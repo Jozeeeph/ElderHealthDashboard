@@ -1,12 +1,48 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Gestion{% endblock %}
+{% block title %}Forum - Posts{% endblock %}
 
 {% block body %}
-  <div class="p-4">
-    <h2 class="mb-3">Gestion</h2>
-    <div class="alert alert-success mb-0">
-      {{ message }}
-    </div>
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">Posts</h2>
+    <a class="btn btn-primary" href="{{ path('forum_post_new') }}">+ New Post</a>
   </div>
+
+  <table class="table table-striped align-middle">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Status</th>
+        <th>Created</th>
+        <th class="text-end">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for post in posts %}
+        <tr>
+          <td>{{ post.title }}</td>
+          <td><span class="badge bg-{{ post.status == 'ACTIVE' ? 'success' : 'secondary' }}">{{ post.status }}</span></td>
+          <td>{{ post.dateDeCreation|date('Y-m-d H:i') }}</td>
+          <td class="text-end">
+            <a class="btn btn-sm btn-outline-secondary" href="{{ path('forum_post_edit', {id: post.id}) }}">Edit</a>
+
+            <a class="btn btn-sm btn-outline-primary"
+               href="{{ path('forum_comment_new', {postId: post.id}) }}">
+              + Comment
+            </a>
+
+            <form method="post" action="{{ path('forum_post_delete', {id: post.id}) }}" class="d-inline"
+                  onsubmit="return confirm('Delete this post?');">
+              <input type="hidden" name="_token" value="{{ csrf_token('delete_post_' ~ post.id) }}">
+              <button class="btn btn-sm btn-outline-danger">Delete</button>
+            </form>
+          </td>
+        </tr>
+      {% else %}
+        <tr><td colspan="4" class="text-center text-muted">No posts yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endblock %}
