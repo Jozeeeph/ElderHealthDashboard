@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+{% block title %}Edit Post{% endblock %}
+
+{% block body %}
+<div class="container py-4">
+  <h2 class="mb-3">Edit Post</h2>
+
+  {{ form_start(form) }}
+    {{ form_widget(form) }}
+    <div class="mt-3">
+      <button class="btn btn-primary">Update</button>
+      <a class="btn btn-link" href="{{ path('forum_post_index') }}">Back</a>
+    </div>
+  {{ form_end(form) }}
+</div>
+{% endblock %}
