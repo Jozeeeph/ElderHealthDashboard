@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Types de rendez-vous{% endblock %}
+
+{% block body %}
+<h2>Types de rendez-vous</h2>
+
+<a href="{{ path('appointment_type_new') }}" class="btn btn-success mb-3">Ajouter un type</a>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Type</th>
+            <th>Tarif</th>
+            <th>Durée</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for type in types %}
+        <tr>
+            <td>{{ type.id }}</td>
+            <td>{{ type.type }}</td>
+            <td>{{ type.Tarif }} DT</td>
+            <td>{{ type.Durée }}</td>
+            <td>
+                <a href="{{ path('appointment_type_show', {'id': type.id}) }}" class="btn btn-info btn-sm">Voir</a>
+                <a href="{{ path('appointment_type_edit', {'id': type.id}) }}" class="btn btn-primary btn-sm">Modifier</a>
+                <a href="{{ path('appointment_type_delete', {'id': type.id}) }}" class="btn btn-danger btn-sm" onclick="return confirm('Supprimer ?')">Supprimer</a>
+            </td>
+        </tr>
+    {% else %}
+        <tr><td colspan="5">Aucun type trouvé</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
