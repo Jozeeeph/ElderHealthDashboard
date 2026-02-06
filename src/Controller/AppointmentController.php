@@ -2,7 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\RendezVous;
+use App\Form\gestionRendezVous\RendezVousType;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -10,11 +14,126 @@ use Symfony\Component\Routing\Attribute\Route;
 class AppointmentController extends AbstractController
 {
     #[Route('/', name: 'index')]
-    public function index(): Response
+    public function index(EntityManagerInterface $em): Response
     {
         return $this->render('appointment/index.html.twig', [
-            'message' => 'Gestion Rendez-vous works ⏱️',
+            'rendezVousList' => $em->getRepository(RendezVous::class)->findAll()
         ]);
     }
-}
 
+    #[Route('/new', name: 'new')]
+    public function new(Request $request, EntityManagerInterface $em): Response
+    {
+        $rdv = new RendezVous();
+        $form = $this->createForm(RendezVousType::class, $rdv);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->persist($rdv);
+            $em->flush();
+
+            return $this->redirectToRoute('appointment_index');
+        }
+
+        return $this->render('appointment/form.html.twig', [
+            'form' => $form->createView(),
+            'title' => 'Ajouter un rendez-vous'
+        ]);
+    }
+
+    #[Route('/{id}/edit', name: 'edit')]
+    public function edit(RendezVous $rdv, Request $request, EntityManagerInterface $em): Response
+    {
+        $form = $this->createForm(RendezVousType::class, $rdv);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->flush();
+
+            return $this->redirectToRoute('appointment_index');
+        }
+
+        return $this->render('appointment/form.html.twig', [
+            'form' => $form->createView(),
+            'title' => 'Modifier le rendez-vous'
+        ]);
+    }
+
+    #[Route('/{id}', name: 'show')]
+    public function show(RendezVous $rdv): Response
+    {
+        return $this->render('appointment/show.html.twig', [
+            'rendezVous' => $rdv
+        ]);
+    }
+
+    #[Route('/{id}/delete', name: 'delete')]
+    public function delete(RendezVous $rdv, EntityManagerInterface $em): Response
+    {
+        $em->remove($rdv);
+        $em->flush();
+
+        return $this->redirectToRoute('appointment_index');
+    }
+/* ===================== TYPE RENDEZ-VOUS ===================== */
+
+    #[Route('/types', name: 'type_index')]
+    public function typeIndex(EntityManagerInterface $em): Response
+    {
+        return $this->render('type_rendezvous/index1.html.twig', [
+            'types' => $em->getRepository(TypeRendezVous::class)->findAll()
+        ]);
+    }
+
+    #[Route('/types/new', name: 'type_new')]
+    public function typeNew(Request $request, EntityManagerInterface $em): Response
+    {
+        $type = new TypeRendezVous();
+        $form = $this->createForm(TypeRendezVousType::class, $type);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->persist($type);
+            $em->flush();
+            return $this->redirectToRoute('appointment_type_index');
+        }
+
+        return $this->render('type_rendezvous/form1.html.twig', [
+            'form' => $form->createView(),
+            'title' => 'Ajouter un type de rendez-vous'
+        ]);
+    }
+
+    #[Route('/types/{id}/edit', name: 'type_edit')]
+    public function typeEdit(TypeRendezVous $type, Request $request, EntityManagerInterface $em): Response
+    {
+        $form = $this->createForm(TypeRendezVousType::class, $type);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->flush();
+            return $this->redirectToRoute('appointment_type_index');
+        }
+
+        return $this->render('type_rendezvous/form1.html.twig', [
+            'form' => $form->createView(),
+            'title' => 'Modifier le type'
+        ]);
+    }
+
+    #[Route('/types/{id}', name: 'type_show')]
+    public function typeShow(TypeRendezVous $type): Response
+    {
+        return $this->render('type_rendezvous/show1.html.twig', [
+            'type' => $type
+        ]);
+    }
+
+    #[Route('/types/{id}/delete', name: 'type_delete')]
+    public function typeDelete(TypeRendezVous $type, EntityManagerInterface $em): Response
+    {
+        $em->remove($type);
+        $em->flush();
+        return $this->redirectToRoute('appointment_type_index');
+    }
+}

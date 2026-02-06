@@ -1,12 +1,42 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Gestion{% endblock %}
+{% block title %}Liste des rendez-vous{% endblock %}
 
 {% block body %}
-  <div class="p-4">
-    <h2 class="mb-3">Gestion</h2>
-    <div class="alert alert-success mb-0">
-      {{ message }}
-    </div>
-  </div>
+<h1>Rendez-vous</h1>
+
+<a href="{{ path('appointment_new') }}" class="btn btn-success mb-3">Ajouter</a>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Date</th>
+            <th>Heure</th>
+            <th>Lieu</th>
+            <th>Type</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for rdv in rendezVousList %}
+        <tr>
+            <td>{{ rdv.id }}</td>
+            <td>{{ rdv.date|date('d/m/Y') }}</td>
+            <td>{{ rdv.heure|date('H:i') }}</td>
+            <td>{{ rdv.lieu }}</td>
+            <td>{{ rdv.typeRendezVous.type }}</td>
+            <td>
+                <a href="{{ path('appointment_show', {'id': rdv.id}) }}" class="btn btn-info btn-sm">Voir</a>
+                <a href="{{ path('appointment_edit', {'id': rdv.id}) }}" class="btn btn-primary btn-sm">Modifier</a>
+                <a href="{{ path('appointment_delete', {'id': rdv.id}) }}" class="btn btn-danger btn-sm"
+                   onclick="return confirm('Supprimer ?')">Supprimer</a>
+            </td>
+        </tr>
+    {% else %}
+        <tr><td colspan="6">Aucun rendez-vous</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
 {% endblock %}
