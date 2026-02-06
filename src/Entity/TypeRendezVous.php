@@ -60,12 +60,12 @@ class TypeRendezVous
 
     public function getDuree(): ?string
     {
-        return $this->Duree;
+        return $this->duree;
     }
 
-    public function setDurée(?string $Duree): static
+    public function setDuree(?string $duree): static
     {
-        $this->Duree = $Duree;
+        $this->duree = $duree;
 
         return $this;
     }

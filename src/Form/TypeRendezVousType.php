@@ -21,7 +21,7 @@ class TypeRendezVousType extends AbstractType
                 'label' => 'Tarif (DT)',
                 'scale' => 2,
             ])
-            ->add('Durée', TextType::class, [
+            ->add('duree', TextType::class, [
                 'label' => 'Durée (minutes)',
             ]);
             
