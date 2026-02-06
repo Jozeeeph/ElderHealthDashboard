@@ -1,9 +1,11 @@
 <?php
 
 namespace App\Controller;
-
+use App\Entity\TypeRendezVous;
 use App\Entity\RendezVous;
-use App\Form\gestionRendezVous\RendezVousType;
+
+use App\Form\TypeRendezVousType;
+use App\Form\GestionRendezVous;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,7 +19,8 @@ class AppointmentController extends AbstractController
     public function index(EntityManagerInterface $em): Response
     {
         return $this->render('appointment/index.html.twig', [
-            'rendezVousList' => $em->getRepository(RendezVous::class)->findAll()
+            'rendezVousList' => $em->getRepository(RendezVous::class)->findAll(),
+            'typesRendezVous' => $em->getRepository(TypeRendezVous::class)->findAll() // Ajoutez cette ligne
         ]);
     }
 
@@ -25,7 +28,7 @@ class AppointmentController extends AbstractController
     public function new(Request $request, EntityManagerInterface $em): Response
     {
         $rdv = new RendezVous();
-        $form = $this->createForm(RendezVousType::class, $rdv);
+        $form = $this->createForm(GestionRendezVous::class, $rdv);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -41,10 +44,10 @@ class AppointmentController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'edit')]
+    #[Route('/rdv/{id}/edit', name: 'edit')]
     public function edit(RendezVous $rdv, Request $request, EntityManagerInterface $em): Response
     {
-        $form = $this->createForm(RendezVousType::class, $rdv);
+        $form = $this->createForm(GestionRendezVous::class, $rdv);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -59,7 +62,7 @@ class AppointmentController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'show')]
+    #[Route('/rdv/{id}', name: 'show')]
     public function show(RendezVous $rdv): Response
     {
         return $this->render('appointment/show.html.twig', [
@@ -67,7 +70,7 @@ class AppointmentController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/delete', name: 'delete')]
+    #[Route('/rdv/{id}/delete', name: 'delete')]
     public function delete(RendezVous $rdv, EntityManagerInterface $em): Response
     {
         $em->remove($rdv);
@@ -75,15 +78,18 @@ class AppointmentController extends AbstractController
 
         return $this->redirectToRoute('appointment_index');
     }
-/* ===================== TYPE RENDEZ-VOUS ===================== */
 
-    #[Route('/types', name: 'type_index')]
-    public function typeIndex(EntityManagerInterface $em): Response
-    {
-        return $this->render('type_rendezvous/index1.html.twig', [
-            'types' => $em->getRepository(TypeRendezVous::class)->findAll()
-        ]);
-    }
+    /* ===================== TYPE RENDEZ-VOUS ===================== */
+
+   #[Route('/types', name: 'type_index')]
+public function typeIndex(EntityManagerInterface $em): Response
+{
+    return $this->render('appointment/index.html.twig', [
+        'rendezVousList' => $em->getRepository(RendezVous::class)->findAll(),
+        'typesRendezVous' => $em->getRepository(TypeRendezVous::class)->findAll(),
+    ]);
+}
+
 
     #[Route('/types/new', name: 'type_new')]
     public function typeNew(Request $request, EntityManagerInterface $em): Response
@@ -98,7 +104,7 @@ class AppointmentController extends AbstractController
             return $this->redirectToRoute('appointment_type_index');
         }
 
-        return $this->render('type_rendezvous/form1.html.twig', [
+        return $this->render('appointment/form1.html.twig', [
             'form' => $form->createView(),
             'title' => 'Ajouter un type de rendez-vous'
         ]);
@@ -115,7 +121,7 @@ class AppointmentController extends AbstractController
             return $this->redirectToRoute('appointment_type_index');
         }
 
-        return $this->render('type_rendezvous/form1.html.twig', [
+        return $this->render('appointment/form1.html.twig', [
             'form' => $form->createView(),
             'title' => 'Modifier le type'
         ]);
@@ -124,7 +130,7 @@ class AppointmentController extends AbstractController
     #[Route('/types/{id}', name: 'type_show')]
     public function typeShow(TypeRendezVous $type): Response
     {
-        return $this->render('type_rendezvous/show1.html.twig', [
+        return $this->render('appointment/show1.html.twig', [
             'type' => $type
         ]);
     }
