@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails{% endblock %}
+
+{% block body %}
+<h2>Détails du type de rendez-vous</h2>
+
+<ul>
+    <li><strong>ID :</strong> {{ type.id }}</li>
+    <li><strong>Type :</strong> {{ type.type }}</li>
+    <li><strong>Tarif :</strong> {{ type.Tarif }} DT</li>
+    <li><strong>Durée :</strong> {{ type.Durée }}</li>
+</ul>
+
+<a href="{{ path('appointment_type_index') }}" class="btn btn-secondary mt-2">Retour</a>
+{% endblock %}
