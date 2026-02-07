@@ -28,6 +28,9 @@ class Post
     #[ORM\Column(length: 255)]
     private ?string $status = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $imageName = null;
+
     /**
      * @var Collection<int, Commentaire>
      */
@@ -92,6 +95,17 @@ class Post
     {
         $this->status = $status;
 
+        return $this;
+    }
+
+    public function getImageName(): ?string
+    {
+        return $this->imageName;
+    }
+
+    public function setImageName(?string $imageName): static
+    {
+        $this->imageName = $imageName;
         return $this;
     }
 

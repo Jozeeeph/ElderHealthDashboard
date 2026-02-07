@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/forum/posts/{postId}/commentaires', name: 'forum_comment_')]
 class CommentaireController extends AbstractController
 {
-    #[Route('/new', name: 'new', methods: ['GET','POST'])]
+    #[Route('/new', name: 'new', methods: ['GET', 'POST'])]
     public function new(int $postId, Request $request, EntityManagerInterface $em): Response
     {
         $post = $em->getRepository(Post::class)->find($postId);
@@ -41,7 +41,7 @@ class CommentaireController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'edit', methods: ['GET','POST'])]
+    #[Route('/{id}/edit', name: 'edit', methods: ['GET', 'POST'])]
     public function edit(int $postId, Commentaire $comment, Request $request, EntityManagerInterface $em): Response
     {
         $form = $this->createForm(CommentaireType::class, $comment);
@@ -50,6 +50,9 @@ class CommentaireController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $em->flush();
             return $this->redirectToRoute('forum_post_index');
+        }
+        if ($comment->getPost()?->getId() !== $postId) {
+            throw $this->createNotFoundException('Comment does not belong to this post');
         }
 
         return $this->render('commentaire/edit.html.twig', [
@@ -65,6 +68,9 @@ class CommentaireController extends AbstractController
         if ($this->isCsrfTokenValid('delete_comment_' . $comment->getId(), $request->request->get('_token'))) {
             $em->remove($comment);
             $em->flush();
+        }
+        if ($comment->getPost()?->getId() !== $postId) {
+            throw $this->createNotFoundException('Comment does not belong to this post');
         }
 
         return $this->redirectToRoute('forum_post_index');
