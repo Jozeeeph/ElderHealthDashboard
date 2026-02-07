@@ -15,10 +15,65 @@ use Symfony\Component\Routing\Attribute\Route;
 class ConsultationController extends AbstractController
 {
     #[Route('/', name: 'index', methods: ['GET'])]
-    public function index(ConsultationRepository $repo): Response
+    public function index(Request $request, ConsultationRepository $repo): Response
     {
+        $patient = trim((string) $request->query->get('patient', ''));
+        $personnel = trim((string) $request->query->get('personnel', ''));
+        $dateInput = $request->query->get('date');
+        $date = null;
+        if (is_string($dateInput) && $dateInput !== '') {
+            $date = \DateTimeImmutable::createFromFormat('Y-m-d', $dateInput) ?: null;
+            if (!$date) {
+                $date = \DateTimeImmutable::createFromFormat('d/m/Y', $dateInput) ?: null;
+            }
+        }
+
+        $consultations = $repo->findFiltered(
+            $patient !== '' ? $patient : null,
+            $personnel !== '' ? $personnel : null,
+            $date
+        );
+
         return $this->render('consultation/index.html.twig', [
-            'consultations' => $repo->findAll(),
+            'consultations' => $consultations,
+            'filters' => [
+                'patient' => $patient,
+                'personnel' => $personnel,
+                'date' => $dateInput,
+            ],
+        ]);
+    }
+
+    #[Route('/archives', name: 'archives', methods: ['GET'])]
+    public function archives(Request $request, ConsultationRepository $repo): Response
+    {
+        $patient = trim((string) $request->query->get('patient', ''));
+        $personnel = trim((string) $request->query->get('personnel', ''));
+        $dateInput = $request->query->get('date');
+        $date = null;
+        if (is_string($dateInput) && $dateInput !== '') {
+            $date = \DateTimeImmutable::createFromFormat('Y-m-d', $dateInput) ?: null;
+            if (!$date) {
+                $date = \DateTimeImmutable::createFromFormat('d/m/Y', $dateInput) ?: null;
+            }
+        }
+
+        $limitDate = new \DateTimeImmutable('today -4 days');
+        $consultations = $repo->findArchived(
+            $patient !== '' ? $patient : null,
+            $personnel !== '' ? $personnel : null,
+            $date,
+            $limitDate
+        );
+
+        return $this->render('consultation/archives.html.twig', [
+            'consultations' => $consultations,
+            'filters' => [
+                'patient' => $patient,
+                'personnel' => $personnel,
+                'date' => $dateInput,
+            ],
+            'limit_date' => $limitDate,
         ]);
     }
 

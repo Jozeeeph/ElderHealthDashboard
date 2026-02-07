@@ -16,6 +16,83 @@ class ConsultationRepository extends ServiceEntityRepository
         parent::__construct($registry, Consultation::class);
     }
 
+    /**
+     * @return Consultation[]
+     */
+    public function findFiltered(
+        ?string $patient,
+        ?string $personnel,
+        ?\DateTimeInterface $date
+    ): array {
+        $qb = $this->createQueryBuilder('c')
+            ->leftJoin('c.patient', 'p')->addSelect('p')
+            ->leftJoin('c.personnelMedical', 'm')->addSelect('m')
+            ->orderBy('c.dateConsultation', 'DESC')
+            ->addOrderBy('c.heureConsultation', 'DESC');
+
+        if ($patient) {
+            $patientLike = '%' . mb_strtolower($patient) . '%';
+            $qb->andWhere('LOWER(p.nom) LIKE :patient OR LOWER(p.prenom) LIKE :patient')
+                ->setParameter('patient', $patientLike);
+        }
+
+        if ($personnel) {
+            $personnelLike = '%' . mb_strtolower($personnel) . '%';
+            $qb->andWhere('LOWER(m.nom) LIKE :personnel OR LOWER(m.prenom) LIKE :personnel')
+                ->setParameter('personnel', $personnelLike);
+        }
+
+        if ($date) {
+            $start = \DateTimeImmutable::createFromInterface($date)->setTime(0, 0, 0);
+            $end = $start->modify('+1 day');
+            $qb->andWhere('c.dateConsultation >= :startDate')
+                ->andWhere('c.dateConsultation < :endDate')
+                ->setParameter('startDate', $start)
+                ->setParameter('endDate', $end);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @return Consultation[]
+     */
+    public function findArchived(?string $patient, ?string $personnel, ?\DateTimeInterface $date, \DateTimeInterface $limitDate): array
+    {
+        $qb = $this->createQueryBuilder('c')
+            ->leftJoin('c.patient', 'p')->addSelect('p')
+            ->leftJoin('c.personnelMedical', 'm')->addSelect('m')
+            ->andWhere('c.etatConsultation IN (:etats)')
+            ->setParameter('etats', ['terminee', 'terminée'])
+            ->andWhere('c.dateConsultation <= :limitDate')
+            ->setParameter('limitDate', $limitDate)
+            ->orderBy('c.dateConsultation', 'DESC')
+            ->addOrderBy('c.heureConsultation', 'DESC');
+
+        if ($patient) {
+            $patientLike = '%' . mb_strtolower($patient) . '%';
+            $qb->andWhere('LOWER(p.nom) LIKE :patient OR LOWER(p.prenom) LIKE :patient')
+                ->setParameter('patient', $patientLike);
+        }
+
+        if ($personnel) {
+            $personnelLike = '%' . mb_strtolower($personnel) . '%';
+            $qb->andWhere('LOWER(m.nom) LIKE :personnel OR LOWER(m.prenom) LIKE :personnel')
+                ->setParameter('personnel', $personnelLike);
+        }
+
+        if ($date) {
+            $start = \DateTimeImmutable::createFromInterface($date)->setTime(0, 0, 0);
+            $end = $start->modify('+1 day');
+            $qb->andWhere('c.dateConsultation >= :startDate')
+                ->andWhere('c.dateConsultation < :endDate')
+                ->setParameter('startDate', $start)
+                ->setParameter('endDate', $end);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
 //    /**
 //     * @return Consultation[] Returns an array of Consultation objects
 //     */

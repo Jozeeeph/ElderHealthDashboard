@@ -26,6 +26,9 @@ class RapportMedical
     #[ORM\Column(type: 'datetime')]
     private ?\DateTimeInterface $date_rapport = null;
 
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $fichier_path = null;
+
     #[ORM\OneToOne(targetEntity: Consultation::class)]
     #[ORM\JoinColumn(name: "consultation_id", referencedColumnName: "id", nullable: false, unique: true)]
     private ?Consultation $consultation = null;
@@ -78,6 +81,17 @@ class RapportMedical
     public function setDateRapport(\DateTimeInterface $date_rapport): self
     {
         $this->date_rapport = $date_rapport;
+        return $this;
+    }
+
+    public function getFichierPath(): ?string
+    {
+        return $this->fichier_path;
+    }
+
+    public function setFichierPath(?string $fichier_path): self
+    {
+        $this->fichier_path = $fichier_path;
         return $this;
     }
 
