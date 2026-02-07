@@ -31,17 +31,17 @@ class GestionRendezVous extends AbstractType
             ])
             ->add('patient', EntityType::class, [
                 'class' => Utilisateur::class,
-                'choice_label' => 'id', // Ã  remplacer par nom/prÃ©nom si dispo
+                'choice_label' => 'id',
                 'label' => 'Patient'
             ])
             ->add('personnelMedical', EntityType::class, [
                 'class' => Utilisateur::class,
                 'choice_label' => 'id',
-                'label' => 'Personnel mÃ©dical'
+                'label' => 'Personnel medical'
             ])
             ->add('typeRendezVous', EntityType::class, [
                 'class' => TypeRendezVous::class,
-                'choice_label' => 'type', // ðŸ”¥ champ affichÃ©
+                'choice_label' => 'type',
                 'placeholder' => '--- Choisir un type ---',
                 'label' => 'Type de rendez-vous'
             ]);
