@@ -36,6 +36,9 @@ class ConsultationController extends AbstractController
                 $consultation->setCreatedRole($user->getRole() ? $user->getRole()->value : null);
             }
             $consultation->setCreatedAt(new \DateTime());
+            if (!$consultation->getEtatConsultation()) {
+                $consultation->setEtatConsultation('en_cours');
+            }
 
             $em->persist($consultation);
             $em->flush();

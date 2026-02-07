@@ -28,7 +28,7 @@ class Consultation
     private ?string $lieu = null;
 
     #[ORM\Column(length: 50)]
-    private ?string $etatConsultation = null; // planifiée / réalisée / annulée
+    private ?string $etatConsultation = null; // planifiee / realisee / annulee / en_cours / terminee
 
     #[ORM\ManyToOne(targetEntity: Utilisateur::class)]
     #[ORM\JoinColumn(name: "created_by_id", referencedColumnName: "id", nullable: true, onDelete: "SET NULL")]
@@ -91,20 +91,36 @@ class Consultation
     public function setPersonnelMedical(Utilisateur $personnelMedical): self { $this->personnelMedical = $personnelMedical; return $this; }
 
     public function getPrescription(): ?Prescription { return $this->prescription; }
-    public function setPrescription(Prescription $prescription): self {
+    public function setPrescription(?Prescription $prescription): self {
         $this->prescription = $prescription;
-        if ($prescription->getConsultation() !== $this) {
+        if ($prescription && $prescription->getConsultation() !== $this) {
             $prescription->setConsultation($this);
         }
+        $this->refreshEtatConsultation();
         return $this;
     }
 
     public function getRapportMedical(): ?RapportMedical { return $this->rapportMedical; }
-    public function setRapportMedical(RapportMedical $rapportMedical): self {
+    public function setRapportMedical(?RapportMedical $rapportMedical): self {
         $this->rapportMedical = $rapportMedical;
-        if ($rapportMedical->getConsultation() !== $this) {
+        if ($rapportMedical && $rapportMedical->getConsultation() !== $this) {
             $rapportMedical->setConsultation($this);
         }
+        $this->refreshEtatConsultation();
         return $this;
+    }
+
+    public function refreshEtatConsultation(): void
+    {
+        if ($this->etatConsultation === 'annulee' || $this->etatConsultation === 'annulée') {
+            return;
+        }
+
+        if ($this->prescription && $this->rapportMedical) {
+            $this->etatConsultation = 'terminee';
+            return;
+        }
+
+        $this->etatConsultation = 'en_cours';
     }
 }
