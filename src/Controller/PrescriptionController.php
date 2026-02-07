@@ -39,14 +39,14 @@ class PrescriptionController extends AbstractController
         }
 
         if ($request->isXmlHttpRequest()) {
-            return $this->render('prescription/_form.html.twig', [
+            return $this->render('BackOffice/prescription/_form.html.twig', [
                 'form' => $form->createView(),
                 'submit_label' => 'Ajouter',
                 'form_action' => $this->generateUrl('prescription_new', ['id' => $consultation->getId()]),
             ]);
         }
 
-        return $this->render('prescription/new.html.twig', [
+        return $this->render('BackOffice/prescription/new.html.twig', [
             'form' => $form->createView(),
             'consultation' => $consultation,
         ]);
@@ -55,7 +55,7 @@ class PrescriptionController extends AbstractController
     #[Route('/{id}', name: 'show', methods: ['GET'])]
     public function show(Prescription $prescription): Response
     {
-        return $this->render('prescription/show.html.twig', [
+        return $this->render('BackOffice/prescription/show.html.twig', [
             'prescription' => $prescription,
         ]);
     }
@@ -73,14 +73,14 @@ class PrescriptionController extends AbstractController
         }
 
         if ($request->isXmlHttpRequest()) {
-            return $this->render('prescription/_form.html.twig', [
+            return $this->render('BackOffice/prescription/_form.html.twig', [
                 'form' => $form->createView(),
                 'submit_label' => 'Mettre a jour',
                 'form_action' => $this->generateUrl('prescription_edit', ['id' => $prescription->getIdPrescription()]),
             ]);
         }
 
-        return $this->render('prescription/edit.html.twig', [
+        return $this->render('BackOffice/prescription/edit.html.twig', [
             'form' => $form->createView(),
             'prescription' => $prescription,
         ]);
@@ -106,7 +106,7 @@ class PrescriptionController extends AbstractController
             return $this->redirectToRoute('prescription_show', ['id' => $prescription->getIdPrescription()]);
         }
 
-        $html = $this->renderView('prescription/pdf.html.twig', [
+        $html = $this->renderView('BackOffice/prescription/pdf.html.twig', [
             'prescription' => $prescription,
         ]);
 

@@ -17,7 +17,7 @@ class ConsultationController extends AbstractController
     #[Route('/', name: 'index', methods: ['GET'])]
     public function index(ConsultationRepository $repo): Response
     {
-        return $this->render('consultation/index.html.twig', [
+        return $this->render('BackOffice/consultation/index.html.twig', [
             'consultations' => $repo->findAll(),
         ]);
     }
@@ -45,14 +45,14 @@ class ConsultationController extends AbstractController
         }
 
         if ($request->isXmlHttpRequest()) {
-            return $this->render('consultation/_form.html.twig', [
+            return $this->render('BackOffice/consultation/_form.html.twig', [
                 'form' => $form->createView(),
                 'submit_label' => 'Ajouter',
                 'form_action' => $this->generateUrl('consultation_new'),
             ]);
         }
 
-        return $this->render('consultation/new.html.twig', [
+        return $this->render('BackOffice/consultation/new.html.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -70,14 +70,14 @@ class ConsultationController extends AbstractController
         }
 
         if ($request->isXmlHttpRequest()) {
-            return $this->render('consultation/_form.html.twig', [
+            return $this->render('BackOffice/consultation/_form.html.twig', [
                 'form' => $form->createView(),
                 'submit_label' => 'Mettre à jour',
                 'form_action' => $this->generateUrl('consultation_edit', ['id' => $consultation->getId()]),
             ]);
         }
 
-        return $this->render('consultation/edit.html.twig', [
+        return $this->render('BackOffice/consultation/edit.html.twig', [
             'consultation' => $consultation,
             'form' => $form->createView(),
         ]);

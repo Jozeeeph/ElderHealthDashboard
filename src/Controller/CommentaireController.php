@@ -35,7 +35,7 @@ class CommentaireController extends AbstractController
             return $this->redirectToRoute('forum_post_index');
         }
 
-        return $this->render('commentaire/new.html.twig', [
+        return $this->render('BackOffice/commentaire/new.html.twig', [
             'post' => $post,
             'form' => $form->createView(),
         ]);
@@ -55,7 +55,7 @@ class CommentaireController extends AbstractController
             throw $this->createNotFoundException('Comment does not belong to this post');
         }
 
-        return $this->render('commentaire/edit.html.twig', [
+        return $this->render('BackOffice/commentaire/edit.html.twig', [
             'postId' => $postId,
             'comment' => $comment,
             'form' => $form->createView(),

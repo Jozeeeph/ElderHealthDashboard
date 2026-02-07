@@ -20,7 +20,7 @@ class ForumPostController extends AbstractController
     #[Route('/', name: 'index', methods: ['GET'])]
     public function index(PostRepository $postRepository): Response
     {
-        return $this->render('forum_post/index.html.twig', [
+        return $this->render('BackOffice/forum_post/index.html.twig', [
             'posts' => $postRepository->findAllWithComments(),
         ]);
     }
@@ -63,7 +63,7 @@ class ForumPostController extends AbstractController
             return $this->redirectToRoute('forum_post_index');
         }
 
-        return $this->render('forum_post/new.html.twig', [
+        return $this->render('BackOffice/forum_post/new.html.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -105,7 +105,7 @@ class ForumPostController extends AbstractController
             return $this->redirectToRoute('forum_post_index');
         }
 
-        return $this->render('forum_post/edit.html.twig', [
+        return $this->render('BackOffice/forum_post/edit.html.twig', [
             'post' => $post,
             'form' => $form->createView(),
         ]);

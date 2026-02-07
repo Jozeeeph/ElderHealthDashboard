@@ -223,3 +223,44 @@
     box-shadow: 0 8px 20px rgba(15, 23, 42, .08);
     background: #fff;
 }
+
+.page-wrap{
+  min-height: calc(100vh - 80px);
+  background: #f7f9fc;
+  padding: 32px 12px;
+}
+
+.form-card{
+  max-width: 900px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 14px 36px rgba(15,23,42,.1);
+}
+
+.form-card__header{
+  margin-bottom: 20px;
+}
+
+.brand__title{
+  font-weight: 900;
+  margin: 0;
+}
+
+.brand__subtitle{
+  color: #6b7280;
+}
+
+.actions{
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.btn-primary-ehc{
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-weight: 700;
+}
