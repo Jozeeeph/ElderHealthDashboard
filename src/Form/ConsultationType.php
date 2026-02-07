@@ -31,14 +31,6 @@ class ConsultationType extends AbstractType
             ->add('dateConsultation', DateType::class, ['widget' => 'single_text'])
             ->add('heureConsultation', TimeType::class, ['widget' => 'single_text'])
             ->add('lieu', TextType::class)
-            ->add('etatConsultation', ChoiceType::class, [
-                'choices' => [
-                    'Planifiée' => 'planifiée',
-                    'Réalisée' => 'réalisée',
-                    'Annulée' => 'annulée',
-                ],
-                'placeholder' => 'Sélectionner un état',
-            ])
             ->add('patient', EntityType::class, [
                 'class' => Utilisateur::class,
                 'choice_label' => function (Utilisateur $u) {

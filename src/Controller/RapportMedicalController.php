@@ -26,7 +26,7 @@ class RapportMedicalController extends AbstractController
         }
 
         $rapport = new RapportMedical();
-        $rapport->setConsultation($consultation);
+        $consultation->setRapportMedical($rapport);
         $rapport->setDateRapport(new \DateTime());
 
         $form = $this->createForm(RapportMedicalType::class, $rapport);
@@ -91,6 +91,10 @@ class RapportMedicalController extends AbstractController
     public function delete(RapportMedical $rapport, Request $request, EntityManagerInterface $em): Response
     {
         if ($this->isCsrfTokenValid('delete_rapport_' . $rapport->getIdRapport(), $request->request->get('_token'))) {
+            $consultation = $rapport->getConsultation();
+            if ($consultation) {
+                $consultation->setRapportMedical(null);
+            }
             $em->remove($rapport);
             $em->flush();
             $this->addFlash('success', 'Rapport medical supprime.');

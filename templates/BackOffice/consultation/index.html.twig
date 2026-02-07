@@ -75,6 +75,15 @@
     background: linear-gradient(90deg, #27b07f, #7bd6b1);
 }
 
+.consultation-card[data-status^="en_cours"] .consultation-accent,
+.consultation-card[data-status^="en cours"] .consultation-accent {
+    background: linear-gradient(90deg, #f4b740, #f8d27a);
+}
+
+.consultation-card[data-status^="term"] .consultation-accent {
+    background: linear-gradient(90deg, #2bbf9f, #6edfbf);
+}
+
 .consultation-card[data-status^="annul"] .consultation-accent {
     background: linear-gradient(90deg, #e05858, #f2a0a0);
 }
@@ -189,6 +198,11 @@
 <div class="row g-3">
     {% for consultation in consultations %}
         {% set status = consultation.etatConsultation ? consultation.etatConsultation|lower : '' %}
+        {% set status_label = status == 'en_cours' ? 'En cours'
+            : (status == 'terminee' ? 'Terminée'
+            : (status == 'planifiée' ? 'Planifiée'
+            : (status == 'réalisée' ? 'Réalisée'
+            : (status == 'annulée' ? 'Annulée' : (consultation.etatConsultation ?? ''))))) %}
 
         <div class="col-12 col-md-6 col-xl-4">
             <div class="card h-100 shadow-sm position-relative consultation-card"
@@ -202,7 +216,7 @@
                                 {{ consultation.patient.prenom }} {{ consultation.patient.nom }}
                             </div>
                         </div>
-                        <span class="badge badge-soft">{{ consultation.etatConsultation }}</span>
+                        <span class="badge badge-soft">{{ status_label }}</span>
                     </div>
 
                     <div class="consultation-meta">

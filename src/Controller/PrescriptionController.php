@@ -26,7 +26,7 @@ class PrescriptionController extends AbstractController
         }
 
         $prescription = new Prescription();
-        $prescription->setConsultation($consultation);
+        $consultation->setPrescription($prescription);
 
         $form = $this->createForm(PrescriptionType::class, $prescription);
         $form->handleRequest($request);
@@ -90,6 +90,10 @@ class PrescriptionController extends AbstractController
     public function delete(Prescription $prescription, Request $request, EntityManagerInterface $em): Response
     {
         if ($this->isCsrfTokenValid('delete_prescription_' . $prescription->getIdPrescription(), $request->request->get('_token'))) {
+            $consultation = $prescription->getConsultation();
+            if ($consultation) {
+                $consultation->setPrescription(null);
+            }
             $em->remove($prescription);
             $em->flush();
             $this->addFlash('success', 'Prescription supprimee.');
