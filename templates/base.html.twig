@@ -1,153 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>
-			{% block title %}My Symfony App
-			{% endblock %}
-		</title>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+        {% block stylesheets %}
+        {% endblock %}
 
-		<!-- Bootstrap CSS -->
-		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-		<link
-		rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-		<!-- Font Awesome -->
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-		<link
-		rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-		<!-- Custom CSS -->
-		<link href="{{ asset('css/sb-admin-2.min.css') }}" rel="stylesheet"> {% block stylesheets %}{% endblock %}
-		</head>
-		<body>
-			<!-- Navigation -->
-			<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-				<div class="container-fluid">
-					<a class="navbar-brand d-flex align-items-center" href="{{ path('app_home') }}">
-						<img src="{{ asset('img/logo.png') }}" alt="Elder HealthCare" height="50" class="me-2">
-						<span class="fw-bold text-primary">Elder</span>
-						<span class="fw-bold text-warning ms-1">HealthCare</span>
-					</a>
-
-					<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-						<span class="navbar-toggler-icon"></span>
-					</button>
-
-					<div class="collapse navbar-collapse" id="navbarNav">
-						<ul class="navbar-nav ms-auto">
-							<li class="nav-item">
-								<a class="nav-link" href="{{ path('app_home') }}">
-									<i class="fas fa-house-medical me-1"></i>
-									Accueil
-								</a>
-							</li>
-							<li class="nav-item">
-								<a class="nav-link" href="{{ path('app_dashboard') }}">
-									<i class="fas fa-heart-pulse me-1"></i>
-									Tableau de bord
-								</a>
-							</li>
-							<li class="nav-item dropdown">
-								<a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-									<i class="fas fa-user-nurse me-1"></i>
-									Mon compte
-								</a>
-								<ul class="dropdown-menu dropdown-menu-end">
-									<li>
-										<a class="dropdown-item" href="#">
-											<i class="fas fa-gear me-2"></i>
-											Paramètres</a>
-									</li>
-									<li>
-										<a class="dropdown-item text-danger" href="#">
-											<i class="fas fa-right-from-bracket me-2"></i>
-											Déconnexion</a>
-									</li>
-								</ul>
-							</li>
-						</ul>
-					</div>
-				</div>
-			</nav>
-
-
-			<!-- Main Content -->
-			<div class="container-fluid">
-				<div
-					class="row">
-					<!-- Sidebar -->
-					<nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar elder-sidebar">
-						<div class="position-sticky pt-4">
-							<ul class="nav flex-column">
-
-								<li class="nav-item">
-									<a class="nav-link" href="{{ path('event_index') }}">
-										<i class="fas fa-calendar-days me-2"></i>
-										Événements
-									</a>
-								</li>
-
-								<li class="nav-item">
-									<a class="nav-link" href="{{ path('appointment_index') }}">
-										<i class="fas fa-clock me-2"></i>
-										Rendez-vous
-									</a>
-								</li>
-
-								<li class="nav-item">
-									<a class="nav-link" href="{{ path('consultation_index') }}">
-										<i class="fas fa-stethoscope me-2"></i>
-										Consultations
-									</a>
-								</li>
-
-								<li class="nav-item">
-									<a class="nav-link" href="{{ path('forum_post_index') }}">
-										<i class="fas fa-comments me-2"></i>
-										Forum
-									</a>
-								</li>
-
-								<li class="nav-item">
-									<a class="nav-link" href="{{ path('equipment_index') }}">
-										<i class="fas fa-hospital me-2"></i>
-										Équipements médicaux
-									</a>
-								</li>
-
-								<li class="nav-item">
-									<a class="nav-link" href="{{ path('user_index') }}">
-										<i class="fas fa-users me-2"></i>
-										Utilisateurs
-									</a>
-								</li>
-							</ul>
-						</div>
-					</nav>
-
-
-					<!-- Main Area -->
-					<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4"> {% block body %}{% endblock %}
-						</main>
-					</div>
-				</div>
-
-				<!-- Footer -->
-				<footer class="footer mt-auto py-3 bg-light">
-					<div class="container text-center">
-						<span class="text-muted">©
-							{{ "now"|date("Y") }}
-							My Symfony App. All rights reserved.</span>
-					</div>
-				</footer>
-
-				<!-- Bootstrap JS Bundle -->
-				 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-
-
-				<!-- Custom JS -->
-				 <script src="{{ asset('js/sb-admin-2.min.js') }}"></script>{% block javascripts %}
-			{% endblock %}
-		</body>
-	</html>
+        {% block javascripts %}
+            {% block importmap %}{{ importmap('app') }}{% endblock %}
+        {% endblock %}
+    </head>
+    <body>
+        {% block body %}{% endblock %}
+    </body>
+</html>
