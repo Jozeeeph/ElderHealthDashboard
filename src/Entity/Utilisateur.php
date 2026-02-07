@@ -5,23 +5,12 @@ namespace App\Entity;
 use App\Enum\Role;
 use App\Repository\UtilisateurRepository;
 use Doctrine\ORM\Mapping as ORM;
-use App\Entity\PersonnelMedical;
-use App\Entity\Patient;
-use App\Entity\ProprietaireMedicaux;
-use App\Entity\Admin;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 
 #[ORM\Entity(repositoryClass: UtilisateurRepository::class)]
-#[ORM\InheritanceType('JOINED')]
-#[ORM\DiscriminatorColumn(name: 'type', type: 'string')]
-#[ORM\DiscriminatorMap([
-    'utilisateur' => Utilisateur::class,
-    'admin' => Admin::class,
-    'patient' => Patient::class,
-    'personnel_medical' => PersonnelMedical::class,
-    'proprietaire_medicaux' => ProprietaireMedicaux::class,
-])]
-class Utilisateur
+class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -65,6 +54,39 @@ class Utilisateur
 
     #[ORM\Column]
     private ?string $password = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $dossierMedicalPath = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $cv = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $certification = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $attestation = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $hopitalAffectation = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $nbAnneeExperience = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $specialite = null;
+
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $disponibilite = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $fonction = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $patante = null;
+
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $numeroFix = null;
 
     public function getId(): ?int
     {
@@ -219,5 +241,126 @@ class Utilisateur
 
     public function eraseCredentials(): void
     {
+    }
+
+    public function getDossierMedicalPath(): ?string
+    {
+        return $this->dossierMedicalPath;
+    }
+
+    public function setDossierMedicalPath(?string $dossierMedicalPath): self
+    {
+        $this->dossierMedicalPath = $dossierMedicalPath;
+        return $this;
+    }
+
+    public function getCv(): ?string
+    {
+        return $this->cv;
+    }
+
+    public function setCv(?string $cv): self
+    {
+        $this->cv = $cv;
+        return $this;
+    }
+
+    public function getCertification(): ?string
+    {
+        return $this->certification;
+    }
+
+    public function setCertification(?string $certification): self
+    {
+        $this->certification = $certification;
+        return $this;
+    }
+
+    public function getAttestation(): ?string
+    {
+        return $this->attestation;
+    }
+
+    public function setAttestation(?string $attestation): self
+    {
+        $this->attestation = $attestation;
+        return $this;
+    }
+
+    public function getHopitalAffectation(): ?string
+    {
+        return $this->hopitalAffectation;
+    }
+
+    public function setHopitalAffectation(?string $hopitalAffectation): self
+    {
+        $this->hopitalAffectation = $hopitalAffectation;
+        return $this;
+    }
+
+    public function getNbAnneeExperience(): ?int
+    {
+        return $this->nbAnneeExperience;
+    }
+
+    public function setNbAnneeExperience(?int $nbAnneeExperience): self
+    {
+        $this->nbAnneeExperience = $nbAnneeExperience;
+        return $this;
+    }
+
+    public function getSpecialite(): ?string
+    {
+        return $this->specialite;
+    }
+
+    public function setSpecialite(?string $specialite): self
+    {
+        $this->specialite = $specialite;
+        return $this;
+    }
+
+    public function getDisponibilite(): ?string
+    {
+        return $this->disponibilite;
+    }
+
+    public function setDisponibilite(?string $disponibilite): self
+    {
+        $this->disponibilite = $disponibilite;
+        return $this;
+    }
+
+    public function getFonction(): ?string
+    {
+        return $this->fonction;
+    }
+
+    public function setFonction(?string $fonction): self
+    {
+        $this->fonction = $fonction;
+        return $this;
+    }
+
+    public function getPatante(): ?string
+    {
+        return $this->patante;
+    }
+
+    public function setPatante(?string $patante): self
+    {
+        $this->patante = $patante;
+        return $this;
+    }
+
+    public function getNumeroFix(): ?string
+    {
+        return $this->numeroFix;
+    }
+
+    public function setNumeroFix(?string $numeroFix): self
+    {
+        $this->numeroFix = $numeroFix;
+        return $this;
     }
 }
