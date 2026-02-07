@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier prescription{% endblock %}
+
+{% block body %}
+<div class="container py-4">
+    <h1 class="mb-3">Modifier prescription</h1>
+    <div class="text-muted mb-4">
+        Consultation #{{ prescription.consultation.id }} - {{ prescription.consultation.patient.prenom }} {{ prescription.consultation.patient.nom }}
+    </div>
+
+    {% include 'prescription/_form.html.twig' with {
+        form: form,
+        submit_label: 'Mettre a jour'
+    } %}
+</div>
+{% endblock %}

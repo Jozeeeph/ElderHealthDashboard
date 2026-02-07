@@ -1,0 +1,216 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Rapport medical{% endblock %}
+
+{% block body %}
+<style>
+.rapport-shell {
+    --ink: #1e2a2f;
+    --muted: #6c7a80;
+    --brand: #0e8aa7;
+    --brand-2: #2bbf9f;
+    --card: #ffffff;
+    --ring: rgba(14, 138, 167, 0.2);
+}
+
+.rapport-header {
+    background: linear-gradient(135deg, #e8f6f9 0%, #eef8f4 100%);
+    border-radius: 18px 28px 18px 28px;
+    padding: 16px 20px;
+    border: 1px solid #e2eef1;
+}
+
+.rapport-title {
+    color: var(--ink);
+}
+
+.rapport-actions .btn {
+    border-radius: 999px;
+    padding: 8px 16px;
+}
+
+.rapport-card {
+    border: 1px solid #e6edf0;
+    border-radius: 18px 28px 18px 28px;
+    background: var(--card);
+}
+
+.rapport-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: #eef6f8;
+    border: 1px solid #d6e7ec;
+    color: #1a5b6b;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.rapport-modal .modal-content {
+    border: none;
+    border-radius: 20px 28px 20px 28px;
+    box-shadow: 0 18px 48px rgba(30, 42, 47, 0.2);
+    background: #ffffff;
+}
+
+.rapport-modal .modal-header {
+    border: 0;
+    background: linear-gradient(135deg, #e8f6f9 0%, #eef8f4 100%);
+    border-radius: 20px 28px 0 0;
+    padding: 16px 20px;
+}
+
+.rapport-modal .modal-title {
+    font-weight: 700;
+    color: #1e2a2f;
+}
+
+.rapport-modal .modal-body {
+    padding: 18px 20px 22px;
+    background: #ffffff;
+}
+</style>
+
+<div class="rapport-shell container py-4">
+    <div class="rapport-header d-flex flex-wrap justify-content-between align-items-start mb-3 gap-2">
+        <div>
+            <h1 class="rapport-title mb-1">Rapport medical</h1>
+            <div class="text-muted">
+                Consultation #{{ rapport.consultation.id }} - {{ rapport.consultation.patient.prenom }} {{ rapport.consultation.patient.nom }}
+            </div>
+        </div>
+        <div class="rapport-actions d-flex gap-2">
+            <a class="btn btn-outline-secondary" href="{{ path('rapport_medical_pdf', {'id': rapport.idRapport}) }}">Telecharger PDF</a>
+            <button type="button"
+                    class="btn btn-outline-primary"
+                    data-bs-toggle="modal"
+                    data-bs-target="#rapportEditModal"
+                    data-edit-url="{{ path('rapport_medical_edit', {'id': rapport.idRapport}) }}">
+                Modifier
+            </button>
+            <button type="button"
+                    class="btn btn-outline-danger"
+                    data-bs-toggle="modal"
+                    data-bs-target="#rapportDeleteModal"
+                    data-delete-url="{{ path('rapport_medical_delete', {'id': rapport.idRapport}) }}"
+                    data-delete-token="{{ csrf_token('delete_rapport_' ~ rapport.idRapport) }}">
+                Supprimer
+            </button>
+        </div>
+    </div>
+
+    <div class="card shadow-sm rapport-card">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-12 col-md-4">
+                    <div class="text-muted small">Niveau de gravite</div>
+                    <div class="rapport-pill">{{ rapport.niveauGravite }}</div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="text-muted small">Date du rapport</div>
+                    <div class="fw-semibold">{{ rapport.dateRapport ? rapport.dateRapport|date('d/m/Y H:i') : '-' }}</div>
+                </div>
+                <div class="col-12">
+                    <div class="text-muted small">Diagnostic</div>
+                    <div class="fw-semibold">{{ rapport.diagnostic }}</div>
+                </div>
+                <div class="col-12">
+                    <div class="text-muted small">Recommandations</div>
+                    <div class="fw-semibold">{{ rapport.recommandations }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a class="btn btn-light" href="{{ path('consultation_index') }}">Retour</a>
+    </div>
+</div>
+
+<div class="modal fade rapport-modal" id="rapportEditModal" tabindex="-1" aria-labelledby="rapportEditModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="rapportEditModalLabel">Modifier rapport medical</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-muted small">Chargement...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade rapport-modal" id="rapportDeleteModal" tabindex="-1" aria-labelledby="rapportDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="rapportDeleteModalLabel">Confirmer la suppression</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-2">Voulez-vous vraiment supprimer ce rapport ?</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Annuler</button>
+                <form method="post" action="">
+                    <input type="hidden" name="_token" value="">
+                    <button type="submit" class="btn btn-danger">Supprimer</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const editModal = document.getElementById('rapportEditModal');
+    const deleteModal = document.getElementById('rapportDeleteModal');
+    if (!editModal || !deleteModal) return;
+
+    const loadFormIntoModal = async (modal, url) => {
+        const modalBody = modal.querySelector('.modal-body');
+        if (!modalBody) return;
+        modalBody.innerHTML = '<div class="text-muted small">Chargement...</div>';
+        try {
+            const response = await fetch(url, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            if (!response.ok) {
+                throw new Error('Erreur de chargement');
+            }
+            const html = await response.text();
+            modalBody.innerHTML = html;
+        } catch (e) {
+            modalBody.innerHTML = '<div class="alert alert-danger mb-0">Impossible de charger le formulaire.</div>';
+        }
+    };
+
+    editModal.addEventListener('show.bs.modal', async (event) => {
+        const trigger = event.relatedTarget;
+        if (!trigger) return;
+        const editUrl = trigger.getAttribute('data-edit-url');
+        if (!editUrl) return;
+        await loadFormIntoModal(editModal, editUrl);
+    });
+
+    deleteModal.addEventListener('show.bs.modal', (event) => {
+        const trigger = event.relatedTarget;
+        if (!trigger) return;
+        const deleteUrl = trigger.getAttribute('data-delete-url');
+        const deleteToken = trigger.getAttribute('data-delete-token');
+        const form = deleteModal.querySelector('form');
+        const tokenInput = deleteModal.querySelector('input[name="_token"]');
+        if (form && deleteUrl) {
+            form.setAttribute('action', deleteUrl);
+        }
+        if (tokenInput && deleteToken) {
+            tokenInput.value = deleteToken;
+        }
+    });
+});
+</script>
+{% endblock %}

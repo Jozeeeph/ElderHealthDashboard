@@ -1,0 +1,31 @@
+{{ form_start(form, {
+    action: form_action|default(app.request.uri)
+}) }}
+    <div class="row g-3">
+        <div class="col-12">
+            {{ form_row(form.medicaments) }}
+        </div>
+        <div class="col-12 col-md-6">
+            {{ form_row(form.frequence) }}
+        </div>
+        <div class="col-12 col-md-6">
+            {{ form_row(form.dosage) }}
+        </div>
+        <div class="col-12 col-md-6">
+            {{ form_row(form.dureeTraitement) }}
+        </div>
+        <div class="col-12 col-md-6">
+            {{ form_row(form.dateDebut) }}
+        </div>
+        <div class="col-12 col-md-6">
+            {{ form_row(form.dateFin) }}
+        </div>
+        <div class="col-12">
+            {{ form_row(form.consignes) }}
+        </div>
+    </div>
+    <div class="mt-4 d-flex gap-2">
+        <button class="btn btn-primary" type="submit">{{ submit_label|default('Enregistrer') }}</button>
+        <a class="btn btn-light" href="{{ path('consultation_index') }}">Retour</a>
+    </div>
+{{ form_end(form) }}

@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier rapport medical{% endblock %}
+
+{% block body %}
+<div class="container py-4">
+    <h1 class="mb-3">Modifier rapport medical</h1>
+    <div class="text-muted mb-4">
+        Consultation #{{ rapport.consultation.id }} - {{ rapport.consultation.patient.prenom }} {{ rapport.consultation.patient.nom }}
+    </div>
+
+    {% include 'rapport_medical/_form.html.twig' with {
+        form: form,
+        submit_label: 'Mettre a jour'
+    } %}
+</div>
+{% endblock %}

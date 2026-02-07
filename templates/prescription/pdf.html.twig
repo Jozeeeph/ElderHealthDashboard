@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <title>Prescription</title>
+    <style>
+        body { font-family: DejaVu Sans, Arial, sans-serif; color: #1e2a2f; font-size: 12px; }
+        .header { padding: 8px 0 12px; border-bottom: 1px solid #e0e6ea; }
+        .title { font-size: 20px; font-weight: 700; }
+        .sub { color: #5b6b73; font-size: 12px; }
+        .section { margin-top: 14px; }
+        .label { color: #5b6b73; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+        .value { font-weight: 600; margin-top: 4px; }
+        .box { border: 1px solid #e0e6ea; border-radius: 6px; padding: 10px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title">Prescription</div>
+        <div class="sub">
+            Consultation #{{ prescription.consultation.id }} -
+            {{ prescription.consultation.patient.prenom }} {{ prescription.consultation.patient.nom }}
+        </div>
+    </div>
+
+    <div class="section box">
+        <div class="label">Frequence</div>
+        <div class="value">{{ prescription.frequence }}</div>
+    </div>
+
+    <div class="section box">
+        <div class="label">Dosage</div>
+        <div class="value">{{ prescription.dosage }}</div>
+    </div>
+
+    <div class="section box">
+        <div class="label">Duree du traitement</div>
+        <div class="value">{{ prescription.dureeTraitement }}</div>
+    </div>
+
+    <div class="section box">
+        <div class="label">Periode</div>
+        <div class="value">
+            {{ prescription.dateDebut ? prescription.dateDebut|date('d/m/Y') : '-' }}
+            -
+            {{ prescription.dateFin ? prescription.dateFin|date('d/m/Y') : '-' }}
+        </div>
+    </div>
+
+    <div class="section box">
+        <div class="label">Medicaments</div>
+        <div class="value">{{ prescription.medicaments }}</div>
+    </div>
+
+    <div class="section box">
+        <div class="label">Consignes</div>
+        <div class="value">{{ prescription.consignes ?: '-' }}</div>
+    </div>
+</body>
+</html>
