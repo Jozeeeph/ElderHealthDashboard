@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Entity\Event;
 use App\Entity\TypeEvent;
 use App\Entity\Participation;
-use App\Entity\Utilisateur; 
+use App\Entity\Utilisateur;
 use App\Form\EventType;
 use App\Form\TypeEventType;
 use App\Repository\EventRepository;
@@ -23,7 +23,7 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 #[Route('/events', name: 'event_')]
 class EventController extends AbstractController
 {
-  
+
 
     #[Route('/', name: 'index', methods: ['GET'])]
     public function index(EventRepository $eventRepository): Response
@@ -34,88 +34,99 @@ class EventController extends AbstractController
     }
 
     #[Route('/new', name: 'new', methods: ['GET', 'POST'])]
-   public function new(Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
-{
-    $event = new Event();
-    $event->setCreatedAt(new \DateTimeImmutable());
+    public function new(Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
+    {
+        $event = new Event();
+        $event->setCreatedAt(new \DateTimeImmutable());
 
-    $form = $this->createForm(EventType::class, $event);
-    $form->handleRequest($request);
+        $form = $this->createForm(EventType::class, $event);
+        $form->handleRequest($request);
 
-    if ($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
 
-        $imageFile = $form->get('image')->getData();
+            $imageFile = $form->get('image')->getData();
 
-        if ($imageFile) {
-            $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
-            $safeFilename = $slugger->slug($originalFilename);
-            $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
+            if ($imageFile) {
+                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
 
-            try {
-                $imageFile->move(
-                    $this->getParameter('kernel.project_dir').'/public/uploads/events',
-                    $newFilename
-                );
-            } catch (FileException $e) {
-                $this->addFlash('danger', 'Erreur lors de l’upload');
+                $extension = $imageFile->guessExtension()
+                    ?: $imageFile->getClientOriginalExtension()
+                    ?: 'jpg';
+
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $extension;
+
+                $uploadDir = $this->getParameter('kernel.project_dir') . '/public/uploads/events';
+
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0777, true);
+                }
+
+                try {
+                    $imageFile->move($uploadDir, $newFilename);
+                    $event->setImage($newFilename);
+                } catch (FileException $e) {
+                    $this->addFlash('danger', 'Erreur upload : ' . $e->getMessage());
+                    return $this->render('BackOffice/event/new.html.twig', [
+                        'form' => $form->createView(),
+                    ]);
+                }
             }
 
-            $event->setImage($newFilename);
+            $em->persist($event);
+            $em->flush();
+
+            $this->addFlash('success', 'Événement créé avec succès');
+            return $this->redirectToRoute('event_index');
         }
 
-        $em->persist($event);
-        $em->flush();
-
-        $this->addFlash('success', 'Événement créé avec succès');
-        return $this->redirectToRoute('event_index');
+        return $this->render('BackOffice/event/new.html.twig', [
+            'form' => $form->createView(),
+        ]);
     }
 
-    return $this->render('BackOffice/event/new.html.twig', [
-        'form' => $form->createView(),
-    ]);
-}
 
 
     #[Route('/{id}/edit', name: 'edit', methods: ['GET', 'POST'])]
     public function edit(Event $event, Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
-{
-    $event->setUpdatedAt(new \DateTimeImmutable());
+    {
+        $event->setUpdatedAt(new \DateTimeImmutable());
 
-    $form = $this->createForm(EventType::class, $event);
-    $form->handleRequest($request);
+        $form = $this->createForm(EventType::class, $event);
+        $form->handleRequest($request);
 
-    if ($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
 
-        $imageFile = $form->get('image')->getData();
+            $imageFile = $form->get('image')->getData();
 
-        if ($imageFile) {
-            $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
-            $safeFilename = $slugger->slug($originalFilename);
-            $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
+            if ($imageFile) {
+                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $imageFile->guessExtension();
 
-            try {
-                $imageFile->move(
-                    $this->getParameter('kernel.project_dir').'/public/uploads/events',
-                    $newFilename
-                );
-            } catch (FileException $e) {
-                $this->addFlash('danger', 'Erreur lors de l’upload');
+                try {
+                    $imageFile->move(
+                        $this->getParameter('kernel.project_dir') . '/public/uploads/events',
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                    $this->addFlash('danger', 'Erreur lors de l’upload');
+                }
+
+                $event->setImage($newFilename);
             }
 
-            $event->setImage($newFilename);
+            $em->flush();
+
+            $this->addFlash('success', 'Événement modifié');
+            return $this->redirectToRoute('event_index');
         }
 
-        $em->flush();
-
-        $this->addFlash('success', 'Événement modifié');
-        return $this->redirectToRoute('event_index');
+        return $this->render('BackOffice/event/edit.html.twig', [
+            'event' => $event,
+            'form' => $form->createView(),
+        ]);
     }
-
-    return $this->render('BackOffice/event/edit.html.twig', [
-        'event' => $event,
-        'form' => $form->createView(),
-    ]);
-}
 
 
     #[Route('/{id}', name: 'delete', methods: ['POST'])]
@@ -130,7 +141,7 @@ class EventController extends AbstractController
         return $this->redirectToRoute('event_index');
     }
 
-  
+
     // TypeEvent
 
 
