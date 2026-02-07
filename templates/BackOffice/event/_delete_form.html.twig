@@ -1,0 +1,9 @@
+<form method="post"
+      action="{{ path('event_delete', {id: event.id}) }}"
+      onsubmit="return confirm('Supprimer cet événement ?');"
+      class="d-inline">
+  <input type="hidden" name="_token" value="{{ csrf_token('delete_event_' ~ event.id) }}">
+  <button class="icon-btn danger" title="Supprimer" type="submit">
+    <i class="bi bi-trash"></i>
+  </button>
+</form>

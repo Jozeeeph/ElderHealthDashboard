@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+{% block title %}Modifier événement{% endblock %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  <link rel="stylesheet" href="{{ asset('css/sb-admin-2.min.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/forum.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="forum-wrap">
+  <div class="container">
+
+    <div class="forum-header">
+      <div>
+        <h2 class="forum-title">Modifier : {{ event.titre }}</h2>
+        <div class="text-muted">BackOffice</div>
+      </div>
+      <a class="btn btn-outline-secondary" href="{{ path('event_index') }}">
+        <i class="bi bi-arrow-left"></i> Retour
+      </a>
+    </div>
+
+    <div class="post-card">
+      <div class="post-card__body">
+        {% include 'BackOffice/event/_form.html.twig' with {form: form, button_label: 'Mettre à jour'} %}
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

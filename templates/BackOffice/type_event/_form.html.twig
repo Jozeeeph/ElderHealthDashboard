@@ -1,0 +1,29 @@
+{{ form_start(form) }}
+
+<div class="row g-3">
+  <div class="col-md-6">
+    {{ form_row(form.libelle) }}
+  </div>
+  <div class="col-md-6">
+    {{ form_row(form.couleur) }}
+  </div>
+
+  <div class="col-12">
+    {{ form_row(form.description) }}
+  </div>
+
+  <div class="col-12">
+    {{ form_row(form.isActive) }}
+  </div>
+</div>
+
+<div class="mt-4 d-flex gap-2">
+  <button class="btn btn-brand">
+    <i class="bi bi-save"></i> {{ button_label|default('Enregistrer') }}
+  </button>
+  <a class="btn btn-outline-secondary" href="{{ path('event_type_index') }}">
+    Retour
+  </a>
+</div>
+
+{{ form_end(form) }}
