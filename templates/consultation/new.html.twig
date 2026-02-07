@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle Consultation{% endblock %}
+
+{% block body %}
+<h1>Nouvelle Consultation</h1>
+
+{{ include('consultation/_form.html.twig', { form: form, submit_label: 'Ajouter', form_action: path('consultation_new') }) }}
+
+<a href="{{ path('consultation_index') }}" class="btn btn-secondary mt-3">? Retour</a>
+{% endblock %}
