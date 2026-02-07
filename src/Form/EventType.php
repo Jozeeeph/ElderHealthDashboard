@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\Event;
 use App\Entity\TypeEvent;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -52,7 +53,13 @@ class EventType extends AbstractType
             ->add('type', EntityType::class, [
                 'class' => TypeEvent::class,
                 'choice_label' => 'libelle',
-                'placeholder' => '— Choisir un type —',
+                'placeholder' => 'Choisir un type',
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('t')
+                        ->andWhere('t.isActive = :active')
+                        ->setParameter('active', true)
+                        ->orderBy('t.libelle', 'ASC');
+                },
             ])
         ;
     }
