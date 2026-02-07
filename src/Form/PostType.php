@@ -21,7 +21,7 @@ class PostType extends AbstractType
             ->add('content', TextareaType::class)
             ->add('image', FileType::class, [
                 'label' => 'Image (JPG/PNG/WebP)',
-                'mapped' => false,     // important : pas un champ DB direct
+                'mapped' => false,
                 'required' => false,
                 'constraints' => [
                     new File([
