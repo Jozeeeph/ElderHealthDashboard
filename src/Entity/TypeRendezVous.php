@@ -6,6 +6,7 @@ use App\Repository\TypeRendezVousRepository;
 use BcMath\Number;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\Utilisateur;
 
 #[ORM\Entity(repositoryClass: TypeRendezVousRepository::class)]
 class TypeRendezVous
@@ -27,7 +28,7 @@ class TypeRendezVous
     #[ORM\Column(length: 200, nullable: true)]
     private ?string $duree = null;
     #[ORM\ManyToOne]
-    private ?Admin $admin = null;
+    private ?Utilisateur $admin = null;
     public function getId(): ?int
     {
         return $this->id;
@@ -69,13 +70,13 @@ class TypeRendezVous
 
         return $this;
     }
-    public function getAdmin(): ?Admin
+    public function getAdmin(): ?Utilisateur
 {
     return $this->admin;
 }
 
 
-public function setAdmin(?Admin $admin): self
+public function setAdmin(?Utilisateur $admin): self
 {
     $this->admin = $admin;
     return $this;

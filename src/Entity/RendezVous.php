@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\RendezVousRepository;
+use App\Entity\Utilisateur;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -23,16 +24,16 @@ class RendezVous
     private ?string $lieu = null;
 
     #[ORM\ManyToOne]
-    private ?Patient $patient = null;
+    private ?Utilisateur $patient = null;
 
     #[ORM\ManyToOne]
-    private ?PersonnelMedical $personnelMedical = null;
+    private ?Utilisateur $personnelMedical = null;
 
     #[ORM\ManyToOne]
     private ?TypeRendezVous $typeRendezVous = null;
 
     #[ORM\ManyToOne]
-    private ?Admin $admin = null;
+    private ?Utilisateur $admin = null;
 
     public function getId(): ?int
     {
@@ -54,12 +55,12 @@ class RendezVous
         return $this->lieu;
     }
 
-    public function getPatient(): ?Patient
+    public function getPatient(): ?Utilisateur
     {
         return $this->patient;
     }
 
-    public function getPersonnelMedical(): ?PersonnelMedical
+    public function getPersonnelMedical(): ?Utilisateur
     {
         return $this->personnelMedical;
     }
@@ -89,13 +90,13 @@ class RendezVous
         return $this;
     }
 
-    public function setPatient(?Patient $patient): self
+    public function setPatient(?Utilisateur $patient): self
     {
         $this->patient = $patient;
         return $this;
     }
 
-    public function setPersonnelMedical(?PersonnelMedical $personnelMedical): self
+    public function setPersonnelMedical(?Utilisateur $personnelMedical): self
     {
         $this->personnelMedical = $personnelMedical;
         return $this;
@@ -106,15 +107,14 @@ class RendezVous
         $this->typeRendezVous = $typeRendezVous;
         return $this;
     }
-    public function getAdmin(): ?Admin
+    public function getAdmin(): ?Utilisateur
 {
     return $this->admin;
 }
 
-public function setAdmin(?Admin $admin): self
+public function setAdmin(?Utilisateur $admin): self
 {
     $this->admin = $admin;
     return $this;
 }
 }
-
