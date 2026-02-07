@@ -1,0 +1,47 @@
+{% extends 'FrontOffice/base.html.twig' %}
+
+{% block title %}Elder HealthCare{% endblock %}
+
+{% block stylesheets %}
+  <link rel="stylesheet" href="{{ asset('css/public-site.css') }}">
+{% endblock %}
+
+{% block body %}
+
+<!-- HERO SECTION -->
+<section class="hero">
+  <div class="hero-overlay"></div>
+
+  <div class="container h-100">
+    <div class="row h-100 align-items-center">
+      <div class="col-lg-6 text-white">
+
+        <span class="hero-badge">
+          Bienvenue sur ElderHealthCare
+        </span>
+
+        <h1 class="hero-title">
+          La meilleure solution<br>
+          de santé pour nos aînés
+        </h1>
+
+        <p class="hero-text">
+          Une plateforme moderne pour le suivi médical,
+          la communication et le bien-être des personnes âgées.
+        </p>
+
+        <div class="hero-actions">
+          <a href="#" class="btn btn-primary btn-lg">
+            <i class="bi bi-search"></i> Trouver un service
+          </a>
+          <a href="{{ path('app_home') }}" class="btn btn-outline-light btn-lg">
+            Accéder à l’application
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

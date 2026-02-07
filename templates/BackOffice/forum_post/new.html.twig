@@ -1,33 +1,44 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Nouvelle publication{% endblock %}
+{% block title %}Nouvelle publication
+{% endblock %}
 
 {% block stylesheets %}
-  {{ parent() }}
-  <link rel="stylesheet" href="{{ asset('css/forum.css') }}">
+	{{ parent() }}
+	<link rel="stylesheet" href="{{ asset('css/forum.css') }}">
 {% endblock %}
 
 {% block body %}
-<div class="page-wrap">
-  <div class="form-card">
-    <div class="form-card__header">
-      <p class="brand__title">
-        Elder<span style="color:#f5a623">Health</span>Care
-      </p>
-      <p class="brand__subtitle">
-        Forum • Créer une nouvelle publication
-      </p>
-    </div>
+	<div class="page-wrap">
+		<div class="form-card">
+			<div class="form-card__header">
+				<p class="brand__title">
+					Elder<span style="color:#f5a623">Health</span>Care
+				</p>
+				<p class="brand__subtitle">
+					Forum • Créer une nouvelle publication
+				</p>
+			</div>
 
-    {{ form_start(form, { attr: { class: 'ehc-form' } }) }}
-      {{ form_widget(form) }}
+			{{ form_start(form) }}
 
-      <div class="actions">
-        <a href="{{ path('forum_post_index') }}" class="btn btn-link">Annuler</a>
-        <button class="btn btn-primary-ehc">Enregistrer</button>
-      </div>
-    {{ form_end(form) }}
+			{{ form_errors(form) }}
 
-  </div>
-</div>
+			{{ form_row(form.title) }}
+			{{ form_row(form.content) }}
+			{{ form_row(form.image) }}
+			{{ form_row(form.status) }}
+
+			<button class="btn btn-primary">Enregistrer</button>
+
+			{{ form_end(form) }}
+
+			<div class="actions">
+				<a href="{{ path('forum_post_index') }}" class="btn btn-link">Annuler</a>
+				<button class="btn btn-primary-ehc">Enregistrer</button>
+			</div>
+			{{ form_end(form) }}
+
+		</div>
+	</div>
 {% endblock %}

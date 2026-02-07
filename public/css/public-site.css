@@ -1,0 +1,97 @@
+:root {
+  --ehc-blue: #0d6efd;
+  --ehc-orange: #f5a623;
+  --ehc-dark: #0f172a;
+}
+
+/* HERO */
+.hero {
+  position: relative;
+  min-height: 85vh;
+  background: url("/img/hero-doctor.jpg") center/cover no-repeat;
+  display: flex;
+  align-items: center;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(15, 23, 42, 0.85),
+    rgba(15, 23, 42, 0.35)
+  );
+}
+
+.hero .container {
+  position: relative;
+  z-index: 2;
+}
+
+.hero-badge {
+  display: inline-block;
+  margin-bottom: 16px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-weight: 700;
+  background: rgba(245, 166, 35, 0.15);
+  color: var(--ehc-orange);
+  letter-spacing: .5px;
+}
+
+.hero-title {
+  font-size: 3.2rem;
+  font-weight: 900;
+  line-height: 1.2;
+  margin-bottom: 20px;
+}
+
+.hero-text {
+  font-size: 1.15rem;
+  max-width: 520px;
+  opacity: .9;
+  margin-bottom: 30px;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.hero {
+  position: relative;
+  min-height: 85vh;
+  background-image: url("../img/home.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+}
+
+
+/* Buttons override */
+.hero .btn-primary {
+  background: linear-gradient(
+    90deg,
+    var(--ehc-blue),
+    #3b82f6
+  );
+  border: none;
+  font-weight: 700;
+  padding: 12px 22px;
+}
+
+.hero .btn-outline-light {
+  border-width: 2px;
+  font-weight: 700;
+  padding: 12px 22px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2.3rem;
+  }
+}
