@@ -36,10 +36,8 @@ class ForumPostController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            // ✅ 1) Get uploaded file from the form (mapped=false field)
             $imageFile = $form->get('image')->getData();
 
-            // ✅ 2) If a file is uploaded, move it and save filename in DB
             if ($imageFile) {
                 $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
                 $safeFilename = $slugger->slug($originalFilename);
