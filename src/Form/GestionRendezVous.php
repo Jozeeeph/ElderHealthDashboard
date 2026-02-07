@@ -4,8 +4,7 @@ namespace App\Form;
 
 use App\Entity\RendezVous;
 use App\Entity\TypeRendezVous;
-use App\Entity\Patient;
-use App\Entity\PersonnelMedical;
+use App\Entity\Utilisateur;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -31,18 +30,18 @@ class GestionRendezVous extends AbstractType
                 'label' => 'Lieu'
             ])
             ->add('patient', EntityType::class, [
-                'class' => Patient::class,
-                'choice_label' => 'id', // à remplacer par nom/prénom si dispo
+                'class' => Utilisateur::class,
+                'choice_label' => 'id', // Ã  remplacer par nom/prÃ©nom si dispo
                 'label' => 'Patient'
             ])
             ->add('personnelMedical', EntityType::class, [
-                'class' => PersonnelMedical::class,
+                'class' => Utilisateur::class,
                 'choice_label' => 'id',
-                'label' => 'Personnel médical'
+                'label' => 'Personnel mÃ©dical'
             ])
             ->add('typeRendezVous', EntityType::class, [
                 'class' => TypeRendezVous::class,
-                'choice_label' => 'type', // 🔥 champ affiché
+                'choice_label' => 'type', // ðŸ”¥ champ affichÃ©
                 'placeholder' => '--- Choisir un type ---',
                 'label' => 'Type de rendez-vous'
             ]);
