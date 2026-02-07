@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+{% block title %}Edit Comment{% endblock %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  <link rel="stylesheet" href="{{ asset('css/forum.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="forum-wrap">
+  <div class="container">
+
+    <div class="forum-header">
+      <div>
+        <h2 class="forum-title">Edit Comment</h2>
+        <div class="text-muted">Update the comment</div>
+      </div>
+
+      <a class="btn btn-brand" href="{{ path('forum_post_index') }}">
+        <i class="bi bi-arrow-left-circle"></i> Back
+      </a>
+    </div>
+
+    <div class="post-card">
+      <div class="post-card__body">
+        {{ form_start(form) }}
+          {{ form_row(form.content) }}
+          {{ form_row(form.status) }}
+
+          <div class="actions" style="padding-left:0;padding-right:0;">
+            <a class="btn btn-outline-secondary btn-pill btn-sm" href="{{ path('forum_post_index') }}">
+              Cancel
+            </a>
+            <button class="btn btn-outline-primary btn-pill btn-sm">
+              <i class="bi bi-check2-circle"></i> Update
+            </button>
+          </div>
+        {{ form_end(form) }}
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
