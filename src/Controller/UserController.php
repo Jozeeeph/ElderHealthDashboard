@@ -12,7 +12,7 @@ class UserController extends AbstractController
     #[Route('/', name: 'index')]
     public function index(): Response
     {
-        return $this->render('user/index.html.twig', [
+        return $this->render('BackOffice/user/index.html.twig', [
             'message' => 'Gestion Utilisateurs works 🎉',
         ]);
     }

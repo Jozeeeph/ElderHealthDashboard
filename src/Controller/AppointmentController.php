@@ -18,7 +18,7 @@ class AppointmentController extends AbstractController
     #[Route('/', name: 'index')]
     public function index(EntityManagerInterface $em): Response
     {
-        return $this->render('appointment/index.html.twig', [
+        return $this->render('BackOffice/appointment/index.html.twig', [
             'rendezVousList' => $em->getRepository(RendezVous::class)->findAll(),
             'typesRendezVous' => $em->getRepository(TypeRendezVous::class)->findAll() // Ajoutez cette ligne
         ]);
@@ -38,7 +38,7 @@ class AppointmentController extends AbstractController
             return $this->redirectToRoute('appointment_index');
         }
 
-        return $this->render('appointment/form.html.twig', [
+        return $this->render('BackOffice/appointment/form.html.twig', [
             'form' => $form->createView(),
             'title' => 'Ajouter un rendez-vous'
         ]);
@@ -56,7 +56,7 @@ class AppointmentController extends AbstractController
             return $this->redirectToRoute('appointment_index');
         }
 
-        return $this->render('appointment/form.html.twig', [
+        return $this->render('BackOffice/appointment/form.html.twig', [
             'form' => $form->createView(),
             'title' => 'Modifier le rendez-vous'
         ]);
@@ -84,7 +84,7 @@ class AppointmentController extends AbstractController
    #[Route('/types', name: 'type_index')]
 public function typeIndex(EntityManagerInterface $em): Response
 {
-    return $this->render('appointment/index.html.twig', [
+    return $this->render('BackOffice/appointment/index.html.twig', [
         'rendezVousList' => $em->getRepository(RendezVous::class)->findAll(),
         'typesRendezVous' => $em->getRepository(TypeRendezVous::class)->findAll(),
     ]);
@@ -104,7 +104,7 @@ public function typeIndex(EntityManagerInterface $em): Response
             return $this->redirectToRoute('appointment_type_index');
         }
 
-        return $this->render('appointment/form1.html.twig', [
+        return $this->render('BackOffice/appointment/form1.html.twig', [
             'form' => $form->createView(),
             'title' => 'Ajouter un type de rendez-vous'
         ]);
@@ -121,7 +121,7 @@ public function typeIndex(EntityManagerInterface $em): Response
             return $this->redirectToRoute('appointment_type_index');
         }
 
-        return $this->render('appointment/form1.html.twig', [
+        return $this->render('BackOffice/appointment/form1.html.twig', [
             'form' => $form->createView(),
             'title' => 'Modifier le type'
         ]);
@@ -130,7 +130,7 @@ public function typeIndex(EntityManagerInterface $em): Response
     #[Route('/types/{id}', name: 'type_show')]
     public function typeShow(TypeRendezVous $type): Response
     {
-        return $this->render('appointment/show1.html.twig', [
+        return $this->render('BackOffice/appointment/show1.html.twig', [
             'type' => $type
         ]);
     }

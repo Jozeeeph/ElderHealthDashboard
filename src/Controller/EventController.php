@@ -12,7 +12,7 @@ class EventController extends AbstractController
     #[Route('/', name: 'index')]
     public function index(): Response
     {
-        return $this->render('event/index.html.twig', [
+        return $this->render('BackOffice/event/index.html.twig', [
             'message' => 'Gestion Événements works 🎉',
         ]);
     }

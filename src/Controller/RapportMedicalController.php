@@ -40,14 +40,14 @@ class RapportMedicalController extends AbstractController
         }
 
         if ($request->isXmlHttpRequest()) {
-            return $this->render('rapport_medical/_form.html.twig', [
+            return $this->render('BackOffice/rapport_medical/_form.html.twig', [
                 'form' => $form->createView(),
                 'submit_label' => 'Ajouter',
                 'form_action' => $this->generateUrl('rapport_medical_new', ['id' => $consultation->getId()]),
             ]);
         }
 
-        return $this->render('rapport_medical/new.html.twig', [
+        return $this->render('BackOffice/rapport_medical/new.html.twig', [
             'form' => $form->createView(),
             'consultation' => $consultation,
         ]);
@@ -56,7 +56,7 @@ class RapportMedicalController extends AbstractController
     #[Route('/{id}', name: 'show', methods: ['GET'])]
     public function show(RapportMedical $rapport): Response
     {
-        return $this->render('rapport_medical/show.html.twig', [
+        return $this->render('BackOffice/rapport_medical/show.html.twig', [
             'rapport' => $rapport,
         ]);
     }
@@ -74,14 +74,14 @@ class RapportMedicalController extends AbstractController
         }
 
         if ($request->isXmlHttpRequest()) {
-            return $this->render('rapport_medical/_form.html.twig', [
+            return $this->render('BackOffice/rapport_medical/_form.html.twig', [
                 'form' => $form->createView(),
                 'submit_label' => 'Mettre a jour',
                 'form_action' => $this->generateUrl('rapport_medical_edit', ['id' => $rapport->getIdRapport()]),
             ]);
         }
 
-        return $this->render('rapport_medical/edit.html.twig', [
+        return $this->render('BackOffice/rapport_medical/edit.html.twig', [
             'form' => $form->createView(),
             'rapport' => $rapport,
         ]);
@@ -107,7 +107,7 @@ class RapportMedicalController extends AbstractController
             return $this->redirectToRoute('rapport_medical_show', ['id' => $rapport->getIdRapport()]);
         }
 
-        $html = $this->renderView('rapport_medical/pdf.html.twig', [
+        $html = $this->renderView('BackOffice/rapport_medical/pdf.html.twig', [
             'rapport' => $rapport,
         ]);
 

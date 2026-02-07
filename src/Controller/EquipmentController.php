@@ -12,7 +12,7 @@ class EquipmentController extends AbstractController
     #[Route('/', name: 'index')]
     public function index(): Response
     {
-        return $this->render('equipment/index.html.twig', [
+        return $this->render('BackOffice/equipment/index.html.twig', [
             'message' => 'Gestion Équipements médicaux works 🎉',
         ]);
     }

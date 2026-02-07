@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+{% block title %}Modifier la publication{% endblock %}
+
+{% block body %}
+<div class="container py-4">
+  <h2 class="mb-3">Modifier la publication</h2>
+
+  {{ form_start(form) }}
+    {{ form_widget(form) }}
+    <div class="mt-3">
+      <button class="btn btn-primary">Mettre à jour</button>
+      <a class="btn btn-link" href="{{ path('forum_post_index') }}">Retour</a>
+    </div>
+  {{ form_end(form) }}
+</div>
+{% endblock %}
