@@ -2,7 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\Patient;
+use App\Entity\Utilisateur;
+use App\Enum\Role;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -18,9 +19,12 @@ class PatientController extends AbstractController
         Request $request,
         EntityManagerInterface $em
     ): Response {
-        $patient = $em->getRepository(Patient::class)->find($id);
+        $patient = $em->getRepository(Utilisateur::class)->find($id);
         if (!$patient) {
             return $this->json(['message' => 'Patient introuvable'], 404);
+        }
+        if ($patient->getRole() !== Role::PATIENT) {
+            return $this->json(['message' => 'Utilisateur non patient'], 400);
         }
 
         $file = $request->files->get('dossierMedical'); // name="dossierMedical"

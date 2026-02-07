@@ -1,12 +1,343 @@
-{% extends 'base.html.twig' %}
+﻿{% extends 'base.html.twig' %}
 
-{% block title %}Gestion{% endblock %}
+{% block title %}Liste des Consultations{% endblock %}
 
 {% block body %}
-  <div class="p-4">
-    <h2 class="mb-3">Gestion</h2>
-    <div class="alert alert-success mb-0">
-      {{ message }}
+<style>
+.consultation-page {
+    --ink: #1e2a2f;
+    --muted: #6c7a80;
+    --brand: #0e8aa7;
+    --brand-2: #2bbf9f;
+    --bg: #f4f7f8;
+    --card: #ffffff;
+    --ring: rgba(14, 138, 167, 0.2);
+}
+
+.consultation-header {
+    background: linear-gradient(135deg, #e8f6f9 0%, #eef8f4 100%);
+    border-radius: 18px 28px 18px 28px;
+    padding: 18px 20px;
+    border: 1px solid #e2eef1;
+}
+
+.consultation-title {
+    color: var(--ink);
+    letter-spacing: 0.2px;
+}
+
+.consultation-subtitle {
+    color: var(--muted);
+    font-size: 0.95rem;
+}
+
+.consultation-btn {
+    background: linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 100%);
+    border: none;
+    box-shadow: 0 8px 18px rgba(14, 138, 167, 0.25);
+}
+
+.consultation-btn:hover {
+    filter: brightness(0.98);
+}
+
+.consultation-card {
+    border: 1px solid #e6edf0;
+    border-radius: 18px 28px 18px 28px;
+    background: var(--card);
+    transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
+}
+
+.consultation-card:hover {
+    transform: translateY(-2px);
+    border-color: #d6e4ea;
+    box-shadow: 0 10px 28px rgba(30, 42, 47, 0.12);
+}
+
+.consultation-card:focus-within {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+}
+
+.consultation-accent {
+    height: 6px;
+    border-radius: 18px 28px 0 0;
+    margin: -1px -1px 12px -1px;
+}
+
+.consultation-card[data-status^="planif"] .consultation-accent {
+    background: linear-gradient(90deg, #2b9de2, #69c1f2);
+}
+
+.consultation-card[data-status^="réal"] .consultation-accent,
+.consultation-card[data-status^="real"] .consultation-accent {
+    background: linear-gradient(90deg, #27b07f, #7bd6b1);
+}
+
+.consultation-card[data-status^="annul"] .consultation-accent {
+    background: linear-gradient(90deg, #e05858, #f2a0a0);
+}
+
+.consultation-label {
+    color: var(--muted);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.consultation-name {
+    font-weight: 700;
+    color: var(--ink);
+}
+
+.badge-soft {
+    background: #eef6f8;
+    color: #1a5b6b;
+    border: 1px solid #d6e7ec;
+}
+
+.consultation-modal .modal-content {
+    border: none;
+    border-radius: 20px 28px 20px 28px;
+    box-shadow: 0 18px 48px rgba(30, 42, 47, 0.2);
+    background: #ffffff;
+}
+
+.consultation-modal .modal-header {
+    border: 0;
+    background: linear-gradient(135deg, #e8f6f9 0%, #eef8f4 100%);
+    border-radius: 20px 28px 0 0;
+    padding: 16px 20px;
+}
+
+.consultation-modal .modal-title {
+    font-weight: 700;
+    color: #1e2a2f;
+}
+
+.consultation-modal .modal-body {
+    padding: 18px 20px 22px;
+    background: #ffffff;
+}
+</style>
+
+<div class="consultation-page">
+<div class="consultation-header d-flex align-items-center justify-content-between mb-3">
+    <div>
+        <h1 class="consultation-title mb-1">Liste des Consultations</h1>
+        <div class="consultation-subtitle">Vue rapide des rendez-vous et statuts</div>
     </div>
-  </div>
+    <button type="button"
+            class="btn btn-primary consultation-btn"
+            data-bs-toggle="modal"
+            data-bs-target="#consultationNewModal"
+            data-new-url="{{ path('consultation_new') }}">
+        Nouvelle Consultation
+    </button>
+</div>
+
+<div class="row g-3">
+    {% for consultation in consultations %}
+        {% set status = consultation.etatConsultation ? consultation.etatConsultation|lower : '' %}
+
+        <div class="col-12 col-md-6 col-xl-4">
+            <div class="card h-100 shadow-sm position-relative consultation-card"
+                 data-status="{{ status }}">
+                <div class="card-body">
+                    <div class="consultation-accent"></div>
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <div class="consultation-label">Patient</div>
+                            <div class="consultation-name">
+                                {{ consultation.patient.prenom }} {{ consultation.patient.nom }}
+                            </div>
+                        </div>
+                        <span class="badge badge-soft">{{ consultation.etatConsultation }}</span>
+                    </div>
+
+                    <div class="mb-2">
+                        <div class="consultation-label">Personnel médical</div>
+                        <div>{{ consultation.personnelMedical.prenom }} {{ consultation.personnelMedical.nom }}</div>
+                    </div>
+
+                    <div class="mb-2">
+                        <div class="consultation-label">Créée par</div>
+                        <div>
+                            {% if consultation.createdBy %}
+                                {{ consultation.createdBy.prenom }} {{ consultation.createdBy.nom }}
+                                <span class="text-muted">•</span>
+                                {{ consultation.createdRole ?? (consultation.createdBy.role ? consultation.createdBy.role.value : '-') }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mb-2">
+                        <div class="consultation-label">Date & heure</div>
+                        <div>
+                            {{ consultation.dateConsultation ? consultation.dateConsultation|date('d/m/Y') : '-' }}
+                            •
+                            {{ consultation.heureConsultation ? consultation.heureConsultation|date('H:i') : '-' }}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="consultation-label">Lieu</div>
+                        <div>{{ consultation.lieu ?: '-' }}</div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="button"
+                                class="btn btn-warning btn-sm js-edit-consultation"
+                                data-bs-toggle="modal"
+                                data-bs-target="#consultationEditModal"
+                                data-edit-url="{{ path('consultation_edit', {'id': consultation.id}) }}">
+                            Éditer
+                        </button>
+                        <button type="button"
+                                class="btn btn-danger btn-sm js-delete-consultation"
+                                data-delete-url="{{ path('consultation_delete', {'id': consultation.id}) }}"
+                                data-delete-name="{{ consultation.patient.prenom }} {{ consultation.patient.nom }}"
+                                data-delete-token="{{ csrf_token('delete_consultation_' ~ consultation.id) }}">
+                            Supprimer
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="col-12">
+            <div class="alert alert-info mb-0">Aucune consultation.</div>
+        </div>
+    {% endfor %}
+</div>
+</div>
+
+<div class="modal fade consultation-modal" id="consultationEditModal" tabindex="-1" aria-labelledby="consultationEditModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="consultationEditModalLabel">Modifier Consultation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-muted small">Chargement...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade consultation-modal" id="consultationNewModal" tabindex="-1" aria-labelledby="consultationNewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="consultationNewModalLabel">Nouvelle Consultation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-muted small">Chargement...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade consultation-modal" id="consultationDeleteModal" tabindex="-1" aria-labelledby="consultationDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="consultationDeleteModalLabel">Confirmer la suppression</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-2">Voulez-vous vraiment supprimer cette consultation ?</div>
+                <div class="fw-semibold" data-delete-name></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Annuler</button>
+                <form method="post" action="">
+                    <input type="hidden" name="_token" value="">
+                    <button type="submit" class="btn btn-danger">Supprimer</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const editModal = document.getElementById('consultationEditModal');
+    const newModal = document.getElementById('consultationNewModal');
+    const deleteModal = document.getElementById('consultationDeleteModal');
+    if (!editModal && !newModal && !deleteModal) return;
+
+    const loadFormIntoModal = async (modal, url) => {
+        const modalBody = modal.querySelector('.modal-body');
+        if (!modalBody) return;
+        modalBody.innerHTML = '<div class="text-muted small">Chargement...</div>';
+        try {
+            const response = await fetch(url, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            if (!response.ok) {
+                throw new Error('Erreur de chargement');
+            }
+            const html = await response.text();
+            modalBody.innerHTML = html;
+        } catch (e) {
+            modalBody.innerHTML = '<div class="alert alert-danger mb-0">Impossible de charger le formulaire.</div>';
+        }
+    };
+
+    if (editModal) {
+        editModal.addEventListener('show.bs.modal', async (event) => {
+            const trigger = event.relatedTarget;
+            if (!trigger) return;
+            const editUrl = trigger.getAttribute('data-edit-url');
+            if (!editUrl) return;
+            await loadFormIntoModal(editModal, editUrl);
+        });
+    }
+
+    if (newModal) {
+        newModal.addEventListener('show.bs.modal', async (event) => {
+            const trigger = event.relatedTarget;
+            if (!trigger) return;
+            const newUrl = trigger.getAttribute('data-new-url');
+            if (!newUrl) return;
+            await loadFormIntoModal(newModal, newUrl);
+        });
+    }
+
+    if (deleteModal) {
+        deleteModal.addEventListener('show.bs.modal', (event) => {
+            const trigger = event.relatedTarget;
+            if (!trigger) return;
+            const deleteUrl = trigger.getAttribute('data-delete-url');
+            const deleteToken = trigger.getAttribute('data-delete-token');
+            const deleteName = trigger.getAttribute('data-delete-name');
+            const form = deleteModal.querySelector('form');
+            const tokenInput = deleteModal.querySelector('input[name="_token"]');
+            const nameLabel = deleteModal.querySelector('[data-delete-name]');
+            if (form && deleteUrl) {
+                form.setAttribute('action', deleteUrl);
+            }
+            if (tokenInput && deleteToken) {
+                tokenInput.value = deleteToken;
+            }
+            if (nameLabel) {
+                nameLabel.textContent = deleteName || '';
+            }
+        });
+    }
+
+    document.querySelectorAll('.js-delete-consultation').forEach((button) => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            const modal = new bootstrap.Modal(deleteModal);
+            modal.show(button);
+        });
+    });
+});
+</script>
 {% endblock %}
