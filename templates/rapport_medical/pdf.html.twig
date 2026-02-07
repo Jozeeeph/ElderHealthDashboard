@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <title>Rapport medical</title>
+    <style>
+        body { font-family: DejaVu Sans, Arial, sans-serif; color: #1e2a2f; font-size: 12px; }
+        .header { padding: 8px 0 12px; border-bottom: 1px solid #e0e6ea; }
+        .title { font-size: 20px; font-weight: 700; }
+        .sub { color: #5b6b73; font-size: 12px; }
+        .section { margin-top: 14px; }
+        .label { color: #5b6b73; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+        .value { font-weight: 600; margin-top: 4px; }
+        .box { border: 1px solid #e0e6ea; border-radius: 6px; padding: 10px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title">Rapport medical</div>
+        <div class="sub">
+            Consultation #{{ rapport.consultation.id }} -
+            {{ rapport.consultation.patient.prenom }} {{ rapport.consultation.patient.nom }}
+        </div>
+    </div>
+
+    <div class="section box">
+        <div class="label">Niveau de gravite</div>
+        <div class="value">{{ rapport.niveauGravite }}</div>
+    </div>
+
+    <div class="section box">
+        <div class="label">Date du rapport</div>
+        <div class="value">{{ rapport.dateRapport ? rapport.dateRapport|date('d/m/Y H:i') : '-' }}</div>
+    </div>
+
+    <div class="section box">
+        <div class="label">Diagnostic</div>
+        <div class="value">{{ rapport.diagnostic }}</div>
+    </div>
+
+    <div class="section box">
+        <div class="label">Recommandations</div>
+        <div class="value">{{ rapport.recommandations }}</div>
+    </div>
+</body>
+</html>

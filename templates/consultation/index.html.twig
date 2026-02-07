@@ -46,6 +46,7 @@
     border-radius: 18px 28px 18px 28px;
     background: var(--card);
     transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
+    overflow: hidden;
 }
 
 .consultation-card:hover {
@@ -119,6 +120,55 @@
     padding: 18px 20px 22px;
     background: #ffffff;
 }
+
+.consultation-grid {
+    display: grid;
+    gap: 10px;
+}
+
+.consultation-row {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 10px;
+    align-items: center;
+}
+
+.consultation-row .value {
+    color: var(--ink);
+    font-weight: 600;
+}
+
+.consultation-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.consultation-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: #eef6f8;
+    border: 1px solid #d6e7ec;
+    color: #1a5b6b;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.consultation-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.consultation-actions .btn {
+    border-radius: 999px;
+    padding: 6px 12px;
+}
 </style>
 
 <div class="consultation-page">
@@ -155,39 +205,40 @@
                         <span class="badge badge-soft">{{ consultation.etatConsultation }}</span>
                     </div>
 
-                    <div class="mb-2">
-                        <div class="consultation-label">Personnel médical</div>
-                        <div>{{ consultation.personnelMedical.prenom }} {{ consultation.personnelMedical.nom }}</div>
-                    </div>
-
-                    <div class="mb-2">
-                        <div class="consultation-label">Créée par</div>
-                        <div>
-                            {% if consultation.createdBy %}
-                                {{ consultation.createdBy.prenom }} {{ consultation.createdBy.nom }}
-                                <span class="text-muted">•</span>
-                                {{ consultation.createdRole ?? (consultation.createdBy.role ? consultation.createdBy.role.value : '-') }}
-                            {% else %}
-                                -
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="mb-2">
-                        <div class="consultation-label">Date & heure</div>
-                        <div>
+                    <div class="consultation-meta">
+                        <span class="consultation-chip">
                             {{ consultation.dateConsultation ? consultation.dateConsultation|date('d/m/Y') : '-' }}
-                            •
+                        </span>
+                        <span class="consultation-chip">
                             {{ consultation.heureConsultation ? consultation.heureConsultation|date('H:i') : '-' }}
+                        </span>
+                        {% if consultation.lieu %}
+                            <span class="consultation-chip">{{ consultation.lieu }}</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="consultation-grid">
+                        <div class="consultation-row">
+                            <div class="consultation-label">Personnel</div>
+                            <div class="value">
+                                {{ consultation.personnelMedical.prenom }} {{ consultation.personnelMedical.nom }}
+                            </div>
+                        </div>
+                        <div class="consultation-row">
+                            <div class="consultation-label">Créée par</div>
+                            <div class="value">
+                                {% if consultation.createdBy %}
+                                    {{ consultation.createdBy.prenom }} {{ consultation.createdBy.nom }}
+                                    <span class="text-muted">•</span>
+                                    {{ consultation.createdRole ?? (consultation.createdBy.role ? consultation.createdBy.role.value : '-') }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <div class="consultation-label">Lieu</div>
-                        <div>{{ consultation.lieu ?: '-' }}</div>
-                    </div>
-
-                    <div class="d-flex gap-2">
+                    <div class="consultation-actions">
                         <button type="button"
                                 class="btn btn-warning btn-sm js-edit-consultation"
                                 data-bs-toggle="modal"
@@ -202,6 +253,43 @@
                                 data-delete-token="{{ csrf_token('delete_consultation_' ~ consultation.id) }}">
                             Supprimer
                         </button>
+                        {% if consultation.rapportMedical %}
+                            <a class="btn btn-outline-primary btn-sm"
+                               href="{{ path('rapport_medical_show', {'id': consultation.rapportMedical.idRapport}) }}">
+                                Rapport
+                            </a>
+                            <a class="btn btn-outline-secondary btn-sm"
+                               href="{{ path('rapport_medical_pdf', {'id': consultation.rapportMedical.idRapport}) }}">
+                                PDF rapport
+                            </a>
+                        {% else %}
+                            <button type="button"
+                                    class="btn btn-success btn-sm js-rapport-new"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#rapportNewModal"
+                                    data-new-url="{{ path('rapport_medical_new', {'id': consultation.id}) }}">
+                                Ajouter rapport
+                            </button>
+                        {% endif %}
+
+                        {% if consultation.prescription %}
+                            <a class="btn btn-outline-primary btn-sm"
+                               href="{{ path('prescription_show', {'id': consultation.prescription.idPrescription}) }}">
+                                Prescription
+                            </a>
+                            <a class="btn btn-outline-secondary btn-sm"
+                               href="{{ path('prescription_pdf', {'id': consultation.prescription.idPrescription}) }}">
+                                PDF prescription
+                            </a>
+                        {% else %}
+                            <button type="button"
+                                    class="btn btn-success btn-sm js-prescription-new"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#prescriptionNewModal"
+                                    data-new-url="{{ path('prescription_new', {'id': consultation.id}) }}">
+                                Ajouter prescription
+                            </button>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -242,6 +330,34 @@
     </div>
 </div>
 
+<div class="modal fade consultation-modal" id="rapportNewModal" tabindex="-1" aria-labelledby="rapportNewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="rapportNewModalLabel">Nouveau rapport medical</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-muted small">Chargement...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade consultation-modal" id="prescriptionNewModal" tabindex="-1" aria-labelledby="prescriptionNewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="prescriptionNewModalLabel">Nouvelle prescription</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-muted small">Chargement...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade consultation-modal" id="consultationDeleteModal" tabindex="-1" aria-labelledby="consultationDeleteModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -268,8 +384,10 @@
 document.addEventListener('DOMContentLoaded', () => {
     const editModal = document.getElementById('consultationEditModal');
     const newModal = document.getElementById('consultationNewModal');
+    const rapportNewModal = document.getElementById('rapportNewModal');
+    const prescriptionNewModal = document.getElementById('prescriptionNewModal');
     const deleteModal = document.getElementById('consultationDeleteModal');
-    if (!editModal && !newModal && !deleteModal) return;
+    if (!editModal && !newModal && !rapportNewModal && !prescriptionNewModal && !deleteModal) return;
 
     const loadFormIntoModal = async (modal, url) => {
         const modalBody = modal.querySelector('.modal-body');
@@ -306,6 +424,26 @@ document.addEventListener('DOMContentLoaded', () => {
             const newUrl = trigger.getAttribute('data-new-url');
             if (!newUrl) return;
             await loadFormIntoModal(newModal, newUrl);
+        });
+    }
+
+    if (rapportNewModal) {
+        rapportNewModal.addEventListener('show.bs.modal', async (event) => {
+            const trigger = event.relatedTarget;
+            if (!trigger) return;
+            const newUrl = trigger.getAttribute('data-new-url');
+            if (!newUrl) return;
+            await loadFormIntoModal(rapportNewModal, newUrl);
+        });
+    }
+
+    if (prescriptionNewModal) {
+        prescriptionNewModal.addEventListener('show.bs.modal', async (event) => {
+            const trigger = event.relatedTarget;
+            if (!trigger) return;
+            const newUrl = trigger.getAttribute('data-new-url');
+            if (!newUrl) return;
+            await loadFormIntoModal(prescriptionNewModal, newUrl);
         });
     }
 

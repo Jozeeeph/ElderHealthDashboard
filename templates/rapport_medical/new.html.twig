@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau rapport medical{% endblock %}
+
+{% block body %}
+<div class="container py-4">
+    <h1 class="mb-3">Nouveau rapport medical</h1>
+    <div class="text-muted mb-4">
+        Consultation #{{ consultation.id }} - {{ consultation.patient.prenom }} {{ consultation.patient.nom }}
+    </div>
+
+    {% include 'rapport_medical/_form.html.twig' with {
+        form: form,
+        submit_label: 'Ajouter'
+    } %}
+</div>
+{% endblock %}
