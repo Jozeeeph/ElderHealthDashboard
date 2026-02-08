@@ -1,0 +1,131 @@
+{% extends 'FrontOffice/base.html.twig' %}
+
+{% block title %}Forum
+{% endblock %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{ asset('css/forumFront.css') }}">
+	<link rel="stylesheet" href="{{ asset('css/public-site.css') }}">
+{% endblock %}
+
+{% block body %}
+	<div class="forum-fb py-5">
+		<div class="container">
+
+			<div class="fb-header mb-4">
+				<h1 class="fb-title">Forum</h1>
+				<p class="fb-subtitle">Partagez des infos, posez des questions et échangez avec la communauté.</p>
+			</div>
+
+			<div class="row justify-content-center">
+				<div
+					class="col-lg-8">
+
+					{# POSTS #}
+					{% for post in posts %}
+						<div
+							class="fb-card mb-4">
+
+							{# TOP (avatar + title + date) #}
+							<div class="fb-card__top">
+								<div class="fb-avatar">
+									{{ post.title|default('E')|slice(0,1)|upper }}
+								</div>
+
+								<div class="fb-meta">
+									<div class="fb-name">{{ post.title }}</div>
+
+									<div class="fb-time">
+										<i class="bi bi-clock"></i>
+										{% if post.dateDeCreation is defined and post.dateDeCreation %}
+											{{ post.dateDeCreation|date('d/m/Y H:i') }}
+										{% else %}
+											Publié récemment
+										{% endif %}
+									</div>
+								</div>
+
+								{# optional badge if you have status #}
+								{% if post.status is defined %}
+									<span class="fb-badge {{ post.status == 'ACTIVE' ? 'fb-badge--active' : 'fb-badge--inactive' }}">
+										{{ post.status == 'ACTIVE' ? 'Actif' : 'Inactif' }}
+									</span>
+								{% endif %}
+							</div>
+
+							{# CONTENT #}
+							<div class="fb-card__body">
+								<p class="fb-text">{{ post.content|default('') }}</p>
+
+								{# IMAGE #}
+								{% if post.imageName %}
+									<div class="fb-image">
+										<img src="{{ asset('uploads/posts/' ~ post.imageName) }}" alt="Image du post" loading="lazy">
+									</div>
+								{% endif %}
+							</div>
+
+							{# ACTIONS #}
+							<div class="fb-actions">
+								<button class="fb-action" type="button" data-bs-toggle="collapse" data-bs-target="#comments-{{ post.id }}">
+									<i class="bi bi-chat-dots"></i>
+									Commentaires ({{ post.commentaires|length }})
+								</button>
+
+								{# If you already have add comment route #}
+								{% if post.id %}
+									<a class="fb-action" href="{{ path('forum_comment_new', { postId: post.id }) }}">
+										<i class="bi bi-chat-left-text"></i>
+										Ajouter
+									</a>
+								{% endif %}
+							</div>
+
+							{# COMMENTS #}
+							<div class="collapse" id="comments-{{ post.id }}">
+								<div class="fb-comments">
+
+									{% if post.commentaires|length > 0 %}
+										{% for c in post.commentaires %}
+											<div class="fb-comment">
+												<div class="fb-comment__avatar">
+													{{ c.content|default('U')|slice(0,1)|upper }}
+												</div>
+
+												<div class="fb-comment__bubble">
+													<div class="fb-comment__top">
+														<span class="fb-comment__name">Utilisateur</span>
+
+														{% if c.date is defined and c.date %}
+															<span class="fb-comment__time">{{ c.date|date('d/m/Y H:i') }}</span>
+														{% endif %}
+
+														{% if c.status is defined %}
+															<span class="fb-mini-badge {{ c.status == 'ACTIVE' ? 'fb-mini-badge--active' : 'fb-mini-badge--inactive' }}">
+																{{ c.status == 'ACTIVE' ? 'Actif' : 'Inactif' }}
+															</span>
+														{% endif %}
+													</div>
+
+													<div class="fb-comment__text">{{ c.content }}</div>
+												</div>
+											</div>
+										{% endfor %}
+									{% else %}
+										<div class="fb-empty">Aucun commentaire pour le moment 🙂</div>
+									{% endif %}
+
+								</div>
+							</div>
+
+						</div>
+					{% else %}
+						<div class="fb-empty">Aucune publication pour le moment 🙂</div>
+					{% endfor %}
+
+				</div>
+			</div>
+
+		</div>
+	</div>
+{% endblock %}

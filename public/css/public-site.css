@@ -14,9 +14,9 @@
   position: sticky;
   top: 0;
   z-index: 1030;
-  transition: background-color .25s ease, box-shadow .25s ease, backdrop-filter .25s ease;
-  background: rgba(255, 255, 255, 0.0);
-  box-shadow: none;
+  background: #ffffff;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .08);
+  transition: background .25s ease, box-shadow .25s ease, backdrop-filter .25s ease;
 }
 
 .navbar-yoopies.is-scrolled {
@@ -84,7 +84,8 @@
 .hero {
   position: relative;
   min-height: 85vh;
-  background-image: url("../img/home.jpg"); /* keep only ONE hero background */
+  background-image: url("../img/home.jpg");
+  /* keep only ONE hero background */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -95,11 +96,9 @@
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    90deg,
-    rgba(15, 23, 42, 0.85),
-    rgba(15, 23, 42, 0.35)
-  );
+  background: linear-gradient(90deg,
+      rgba(15, 23, 42, 0.85),
+      rgba(15, 23, 42, 0.35));
 }
 
 .hero .container {
@@ -199,13 +198,15 @@
   border-radius: 14px;
   display: grid;
   place-items: center;
-  background: rgba(245, 166, 35, .18); /* orange tint */
+  background: rgba(245, 166, 35, .18);
+  /* orange tint */
   border: 1px solid rgba(245, 166, 35, .35);
 }
 
 .service-icon i {
   font-size: 26px;
-  color: var(--ehc-blue); /* icon in blue, like your logo */
+  color: var(--ehc-blue);
+  /* icon in blue, like your logo */
 }
 
 /* Title */
@@ -222,7 +223,8 @@
   color: var(--ehc-muted);
   font-size: .95rem;
   line-height: 1.6;
-  min-height: 110px; /* keep cards same height */
+  min-height: 110px;
+  /* keep cards same height */
 }
 
 /* Link */
