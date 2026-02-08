@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: EquipementRepository::class)]
 class Equipement
@@ -17,18 +18,34 @@ class Equipement
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le nom de l'équipement est obligatoire")]
+    #[Assert\Length(
+        min: 3,
+        max: 255,
+        minMessage: "Le nom doit contenir au moins {{ limit }} caractères",
+        maxMessage: "Le nom ne peut pas dépasser {{ limit }} caractères"
+    )]
     private ?string $nom = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[Assert\NotBlank(message: "Le prix est obligatoire")]
+    #[Assert\Positive(message: "Le prix doit être positif")]
     private ?string $prix = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank(message: "La quantité est obligatoire")]
+    #[Assert\PositiveOrZero(message: "La quantité doit être positive ou zéro")]
     private ?int $quantiteDisponible = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le statut est obligatoire")]
+    #[Assert\Choice(
+        choices: ['disponible', 'en_rupture', 'en_maintenance'],
+        message: "Le statut doit être: disponible, en_rupture ou en_maintenance"
+    )]
     private ?string $statut = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -49,6 +66,26 @@ class Equipement
     public function __construct()
     {
         $this->commandes = new ArrayCollection();
+        $this->dateAjout = new \DateTime(); // Initialize dateAjout automatically
+        $this->statut = 'disponible'; // Default status
+    }
+
+    // ADD THIS METHOD TO PREVENT CIRCULAR REFERENCES
+    public function __sleep()
+    {
+        // Only serialize these properties, skip the relationships
+        return [
+            'id', 
+            'nom', 
+            'description', 
+            'prix', 
+            'quantiteDisponible', 
+            'statut', 
+            'image', 
+            'categorie', 
+            'dateAjout'
+        ];
+        // Note: commandes is NOT included
     }
 
     public function getId(): ?int
