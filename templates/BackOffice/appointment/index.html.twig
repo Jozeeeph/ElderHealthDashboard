@@ -1,183 +1,339 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Gestion des Rendez-vous{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/appointments.css') }}">
+    <!-- Ajout d'icônes Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+  
+
+{% endblock %}
 
 {% block body %}
-<div class="container-fluid">
-    <h1 class="mb-4">Gestion des Rendez-vous</h1>
-    
-    <!-- Onglets -->
-    <ul class="nav nav-tabs" id="appointmentTabs" role="tablist">
-        <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="rdv-tab" data-bs-toggle="tab" data-bs-target="#rdv" type="button" role="tab">
-                Rendez-vous <span class="badge bg-secondary">{{ rendezVousList|length }}</span>
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="types-tab" data-bs-toggle="tab" data-bs-target="#types" type="button" role="tab">
-                Types de Rendez-vous <span class="badge bg-secondary">{{ typesRendezVous|length }}</span>
-            </button>
-        </li>
-    </ul>
-
-    <!-- Contenu des onglets -->
-    <div class="tab-content" id="appointmentTabsContent">
-        
-        <!-- Onglet Rendez-vous -->
-        <div class="tab-pane fade show active" id="rdv" role="tabpanel">
-            <div class="card mt-3">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Liste des Rendez-vous</h5>
-                    <a href="{{ path('appointment_new') }}" class="btn btn-success btn-sm">
-                        <i class="fas fa-plus"></i> Ajouter un Rendez-vous
-                    </a>
-                </div>
-                <div class="card-body">
-                    {% if rendezVousList is empty %}
-                        <div class="alert alert-info">Aucun rendez-vous programmé.</div>
-                    {% else %}
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Date</th>
-                                        <th>Heure</th>
-                                        <th>Lieu</th>
-                                        <th>Type</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                {% for rdv in rendezVousList %}
-                                    <tr>
-                                        <td>{{ rdv.id }}</td>
-                                        <td>{{ rdv.date|date('d/m/Y') }}</td>
-                                        <td>{{ rdv.heure|date('H:i') }}</td>
-                                        <td>{{ rdv.lieu }}</td>
-                                        <td>
-                                            <span class="badge bg-info">
-                                                {{ rdv.typeRendezVous.type }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <div class="btn-group btn-group-sm">
-                                                <a href="{{ path('appointment_show', {'id': rdv.id}) }}" 
-                                                   class="btn btn-outline-info" title="Voir">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                                <a href="{{ path('appointment_edit', {'id': rdv.id}) }}" 
-                                                   class="btn btn-outline-primary" title="Modifier">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                <a href="{{ path('appointment_delete', {'id': rdv.id}) }}" 
-                                                   class="btn btn-outline-danger" title="Supprimer"
-                                                   onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce rendez-vous ?')">
-                                                    <i class="fas fa-trash"></i>
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    {% endif %}
-                </div>
+<div class="appointments-page">
+    <div class="appointments-container">
+        <!-- Header avec titre à gauche -->
+        <div class="appointments-header">
+            <h1>
+                <i class="bi bi-calendar-check"></i>
+                Gestion des Rendez-vous
+            </h1>
+            <div class="header-actions">
+                <button class="btn btn-primary" onclick="loadModal('{{ path('appointment_new') }}', 'rdvModal')">
+                    <i class="bi bi-plus-circle"></i>
+                    Nouveau RDV
+                </button>
+                <button class="btn btn-warning" onclick="loadModal('{{ path('appointment_type_new') }}', 'typeModal')">
+                    <i class="bi bi-plus-circle"></i>
+                    Nouveau Type
+                </button>
             </div>
         </div>
 
-        <!-- Onglet Types de Rendez-vous -->
-        <div class="tab-pane fade" id="types" role="tabpanel">
-            <div class="card mt-3">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Types de Rendez-vous</h5>
-                    <a href="{{ path('appointment_type_new') }}" class="btn btn-success btn-sm">
-                        <i class="fas fa-plus"></i> Ajouter un Type
-                    </a>
-                </div>
-                <div class="card-body">
-                    {% if typesRendezVous is empty %}
-                        <div class="alert alert-info">Aucun type de rendez-vous défini.</div>
-                    {% else %}
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Type</th>
-                                        <th>Tarif</th>
-                                        <th>Durée</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                {% for type in typesRendezVous %}
-                                    <tr>
-                                        <td>{{ type.id }}</td>
-                                        <td><strong>{{ type.type }}</strong></td>
-                                        <td>{{ type.Tarif }} DT</td>
-                                        <td>{{ type.duree }}</td>
-                                        <td>
-                                            <div class="btn-group btn-group-sm">
-                                                <a href="{{ path('appointment_type_show', {'id': type.id}) }}" 
-                                                   class="btn btn-outline-info" title="Voir">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                                <a href="{{ path('appointment_type_edit', {'id': type.id}) }}" 
-                                                   class="btn btn-outline-primary" title="Modifier">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                <a href="{{ path('appointment_type_delete', {'id': type.id}) }}" 
-                                                   class="btn btn-outline-danger" title="Supprimer"
-                                                   onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce type ?')">
-                                                    <i class="fas fa-trash"></i>
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                                </tbody>
-                            </table>
+        <!-- Onglets avec icônes -->
+        <div class="appointments-tabs">
+            <ul class="nav nav-tabs" id="appointmentTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#rdv" role="tab">
+                        <i class="bi bi-calendar-event icon-md"></i>
+                        Rendez-vous
+                        <span class="badge bg-primary">{{ rendezVousList|length }}</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#types" role="tab">
+                        <i class="bi bi-tags icon-md"></i>
+                        Types de Rendez-vous
+                        <span class="badge bg-warning">{{ typesRendezVous|length }}</span>
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content mt-3">
+                {# ---------------- RDV TAB ---------------- #}
+                <div class="tab-pane fade show active" id="rdv" role="tabpanel">
+                    <div class="card border-0">
+                        <div class="card-header-appointments">
+                            <h5>
+                                <i class="bi bi-list-task"></i>
+                                Liste des Rendez-vous
+                            </h5>
+                            <button class="btn btn-primary" onclick="loadModal('{{ path('appointment_new') }}', 'rdvModal')">
+                                <i class="bi bi-plus-lg"></i>
+                                Ajouter un RDV
+                            </button>
                         </div>
-                    {% endif %}
+                        <div class="card-body p-0">
+                            {% if rendezVousList is empty %}
+                                <div class="empty-state">
+                                    <i class="bi bi-calendar-x"></i>
+                                    <h5>Aucun rendez-vous programmé</h5>
+                                    <p>Commencez par ajouter un nouveau rendez-vous</p>
+                                </div>
+                            {% else %}
+                                <div class="table-responsive">
+                                    <table class="table appointments-table">
+                                        <thead>
+                                            <tr>
+                                                <th><i class="bi bi-hash"></i> ID</th>
+                                                <th><i class="bi bi-calendar"></i> Date</th>
+                                                <th><i class="bi bi-clock"></i> Heure</th>
+                                                <th><i class="bi bi-geo-alt"></i> Lieu</th>
+                                                <th><i class="bi bi-tag"></i> Type</th>
+                                                <th><i class="bi bi-circle"></i> État</th>
+                                                <th><i class="bi bi-gear"></i> Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for rdv in rendezVousList %}
+                                            <tr class="fade-in">
+                                                <td><strong>#{{ rdv.id }}</strong></td>
+                                                <td>{{ rdv.date|date('d/m/Y') }}</td>
+                                                <td>
+                                                    <span class="badge bg-light text-dark">
+                                                        <i class="bi bi-clock me-1"></i>
+                                                        {{ rdv.heure|date('H:i') }}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <i class="bi bi-geo-alt text-muted me-1"></i>
+                                                    {{ rdv.lieu|slice(0, 30) }}{{ rdv.lieu|length > 30 ? '...' : '' }}
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-info text-white">
+                                                        {{ rdv.typeRendezVous.type }}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    {% set etatClass = {
+                                                        'PLANIFIEE': 'status-planifiee',
+                                                        'EN_COURS': 'status-en_cours',
+                                                        'TERMINEE': 'status-terminee',
+                                                        'ANNULEE': 'status-annulee'
+                                                    } %}
+                                                    <span class="status-badge {{ etatClass[rdv.etat] ?? 'status-planifiee' }}">
+                                                        {{ rdv.etat|replace({'_': ' '})|lower|title }}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <div class="actions-group">
+                                                        <button class="btn-action edit" 
+                                                                onclick="loadModal('{{ path('appointment_edit', {'id': rdv.id}) }}', 'rdvModal')"
+                                                                title="Modifier">
+                                                            <i class="bi bi-pencil"></i>
+                                                        </button>
+                                                        <a class="btn-action delete" 
+                                                           href="{{ path('appointment_delete', {'id': rdv.id}) }}"
+                                                           onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce rendez-vous ?')"
+                                                           title="Supprimer">
+                                                            <i class="bi bi-trash"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                {# ---------------- TYPES TAB ---------------- #}
+                <div class="tab-pane fade" id="types" role="tabpanel">
+                    <div class="card border-0">
+                        <div class="card-header-appointments">
+                            <h5>
+                                <i class="bi bi-tags"></i>
+                                Types de Rendez-vous
+                            </h5>
+                            <button class="btn btn-warning" onclick="loadModal('{{ path('appointment_type_new') }}', 'typeModal')">
+                                <i class="bi bi-plus-lg"></i>
+                                Ajouter un Type
+                            </button>
+                        </div>
+                        <div class="card-body p-0">
+                            {% if typesRendezVous is empty %}
+                                <div class="empty-state">
+                                    <i class="bi bi-tag"></i>
+                                    <h5>Aucun type défini</h5>
+                                    <p>Commencez par ajouter un type de rendez-vous</p>
+                                </div>
+                            {% else %}
+                                <div class="table-responsive">
+                                    <table class="table appointments-table">
+                                        <thead>
+                                            <tr>
+                                                <th><i class="bi bi-hash"></i> ID</th>
+                                                <th><i class="bi bi-tag"></i> Type</th>
+                                                <th><i class="bi bi-cash"></i> Tarif</th>
+                                                <th><i class="bi bi-clock-history"></i> Durée</th>
+                                                <th><i class="bi bi-gear"></i> Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for type in typesRendezVous %}
+                                            <tr class="fade-in">
+                                                <td><strong>#{{ type.id }}</strong></td>
+                                                <td>
+                                                    <span class="badge bg-warning text-dark">
+                                                        <i class="bi bi-tag-fill me-1"></i>
+                                                        {{ type.type }}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-success text-white">
+                                                        <i class="bi bi-currency-euro me-1"></i>
+                                                        {{ type.Tarif }} DT
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-secondary text-white">
+                                                        <i class="bi bi-clock me-1"></i>
+                                                        {{ type.duree }} min
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <div class="actions-group">
+                                                        <button class="btn-action edit" 
+                                                                onclick="loadModal('{{ path('appointment_type_edit', {'id': type.id}) }}', 'typeModal')"
+                                                                title="Modifier">
+                                                            <i class="bi bi-pencil"></i>
+                                                        </button>
+                                                        <a class="btn-action delete" 
+                                                           href="{{ path('appointment_type_delete', {'id': type.id}) }}"
+                                                           onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce type ?')"
+                                                           title="Supprimer">
+                                                            <i class="bi bi-trash"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<style>
-    .nav-tabs .nav-link {
-        font-weight: 500;
-    }
-    .nav-tabs .nav-link.active {
-        font-weight: 600;
-    }
-    .badge {
-        font-size: 0.7em;
-        margin-left: 5px;
-    }
-    .btn-group-sm > .btn {
-        padding: 0.25rem 0.5rem;
-    }
-</style>
+{# ---------------- MODALS CONTAINER ---------------- #}
+<div class="modal fade" id="rdvModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <!-- Le contenu sera chargé dynamiquement -->
+    </div>
+</div>
 
-<script>
-    // Garder l'onglet actif après rafraîchissement
-    document.addEventListener('DOMContentLoaded', function() {
-        const activeTab = localStorage.getItem('activeAppointmentTab');
-        if (activeTab) {
-            const tabTrigger = new bootstrap.Tab(document.querySelector(activeTab));
-            tabTrigger.show();
+<div class="modal fade" id="typeModal" tabindex="-1">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+        <!-- Le contenu sera chargé dynamiquement -->
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ asset('js/sb-admin-2.min.js') }}"></script>
+    
+    <script>
+        function loadModal(url, modalId) {
+            $.ajax({
+                url: url,
+                method: 'GET',
+                beforeSend: function() {
+                    // Afficher un loader
+                    $('#' + modalId + ' .modal-dialog').html(`
+                        <div class="modal-content">
+                            <div class="modal-body text-center py-5">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Chargement...</span>
+                                </div>
+                                <p class="mt-3">Chargement en cours...</p>
+                            </div>
+                        </div>
+                    `);
+                },
+                success: function(data) {
+                    $('#' + modalId + ' .modal-dialog').html(data);
+                    var modal = new bootstrap.Modal(document.getElementById(modalId));
+                    modal.show();
+                    
+                    // Ajouter la classe personnalisée
+                    $('#' + modalId + ' .modal-content').addClass('modal-appointment');
+                    
+                    // Gestion de la soumission du formulaire via AJAX
+                    $('#' + modalId + ' form').on('submit', function(e) {
+                        e.preventDefault();
+                        var form = $(this);
+                        var submitBtn = form.find('button[type="submit"]');
+                        
+                        // Désactiver le bouton pendant l'envoi
+                        submitBtn.prop('disabled', true).html(`
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            Enregistrement...
+                        `);
+                        
+                        $.ajax({
+                            url: form.attr('action') || url,
+                            method: 'POST',
+                            data: form.serialize(),
+                            success: function(response) {
+                                if ($(response).find('.invalid-feedback').length === 0 && 
+                                    $(response).find('.is-invalid').length === 0) {
+                                    // Si succès, recharger la page
+                                    window.location.reload();
+                                } else {
+                                    // Sinon, mettre à jour le contenu de la modal
+                                    $('#' + modalId + ' .modal-dialog').html(response);
+                                    $('#' + modalId + ' .modal-content').addClass('modal-appointment');
+                                    // Réactiver la gestion du formulaire
+                                    submitBtn.prop('disabled', false).html('Enregistrer');
+                                }
+                            },
+                            error: function() {
+                                submitBtn.prop('disabled', false).html('Enregistrer');
+                                alert('Une erreur est survenue. Veuillez réessayer.');
+                            }
+                        });
+                    });
+                },
+                error: function() {
+                    $('#' + modalId + ' .modal-dialog').html(`
+                        <div class="modal-content">
+                            <div class="modal-header bg-danger text-white">
+                                <h5 class="modal-title">Erreur</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="alert alert-danger">
+                                    Impossible de charger le formulaire. Veuillez réessayer.
+                                </div>
+                            </div>
+                        </div>
+                    `);
+                    var modal = new bootstrap.Modal(document.getElementById(modalId));
+                    modal.show();
+                }
+            });
         }
         
-        // Sauvegarder l'onglet actif
-        document.querySelectorAll('#appointmentTabs button').forEach(tab => {
-            tab.addEventListener('click', function(e) {
-                localStorage.setItem('activeAppointmentTab', e.target.getAttribute('data-bs-target'));
+        $(document).ready(function() {
+            // Animation d'entrée des éléments
+            $('.fade-in').each(function(i) {
+                $(this).css('animation-delay', (i * 0.05) + 's');
             });
+            
+            console.log("Gestion des rendez-vous - Interface chargée");
         });
-    });
-</script>
+    </script>
 {% endblock %}
