@@ -13,8 +13,7 @@
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"> {% block stylesheets %}{% endblock %}
 		</head>
 
-		<body
-			class="bg-light">
+		<body class="{% block body_class %}{% endblock %}">
 
 			{# Header public simple #}
 			<nav id="publicNavbar" class="navbar navbar-expand-lg navbar-light navbar-yoopies">
@@ -61,7 +60,7 @@
 										</a>
 									</li>
 									<li>
-										<a class="dropdown-item services-item" href="#">
+										<a class="dropdown-item services-item" href="{{ path('forum_post_forum_index') }}">
 											<i class="bi bi-chat-dots services-icon"></i>
 											<span>Forum</span>
 										</a>
@@ -110,16 +109,16 @@
 			 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 			{% block javascripts %}
 				 <script>
-				  const nav = document.getElementById('publicNavbar');
-				
-				  function onScroll(){
-				    if (window.scrollY > 10) nav.classList.add('is-scrolled');
-				    else nav.classList.remove('is-scrolled');
-				  }
-				
-				  onScroll();
-				  window.addEventListener('scroll', onScroll, { passive: true });
-				</script>
+												  const nav = document.getElementById('publicNavbar');
+												
+												  function onScroll(){
+												    if (window.scrollY > 10) nav.classList.add('is-scrolled');
+												    else nav.classList.remove('is-scrolled');
+												  }
+												
+												  onScroll();
+												  window.addEventListener('scroll', onScroll, { passive: true });
+												</script>
 			{% endblock %}
 		</body>
 	</html>
