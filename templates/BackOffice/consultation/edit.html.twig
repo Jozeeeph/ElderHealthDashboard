@@ -5,7 +5,7 @@
 {% block body %}
 <h1>{{ consultation is defined ? 'Modifier Consultation' : 'Nouvelle Consultation' }}</h1>
 
-{{ include('consultation/_form.html.twig', { form: form, submit_label: 'Mettre à jour', form_action: path('consultation_edit', {'id': consultation.id}) }) }}
+{{ include('BackOffice/consultation/_form.html.twig', { form: form, submit_label: 'Mettre à jour', form_action: path('consultation_edit', {'id': consultation.id}) }) }}
 
 <a href="{{ path('consultation_index') }}" class="btn btn-secondary mt-3">← Retour</a>
 {% endblock %}

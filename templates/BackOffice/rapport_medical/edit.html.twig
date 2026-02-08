@@ -9,7 +9,7 @@
         Consultation #{{ rapport.consultation.id }} - {{ rapport.consultation.patient.prenom }} {{ rapport.consultation.patient.nom }}
     </div>
 
-    {% include 'rapport_medical/_form.html.twig' with {
+    {% include 'BackOffice/rapport_medical/_form.html.twig' with {
         form: form,
         submit_label: 'Mettre a jour'
     } %}

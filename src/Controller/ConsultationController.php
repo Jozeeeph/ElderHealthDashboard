@@ -34,7 +34,7 @@ class ConsultationController extends AbstractController
             $date
         );
 
-        return $this->render('consultation/index.html.twig', [
+        return $this->render('BackOffice/consultation/index.html.twig', [
             'consultations' => $consultations,
             'filters' => [
                 'patient' => $patient,
@@ -66,7 +66,7 @@ class ConsultationController extends AbstractController
             $limitDate
         );
 
-        return $this->render('consultation/archives.html.twig', [
+        return $this->render('BackOffice/consultation/archives.html.twig', [
             'consultations' => $consultations,
             'filters' => [
                 'patient' => $patient,
@@ -103,14 +103,14 @@ class ConsultationController extends AbstractController
         }
 
         if ($request->isXmlHttpRequest()) {
-            return $this->render('consultation/_form.html.twig', [
+            return $this->render('BackOffice/consultation/_form.html.twig', [
                 'form' => $form->createView(),
                 'submit_label' => 'Ajouter',
                 'form_action' => $this->generateUrl('consultation_new'),
             ]);
         }
 
-        return $this->render('consultation/new.html.twig', [
+        return $this->render('BackOffice/consultation/new.html.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -128,14 +128,14 @@ class ConsultationController extends AbstractController
         }
 
         if ($request->isXmlHttpRequest()) {
-            return $this->render('consultation/_form.html.twig', [
+            return $this->render('BackOffice/consultation/_form.html.twig', [
                 'form' => $form->createView(),
                 'submit_label' => 'Mettre à jour',
                 'form_action' => $this->generateUrl('consultation_edit', ['id' => $consultation->getId()]),
             ]);
         }
 
-        return $this->render('consultation/edit.html.twig', [
+        return $this->render('BackOffice/consultation/edit.html.twig', [
             'consultation' => $consultation,
             'form' => $form->createView(),
         ]);
