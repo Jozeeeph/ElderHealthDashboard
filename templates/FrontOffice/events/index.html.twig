@@ -1,5 +1,84 @@
 {% extends 'FrontOffice/base.html.twig' %}
 
+{% block title %}Événements{% endblock %}
+
 {% block stylesheets %}
-	<link rel="stylesheet" href="{{ asset('css/public-site.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/public-site.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/eventsCards.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+
+    <div class="text-center mb-4">
+        <h2 class="section-title">ÉVÉNEMENTS DISPONIBLES</h2>
+        <p class="section-subtitle">Découvrez les événements publiés et choisissez celui qui vous intéresse.</p>
+    </div>
+
+    {% if events is empty %}
+        <div class="alert alert-info">
+            Aucun événement disponible pour le moment.
+        </div>
+    {% else %}
+        <div class="row g-4 row-cols-1 row-cols-md-2 row-cols-lg-3">
+            {% for e in events %}
+                {% set typeColor = e.type and e.type.couleur ? e.type.couleur : '#0d6efd' %}
+
+                <div class="col">
+                    <div class="event-card h-100">
+
+                        <div class="event-icon" style="border-color: {{ typeColor }};">
+                            <i class="bi bi-calendar-event" style="color: {{ typeColor }};"></i>
+                        </div>
+
+                        <h5 class="event-name">{{ e.titre }}</h5>
+
+                        {% if e.type %}
+                            <div class="event-badge" style="background: {{ typeColor }}1a; color: {{ typeColor }};">
+                                <i class="bi bi-tag"></i> {{ e.type.libelle }}
+                            </div>
+                        {% endif %}
+
+                        <p class="event-text">
+                            {{ e.description|default('')|length > 0 ? e.description|slice(0,120) ~ '…' : 'Aucune description.' }}
+                        </p>
+
+                        <div class="event-meta">
+                            <div class="event-meta-item">
+                                <i class="bi bi-clock"></i>
+                                {{ e.dateDebut ? e.dateDebut|date('d/m/Y H:i') : 'Date non définie' }}
+                            </div>
+
+                            {% if e.lieu %}
+                                <div class="event-meta-item">
+                                    <i class="bi bi-geo-alt"></i>
+                                    {{ e.lieu }}
+                                </div>
+                            {% endif %}
+
+                            {% if e.capaciteMax %}
+                                <div class="event-meta-item">
+                                    <i class="bi bi-people"></i>
+                                    Capacité : {{ e.capaciteMax }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        {% if e.image %}
+                            <div class="event-thumb">
+                                <img src="{{ asset('uploads/events/' ~ e.image) }}" alt="Image event" loading="lazy">
+                            </div>
+                        {% endif %}
+
+                        <a href="{{ path('front_events_show', {id: e.id}) }}" class="event-link">
+                            <i class="bi bi-arrow-right"></i>
+                            Voir détails
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+</div>
 {% endblock %}
