@@ -33,13 +33,7 @@ class EventController extends AbstractController
         ]);
     }
 
-    #[Route('/forum', name: 'list_index')]
-    public function index2(EventRepository $eventRepository): Response
-    {
-        return $this->render('FrontOffice/events/index.html.twig', [
-            'events' => $eventRepository->findAll(),
-        ]);
-    }
+ 
 
     #[Route('/new', name: 'new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
