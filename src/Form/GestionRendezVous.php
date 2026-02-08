@@ -1,11 +1,12 @@
 <?php
 
 namespace App\Form;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 use App\Entity\RendezVous;
 use App\Entity\TypeRendezVous;
 use App\Entity\Utilisateur;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TimeType;
@@ -39,12 +40,15 @@ class GestionRendezVous extends AbstractType
                 'choice_label' => 'id',
                 'label' => 'Personnel medical'
             ])
-            ->add('typeRendezVous', EntityType::class, [
-                'class' => TypeRendezVous::class,
-                'choice_label' => 'type',
-                'placeholder' => '--- Choisir un type ---',
-                'label' => 'Type de rendez-vous'
-            ]);
+            
+    ->add('typeRendezVous', EntityType::class, [
+        'class' => TypeRendezVous::class,
+        'choice_label' => 'type', // 🔥 OBLIGATOIRE
+        'placeholder' => 'Choisir un type de rendez-vous',
+        'label' => 'Type de rendez-vous',
+        'required' => true,
+    ]);
+            
     }
 
     public function configureOptions(OptionsResolver $resolver): void

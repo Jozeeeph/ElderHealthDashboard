@@ -1,14 +1,13 @@
-{% extends 'base.html.twig' %}
+{{ form_start(form, { attr: { class: 'row g-3' } }) }}
 
-{% block title %}{{ title }}{% endblock %}
+<div class="col-md-12">{{ form_row(form.type) }}</div>
+<div class="col-md-6">{{ form_row(form.tarif) }}</div>
+<div class="col-md-6">{{ form_row(form.duree) }}</div>
 
-{% block body %}
-<h2>{{ title }}</h2>
+<div class="col-12 text-end">
+    <button class="btn btn-primary">
+        <i class="fas fa-save"></i> Enregistrer
+    </button>
+</div>
 
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn btn-success mt-3">Enregistrer</button>
 {{ form_end(form) }}
-
-<a href="{{ path('appointment_type_index') }}" class="btn btn-secondary mt-2">Retour</a>
-{% endblock %}

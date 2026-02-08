@@ -1,9 +1,10 @@
 <?php
 
 namespace App\Controller;
+
 use App\Entity\TypeRendezVous;
 use App\Entity\RendezVous;
-
+use App\Service\RendezVousEtatService;
 use App\Form\TypeRendezVousType;
 use App\Form\GestionRendezVous;
 use Doctrine\ORM\EntityManagerInterface;
@@ -16,11 +17,18 @@ use Symfony\Component\Routing\Attribute\Route;
 class AppointmentController extends AbstractController
 {
     #[Route('/', name: 'index')]
-    public function index(EntityManagerInterface $em): Response
+    public function index(EntityManagerInterface $em, RendezVousEtatService $etatService): Response
     {
+        // Mise à jour automatique des états
+        $etatService->updateEtats();
+
+        // Récupérer toutes les entités
+        $rendezVousList = $em->getRepository(RendezVous::class)->findAll();
+        $typesRendezVous = $em->getRepository(TypeRendezVous::class)->findAll();
+
         return $this->render('BackOffice/appointment/index.html.twig', [
-            'rendezVousList' => $em->getRepository(RendezVous::class)->findAll(),
-            'typesRendezVous' => $em->getRepository(TypeRendezVous::class)->findAll() // Ajoutez cette ligne
+            'rendezVousList' => $rendezVousList,
+            'typesRendezVous' => $typesRendezVous,
         ]);
     }
 
@@ -38,13 +46,11 @@ class AppointmentController extends AbstractController
             return $this->redirectToRoute('appointment_index');
         }
 
-        return $this->render('BackOffice/appointment/form.html.twig', [
-            'form' => $form->createView(),
-            'title' => 'Ajouter un rendez-vous'
-        ]);
+        // Si formulaire invalide, on reste sur la page avec les modals
+        return $this->renderFormWithModal($form);
     }
 
-    #[Route('/rdv/{id}/edit', name: 'edit')]
+    #[Route('/edit/{id}', name: 'edit')]
     public function edit(RendezVous $rdv, Request $request, EntityManagerInterface $em): Response
     {
         $form = $this->createForm(GestionRendezVous::class, $rdv);
@@ -56,42 +62,11 @@ class AppointmentController extends AbstractController
             return $this->redirectToRoute('appointment_index');
         }
 
-        return $this->render('BackOffice/appointment/form.html.twig', [
-            'form' => $form->createView(),
-            'title' => 'Modifier le rendez-vous'
-        ]);
+        // Si formulaire invalide, on reste sur la page avec les modals
+        return $this->renderFormWithModal($form);
     }
 
-    #[Route('/rdv/{id}', name: 'show')]
-    public function show(RendezVous $rdv): Response
-    {
-        return $this->render('appointment/show.html.twig', [
-            'rendezVous' => $rdv
-        ]);
-    }
-
-    #[Route('/rdv/{id}/delete', name: 'delete')]
-    public function delete(RendezVous $rdv, EntityManagerInterface $em): Response
-    {
-        $em->remove($rdv);
-        $em->flush();
-
-        return $this->redirectToRoute('appointment_index');
-    }
-
-    /* ===================== TYPE RENDEZ-VOUS ===================== */
-
-   #[Route('/types', name: 'type_index')]
-public function typeIndex(EntityManagerInterface $em): Response
-{
-    return $this->render('BackOffice/appointment/index.html.twig', [
-        'rendezVousList' => $em->getRepository(RendezVous::class)->findAll(),
-        'typesRendezVous' => $em->getRepository(TypeRendezVous::class)->findAll(),
-    ]);
-}
-
-
-    #[Route('/types/new', name: 'type_new')]
+    #[Route('/type/new', name: 'type_new')]
     public function typeNew(Request $request, EntityManagerInterface $em): Response
     {
         $type = new TypeRendezVous();
@@ -101,16 +76,15 @@ public function typeIndex(EntityManagerInterface $em): Response
         if ($form->isSubmitted() && $form->isValid()) {
             $em->persist($type);
             $em->flush();
-            return $this->redirectToRoute('appointment_type_index');
+
+            return $this->redirectToRoute('appointment_index');
         }
 
-        return $this->render('BackOffice/appointment/form1.html.twig', [
-            'form' => $form->createView(),
-            'title' => 'Ajouter un type de rendez-vous'
-        ]);
+        // Si formulaire invalide, on reste sur la page avec les modals
+        return $this->renderFormWithModal($form, 'type');
     }
 
-    #[Route('/types/{id}/edit', name: 'type_edit')]
+    #[Route('/type/edit/{id}', name: 'type_edit')]
     public function typeEdit(TypeRendezVous $type, Request $request, EntityManagerInterface $em): Response
     {
         $form = $this->createForm(TypeRendezVousType::class, $type);
@@ -118,28 +92,47 @@ public function typeIndex(EntityManagerInterface $em): Response
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em->flush();
-            return $this->redirectToRoute('appointment_type_index');
+
+            return $this->redirectToRoute('appointment_index');
         }
 
-        return $this->render('BackOffice/appointment/form1.html.twig', [
-            'form' => $form->createView(),
-            'title' => 'Modifier le type'
-        ]);
+        // Si formulaire invalide, on reste sur la page avec les modals
+        return $this->renderFormWithModal($form, 'type');
     }
 
-    #[Route('/types/{id}', name: 'type_show')]
-    public function typeShow(TypeRendezVous $type): Response
+    #[Route('/delete/{id}', name: 'delete')]
+    public function delete(RendezVous $rdv, EntityManagerInterface $em): Response
     {
-        return $this->render('BackOffice/appointment/show1.html.twig', [
-            'type' => $type
-        ]);
+        $em->remove($rdv);
+        $em->flush();
+
+        return $this->redirectToRoute('appointment_index');
     }
 
-    #[Route('/types/{id}/delete', name: 'type_delete')]
+    #[Route('/type/delete/{id}', name: 'type_delete')]
     public function typeDelete(TypeRendezVous $type, EntityManagerInterface $em): Response
     {
         $em->remove($type);
         $em->flush();
-        return $this->redirectToRoute('appointment_type_index');
+
+        return $this->redirectToRoute('appointment_index');
+    }
+
+    /**
+     * Méthode pour afficher le formulaire dans une modal
+     */
+    private function renderFormWithModal($form, string $type = 'rdv'): Response
+    {
+        $template = 'BackOffice/appointment/form_modal.html.twig';
+        
+        // Pour un rendu en HTML seulement (sans le layout complet)
+        $response = $this->render($template, [
+            'form' => $form->createView(),
+            'form_type' => $type
+        ]);
+        
+        // Retirer le layout pour n'avoir que le contenu de la modal
+        $response->headers->set('X-Form-Render', 'true');
+        return $response;
     }
 }

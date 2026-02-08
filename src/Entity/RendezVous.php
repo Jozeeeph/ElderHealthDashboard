@@ -34,7 +34,21 @@ class RendezVous
 
     #[ORM\ManyToOne]
     private ?Utilisateur $admin = null;
+   
 
+        #[ORM\Column(length: 20)]
+private ?string $etat = 'PLANIFIE';
+
+public function getEtat(): ?string
+{
+    return $this->etat;
+}
+
+public function setEtat(string $etat): self
+{
+    $this->etat = $etat;
+    return $this;
+}
     public function getId(): ?int
     {
         return $this->id;

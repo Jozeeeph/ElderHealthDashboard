@@ -17,14 +17,20 @@ class TypeRendezVousType extends AbstractType
             ->add('type', TextType::class, [
                 'label' => 'Type de rendez-vous',
             ])
-            ->add('Tarif', NumberType::class, [
+            // Ajoutez ces options au champ tarif
+            ->add('tarif', NumberType::class, [
                 'label' => 'Tarif (DT)',
-                'scale' => 2,
-            ])
+                'required' => true,
+                'attr' => [
+                    'class' => 'form-control',
+                    'step' => '0.01',
+                    'min' => '0',
+                    'placeholder' => '0.00'
+                ]
+            ]) // Note: point-virgule manquant et parenthèse fermante ajoutée
             ->add('duree', TextType::class, [
                 'label' => 'Durée (minutes)',
             ]);
-            
     }
 
     public function configureOptions(OptionsResolver $resolver): void

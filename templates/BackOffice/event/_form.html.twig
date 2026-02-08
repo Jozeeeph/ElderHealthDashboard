@@ -1,0 +1,46 @@
+{{ form_start(form) }}
+
+<div class="row g-3">
+  <div class="col-md-6">
+    {{ form_row(form.titre) }}
+  </div>
+  <div class="col-md-6">
+    {{ form_row(form.type) }}
+  </div>
+
+  <div class="col-md-6">
+    {{ form_row(form.dateDebut) }}
+  </div>
+  <div class="col-md-6">
+    {{ form_row(form.dateFin) }}
+  </div>
+
+  <div class="col-md-6">
+    {{ form_row(form.lieu) }}
+  </div>
+  <div class="col-md-6">
+    {{ form_row(form.capaciteMax) }}
+  </div>
+
+  <div class="col-md-6">
+    {{ form_row(form.statut) }}
+  </div>
+  <div class="col-md-6">
+    {{ form_row(form.image) }}
+  </div>
+
+  <div class="col-12">
+    {{ form_row(form.description) }}
+  </div>
+</div>
+
+<div class="mt-4 d-flex gap-2">
+  <button class="btn btn-brand">
+    <i class="bi bi-save"></i> {{ button_label|default('Enregistrer') }}
+  </button>
+  <a class="btn btn-outline-secondary" href="{{ path('event_index') }}">
+    Retour
+  </a>
+</div>
+
+{{ form_end(form) }}

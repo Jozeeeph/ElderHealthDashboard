@@ -1,0 +1,378 @@
+/* ===== VARIABLES ===== */
+:root {
+    --primary-color: #4a6cf7;
+    --secondary-color: #6c757d;
+    --success-color: #28a745;
+    --info-color: #17a2b8;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+    --border-radius: 12px;
+    --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --transition: all 0.3s ease;
+}
+
+/* ===== PAGE STYLES ===== */
+.appointments-page {
+    background: linear-gradient(135deg, #667eea 0%, #b3afb8 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.appointments-container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* ===== HEADER ===== */
+.appointments-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px 30px;
+    margin-bottom: 25px;
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+}
+
+.appointments-header h1 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--dark-color);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.appointments-header h1::before {
+    
+    font-size: 1.5rem;
+}
+
+.header-actions {
+    display: flex;
+    gap: 15px;
+}
+
+/* ===== TABS ===== */
+.appointments-tabs {
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    margin-bottom: 25px;
+    overflow: hidden;
+}
+
+.appointments-tabs .nav-tabs {
+    border-bottom: none;
+    padding: 0 30px;
+    background: #f8f9fa;
+}
+
+.appointments-tabs .nav-link {
+    border: none;
+    padding: 20px 30px;
+    font-weight: 500;
+    color: var(--secondary-color);
+    background: transparent;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: var(--transition);
+}
+
+.appointments-tabs .nav-link:hover {
+    color: var(--primary-color);
+    background: transparent;
+}
+
+.appointments-tabs .nav-link.active {
+    color: var(--primary-color);
+    background: white;
+    font-weight: 600;
+}
+
+.appointments-tabs .nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--primary-color);
+    border-radius: 3px 3px 0 0;
+}
+
+.appointments-tabs .nav-link i {
+    font-size: 1.2rem;
+}
+
+.appointments-tabs .badge {
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border-radius: 10px;
+    min-width: 24px;
+}
+
+/* ===== TAB CONTENT ===== */
+.tab-content {
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    overflow: hidden;
+}
+
+/* ===== CARD HEADER ===== */
+.card-header-appointments {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.card-header-appointments h5 {
+    margin: 0;
+    font-weight: 600;
+    color: var(--dark-color);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.card-header-appointments .btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+/* ===== TABLES ===== */
+.appointments-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.appointments-table thead th {
+    background: #f8f9fa;
+    color: var(--dark-color);
+    font-weight: 600;
+    padding: 15px 20px;
+    border-bottom: 2px solid #e9ecef;
+    white-space: nowrap;
+}
+
+.appointments-table tbody td {
+    padding: 15px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
+}
+
+.appointments-table tbody tr {
+    transition: var(--transition);
+}
+
+.appointments-table tbody tr:hover {
+    background: #f8fafc;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* ===== STATUS BADGES ===== */
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-transform: capitalize;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.status-badge::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.status-planifiee {
+    background: rgba(23, 162, 184, 0.1);
+    color: #0c5460;
+}
+
+.status-planifiee::before {
+    background: #17a2b8;
+}
+
+.status-en_cours {
+    background: rgba(255, 193, 7, 0.1);
+    color: #856404;
+}
+
+.status-en_cours::before {
+    background: #ffc107;
+}
+
+.status-terminee {
+    background: rgba(40, 167, 69, 0.1);
+    color: #155724;
+}
+
+.status-terminee::before {
+    background: #28a745;
+}
+
+.status-annulee {
+    background: rgba(220, 53, 69, 0.1);
+    color: #721c24;
+}
+
+.status-annulee::before {
+    background: #dc3545;
+}
+
+/* ===== ACTIONS BUTTONS ===== */
+.actions-group {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-action {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    background: white;
+    color: var(--secondary-color);
+    transition: var(--transition);
+}
+
+.btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-action.edit:hover {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+.btn-action.delete:hover {
+    background: var(--danger-color);
+    border-color: var(--danger-color);
+    color: white;
+}
+
+.btn-action.add:hover {
+    background: var(--success-color);
+    border-color: var(--success-color);
+    color: white;
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--secondary-color);
+}
+
+.empty-state i {
+    font-size: 3rem;
+    color: #dee2e6;
+    margin-bottom: 15px;
+}
+
+.empty-state h5 {
+    color: var(--secondary-color);
+    margin-bottom: 10px;
+}
+
+/* ===== MODALS ===== */
+.modal-appointment {
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    border: none;
+}
+
+.modal-appointment .modal-header {
+    background: linear-gradient(135deg, #667eea 0%, #b3a6c0 100%);
+    color: white;
+    padding: 20px 30px;
+    border-bottom: none;
+}
+
+.modal-appointment .modal-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+}
+
+.modal-appointment .btn-close {
+    filter: brightness(0) invert(1);
+}
+
+.modal-appointment .modal-body {
+    padding: 30px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .appointments-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+        padding: 20px;
+    }
+    
+    .appointments-tabs .nav-link {
+        padding: 15px 20px;
+        font-size: 0.9rem;
+    }
+    
+    .appointments-table {
+        display: block;
+        overflow-x: auto;
+    }
+    
+    .appointments-table thead th,
+    .appointments-table tbody td {
+        padding: 12px 15px;
+    }
+    
+    .actions-group {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
+
+/* ===== ICONS ===== */
+.icon-md {
+    font-size: 1.2rem;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease forwards;
+}
