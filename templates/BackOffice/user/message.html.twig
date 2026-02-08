@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Information{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="alert alert-success">
+        {{ message }}
+    </div>
+
+    <div class="mt-3">
+        <a href="{{ path('app_home') }}" class="btn btn-primary">
+            Retour à l'accueil
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="container mt-4">
+    <h2>Modifier utilisateur</h2>
+
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button class="btn btn-primary mt-3">Enregistrer</button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('admin_users_index') }}" class="btn btn-secondary mt-3">Retour</a>
+</div>
+{% endblock %}

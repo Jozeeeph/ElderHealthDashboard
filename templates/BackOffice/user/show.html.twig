@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="container mt-4">
+    <h2>Détails utilisateur</h2>
+
+    <p><strong>Email :</strong> {{ user.email }}</p>
+    <p><strong>Nom :</strong> {{ user.nom }}</p>
+    <p><strong>Prénom :</strong> {{ user.prenom }}</p>
+    <p><strong>Statut :</strong> {{ user.accountStatus }}</p>
+    <p><strong>Actif :</strong> {{ user.isActive ? 'Oui' : 'Non' }}</p>
+
+    <a href="{{ path('admin_users_index') }}" class="btn btn-secondary">Retour</a>
+</div>
+{% endblock %}
