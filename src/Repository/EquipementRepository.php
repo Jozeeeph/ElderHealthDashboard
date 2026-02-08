@@ -16,6 +16,20 @@ class EquipementRepository extends ServiceEntityRepository
         parent::__construct($registry, Equipement::class);
     }
 
+    /**
+     * Get equipment for listing (without loading relationships)
+     * Prevents circular reference issues in Twig
+     */
+    public function findAllForListing(): array
+    {
+        return $this->createQueryBuilder('e')
+            ->select('e.id', 'e.nom', 'e.description', 'e.prix', 
+                     'e.quantiteDisponible', 'e.statut', 'e.categorie', 'e.image')
+            ->orderBy('e.id', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return Equipement[] Returns an array of Equipement objects
     //     */

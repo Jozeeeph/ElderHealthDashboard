@@ -1,12 +1,278 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Gestion{% endblock %}
+{% block title %}Gestion des Équipements Médicaux{% endblock %}
 
 {% block body %}
-  <div class="p-4">
-    <h2 class="mb-3">Gestion</h2>
-    <div class="alert alert-success mb-0">
-      {{ message }}
+<div class="container-fluid p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Gestion des Équipements Médicaux</h2>
+        <button type="button" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#addEquipmentForm">
+            <i class="bi bi-plus-circle"></i> Ajouter un équipement
+        </button>
     </div>
-  </div>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+
+    <!-- ADD EQUIPMENT FORM (Collapsible) -->
+    <div class="collapse mb-4" id="addEquipmentForm">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-plus-circle me-2"></i>
+                    Ajouter un nouvel équipement
+                </h5>
+            </div>
+            <div class="card-body">
+                {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ form_row(form.nom, {
+                            'attr': {'class': 'form-control'}
+                        }) }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form_row(form.categorie, {
+                            'attr': {'class': 'form-control'}
+                        }) }}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        {{ form_row(form.prix, {
+                            'attr': {'class': 'form-control'}
+                        }) }}
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        {{ form_row(form.quantiteDisponible, {
+                            'attr': {'class': 'form-control'}
+                        }) }}
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        {{ form_row(form.statut, {
+                            'attr': {'class': 'form-control'}
+                        }) }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    {{ form_row(form.description, {
+                        'attr': {'class': 'form-control', 'rows': 3}
+                    }) }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form_row(form.image, {
+                        'attr': {'class': 'form-control'}
+                    }) }}
+                    <small class="form-text text-muted">
+                        Formats acceptés: JPG, PNG. Taille max: 2MB
+                    </small>
+                </div>
+
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-success" name="action" value="add">
+                        <i class="fas fa-save me-2"></i> Enregistrer
+                    </button>
+                </div>
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+
+    <!-- EQUIPMENTS TABLE -->
+    {% if equipements|length > 0 %}
+        <div class="card shadow">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Image</th>
+                                <th>Nom</th>
+                                <th>Catégorie</th>
+                                <th>Prix</th>
+                                <th>Quantité</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for equipement in equipements %}
+                                {% set isEditing = app.request.get('edit_id') == equipement.id %}
+                                
+                                {% if isEditing %}
+                                    <!-- EDIT FORM (Inline) -->
+                                    <tr class="bg-light">
+                                        <form method="post" action="{{ path('equipment_index') ~ '?edit_id=' ~ equipement.id }}" enctype="multipart/form-data">
+                                            <td>{{ equipement.id }}</td>
+                                            <td>
+                                                {% if equipement.image %}
+                                                    <img src="{{ asset('uploads/images/' ~ equipement.image) }}" 
+                                                         alt="{{ equipement.nom }}" 
+                                                         class="img-thumbnail mb-2" 
+                                                         style="width: 50px; height: 50px; object-fit: cover;">
+                                                    <br>
+                                                    <small class="text-muted">Image actuelle</small>
+                                                {% endif %}
+                                                <input type="file" name="image" class="form-control form-control-sm mt-1" accept="image/jpeg,image/png">
+                                            </td>
+                                            <td><input type="text" name="nom" value="{{ equipement.nom }}" class="form-control form-control-sm" required></td>
+                                            <td><input type="text" name="categorie" value="{{ equipement.categorie }}" class="form-control form-control-sm"></td>
+                                            <td><input type="number" name="prix" value="{{ equipement.prix }}" step="0.01" class="form-control form-control-sm" required></td>
+                                            <td><input type="number" name="quantiteDisponible" value="{{ equipement.quantiteDisponible }}" class="form-control form-control-sm" required></td>
+                                            <td>
+                                                <select name="statut" class="form-control form-control-sm" required>
+                                                    <option value="disponible" {{ equipement.statut == 'disponible' ? 'selected' : '' }}>Disponible</option>
+                                                    <option value="en_rupture" {{ equipement.statut == 'en_rupture' ? 'selected' : '' }}>En rupture</option>
+                                                    <option value="en_maintenance" {{ equipement.statut == 'en_maintenance' ? 'selected' : '' }}>En maintenance</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('edit' ~ equipement.id) }}">
+                                                    <input type="hidden" name="id" value="{{ equipement.id }}">
+                                                    <button type="submit" class="btn btn-sm btn-success" name="action" value="update">
+                                                        <i class="bi bi-check"></i>
+                                                    </button>
+                                                    <a href="{{ path('equipment_index') }}" class="btn btn-sm btn-secondary">
+                                                        <i class="bi bi-x"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </form>
+                                    </tr>
+                                {% else %}
+                                    <!-- NORMAL ROW -->
+                                    <tr>
+                                        <td>{{ equipement.id }}</td>
+                                        <td>
+                                            {% if equipement.image %}
+                                                <img src="{{ asset('uploads/images/' ~ equipement.image) }}" 
+                                                     alt="{{ equipement.nom }}" 
+                                                     class="img-thumbnail" 
+                                                     style="width: 50px; height: 50px; object-fit: cover;">
+                                            {% else %}
+                                                <div class="bg-secondary text-white d-flex align-items-center justify-content-center" 
+                                                     style="width: 50px; height: 50px;">
+                                                    <i class="bi bi-image"></i>
+                                                </div>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ equipement.nom }}</td>
+                                        <td>
+                                            {% if equipement.categorie %}
+                                                <span class="badge bg-info">{{ equipement.categorie }}</span>
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ equipement.prix }} DT</td>
+                                        <td>{{ equipement.quantiteDisponible }}</td>
+                                        <td>
+                                            {% if equipement.statut == 'disponible' %}
+                                                <span class="badge bg-success">Disponible</span>
+                                            {% elseif equipement.statut == 'en_rupture' %}
+                                                <span class="badge bg-danger">En rupture</span>
+                                            {% else %}
+                                                <span class="badge bg-warning">En maintenance</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <!-- VIEW button (Bootstrap popover) -->
+                                                <button type="button" class="btn btn-sm btn-info" 
+                                                        data-bs-toggle="popover" 
+                                                        data-bs-html="true"
+                                                        data-bs-title="Détails de: {{ equipement.nom }}"
+                                                        data-bs-content="
+                                                            <strong>ID:</strong> {{ equipement.id }}<br>
+                                                            <strong>Nom:</strong> {{ equipement.nom }}<br>
+                                                            <strong>Catégorie:</strong> {{ equipement.categorie ? equipement.categorie : 'Non définie' }}<br>
+                                                            <strong>Prix:</strong> {{ equipement.prix }} DT<br>
+                                                            <strong>Quantité:</strong> {{ equipement.quantiteDisponible }}<br>
+                                                            <strong>Statut:</strong> {{ equipement.statut }}<br>
+                                                            <strong>Description:</strong> {{ equipement.description ? equipement.description : 'Aucune' }}
+                                                        "
+                                                        title="Voir">
+                                                    <i class="bi bi-eye"></i>
+                                                </button>
+                                                
+                                                <!-- EDIT button -->
+                                                <a href="{{ path('equipment_index', {'edit_id': equipement.id}) }}" 
+                                                   class="btn btn-sm btn-warning" title="Modifier">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                
+                                                <!-- DELETE button -->
+                                                <form method="post" 
+                                                      action="{{ path('equipment_index') }}" 
+                                                      style="display: inline;"
+                                                      onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet équipement ?');">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ equipement.id) }}">
+                                                    <input type="hidden" name="id" value="{{ equipement.id }}">
+                                                    <input type="hidden" name="action" value="delete">
+                                                    <button type="submit" class="btn btn-sm btn-danger" title="Supprimer">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> Aucun équipement trouvé. 
+            <button type="button" class="btn btn-link p-0" data-bs-toggle="collapse" data-bs-target="#addEquipmentForm">
+                Ajouter le premier équipement
+            </button>
+        </div>
+    {% endif %}
+</div>
+
+<!-- JavaScript -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check if form has errors
+        const formErrors = document.querySelector('.form-error-message, .is-invalid');
+        if (formErrors) {
+            const formCollapse = new bootstrap.Collapse(document.getElementById('addEquipmentForm'));
+            formCollapse.show();
+        }
+        
+        // Auto-scroll to editing row
+        const editId = new URLSearchParams(window.location.search).get('edit_id');
+        if (editId) {
+            const editingRow = document.querySelector('tr.bg-light');
+            if (editingRow) {
+                editingRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+        
+        // Initialize Bootstrap popovers
+        const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
+        const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl));
+    });
+</script>
 {% endblock %}
