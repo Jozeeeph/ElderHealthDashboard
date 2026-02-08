@@ -16,67 +16,26 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 #[Route('/equipment', name: 'equipment_')]
 class EquipmentController extends AbstractController
 {
-    #[Route('/', name: 'index', methods: ['GET', 'POST'])]
-    public function index(Request $request, EquipementRepository $equipementRepository, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
+    #[Route('/', name: 'index', methods: ['GET'])]
+    public function index(EquipementRepository $equipementRepository): Response
     {
-        // Handle DELETE
-        if ($request->isMethod('POST') && $request->request->get('action') === 'delete') {
-            $id = $request->request->get('id');
-            $equipement = $equipementRepository->find($id);
-            
-            if ($equipement && $this->isCsrfTokenValid('delete' . $id, $request->request->get('_token'))) {
-                $entityManager->remove($equipement);
-                $entityManager->flush();
-                $this->addFlash('success', 'Équipement supprimé avec succès !');
-            }
-            
-            return $this->redirectToRoute('equipment_index');
-        }
+        // SEULEMENT l'affichage de la liste
+        $equipements = $equipementRepository->findAll();
         
-        // Handle UPDATE (inline editing)
-        if ($request->isMethod('POST') && $request->request->get('action') === 'update') {
-            $id = $request->request->get('id');
-            $equipement = $equipementRepository->find($id);
-            
-            if ($equipement && $this->isCsrfTokenValid('edit' . $id, $request->request->get('_token'))) {
-                // Update fields
-                $equipement->setNom($request->request->get('nom'));
-                $equipement->setCategorie($request->request->get('categorie'));
-                $equipement->setPrix($request->request->get('prix'));
-                $equipement->setQuantiteDisponible($request->request->get('quantiteDisponible'));
-                $equipement->setStatut($request->request->get('statut'));
-                
-                // Handle file upload
-                $imageFile = $request->files->get('image');
-                if ($imageFile) {
-                    $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
-                    $safeFilename = $slugger->slug($originalFilename);
-                    $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
-                    
-                    try {
-                        $imageFile->move(
-                            $this->getParameter('images_directory'),
-                            $newFilename
-                        );
-                        $equipement->setImage($newFilename);
-                    } catch (FileException $e) {
-                        $this->addFlash('error', 'Erreur lors du téléchargement de l\'image');
-                    }
-                }
-                
-                $entityManager->flush();
-                $this->addFlash('success', 'Équipement modifié avec succès !');
-            }
-            
-            return $this->redirectToRoute('equipment_index');
-        }
-        
-        // Handle ADD (inline adding)
+        return $this->render('BackOffice/equipment/index.html.twig', [
+            'equipements' => $equipements,
+        ]);
+    }
+
+    #[Route('/new', name: 'new', methods: ['GET', 'POST'])]
+    public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
+    {
+        // SEULEMENT l'ajout
         $equipement = new Equipement();
         $form = $this->createForm(EquipementType::class, $equipement);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid() && $request->request->get('action') === 'add') {
+        if ($form->isSubmitted() && $form->isValid()) {
             // Handle file upload
             $imageFile = $form->get('image')->getData();
             if ($imageFile) {
@@ -99,25 +58,81 @@ class EquipmentController extends AbstractController
             $entityManager->flush();
 
             $this->addFlash('success', 'Équipement ajouté avec succès !');
-
-            // Redirect to same page to clear form
             return $this->redirectToRoute('equipment_index');
         }
 
-        // Get equipment list
-        $equipements = $equipementRepository->createQueryBuilder('e')
-            ->select('e.id', 'e.nom', 'e.description', 'e.prix', 
-                     'e.quantiteDisponible', 'e.statut', 'e.categorie', 'e.image')
-            ->orderBy('e.id', 'DESC')
-            ->getQuery()
-            ->getResult();
-
-        return $this->render('BackOffice/equipment/index.html.twig', [
-            'equipements' => $equipements,
+        return $this->render('BackOffice/equipment/new.html.twig', [
             'form' => $form->createView(),
-            'edit_id' => $request->query->get('edit_id'),
         ]);
     }
-    
-    // NO OTHER ROUTES - Everything is on index page
+
+    #[Route('/{id}/edit', name: 'edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, Equipement $equipement, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
+    {
+        // SEULEMENT l'édition (Symfony injecte automatiquement l'équipement via l'ID)
+        $form = $this->createForm(EquipementType::class, $equipement);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Handle file upload
+            $imageFile = $form->get('image')->getData();
+            if ($imageFile) {
+                // Supprimer l'ancienne image si elle existe
+                if ($equipement->getImage()) {
+                    $oldImage = $this->getParameter('images_directory').'/'.$equipement->getImage();
+                    if (file_exists($oldImage)) {
+                        unlink($oldImage);
+                    }
+                }
+                
+                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
+
+                try {
+                    $imageFile->move(
+                        $this->getParameter('images_directory'),
+                        $newFilename
+                    );
+                    $equipement->setImage($newFilename);
+                } catch (FileException $e) {
+                    $this->addFlash('error', 'Erreur lors du téléchargement de l\'image');
+                }
+            }
+
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Équipement modifié avec succès !');
+            return $this->redirectToRoute('equipment_index');
+        }
+
+        return $this->render('BackOffice/equipment/edit.html.twig', [
+            'form' => $form->createView(),
+            'equipement' => $equipement,
+        ]);
+    }
+
+    #[Route('/{id}/delete', name: 'delete', methods: ['POST'])]
+    public function delete(Request $request, Equipement $equipement, EntityManagerInterface $entityManager): Response
+    {
+        // SEULEMENT la suppression
+        if ($this->isCsrfTokenValid('delete'.$equipement->getId(), $request->request->get('_token'))) {
+            // Supprimer l'image si elle existe
+            if ($equipement->getImage()) {
+                $imagePath = $this->getParameter('images_directory').'/'.$equipement->getImage();
+                if (file_exists($imagePath)) {
+                    unlink($imagePath);
+                }
+            }
+
+            $entityManager->remove($equipement);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Équipement supprimé avec succès !');
+        } else {
+            $this->addFlash('error', 'Token CSRF invalide');
+        }
+
+        return $this->redirectToRoute('equipment_index');
+    }
 }
