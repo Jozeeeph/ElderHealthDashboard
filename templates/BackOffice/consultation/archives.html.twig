@@ -1,0 +1,140 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Archives des Consultations{% endblock %}
+
+{% block body %}
+<style>
+.archive-page {
+    --ink: #1e2a2f;
+    --muted: #6c7a80;
+    --brand: #0e8aa7;
+    --brand-2: #2bbf9f;
+    --card: #ffffff;
+    --ring: rgba(14, 138, 167, 0.2);
+}
+
+.archive-header {
+    background: linear-gradient(135deg, #f1f7f9 0%, #f1f5f2 100%);
+    border-radius: 18px 28px 18px 28px;
+    padding: 18px 20px;
+    border: 1px solid #e2eef1;
+}
+
+.archive-title {
+    color: var(--ink);
+    letter-spacing: 0.2px;
+}
+
+.archive-subtitle {
+    color: var(--muted);
+    font-size: 0.95rem;
+}
+
+.archive-card {
+    border: 1px solid #e6edf0;
+    border-radius: 18px 28px 18px 28px;
+    background: var(--card);
+    overflow: hidden;
+}
+
+.archive-accent {
+    height: 6px;
+    border-radius: 18px 28px 0 0;
+    margin: -1px -1px 12px -1px;
+    background: linear-gradient(90deg, #2bbf9f, #6edfbf);
+}
+
+.archive-form .form-label {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #6c7a80;
+    margin-bottom: 6px;
+}
+
+.archive-form .form-control {
+    border-radius: 14px;
+    border: 1px solid #dbe6ea;
+    padding: 10px 12px;
+    background: #ffffff;
+}
+
+.archive-form .form-control:focus {
+    border-color: #7ec3d6;
+    box-shadow: 0 0 0 0.2rem rgba(14, 138, 167, 0.18);
+}
+
+.archive-actions .btn {
+    border-radius: 999px;
+}
+</style>
+
+<div class="archive-page">
+    <div class="archive-header d-flex align-items-center justify-content-between mb-3">
+        <div>
+            <h1 class="archive-title mb-1">
+                <i class="bi bi-archive me-2"></i>Archives des Consultations
+            </h1>
+            <div class="archive-subtitle">
+                Consultations terminées depuis au moins 4 jours (avant le {{ limit_date|date('d/m/Y') }})
+            </div>
+        </div>
+        <a class="btn btn-outline-primary" href="{{ path('consultation_index') }}">
+            <i class="bi bi-arrow-left"></i>
+            Retour
+        </a>
+    </div>
+
+    <div class="archive-card p-3 mb-3">
+        <form class="archive-form" method="get" action="{{ path('consultation_archives') }}">
+            <div class="row g-3">
+                <div class="col-12 col-md-4">
+                    <label class="form-label" for="filter-patient">Patient</label>
+                    <input id="filter-patient" name="patient" class="form-control" type="text"
+                           value="{{ filters.patient ?? '' }}" placeholder="Nom ou prénom du patient">
+                </div>
+                <div class="col-12 col-md-4">
+                    <label class="form-label" for="filter-personnel">Personnel médical</label>
+                    <input id="filter-personnel" name="personnel" class="form-control" type="text"
+                           value="{{ filters.personnel ?? '' }}" placeholder="Nom ou prénom du personnel">
+                </div>
+                <div class="col-12 col-md-3">
+                    <label class="form-label" for="filter-date">Date consultation</label>
+                    <input id="filter-date" name="date" class="form-control" type="date"
+                           value="{{ filters.date ?? '' }}">
+                </div>
+                <div class="col-12 col-md-1 d-flex align-items-end archive-actions">
+                    <button class="btn btn-primary w-100" type="submit">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="row g-3">
+        {% for consultation in consultations %}
+            <div class="col-12 col-md-6 col-xl-4">
+                <div class="archive-card h-100 p-3">
+                    <div class="archive-accent"></div>
+                    <div class="fw-semibold text-dark mb-2">
+                        {{ consultation.patient.prenom }} {{ consultation.patient.nom }}
+                    </div>
+                    <div class="text-muted small mb-2">
+                        {{ consultation.dateConsultation ? consultation.dateConsultation|date('d/m/Y') : '-' }}
+                        •
+                        {{ consultation.heureConsultation ? consultation.heureConsultation|date('H:i') : '-' }}
+                    </div>
+                    <div class="text-muted small">
+                        Personnel: {{ consultation.personnelMedical.prenom }} {{ consultation.personnelMedical.nom }}
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-12">
+                <div class="alert alert-info mb-0">Aucune consultation archivée pour ces filtres.</div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

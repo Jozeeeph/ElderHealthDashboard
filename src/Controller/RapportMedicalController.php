@@ -8,6 +8,7 @@ use App\Form\RapportMedicalType;
 use Doctrine\ORM\EntityManagerInterface;
 use Dompdf\Dompdf;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -33,6 +34,11 @@ class RapportMedicalController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $upload = $form->get('fichier')->getData();
+            if ($upload instanceof UploadedFile) {
+                $path = $this->storeRapportFile($upload);
+                $rapport->setFichierPath($path);
+            }
             $em->persist($rapport);
             $em->flush();
             $this->addFlash('success', 'Rapport medical ajoute.');
@@ -40,14 +46,14 @@ class RapportMedicalController extends AbstractController
         }
 
         if ($request->isXmlHttpRequest()) {
-            return $this->render('BackOffice/rapport_medical/_form.html.twig', [
+            return $this->render('rapport_medical/_form.html.twig', [
                 'form' => $form->createView(),
                 'submit_label' => 'Ajouter',
                 'form_action' => $this->generateUrl('rapport_medical_new', ['id' => $consultation->getId()]),
             ]);
         }
 
-        return $this->render('BackOffice/rapport_medical/new.html.twig', [
+        return $this->render('rapport_medical/new.html.twig', [
             'form' => $form->createView(),
             'consultation' => $consultation,
         ]);
@@ -56,7 +62,7 @@ class RapportMedicalController extends AbstractController
     #[Route('/{id}', name: 'show', methods: ['GET'])]
     public function show(RapportMedical $rapport): Response
     {
-        return $this->render('BackOffice/rapport_medical/show.html.twig', [
+        return $this->render('rapport_medical/show.html.twig', [
             'rapport' => $rapport,
         ]);
     }
@@ -68,20 +74,25 @@ class RapportMedicalController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $upload = $form->get('fichier')->getData();
+            if ($upload instanceof UploadedFile) {
+                $path = $this->storeRapportFile($upload);
+                $rapport->setFichierPath($path);
+            }
             $em->flush();
             $this->addFlash('success', 'Rapport medical mis a jour.');
             return $this->redirectToRoute('rapport_medical_show', ['id' => $rapport->getIdRapport()]);
         }
 
         if ($request->isXmlHttpRequest()) {
-            return $this->render('BackOffice/rapport_medical/_form.html.twig', [
+            return $this->render('rapport_medical/_form.html.twig', [
                 'form' => $form->createView(),
                 'submit_label' => 'Mettre a jour',
                 'form_action' => $this->generateUrl('rapport_medical_edit', ['id' => $rapport->getIdRapport()]),
             ]);
         }
 
-        return $this->render('BackOffice/rapport_medical/edit.html.twig', [
+        return $this->render('rapport_medical/edit.html.twig', [
             'form' => $form->createView(),
             'rapport' => $rapport,
         ]);
@@ -111,8 +122,40 @@ class RapportMedicalController extends AbstractController
             return $this->redirectToRoute('rapport_medical_show', ['id' => $rapport->getIdRapport()]);
         }
 
-        $html = $this->renderView('BackOffice/rapport_medical/pdf.html.twig', [
+        $attachment = null;
+        if ($rapport->getFichierPath()) {
+            $projectDir = $this->getParameter('kernel.project_dir');
+            $publicPath = $projectDir . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . $rapport->getFichierPath();
+            if (is_file($publicPath)) {
+                $ext = strtolower(pathinfo($publicPath, PATHINFO_EXTENSION));
+                $isImage = in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'], true);
+                $attachment = [
+                    'is_image' => $isImage,
+                    'name' => basename($publicPath),
+                ];
+
+                if ($isImage) {
+                    $mime = match ($ext) {
+                        'jpg', 'jpeg' => 'image/jpeg',
+                        'png' => 'image/png',
+                        'gif' => 'image/gif',
+                        'webp' => 'image/webp',
+                        default => 'application/octet-stream',
+                    };
+                    $data = base64_encode((string) file_get_contents($publicPath));
+                    $attachment['data_uri'] = 'data:' . $mime . ';base64,' . $data;
+                }
+            } else {
+                $attachment = [
+                    'missing' => true,
+                    'name' => basename($rapport->getFichierPath()),
+                ];
+            }
+        }
+
+        $html = $this->renderView('rapport_medical/pdf.html.twig', [
             'rapport' => $rapport,
+            'attachment' => $attachment,
         ]);
 
         $dompdf = new Dompdf();
@@ -124,5 +167,24 @@ class RapportMedicalController extends AbstractController
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'attachment; filename="rapport-medical-' . $rapport->getIdRapport() . '.pdf"',
         ]);
+    }
+
+    private function storeRapportFile(UploadedFile $file): string
+    {
+        $projectDir = $this->getParameter('kernel.project_dir');
+        $uploadDir = $projectDir . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'rapports';
+
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0775, true);
+        }
+
+        $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+        $safeName = preg_replace('/[^a-zA-Z0-9_-]+/', '-', $originalName) ?: 'rapport';
+        $extension = $file->guessExtension() ?: $file->getClientOriginalExtension();
+        $filename = $safeName . '-' . bin2hex(random_bytes(6)) . ($extension ? '.' . $extension : '');
+
+        $file->move($uploadDir, $filename);
+
+        return 'uploads/rapports/' . $filename;
     }
 }

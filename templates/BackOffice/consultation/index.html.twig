@@ -186,20 +186,56 @@
         <h1 class="consultation-title mb-1">Liste des Consultations</h1>
         <div class="consultation-subtitle">Vue rapide des rendez-vous et statuts</div>
     </div>
-    <button type="button"
-            class="btn btn-primary consultation-btn"
-            data-bs-toggle="modal"
-            data-bs-target="#consultationNewModal"
-            data-new-url="{{ path('consultation_new') }}">
-        Nouvelle Consultation
-    </button>
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-primary" href="{{ path('consultation_archives') }}">
+            <i class="bi bi-archive me-1"></i>
+            Archives
+        </a>
+        <button type="button"
+                class="btn btn-primary consultation-btn"
+                data-bs-toggle="modal"
+                data-bs-target="#consultationNewModal"
+                data-new-url="{{ path('consultation_new') }}">
+            Nouvelle Consultation
+        </button>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm mb-3">
+    <div class="card-body">
+        <form method="get" action="{{ path('consultation_index') }}">
+            <div class="row g-3 align-items-end">
+                <div class="col-12 col-md-4">
+                    <label class="form-label small text-uppercase text-muted" for="filter-patient">Patient</label>
+                    <input id="filter-patient" name="patient" class="form-control" type="text"
+                           value="{{ filters.patient ?? '' }}" placeholder="Nom ou prénom du patient">
+                </div>
+                <div class="col-12 col-md-4">
+                    <label class="form-label small text-uppercase text-muted" for="filter-personnel">Personnel médical</label>
+                    <input id="filter-personnel" name="personnel" class="form-control" type="text"
+                           value="{{ filters.personnel ?? '' }}" placeholder="Nom ou prénom du personnel">
+                </div>
+                <div class="col-12 col-md-2">
+                    <label class="form-label small text-uppercase text-muted" for="filter-date">Date consultation</label>
+                    <input id="filter-date" name="date" class="form-control" type="date"
+                           value="{{ filters.date ?? '' }}">
+                </div>
+                <div class="col-12 col-md-auto ms-md-auto d-flex justify-content-end">
+                    <button class="btn btn-primary px-4" type="submit">
+                        <i class="bi bi-search"></i>
+                        Filtrer
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
 
 <div class="row g-3">
     {% for consultation in consultations %}
         {% set status = consultation.etatConsultation ? consultation.etatConsultation|lower : '' %}
         {% set status_label = status == 'en_cours' ? 'En cours'
-            : (status == 'terminee' ? 'Terminée'
+            : (status == 'terminee' or status == 'terminée' ? 'Terminée'
             : (status == 'planifiée' ? 'Planifiée'
             : (status == 'réalisée' ? 'Réalisée'
             : (status == 'annulée' ? 'Annulée' : (consultation.etatConsultation ?? ''))))) %}

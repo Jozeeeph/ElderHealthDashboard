@@ -42,5 +42,21 @@
         <div class="label">Recommandations</div>
         <div class="value">{{ rapport.recommandations }}</div>
     </div>
+
+    {% if attachment %}
+        <div class="section box">
+            <div class="label">Piece jointe</div>
+            {% if attachment.missing is defined and attachment.missing %}
+                <div class="value">Fichier introuvable : {{ attachment.name }}</div>
+            {% elseif attachment.is_image %}
+                <div class="value">Image jointe</div>
+                <div style="margin-top:8px;">
+                    <img src="{{ attachment.data_uri }}" alt="Piece jointe" style="max-width: 100%; height: auto;">
+                </div>
+            {% else %}
+                <div class="value">Fichier joint : {{ attachment.name }}</div>
+            {% endif %}
+        </div>
+    {% endif %}
 </body>
 </html>

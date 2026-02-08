@@ -15,10 +15,65 @@ use Symfony\Component\Routing\Attribute\Route;
 class ConsultationController extends AbstractController
 {
     #[Route('/', name: 'index', methods: ['GET'])]
-    public function index(ConsultationRepository $repo): Response
+    public function index(Request $request, ConsultationRepository $repo): Response
     {
-        return $this->render('BackOffice/consultation/index.html.twig', [
-            'consultations' => $repo->findAll(),
+        $patient = trim((string) $request->query->get('patient', ''));
+        $personnel = trim((string) $request->query->get('personnel', ''));
+        $dateInput = $request->query->get('date');
+        $date = null;
+        if (is_string($dateInput) && $dateInput !== '') {
+            $date = \DateTimeImmutable::createFromFormat('Y-m-d', $dateInput) ?: null;
+            if (!$date) {
+                $date = \DateTimeImmutable::createFromFormat('d/m/Y', $dateInput) ?: null;
+            }
+        }
+
+        $consultations = $repo->findFiltered(
+            $patient !== '' ? $patient : null,
+            $personnel !== '' ? $personnel : null,
+            $date
+        );
+
+        return $this->render('consultation/index.html.twig', [
+            'consultations' => $consultations,
+            'filters' => [
+                'patient' => $patient,
+                'personnel' => $personnel,
+                'date' => $dateInput,
+            ],
+        ]);
+    }
+
+    #[Route('/archives', name: 'archives', methods: ['GET'])]
+    public function archives(Request $request, ConsultationRepository $repo): Response
+    {
+        $patient = trim((string) $request->query->get('patient', ''));
+        $personnel = trim((string) $request->query->get('personnel', ''));
+        $dateInput = $request->query->get('date');
+        $date = null;
+        if (is_string($dateInput) && $dateInput !== '') {
+            $date = \DateTimeImmutable::createFromFormat('Y-m-d', $dateInput) ?: null;
+            if (!$date) {
+                $date = \DateTimeImmutable::createFromFormat('d/m/Y', $dateInput) ?: null;
+            }
+        }
+
+        $limitDate = new \DateTimeImmutable('today -4 days');
+        $consultations = $repo->findArchived(
+            $patient !== '' ? $patient : null,
+            $personnel !== '' ? $personnel : null,
+            $date,
+            $limitDate
+        );
+
+        return $this->render('consultation/archives.html.twig', [
+            'consultations' => $consultations,
+            'filters' => [
+                'patient' => $patient,
+                'personnel' => $personnel,
+                'date' => $dateInput,
+            ],
+            'limit_date' => $limitDate,
         ]);
     }
 
@@ -48,14 +103,14 @@ class ConsultationController extends AbstractController
         }
 
         if ($request->isXmlHttpRequest()) {
-            return $this->render('BackOffice/consultation/_form.html.twig', [
+            return $this->render('consultation/_form.html.twig', [
                 'form' => $form->createView(),
                 'submit_label' => 'Ajouter',
                 'form_action' => $this->generateUrl('consultation_new'),
             ]);
         }
 
-        return $this->render('BackOffice/consultation/new.html.twig', [
+        return $this->render('consultation/new.html.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -73,14 +128,14 @@ class ConsultationController extends AbstractController
         }
 
         if ($request->isXmlHttpRequest()) {
-            return $this->render('BackOffice/consultation/_form.html.twig', [
+            return $this->render('consultation/_form.html.twig', [
                 'form' => $form->createView(),
                 'submit_label' => 'Mettre à jour',
                 'form_action' => $this->generateUrl('consultation_edit', ['id' => $consultation->getId()]),
             ]);
         }
 
-        return $this->render('BackOffice/consultation/edit.html.twig', [
+        return $this->render('consultation/edit.html.twig', [
             'consultation' => $consultation,
             'form' => $form->createView(),
         ]);

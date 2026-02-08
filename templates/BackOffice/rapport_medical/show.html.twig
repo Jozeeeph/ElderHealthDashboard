@@ -121,6 +121,14 @@
                     <div class="text-muted small">Recommandations</div>
                     <div class="fw-semibold">{{ rapport.recommandations }}</div>
                 </div>
+                {% if rapport.fichierPath %}
+                    <div class="col-12">
+                        <div class="text-muted small">Pièce jointe</div>
+                        <a class="fw-semibold" href="{{ asset(rapport.fichierPath) }}" target="_blank" rel="noopener">
+                            Voir le fichier
+                        </a>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>
