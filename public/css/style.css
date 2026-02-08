@@ -1,0 +1,84 @@
+/* =========================
+   ElderHealthCare - Footer
+   ========================= */
+
+/* Forcer un style identique dans tous les layouts */
+.ehc-footer {
+    background: #1f232a !important;  /* même couleur sur les 2 pages */
+    color: #e9ecef !important;
+}
+
+/* Espacement général */
+.ehc-footer .container {
+    padding-top: 1.5rem !important;
+    padding-bottom: 1.5rem !important;
+}
+
+/* Titres */
+.ehc-footer h4,
+.ehc-footer h5 {
+    color: #0d6efd !important;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-bottom: 1rem;
+    padding-bottom: .6rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.18) !important;
+}
+
+/* Texte */
+.ehc-footer p,
+.ehc-footer li {
+    color: rgba(255, 255, 255, 0.85) !important;
+    font-size: 0.95rem;
+}
+
+/* Icônes fontawesome */
+.ehc-footer i {
+    color: #0d6efd !important;
+}
+
+/* Liste services */
+.ehc-footer ul {
+    margin: 0;
+    padding: 0;
+}
+
+.ehc-footer ul li {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+/* Boutons réseaux sociaux */
+.ehc-footer .btn-square {
+    width: 42px;
+    height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50% !important;
+    background: #0d6efd !important;
+    border: none !important;
+    color: #fff !important;
+    transition: 0.25s ease;
+}
+
+.ehc-footer .btn-square:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.08);
+}
+
+/* Ligne de séparation du bas */
+.ehc-footer .border-top {
+    border-top: 1px solid rgba(255, 255, 255, 0.18) !important;
+}
+
+/* Copyright */
+.ehc-footer .text-primary {
+    color: #0d6efd !important;
+}
+
+/* Fix: éviter que d'autres templates changent bg-dark */
+.ehc-footer.bg-dark {
+    background: #1f232a !important;
+}
