@@ -27,6 +27,14 @@ class EquipmentController extends AbstractController
         ]);
     }
 
+    #[Route('/forum', name: 'list_index')]
+    public function index2(EquipementRepository $equipementRepository): Response
+    {
+        return $this->render('FrontOffice/equipement/index.html.twig', [
+            'equipements' => $equipementRepository->findAll(),
+        ]);
+    }
+
     #[Route('/new', name: 'new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
