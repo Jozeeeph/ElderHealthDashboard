@@ -33,6 +33,8 @@ class EventController extends AbstractController
         ]);
     }
 
+ 
+
     #[Route('/new', name: 'new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
     {

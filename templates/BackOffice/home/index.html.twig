@@ -1,45 +1,203 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Welcome{% endblock %}
+{% block title %}Accueil Admin{% endblock %}
 
 {% block body %}
-    <div class="jumbotron py-5">
-        <h1 class="display-4">Welcome to My Symfony App!</h1>
-        <p class="lead">This is a simple admin dashboard template integrated with Symfony.</p>
-        <hr class="my-4">
-        <p>Get started by exploring the dashboard or customizing this template.</p>
-        <a class="btn btn-primary btn-lg" href="{{ path('app_dashboard') }}" role="button">
-            <i class="fas fa-tachometer-alt me-2"></i> Go to Dashboard
-        </a>
+<style>
+  .home-wrap{
+    padding: 24px;
+  }
+
+  .home-title{
+    font-size: 34px;
+    font-weight: 800;
+    color: #2b2f38;
+    margin: 0 0 6px 0;
+  }
+
+  .home-subtitle{
+    color: #7b8794;
+    margin: 0 0 18px 0;
+    font-weight: 600;
+  }
+
+  .home-grid{
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 18px;
+  }
+
+  .cardx{
+    background: #fff;
+    border: 1px solid rgba(0,0,0,.06);
+    border-radius: 14px;
+    box-shadow: 0 10px 22px rgba(16,24,40,.08);
+    padding: 16px;
+  }
+
+  .cardx h4{
+    margin: 0 0 12px 0;
+    font-size: 18px;
+    font-weight: 800;
+    color: #2b2f38;
+  }
+
+  .box{
+    background: #f7fafc;
+    border: 1px solid rgba(0,0,0,.06);
+    border-radius: 12px;
+    padding: 12px;
+  }
+
+  .row-between{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+  }
+
+  .pill{
+    padding: 10px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(244,201,137,.7);
+    background: rgba(244,201,137,.45);
+    font-weight: 800;
+    color: #1f2937;
+    text-decoration:none;
+    display:inline-block;
+    white-space:nowrap;
+  }
+
+  .list{
+    margin:0;
+    padding:0;
+    list-style:none;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+
+  .item{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: #f7fafc;
+    border: 1px solid rgba(0,0,0,.06);
+    font-weight: 700;
+    color:#2b2f38;
+  }
+
+  .dot{
+    width:10px;height:10px;border-radius:50%;
+    background: rgba(59,130,246,.8);
+  }
+
+  .dot.ok{ background: rgba(16,185,129,.8); }
+  .dot.warn{ background: rgba(245,158,11,.85); }
+
+  .home-bottom{
+    margin-top: 18px;
+    display:grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 18px;
+  }
+
+  @media (max-width: 1100px){
+    .home-grid{ grid-template-columns: 1fr; }
+    .home-bottom{ grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="home-wrap">
+  <h1 class="home-title">Accueil Admin</h1>
+  <p class="home-subtitle">
+    Bienvenue {{ app.user ? app.user.userIdentifier : 'Admin' }} — aperçu rapide et raccourcis.
+  </p>
+
+  <div class="home-grid">
+    {# Colonne gauche #}
+    <div class="cardx">
+      <h4>À faire aujourd’hui</h4>
+      <div class="box">
+        <div class="row-between">
+          <div>
+            <strong style="display:block; font-size:15px;">Vérifier les inscriptions</strong>
+            <small style="color:#7b8794; font-weight:700;">
+              Dernière connexion : {{ "now"|date("d/m/Y - H:i") }}
+            </small>
+          </div>
+          {# pas de path => bouton neutre #}
+          <a class="pill" href="#">Voir</a>
+        </div>
+      </div>
+
+      <div style="height:12px"></div>
+
+      <ul class="list">
+        <li class="item"><span class="dot ok"></span> Valider les nouveaux utilisateurs</li>
+        <li class="item"><span class="dot warn"></span> Vérifier les événements à venir</li>
+        <li class="item"><span class="dot"></span> Contrôler les publications / forum</li>
+      </ul>
     </div>
 
-    <div class="row mt-5">
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body text-center">
-                    <i class="fas fa-bolt fa-3x text-primary mb-3"></i>
-                    <h5 class="card-title">Fast & Efficient</h5>
-                    <p class="card-text">Built with Symfony for maximum performance and scalability.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body text-center">
-                    <i class="fas fa-shield-alt fa-3x text-success mb-3"></i>
-                    <h5 class="card-title">Secure</h5>
-                    <p class="card-text">Enterprise-grade security features built right in.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body text-center">
-                    <i class="fas fa-mobile-alt fa-3x text-info mb-3"></i>
-                    <h5 class="card-title">Responsive</h5>
-                    <p class="card-text">Fully responsive design that works on all devices.</p>
-                </div>
-            </div>
-        </div>
+    {# Colonne droite #}
+    <div class="cardx">
+      <h4>Dernières activités</h4>
+
+      <div class="box" style="margin-bottom:10px;">
+        <strong style="display:block;">Nouvel utilisateur ajouté</strong>
+        <small style="color:#7b8794; font-weight:700;">{{ "now"|date("d/m/Y") }}</small>
+      </div>
+
+      <div class="box" style="margin-bottom:10px;">
+        <strong style="display:block;">Événement mis à jour</strong>
+        <small style="color:#7b8794; font-weight:700;">{{ "now"|date("d/m/Y") }}</small>
+      </div>
+
+      <div class="box">
+        <strong style="display:block;">Équipement médical ajouté</strong>
+        <small style="color:#7b8794; font-weight:700;">{{ "now"|date("d/m/Y") }}</small>
+      </div>
     </div>
+  </div>
+
+  <div class="home-bottom">
+    <div class="cardx">
+      <h4>Raccourci</h4>
+      <div class="row-between box">
+        <div>
+          <strong>Utilisateurs</strong><br>
+          <small style="color:#7b8794; font-weight:700;">Créer / modifier / désactiver</small>
+        </div>
+        <a class="pill" href="#">Ouvrir</a>
+      </div>
+    </div>
+
+    <div class="cardx">
+      <h4>Raccourci</h4>
+      <div class="row-between box">
+        <div>
+          <strong>Événements</strong><br>
+          <small style="color:#7b8794; font-weight:700;">Liste + ajout</small>
+        </div>
+        <a class="pill" href="#">Ouvrir</a>
+      </div>
+    </div>
+
+    <div class="cardx">
+      <h4>État</h4>
+      <div class="row-between box">
+        <div>
+          <strong>Système</strong><br>
+          <small style="color:#7b8794; font-weight:700;">Tout fonctionne</small>
+        </div>
+        <span class="pill" style="background: rgba(16,185,129,.15); border-color: rgba(16,185,129,.35);">
+          OK
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

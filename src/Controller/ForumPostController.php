@@ -26,6 +26,14 @@ class ForumPostController extends AbstractController
     }
 
 
+    #[Route('/forum', name: 'forum_index')]
+    public function index2(PostRepository $postRepository): Response
+    {
+        return $this->render('FrontOffice/forum/index.html.twig', [
+            'posts' => $postRepository->findAll(),
+        ]);
+    }
+
 
     #[Route('/new', name: 'new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response

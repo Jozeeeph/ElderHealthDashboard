@@ -77,10 +77,12 @@
                                     <table class="table appointments-table">
                                         <thead>
                                             <tr>
-                                                <th><i class="bi bi-hash"></i> ID</th>
+                                                
                                                 <th><i class="bi bi-calendar"></i> Date</th>
                                                 <th><i class="bi bi-clock"></i> Heure</th>
                                                 <th><i class="bi bi-geo-alt"></i> Lieu</th>
+                                                <th><i class="bi bi-person-badge"></i> Personnel</th>
+                                                <th><i class="bi bi-person"></i> Patient</th>
                                                 <th><i class="bi bi-tag"></i> Type</th>
                                                 <th><i class="bi bi-circle"></i> État</th>
                                                 <th><i class="bi bi-gear"></i> Actions</th>
@@ -89,7 +91,7 @@
                                         <tbody>
                                             {% for rdv in rendezVousList %}
                                             <tr class="fade-in">
-                                                <td><strong>#{{ rdv.id }}</strong></td>
+                                                
                                                 <td>{{ rdv.date|date('d/m/Y') }}</td>
                                                 <td>
                                                     <span class="badge bg-light text-dark">
@@ -100,6 +102,14 @@
                                                 <td>
                                                     <i class="bi bi-geo-alt text-muted me-1"></i>
                                                     {{ rdv.lieu|slice(0, 30) }}{{ rdv.lieu|length > 30 ? '...' : '' }}
+                                                </td>
+                                                <td>
+                                                    <i class="bi bi-person-badge text-muted me-1"></i>
+                                                    {{ rdv.personnelMedical ? (rdv.personnelMedical.nom ~ ' ' ~ rdv.personnelMedical.prenom) : 'Non assigné' }}
+                                                </td>
+                                                <td>
+                                                    <i class="bi bi-person text-muted me-1"></i>
+                                                    {{ rdv.patient ? (rdv.patient.nom ~ ' ' ~ rdv.patient.prenom) : 'Non assigné' }}
                                                 </td>
                                                 <td>
                                                     <span class="badge bg-info text-white">
@@ -124,9 +134,11 @@
                                                                 title="Modifier">
                                                             <i class="bi bi-pencil"></i>
                                                         </button>
-                                                        <a class="btn-action delete" 
+                                                        <a class="btn-action delete js-delete" 
                                                            href="{{ path('appointment_delete', {'id': rdv.id}) }}"
-                                                           onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce rendez-vous ?')"
+                                                           data-delete-url="{{ path('appointment_delete', {'id': rdv.id}) }}"
+                                                           data-delete-name="{{ rdv.patient ? (rdv.patient.prenom ~ ' ' ~ rdv.patient.nom) : '' }}"
+                                                           data-entity="rendez-vous"
                                                            title="Supprimer">
                                                             <i class="bi bi-trash"></i>
                                                         </a>
@@ -167,7 +179,7 @@
                                     <table class="table appointments-table">
                                         <thead>
                                             <tr>
-                                                <th><i class="bi bi-hash"></i> ID</th>
+                                               
                                                 <th><i class="bi bi-tag"></i> Type</th>
                                                 <th><i class="bi bi-cash"></i> Tarif</th>
                                                 <th><i class="bi bi-clock-history"></i> Durée</th>
@@ -177,7 +189,7 @@
                                         <tbody>
                                             {% for type in typesRendezVous %}
                                             <tr class="fade-in">
-                                                <td><strong>#{{ type.id }}</strong></td>
+                                                
                                                 <td>
                                                     <span class="badge bg-warning text-dark">
                                                         <i class="bi bi-tag-fill me-1"></i>
@@ -203,9 +215,11 @@
                                                                 title="Modifier">
                                                             <i class="bi bi-pencil"></i>
                                                         </button>
-                                                        <a class="btn-action delete" 
+                                                        <a class="btn-action delete js-delete" 
                                                            href="{{ path('appointment_type_delete', {'id': type.id}) }}"
-                                                           onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce type ?')"
+                                                           data-delete-url="{{ path('appointment_type_delete', {'id': type.id}) }}"
+                                                           data-delete-name="{{ type.type }}"
+                                                           data-entity="type de rendez-vous"
                                                            title="Supprimer">
                                                             <i class="bi bi-trash"></i>
                                                         </a>
@@ -237,6 +251,45 @@
         <!-- Le contenu sera chargé dynamiquement -->
     </div>
 </div>
+
+{# ---------------- DELETE CONFIRM MODAL ---------------- #}
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content delete-modal">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    Confirmation de suppression
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p id="deleteConfirmMessage">Voulez-vous vraiment supprimer cet élément ?</p>
+                <div class="fw-semibold" data-delete-name></div>
+                <div class="alert alert-warning">
+                    Cette action est définitive.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <form id="deleteConfirmForm" method="post" action="" class="m-0">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i>
+                        Supprimer
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% for message in app.flashes('success') %}
+    <div class="alert alert-success alert-dismissible fade show flash-alert" role="alert">
+        <i class="bi bi-check-circle me-2"></i>
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+{% endfor %}
 {% endblock %}
 
 {% block javascripts %}
@@ -333,7 +386,43 @@
                 $(this).css('animation-delay', (i * 0.05) + 's');
             });
             
+            // Delete confirmation modal
+            $('.js-delete').on('click', function(e) {
+                e.preventDefault();
+                var url = $(this).data('delete-url');
+                var entity = $(this).data('entity') || 'élément';
+                var name = $(this).data('delete-name') || '';
+
+                $('#deleteConfirmMessage').text('Voulez-vous vraiment supprimer ce ' + entity + ' ?');
+                var nameEl = $('#deleteConfirmModal').find('[data-delete-name]');
+                if (name) {
+                    nameEl.text(name).show();
+                } else {
+                    nameEl.text('').hide();
+                }
+                $('#deleteConfirmForm').attr('action', url);
+
+                var modal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+                modal.show();
+            });
             console.log("Gestion des rendez-vous - Interface chargée");
         });
     </script>
 {% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

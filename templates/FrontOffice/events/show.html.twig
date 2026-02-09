@@ -1,0 +1,110 @@
+{% extends 'FrontOffice/base.html.twig' %}
+
+{% block title %}Détails événement{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/eventsFront.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/public-site.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="events-fb py-5">
+    <div class="container">
+
+        {% set typeColor = event.type and event.type.couleur ? event.type.couleur : '#6c757d' %}
+
+        <div class="ev-header mb-4">
+            <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap">
+                <div>
+                    <h1 class="ev-title">{{ event.titre }}</h1>
+                    <p class="ev-subtitle">Toutes les informations de l’événement.</p>
+                </div>
+
+                <a href="{{ path('front_events_index') }}" class="ev-back">
+                    <i class="bi bi-arrow-left"></i> Retour
+                </a>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+
+                <div class="ev-card mb-4" style="--typeColor: {{ typeColor }};">
+
+                    <div class="ev-card__top">
+                        <div class="ev-avatar" style="background: {{ typeColor }}22; color: {{ typeColor }};">
+                            {{ event.titre|default('E')|slice(0,1)|upper }}
+                        </div>
+
+                        <div class="ev-meta">
+                            <div class="ev-name">{{ event.titre }}</div>
+
+                            <div class="ev-time">
+                                <i class="bi bi-calendar-event"></i>
+                                {{ event.dateDebut ? event.dateDebut|date('d/m/Y H:i') : 'Date non définie' }}
+                                {% if event.dateFin %}
+                                    <span class="mx-1">→</span>{{ event.dateFin|date('d/m/Y H:i') }}
+                                {% endif %}
+                            </div>
+
+                            {% if event.lieu %}
+                                <div class="ev-place">
+                                    <i class="bi bi-geo-alt"></i> {{ event.lieu }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        {% if event.type %}
+                            <span class="ev-badge" style="background: {{ typeColor }};">
+                                <i class="bi bi-tag"></i> {{ event.type.libelle }}
+                            </span>
+                        {% else %}
+                            <span class="ev-badge ev-badge--muted">
+                                <i class="bi bi-tag"></i> Sans type
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <div class="ev-card__body">
+
+                        {% if event.image %}
+                            <div class="ev-image ev-image--big">
+                                <img src="{{ asset('uploads/events/' ~ event.image) }}" alt="Image de l'événement" loading="lazy">
+                            </div>
+                        {% endif %}
+
+                        <div class="ev-infos ev-infos--big">
+                            {% if event.capaciteMax %}
+                                <span class="ev-chip">
+                                    <i class="bi bi-people"></i> Capacité : {{ event.capaciteMax }}
+                                </span>
+                            {% endif %}
+
+                            <span class="ev-chip">
+                                <i class="bi bi-megaphone"></i> Statut : {{ event.statut|default('BROUILLON') }}
+                            </span>
+                        </div>
+
+                        <div class="ev-section">
+                            <h3 class="ev-section__title">Description</h3>
+                            <div class="ev-desc">
+                                {{ event.description|default('') }}
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="ev-actions">
+                        <a class="ev-action" href="{{ path('front_events_index') }}">
+                            <i class="bi bi-grid"></i> Voir tous les événements
+                        </a>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

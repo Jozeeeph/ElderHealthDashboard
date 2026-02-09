@@ -1,0 +1,259 @@
+/* ===== BRAND VARIABLES ===== */
+:root {
+    --blue: #2563eb;
+    --orange: #f59e0b;
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --text: #0f172a;
+    --muted: #64748b;
+    --border: #e5e7eb;
+    --ok: #16a34a;
+    --radius: 16px;
+    --shadow: 0 10px 25px rgba(0, 0, 0, .06);
+}
+
+/* ===== GLOBAL ===== */
+body {
+    background: var(--bg);
+    color: var(--text);
+}
+
+.patient-app {
+    min-height: 100vh;
+}
+
+/* =========================
+   HEADER — Yoopies style
+   (content unchanged)
+========================= */
+
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+    background: #ffffff;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .08);
+    transition: background .25s ease, box-shadow .25s ease, backdrop-filter .25s ease;
+}
+
+.topbar.is-scrolled {
+    background: rgba(255, 255, 255, .92);
+    backdrop-filter: blur(10px);
+}
+
+/* Layout */
+.topbar-inner {
+    max-width: 1440px;
+    /* wider header like public site */
+    width: 100%;
+    margin: auto;
+    padding: 14px 32px;
+
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 28px;
+}
+
+
+/* ================= BRAND ================= */
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+}
+
+.brand img {
+    height: 56px;
+    /* same as navbar-logo */
+    width: auto;
+    object-fit: contain;
+}
+
+.brand span {
+    font-size: 1.35rem;
+    font-weight: 900;
+    line-height: 1;
+    color: var(--ehc-dark);
+}
+
+.brand span span {
+    color: var(--ehc-blue);
+}
+
+/* ================= NAV ================= */
+.top-nav {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+}
+
+
+.top-nav a {
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-weight: 700;
+    color: var(--ehc-muted);
+    text-decoration: none;
+    transition: background .18s ease, color .18s ease;
+}
+
+.top-nav a:hover {
+    background: rgba(13, 110, 253, .08);
+    color: var(--ehc-blue);
+}
+
+.top-nav a.active {
+    background: rgba(13, 110, 253, .12);
+    color: var(--ehc-blue);
+}
+
+/* ================= PROFILE ================= */
+.profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+    color: var(--ehc-dark);
+}
+
+.profile img {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(245, 166, 35, .35);
+    /* subtle orange accent */
+}
+
+
+/* ===== MAIN ===== */
+.patient-main {
+    max-width: 1200px;
+    margin: auto;
+    padding: 28px 20px 40px;
+}
+
+/* ===== WELCOME ===== */
+.welcome-card {
+    background: #eaf1ff;
+    border-radius: 24px;
+    padding: 36px;
+    border-left: 6px solid var(--blue);
+}
+
+.welcome-card h1 {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+}
+
+.welcome-card p {
+    color: var(--muted);
+    max-width: 620px;
+}
+
+/* Buttons */
+.actions {
+    margin-top: 20px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 10px 16px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid transparent;
+}
+
+.btn.primary {
+    background: var(--blue);
+    color: #fff;
+}
+
+.btn.ghost {
+    background: #fff;
+    border-color: var(--blue);
+    color: var(--blue);
+}
+
+.btn.full {
+    width: 100%;
+    text-align: center;
+}
+
+/* ===== STATS ===== */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 24px 0;
+}
+
+.stat-card {
+    background: var(--card);
+    padding: 20px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.tag {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: .8rem;
+    background: #f1f5f9;
+}
+
+.tag.ok {
+    background: #dcfce7;
+    color: var(--ok);
+}
+
+.tag.warn {
+    background: #fff7ed;
+    color: var(--orange);
+}
+
+/* ===== CONTENT ===== */
+.content-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.card {
+    background: var(--card);
+    padding: 20px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.card h2 {
+    margin-bottom: 12px;
+}
+
+.item {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.item:last-child {
+    border-bottom: none;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+    .top-nav {
+        display: none;
+    }
+
+    .stats,
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
+}

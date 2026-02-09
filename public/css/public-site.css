@@ -2,13 +2,93 @@
   --ehc-blue: #0d6efd;
   --ehc-orange: #f5a623;
   --ehc-dark: #0f172a;
+
+  --ehc-muted: #6b7c8f;
+  --ehc-border: #d9e2ef;
 }
 
-/* HERO */
+/* =========================
+   NAVBAR (Yoopies-like)
+========================= */
+.navbar-yoopies {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  background: #ffffff;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .08);
+  transition: background .25s ease, box-shadow .25s ease, backdrop-filter .25s ease;
+}
+
+.navbar-yoopies.is-scrolled {
+  background: rgba(255, 255, 255, .92);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .08);
+}
+
+/* Navbar brand */
+.navbar-brand {
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+.navbar-brand:hover {
+  opacity: .9;
+}
+
+.navbar-logo {
+  height: 56px;
+  width: auto;
+  object-fit: contain;
+}
+
+.brand-text {
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+/* =========================
+   DROPDOWN Services (sidebar look)
+========================= */
+.services-dropdown {
+  min-width: 260px;
+  padding: 10px 8px;
+  border: 0;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .12);
+}
+
+.services-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 12px;
+  border-radius: 10px;
+  color: var(--ehc-blue);
+  font-weight: 600;
+}
+
+.services-item:hover {
+  background: rgba(13, 110, 253, .08);
+  color: var(--ehc-blue);
+}
+
+.services-icon {
+  font-size: 18px;
+  width: 22px;
+  text-align: center;
+}
+
+/* =========================
+   HERO
+========================= */
 .hero {
   position: relative;
   min-height: 85vh;
-  background: url("/img/hero-doctor.jpg") center/cover no-repeat;
+  background-image: url("../img/home.jpg");
+  /* keep only ONE hero background */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   display: flex;
   align-items: center;
 }
@@ -16,11 +96,9 @@
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    90deg,
-    rgba(15, 23, 42, 0.85),
-    rgba(15, 23, 42, 0.35)
-  );
+  background: linear-gradient(90deg,
+      rgba(15, 23, 42, 0.85),
+      rgba(15, 23, 42, 0.35));
 }
 
 .hero .container {
@@ -59,25 +137,9 @@
   flex-wrap: wrap;
 }
 
-.hero {
-  position: relative;
-  min-height: 85vh;
-  background-image: url("../img/home.jpg");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  display: flex;
-  align-items: center;
-}
-
-
 /* Buttons override */
 .hero .btn-primary {
-  background: linear-gradient(
-    90deg,
-    var(--ehc-blue),
-    #3b82f6
-  );
+  background: linear-gradient(90deg, var(--ehc-blue), #3b82f6);
   border: none;
   font-weight: 700;
   padding: 12px 22px;
@@ -89,9 +151,97 @@
   padding: 12px 22px;
 }
 
-/* Responsive */
+/* Responsive Hero */
 @media (max-width: 768px) {
   .hero-title {
     font-size: 2.3rem;
   }
+}
+
+/* =========================
+   SERVICES SECTION (Yoopies-like cards)
+========================= */
+.services-section {
+  background: #ffffff;
+}
+
+.services-title {
+  letter-spacing: .18em;
+  font-weight: 900;
+  color: #9aa8b5;
+  text-transform: uppercase;
+}
+
+/* Card */
+.service-card {
+  background: #fff;
+  border: 1px solid var(--ehc-border);
+  border-radius: 14px;
+  padding: 22px 18px;
+  text-align: center;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .04);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  height: 100%;
+}
+
+.service-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, .10);
+  border-color: rgba(13, 110, 253, .35);
+}
+
+/* Icon bubble */
+.service-icon {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 14px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: rgba(245, 166, 35, .18);
+  /* orange tint */
+  border: 1px solid rgba(245, 166, 35, .35);
+}
+
+.service-icon i {
+  font-size: 26px;
+  color: var(--ehc-blue);
+  /* icon in blue, like your logo */
+}
+
+/* Title */
+.service-name {
+  font-weight: 900;
+  letter-spacing: .04em;
+  margin: 12px 0 10px;
+  color: #1b2b3a;
+  text-transform: uppercase;
+}
+
+/* Text */
+.service-text {
+  color: var(--ehc-muted);
+  font-size: .95rem;
+  line-height: 1.6;
+  min-height: 110px;
+  /* keep cards same height */
+}
+
+/* Link */
+.service-link {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  font-size: .85rem;
+  color: var(--ehc-blue);
+  text-decoration: none;
+}
+
+.service-link:hover {
+  color: #0b5ed7;
+  text-decoration: underline;
 }

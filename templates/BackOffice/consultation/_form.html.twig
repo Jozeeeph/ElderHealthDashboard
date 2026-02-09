@@ -55,8 +55,8 @@
 </style>
 
 <div class="consultation-form-wrapper">
-    <div class="consultation-form-title">Détails de la consultation</div>
-    <div class="consultation-form-subtitle">Renseignez les informations principales</div>
+    <div class="consultation-form-title">🩺 Détails de la consultation</div>
+    <div class="consultation-form-subtitle">📝 Renseignez les informations principales</div>
 
     {% if form_action is defined %}
         {{ form_start(form, {'attr': {'class': 'consultation-form'}, 'action': form_action}) }}
@@ -65,22 +65,22 @@
     {% endif %}
         <div class="row g-3">
             <div class="col-12 col-md-6">
-                {{ form_row(form.patient) }}
+                {{ form_row(form.patient, { label: '🧑‍🦳 Patient' }) }}
             </div>
             <div class="col-12 col-md-6">
-                {{ form_row(form.personnelMedical) }}
+                {{ form_row(form.personnelMedical, { label: '👨‍⚕️ Personnel médical' }) }}
             </div>
             <div class="col-12">
-                {{ form_row(form.typeConsultation) }}
+                {{ form_row(form.typeConsultation, { label: '🩺 Type de consultation' }) }}
             </div>
             <div class="col-12 col-md-6">
-                {{ form_row(form.dateConsultation) }}
+                {{ form_row(form.dateConsultation, { label: '📅 Date de consultation' }) }}
             </div>
             <div class="col-12 col-md-6">
-                {{ form_row(form.heureConsultation) }}
+                {{ form_row(form.heureConsultation, { label: '⏰ Heure de consultation' }) }}
             </div>
             <div class="col-12">
-                {{ form_row(form.lieu) }}
+                {{ form_row(form.lieu, { label: '📍 Lieu' }) }}
             </div>
         </div>
 

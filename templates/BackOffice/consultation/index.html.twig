@@ -15,15 +15,17 @@
 }
 
 .consultation-header {
-    background: linear-gradient(135deg, #e8f6f9 0%, #eef8f4 100%);
+    background: linear-gradient(135deg, #fff4e6 0%, #eef6ff 55%, #f3fff6 100%);
     border-radius: 18px 28px 18px 28px;
     padding: 18px 20px;
-    border: 1px solid #e2eef1;
+    border: 1px solid #f0e2d5;
 }
 
 .consultation-title {
     color: var(--ink);
     letter-spacing: 0.2px;
+    font-size: 1.65rem;
+    font-weight: 800;
 }
 
 .consultation-subtitle {
@@ -90,13 +92,14 @@
 
 .consultation-label {
     color: var(--muted);
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.08em;
 }
 
 .consultation-name {
-    font-weight: 700;
+    font-weight: 800;
+    font-size: 1.05rem;
     color: var(--ink);
 }
 
@@ -144,7 +147,7 @@
 
 .consultation-row .value {
     color: var(--ink);
-    font-weight: 600;
+    font-weight: 700;
 }
 
 .consultation-meta {
@@ -176,14 +179,22 @@
 
 .consultation-actions .btn {
     border-radius: 999px;
-    padding: 6px 12px;
+    padding: 7px 12px;
+    font-weight: 700;
+}
+
+.consultation-toast {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1080;
 }
 </style>
 
 <div class="consultation-page">
 <div class="consultation-header d-flex align-items-center justify-content-between mb-3">
     <div>
-        <h1 class="consultation-title mb-1">Liste des Consultations</h1>
+        <h1 class="consultation-title mb-1">🩺 Liste des Consultations</h1>
         <div class="consultation-subtitle">Vue rapide des rendez-vous et statuts</div>
     </div>
     <div class="d-flex gap-2">
@@ -196,7 +207,7 @@
                 data-bs-toggle="modal"
                 data-bs-target="#consultationNewModal"
                 data-new-url="{{ path('consultation_new') }}">
-            Nouvelle Consultation
+            ➕ Nouvelle Consultation
         </button>
     </div>
 </div>
@@ -206,17 +217,17 @@
         <form method="get" action="{{ path('consultation_index') }}">
             <div class="row g-3 align-items-end">
                 <div class="col-12 col-md-4">
-                    <label class="form-label small text-uppercase text-muted" for="filter-patient">Patient</label>
+                    <label class="form-label small text-uppercase text-muted" for="filter-patient">🧑‍🦳 Patient</label>
                     <input id="filter-patient" name="patient" class="form-control" type="text"
                            value="{{ filters.patient ?? '' }}" placeholder="Nom ou prénom du patient">
                 </div>
                 <div class="col-12 col-md-4">
-                    <label class="form-label small text-uppercase text-muted" for="filter-personnel">Personnel médical</label>
+                    <label class="form-label small text-uppercase text-muted" for="filter-personnel">👨‍⚕️ Personnel médical</label>
                     <input id="filter-personnel" name="personnel" class="form-control" type="text"
                            value="{{ filters.personnel ?? '' }}" placeholder="Nom ou prénom du personnel">
                 </div>
                 <div class="col-12 col-md-2">
-                    <label class="form-label small text-uppercase text-muted" for="filter-date">Date consultation</label>
+                    <label class="form-label small text-uppercase text-muted" for="filter-date">📅 Date consultation</label>
                     <input id="filter-date" name="date" class="form-control" type="date"
                            value="{{ filters.date ?? '' }}">
                 </div>
@@ -240,14 +251,14 @@
             : (status == 'réalisée' ? 'Réalisée'
             : (status == 'annulée' ? 'Annulée' : (consultation.etatConsultation ?? ''))))) %}
 
-        <div class="col-12 col-md-6 col-xl-4">
+        <div class="col-12 col-lg-6">
             <div class="card h-100 shadow-sm position-relative consultation-card"
                  data-status="{{ status }}">
                 <div class="card-body">
                     <div class="consultation-accent"></div>
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <div>
-                            <div class="consultation-label">Patient</div>
+                            <div class="consultation-label">🧑‍🦳 Patient</div>
                             <div class="consultation-name">
                                 {{ consultation.patient.prenom }} {{ consultation.patient.nom }}
                             </div>
@@ -256,26 +267,22 @@
                     </div>
 
                     <div class="consultation-meta">
-                        <span class="consultation-chip">
-                            {{ consultation.dateConsultation ? consultation.dateConsultation|date('d/m/Y') : '-' }}
-                        </span>
-                        <span class="consultation-chip">
-                            {{ consultation.heureConsultation ? consultation.heureConsultation|date('H:i') : '-' }}
-                        </span>
+                        <span class="consultation-chip">📅 {{ consultation.dateConsultation ? consultation.dateConsultation|date('d/m/Y') : '-' }}</span>
+                        <span class="consultation-chip">⏰ {{ consultation.heureConsultation ? consultation.heureConsultation|date('H:i') : '-' }}</span>
                         {% if consultation.lieu %}
-                            <span class="consultation-chip">{{ consultation.lieu }}</span>
+                            <span class="consultation-chip">📍 {{ consultation.lieu }}</span>
                         {% endif %}
                     </div>
 
                     <div class="consultation-grid">
                         <div class="consultation-row">
-                            <div class="consultation-label">Personnel</div>
+                            <div class="consultation-label">👨‍⚕️ Personnel</div>
                             <div class="value">
                                 {{ consultation.personnelMedical.prenom }} {{ consultation.personnelMedical.nom }}
                             </div>
                         </div>
                         <div class="consultation-row">
-                            <div class="consultation-label">Créée par</div>
+                            <div class="consultation-label">🧾 Créée par</div>
                             <div class="value">
                                 {% if consultation.createdBy %}
                                     {{ consultation.createdBy.prenom }} {{ consultation.createdBy.nom }}
@@ -294,23 +301,23 @@
                                 data-bs-toggle="modal"
                                 data-bs-target="#consultationEditModal"
                                 data-edit-url="{{ path('consultation_edit', {'id': consultation.id}) }}">
-                            Éditer
+                            ✏️ Éditer
                         </button>
                         <button type="button"
                                 class="btn btn-danger btn-sm js-delete-consultation"
                                 data-delete-url="{{ path('consultation_delete', {'id': consultation.id}) }}"
                                 data-delete-name="{{ consultation.patient.prenom }} {{ consultation.patient.nom }}"
                                 data-delete-token="{{ csrf_token('delete_consultation_' ~ consultation.id) }}">
-                            Supprimer
+                            🗑️ Supprimer
                         </button>
                         {% if consultation.rapportMedical %}
                             <a class="btn btn-outline-primary btn-sm"
                                href="{{ path('rapport_medical_show', {'id': consultation.rapportMedical.idRapport}) }}">
-                                Rapport
+                                🧾 Rapport
                             </a>
                             <a class="btn btn-outline-secondary btn-sm"
                                href="{{ path('rapport_medical_pdf', {'id': consultation.rapportMedical.idRapport}) }}">
-                                PDF rapport
+                                📄 PDF rapport
                             </a>
                         {% else %}
                             <button type="button"
@@ -318,18 +325,18 @@
                                     data-bs-toggle="modal"
                                     data-bs-target="#rapportNewModal"
                                     data-new-url="{{ path('rapport_medical_new', {'id': consultation.id}) }}">
-                                Ajouter rapport
+                                ➕ Ajouter rapport
                             </button>
                         {% endif %}
 
                         {% if consultation.prescription %}
                             <a class="btn btn-outline-primary btn-sm"
                                href="{{ path('prescription_show', {'id': consultation.prescription.idPrescription}) }}">
-                                Prescription
+                                💊 Prescription
                             </a>
                             <a class="btn btn-outline-secondary btn-sm"
                                href="{{ path('prescription_pdf', {'id': consultation.prescription.idPrescription}) }}">
-                                PDF prescription
+                                📄💊 PDF prescription
                             </a>
                         {% else %}
                             <button type="button"
@@ -337,7 +344,7 @@
                                     data-bs-toggle="modal"
                                     data-bs-target="#prescriptionNewModal"
                                     data-new-url="{{ path('prescription_new', {'id': consultation.id}) }}">
-                                Ajouter prescription
+                                ➕ Ajouter prescription
                             </button>
                         {% endif %}
                     </div>
@@ -350,6 +357,15 @@
         </div>
     {% endfor %}
 </div>
+</div>
+
+<div class="consultation-toast toast-container">
+    <div id="consultationErrorToast" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">Une erreur est survenue.</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Fermer"></button>
+        </div>
+    </div>
 </div>
 
 <div class="modal fade consultation-modal" id="consultationEditModal" tabindex="-1" aria-labelledby="consultationEditModalLabel" aria-hidden="true">
@@ -437,7 +453,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const rapportNewModal = document.getElementById('rapportNewModal');
     const prescriptionNewModal = document.getElementById('prescriptionNewModal');
     const deleteModal = document.getElementById('consultationDeleteModal');
+    const errorToastEl = document.getElementById('consultationErrorToast');
+    const errorToast = errorToastEl ? bootstrap.Toast.getOrCreateInstance(errorToastEl, { delay: 4000 }) : null;
     if (!editModal && !newModal && !rapportNewModal && !prescriptionNewModal && !deleteModal) return;
+
+    const showErrorToast = (message) => {
+        if (!errorToastEl || !errorToast) return;
+        const body = errorToastEl.querySelector('.toast-body');
+        if (body) {
+            body.textContent = message;
+        }
+        errorToast.show();
+    };
 
     const loadFormIntoModal = async (modal, url) => {
         const modalBody = modal.querySelector('.modal-body');
@@ -448,12 +475,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             });
             if (!response.ok) {
-                throw new Error('Erreur de chargement');
+                throw new Error('Impossible de charger le formulaire.');
             }
             const html = await response.text();
             modalBody.innerHTML = html;
         } catch (e) {
             modalBody.innerHTML = '<div class="alert alert-danger mb-0">Impossible de charger le formulaire.</div>';
+            showErrorToast(e.message || 'Erreur de chargement.');
         }
     };
 
