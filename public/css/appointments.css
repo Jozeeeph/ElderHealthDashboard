@@ -499,6 +499,18 @@
     box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.2);
 }
 
+.modal-appointment .form-control.is-invalid,
+.modal-appointment .form-select.is-invalid {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.15);
+}
+
+.modal-appointment .form-control.is-valid,
+.modal-appointment .form-select.is-valid {
+    border-color: #198754;
+    box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.15);
+}
+
 .modal-appointment .invalid-feedback {
     font-size: 0.8rem;
     margin-top: 0.4rem;

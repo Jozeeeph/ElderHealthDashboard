@@ -54,6 +54,32 @@
             <div class="tab-content mt-3">
                 {# ---------------- RDV TAB ---------------- #}
                 <div class="tab-pane fade show active" id="rdv" role="tabpanel">
+                    <div class="card border-0 shadow-sm mb-3">
+                        <div class="card-body">
+                            <div class="row g-3 align-items-end">
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label small text-uppercase text-muted" for="rdv-filter-date">Date</label>
+                                    <input id="rdv-filter-date" class="form-control" type="date">
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label small text-uppercase text-muted" for="rdv-filter-etat">Etat</label>
+                                    <select id="rdv-filter-etat" class="form-select">
+                                        <option value="">Tous les etats</option>
+                                        <option value="PLANIFIE">Planifiee</option>
+                                        <option value="EN_COURS">En cours</option>
+                                        <option value="TERMINE">Terminee</option>
+                                        <option value="ANNULEE">Annulee</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 col-md-auto ms-md-auto d-flex justify-content-end">
+                                    <button class="btn btn-primary" type="button" onclick="loadModal('{{ path('appointment_new') }}', 'rdvModal')">
+                                        <i class="bi bi-plus-lg"></i>
+                                        Ajouter un RDV
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="card border-0">
                         <div class="card-header-appointments">
                             <h5>
@@ -90,7 +116,9 @@
                                         </thead>
                                         <tbody>
                                             {% for rdv in rendezVousList %}
-                                            <tr class="fade-in">
+                                            <tr class="fade-in"
+                                                data-date="{{ rdv.date|date('Y-m-d') }}"
+                                                data-etat="{{ rdv.etat|upper }}">
                                                 
                                                 <td>{{ rdv.date|date('d/m/Y') }}</td>
                                                 <td>
@@ -118,8 +146,10 @@
                                                 </td>
                                                 <td>
                                                     {% set etatClass = {
+                                                        'PLANIFIE': 'status-planifiee',
                                                         'PLANIFIEE': 'status-planifiee',
                                                         'EN_COURS': 'status-en_cours',
+                                                        'TERMINE': 'status-terminee',
                                                         'TERMINEE': 'status-terminee',
                                                         'ANNULEE': 'status-annulee'
                                                     } %}
@@ -156,6 +186,22 @@
 
                 {# ---------------- TYPES TAB ---------------- #}
                 <div class="tab-pane fade" id="types" role="tabpanel">
+                    <div class="card border-0 shadow-sm mb-3">
+                        <div class="card-body">
+                            <div class="row g-3 align-items-end">
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label small text-uppercase text-muted" for="type-filter-text">Type</label>
+                                    <input id="type-filter-text" class="form-control" type="text" placeholder="Rechercher un type">
+                                </div>
+                                <div class="col-12 col-md-auto ms-md-auto d-flex justify-content-end">
+                                    <button class="btn btn-warning" type="button" onclick="loadModal('{{ path('appointment_type_new') }}', 'typeModal')">
+                                        <i class="bi bi-plus-lg"></i>
+                                        Ajouter un Type
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="card border-0">
                         <div class="card-header-appointments">
                             <h5>
@@ -188,7 +234,7 @@
                                         </thead>
                                         <tbody>
                                             {% for type in typesRendezVous %}
-                                            <tr class="fade-in">
+                                            <tr class="fade-in" data-type="{{ type.type|lower }}">
                                                 
                                                 <td>
                                                     <span class="badge bg-warning text-dark">
@@ -328,6 +374,9 @@
                     $('#' + modalId + ' form').on('submit', function(e) {
                         e.preventDefault();
                         var form = $(this);
+                        if (!validateAppointmentForm(form)) {
+                            return;
+                        }
                         var submitBtn = form.find('button[type="submit"]');
                         
                         // Désactiver le bouton pendant l'envoi
@@ -386,6 +435,35 @@
                 $(this).css('animation-delay', (i * 0.05) + 's');
             });
             
+
+            function applyRdvFilters() {
+                var dateVal = $('#rdv-filter-date').val() || '';
+                var etatVal = ($('#rdv-filter-etat').val() || '').toUpperCase();
+
+                $('#rdv tbody tr').each(function() {
+                    var row = $(this);
+                    var rowDate = (row.data('date') || '').toString();
+                    var rowEtat = (row.data('etat') || '').toString().toUpperCase();
+
+                    var matchDate = !dateVal || rowDate === dateVal;
+                    var matchEtat = !etatVal || rowEtat === etatVal;
+
+                    row.toggle(matchDate && matchEtat);
+                });
+            }
+
+            function applyTypeFilters() {
+                var typeVal = ($('#type-filter-text').val() || '').toLowerCase().trim();
+                $('#types tbody tr').each(function() {
+                    var row = $(this);
+                    var rowType = (row.data('type') || '').toString();
+                    var matchType = !typeVal || rowType.indexOf(typeVal) !== -1;
+                    row.toggle(matchType);
+                });
+            }
+
+            $('#rdv-filter-date, #rdv-filter-etat').on('input change', applyRdvFilters);
+            $('#type-filter-text').on('input', applyTypeFilters);
             // Delete confirmation modal
             $('.js-delete').on('click', function(e) {
                 e.preventDefault();
@@ -407,8 +485,113 @@
             });
             console.log("Gestion des rendez-vous - Interface chargée");
         });
+
+        function clearValidation(form) {
+            form.find('.is-invalid, .is-valid').removeClass('is-invalid is-valid');
+            form.find('.invalid-feedback.dynamic').remove();
+        }
+
+        function setFieldError(field, message) {
+            field.addClass('is-invalid');
+            var feedback = $('<div class="invalid-feedback dynamic"></div>').text(message);
+            field.closest('.mb-3, .col-md-6, .col-md-12, .col-12').append(feedback);
+        }
+
+        function setFieldValid(field) {
+            field.addClass('is-valid');
+        }
+
+        function validateAppointmentForm(form) {
+            clearValidation(form);
+
+            var isRdv = form.attr('id') === 'rdvForm';
+            var isType = form.attr('id') === 'typeForm';
+            var valid = true;
+
+            if (isRdv) {
+                var dateField = form.find('input[name$="[date]"]');
+                var heureField = form.find('input[name$="[heure]"]');
+                var lieuField = form.find('input[name$="[lieu]"]');
+                var typeField = form.find('select[name$="[typeRendezVous]"]');
+
+                if (!dateField.val()) {
+                    setFieldError(dateField, 'La date est obligatoire.');
+                    valid = false;
+                } else {
+                    setFieldValid(dateField);
+                }
+
+                if (!heureField.val()) {
+                    setFieldError(heureField, 'L heure est obligatoire.');
+                    valid = false;
+                } else {
+                    setFieldValid(heureField);
+                }
+
+                var lieuVal = (lieuField.val() || '').trim();
+                if (!lieuVal) {
+                    setFieldError(lieuField, 'Le lieu est obligatoire.');
+                    valid = false;
+                } else if (lieuVal.length < 2 || lieuVal.length > 255) {
+                    setFieldError(lieuField, 'Le lieu doit contenir entre 2 et 255 caracteres.');
+                    valid = false;
+                } else {
+                    setFieldValid(lieuField);
+                }
+
+                if (!typeField.val()) {
+                    setFieldError(typeField, 'Le type de rendez-vous est obligatoire.');
+                    valid = false;
+                } else {
+                    setFieldValid(typeField);
+                }
+            }
+
+            if (isType) {
+                var typeText = form.find('input[name$="[type]"]');
+                var tarifField = form.find('input[name$="[tarif]"]');
+                var dureeField = form.find('input[name$="[duree]"]');
+
+                var typeVal = (typeText.val() || '').trim();
+                if (!typeVal) {
+                    setFieldError(typeText, 'Le type est obligatoire.');
+                    valid = false;
+                } else if (typeVal.length < 2 || typeVal.length > 200) {
+                    setFieldError(typeText, 'Le type doit contenir entre 2 et 200 caracteres.');
+                    valid = false;
+                } else {
+                    setFieldValid(typeText);
+                }
+
+                var tarifVal = (tarifField.val() || '').trim();
+                if (!tarifVal) {
+                    setFieldError(tarifField, 'Le tarif est obligatoire.');
+                    valid = false;
+                } else if (isNaN(tarifVal)) {
+                    setFieldError(tarifField, 'Le tarif doit etre numerique.');
+                    valid = false;
+                } else if (Number(tarifVal) < 0 || Number(tarifVal) > 10000) {
+                    setFieldError(tarifField, 'Le tarif doit etre entre 0 et 10000.');
+                    valid = false;
+                } else {
+                    setFieldValid(tarifField);
+                }
+
+                var dureeVal = (dureeField.val() || '').trim();
+                if (!dureeVal) {
+                    setFieldError(dureeField, 'La duree est obligatoire.');
+                    valid = false;
+                } else {
+                    setFieldValid(dureeField);
+                }
+            }
+
+            return valid;
+        }
     </script>
 {% endblock %}
+
+
 
 
 

@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\TypeRendezVous;
 use App\Entity\RendezVous;
+use App\Entity\Utilisateur;
 use App\Service\RendezVousEtatService;
 use App\Form\TypeRendezVousType;
 use App\Form\GestionRendezVous;
@@ -40,6 +41,10 @@ class AppointmentController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $admin = $this->getUser();
+            if ($admin instanceof Utilisateur) {
+                $rdv->setAdmin($admin);
+            }
             $em->persist($rdv);
             $em->flush();
 
@@ -74,6 +79,10 @@ class AppointmentController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $admin = $this->getUser();
+            if ($admin instanceof Utilisateur) {
+                $type->setAdmin($admin);
+            }
             $em->persist($type);
             $em->flush();
 
