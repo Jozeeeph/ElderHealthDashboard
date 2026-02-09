@@ -1,5 +1,6 @@
 {% block stylesheets %}
-	<link rel="stylesheet" href="{{ asset('css/patient.css') }}">
+	<link rel="stylesheet" href="{{ asset('css/patient.css') }}?v=2">
+
 {% endblock %}
 
 {% block body %}
@@ -14,120 +15,132 @@
 				<!-- BRAND -->
 				<a href="{{ path('app_public_site') }}" class="brand">
 					<img src="{{ asset('img/logo.png') }}" alt="Elder HealthCare">
-					<span>Elder<span>HealthCare</span>
+					<span class="brand-text">
+						<span class="fw-bold text-primary">Elder</span>
+						<span class="fw-bold text-warning ms-1">HealthCare</span>
 					</span>
-				</a>
+				</span>
+			</a>
 
-				<!-- NAV -->
-				<nav class="top-nav">
-					<a class="active">Accueil</a>
-					<a>Rendez-vous</a>
-					<a>Documents</a>
-					<a>Messages</a>
-					<a>Alertes</a>
-				</nav>
+			<!-- NAV -->
+			<nav class="top-nav">
+				<a class="active">Accueil</a>
+				<a>Rendez-vous</a>
+				<a>Consultation</a>
+				<a href="{{ path('equipment_list_index') }}">Equipement</a>
+				<a href="{{ path('forum_post_forum_index') }}">Forum</a>
+				<a href="{{ path('front_events_index') }}">Événements</a>
+				<a>Messages</a>
+				<a>Alertes</a>
+			</nav>
 
-				<!-- PROFILE -->
-				<div class="profile">
-					<img src="{{ asset('img/home.jpg') }}" alt="Profil">
-					<strong>Fatma</strong>
-				</div>
-
+			<!-- PROFILE -->
+			<div class="profile">
+				<img src="{{ asset('img/home.jpg') }}" alt="Profil">
+				<strong>Fatma</strong>
 			</div>
-		</header>
 
-		<!-- MAIN -->
-		<main
-			class="patient-main">
+		</div>
+	</header>
 
-			<!-- WELCOME -->
-			<section class="welcome-card">
-				<div class="welcome-content">
-					<h1>
-						Bonjour
-						{{ patientName|default('Fatma') }}
-						<span class="wave">👋</span>
-					</h1>
+	<!-- MAIN -->
+	<main
+		class="patient-main">
 
-					<p>
-						Bienvenue dans votre espace santé.  
-												      Gérez vos rendez-vous, documents médicaux et messages en toute simplicité.
-					</p>
+		<!-- WELCOME -->
+		<section class="welcome-card">
+			<div class="welcome-content">
+				<h1>
+					Bonjour
+					{{ patientName|default('Fatma') }}
+					<span class="wave">👋</span>
+				</h1>
 
-					<div class="actions">
-						<a href="#" class="btn primary">Prendre rendez-vous</a>
-						<a href="#" class="btn ghost">Contacter médecin</a>
-						<a href="#" class="btn ghost">Mettre à jour profil</a>
-					</div>
+				<p>
+					Bienvenue dans votre espace santé.  
+																							      Gérez vos rendez-vous, documents médicaux et messages en toute simplicité.
+				</p>
+
+				<div class="actions">
+					<a href="#" class="btn primary">Prendre rendez-vous</a>
+					<a href="#" class="btn ghost">Contacter médecin</a>
+					<a href="#" class="btn ghost">Mettre à jour profil</a>
 				</div>
-			</section>
+			</div>
+		</section>
 
 
-			<!-- STATS -->
-			<section class="stats">
-				<div class="stat-card">
-					<h3>Prochain RDV</h3>
-					<p>12 Février 2026 – 10:30</p>
-					<span class="tag ok">Confirmé</span>
-				</div>
+		<!-- STATS -->
+		<section class="stats">
+			<div class="stat-card">
+				<h3>Prochain RDV</h3>
+				<p>12 Février 2026 – 10:30</p>
+				<span class="tag ok">Confirmé</span>
+			</div>
 
-				<div class="stat-card">
-					<h3>Documents</h3>
-					<p>6 fichiers disponibles</p>
-					<span class="tag">PDF & Résultats</span>
-				</div>
+			<div class="stat-card">
+				<h3>Documents</h3>
+				<p>6 fichiers disponibles</p>
+				<span class="tag">PDF & Résultats</span>
+			</div>
 
-				<div class="stat-card">
-					<h3>Alertes</h3>
-					<p>1 notification</p>
-					<span class="tag warn">À vérifier</span>
-				</div>
-			</section>
+			<div class="stat-card">
+				<h3>Alertes</h3>
+				<p>1 notification</p>
+				<span class="tag warn">À vérifier</span>
+			</div>
+		</section>
 
-			<!-- CONTENT -->
-			<section class="content-grid">
+		<!-- CONTENT -->
+		<section class="content-grid">
 
-				<div class="card">
-					<h2>Notifications récentes</h2>
+			<div class="card">
+				<h2>Notifications récentes</h2>
 
-					<div class="item">
-						<strong>Rappel médicament</strong>
-						<p>Prendre votre traitement à 20h.</p>
-					</div>
-
-					<div class="item">
-						<strong>Nouveau document</strong>
-						<p>Résultat d’analyse ajouté.</p>
-					</div>
+				<div class="item">
+					<strong>Rappel médicament</strong>
+					<p>Prendre votre traitement à 20h.</p>
 				</div>
 
-				<div class="card">
-					<h2>Derniers documents</h2>
+				<div class="item">
+					<strong>Nouveau document</strong>
+					<p>Résultat d’analyse ajouté.</p>
+				</div>
+			</div>
 
-					<div class="item">
-						<strong>Ordonnance</strong>
-						<p>Ajoutée le 04/02</p>
-					</div>
+			<div class="card">
+				<h2>Derniers documents</h2>
 
-					<div class="item">
-						<strong>Analyse sanguine</strong>
-						<p>Ajoutée le 02/02</p>
-					</div>
+				<div class="item">
+					<strong>Ordonnance</strong>
+					<p>Ajoutée le 04/02</p>
 				</div>
 
-				<div class="card">
-					<h2>Messages</h2>
+				<div class="item">
+					<strong>Analyse sanguine</strong>
+					<p>Ajoutée le 02/02</p>
+				</div>
+			</div>
 
-					<div class="item">
-						<strong>Dr. Amina Trabelsi</strong>
-						<p>Vos résultats sont rassurants.</p>
-					</div>
+			<div class="card">
+				<h2>Messages</h2>
 
-					<a href="#" class="btn primary full">Nouveau message</a>
+				<div class="item">
+					<strong>Dr. Amina Trabelsi</strong>
+					<p>Vos résultats sont rassurants.</p>
 				</div>
 
-			</section>
+				<a href="#" class="btn primary full">Nouveau message</a>
+			</div>
 
-		</main>
-	</div>
-{% endblock %}
+		</section>
+
+	</main>
+</div>
+
+ <script>
+	  window.addEventListener('scroll', () => {
+	    document.querySelector('.topbar')
+	      ?.classList.toggle('is-scrolled', window.scrollY > 10);
+	  });
+	</script>{% endblock %}
