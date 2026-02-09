@@ -18,7 +18,7 @@ class Participation
     private ?\DateTimeImmutable $dateInscription = null;
 
     #[ORM\Column(length: 30)]
-    private ?string $statut = null;
+    private string $statut = 'INSCRIT';
 
     #[ORM\Column(nullable: true)]
     private ?bool $presence = null;
