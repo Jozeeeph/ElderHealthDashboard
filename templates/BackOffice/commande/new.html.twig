@@ -1,0 +1,208 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% if commande.id %}Modifier{% else %}Nouvelle{% endif %} Commande{% endblock %}
+
+{% block body %}
+<style>
+    .commande-form-page {
+        --ink: #1e2a2f;
+        --muted: #6c7a80;
+        --brand: #6f42c1;
+        --brand-2: #9d6de9;
+        --bg: #f9f7fc;
+        --card: #ffffff;
+        background-color: var(--bg);
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .commande-header {
+        background: linear-gradient(135deg, #f3e8ff 0%, #eef2ff 100%);
+        border-radius: 18px 28px 18px 28px;
+        padding: 24px 28px;
+        border: 1px solid #e9d8fd;
+        margin-bottom: 24px;
+    }
+
+    .commande-title {
+        color: var(--ink);
+        font-weight: 700;
+        font-size: 1.75rem;
+        margin-bottom: 8px;
+    }
+
+    .form-card {
+        background: var(--card);
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        border: 1px solid #e9ecef;
+    }
+
+    .form-label {
+        color: var(--ink);
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .form-control, .form-select {
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        padding: 10px 15px;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--brand);
+        box-shadow: 0 0 0 0.25rem rgba(111, 66, 193, 0.25);
+    }
+
+    .btn-submit {
+        background: linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 100%);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.2s ease;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(111, 66, 193, 0.3);
+    }
+</style>
+
+<div class="commande-form-page">
+    <!-- Header -->
+    <div class="commande-header d-flex align-items-center justify-content-between">
+        <div>
+            <h1 class="commande-title">
+                {% if commande.id %}
+                    <i class="bi bi-pencil me-2"></i>Modifier la commande
+                {% else %}
+                    <i class="bi bi-plus-circle me-2"></i>Nouvelle commande
+                {% endif %}
+            </h1>
+            <div class="text-muted">
+                {% if commande.id %}
+                    Numéro: {{ commande.numero }}
+                {% else %}
+                    Création d'une nouvelle commande
+                {% endif %}
+            </div>
+        </div>
+        <div>
+            <a href="{{ path('commande_index') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Retour
+            </a>
+        </div>
+    </div>
+
+    <!-- Form -->
+    <div class="form-card">
+        {{ form_start(form) }}
+            <div class="row">
+                <!-- Colonne gauche -->
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        {{ form_label(form.utilisateur, 'Client', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.utilisateur, {'attr': {'class': 'form-select'}}) }}
+                        <div class="form-error">
+                            {{ form_errors(form.utilisateur) }}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.equipements, 'Équipements', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.equipements, {'attr': {'class': 'form-select'}}) }}
+                        <div class="form-error">
+                            {{ form_errors(form.equipements) }}
+                        </div>
+                        <small class="text-muted">Maintenez Ctrl (Cmd sur Mac) pour sélectionner plusieurs équipements</small>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.statut, 'Statut', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.statut, {'attr': {'class': 'form-select'}}) }}
+                        <div class="form-error">
+                            {{ form_errors(form.statut) }}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.methodePaiement, 'Méthode de paiement', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.methodePaiement, {'attr': {'class': 'form-select'}}) }}
+                        <div class="form-error">
+                            {{ form_errors(form.methodePaiement) }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Colonne droite -->
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        {{ form_label(form.adresseLivraison, 'Adresse de livraison', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.adresseLivraison, {'attr': {'class': 'form-control', 'placeholder': 'Adresse complète'}}) }}
+                        <div class="form-error">
+                            {{ form_errors(form.adresseLivraison) }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form_label(form.telephone, 'Téléphone', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.telephone, {'attr': {'class': 'form-control', 'placeholder': 'Numéro de téléphone'}}) }}
+                            <div class="form-error">
+                                {{ form_errors(form.telephone) }}
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            {{ form_label(form.email, 'Email', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.email, {'attr': {'class': 'form-control', 'placeholder': 'Email de contact'}}) }}
+                            <div class="form-error">
+                                {{ form_errors(form.email) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.remarques, 'Remarques', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.remarques, {'attr': {'class': 'form-control', 'rows': 4, 'placeholder': 'Remarques supplémentaires...'}}) }}
+                        <div class="form-error">
+                            {{ form_errors(form.remarques) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4 pt-3 border-top">
+                <a href="{{ path('commande_index') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-x-circle me-1"></i> Annuler
+                </a>
+                <button type="submit" class="btn btn-submit">
+                    {% if commande.id %}
+                        <i class="bi bi-check-circle me-1"></i> Mettre à jour
+                    {% else %}
+                        <i class="bi bi-plus-circle me-1"></i> Créer la commande
+                    {% endif %}
+                </button>
+            </div>
+        {{ form_end(form) }}
+    </div>
+</div>
+
+<!-- JavaScript pour améliorer le select multiple -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const equipementsSelect = document.querySelector('select[name="commande[equipements][]"]');
+        
+        if (equipementsSelect) {
+            // Ajouter une recherche sur le select multiple
+            equipementsSelect.setAttribute('data-search', 'true');
+            equipementsSelect.style.minHeight = '150px';
+        }
+    });
+</script>
+{% endblock %}

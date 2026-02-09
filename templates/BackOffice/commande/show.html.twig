@@ -1,0 +1,280 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Commande {{ commande.numero }}{% endblock %}
+
+{% block body %}
+<style>
+    .commande-detail-page {
+        --ink: #1e2a2f;
+        --muted: #6c7a80;
+        --bg: #f9f7fc;
+        --card: #ffffff;
+        background-color: var(--bg);
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .commande-header {
+        background: linear-gradient(135deg, #f3e8ff 0%, #eef2ff 100%);
+        border-radius: 18px 28px 18px 28px;
+        padding: 24px 28px;
+        border: 1px solid #e9d8fd;
+        margin-bottom: 24px;
+    }
+
+    .commande-title {
+        color: var(--ink);
+        font-weight: 700;
+        font-size: 1.75rem;
+        margin-bottom: 8px;
+    }
+
+    .info-card {
+        background: var(--card);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        border: 1px solid #e9ecef;
+    }
+
+    .info-label {
+        color: var(--muted);
+        font-size: 0.9rem;
+        margin-bottom: 4px;
+    }
+
+    .info-value {
+        color: var(--ink);
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    .equipement-item {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 10px;
+        border: 1px solid #e9ecef;
+    }
+
+    .equipement-image {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    .statut-select {
+        max-width: 200px;
+    }
+</style>
+
+<div class="commande-detail-page">
+    <!-- Header -->
+    <div class="commande-header d-flex align-items-center justify-content-between">
+        <div>
+            <h1 class="commande-title">Commande {{ commande.numero }}</h1>
+            <div class="text-muted">Créée le {{ commande.dateCommande|date('d/m/Y à H:i') }}</div>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{{ path('commande_index') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Retour
+            </a>
+            <a href="{{ path('commande_edit', {'id': commande.id}) }}" class="btn btn-warning">
+                <i class="bi bi-pencil me-1"></i> Modifier
+            </a>
+        </div>
+    </div>
+
+    <!-- Flash Messages -->
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i>{{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+
+    <div class="row">
+        <!-- Informations de la commande -->
+        <div class="col-md-8">
+            <div class="info-card">
+                <h5 class="mb-4"><i class="bi bi-info-circle me-2"></i>Informations de la commande</h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="info-label">Numéro de commande</div>
+                        <div class="info-value">{{ commande.numero }}</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="info-label">Date de commande</div>
+                        <div class="info-value">{{ commande.dateCommande|date('d/m/Y H:i') }}</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="info-label">Client</div>
+                        <div class="info-value">{{ commande.utilisateur.email }}</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="info-label">Statut</div>
+                        <div class="info-value">
+                            <span class="badge 
+                                {% if commande.statut == 'en_attente' %}bg-warning
+                                {% elseif commande.statut == 'confirmee' %}bg-info
+                                {% elseif commande.statut == 'expediee' %}bg-primary
+                                {% elseif commande.statut == 'livree' %}bg-success
+                                {% else %}bg-danger{% endif %}">
+                                {% if commande.statut == 'en_attente' %}En attente
+                                {% elseif commande.statut == 'confirmee' %}Confirmée
+                                {% elseif commande.statut == 'expediee' %}Expédiée
+                                {% elseif commande.statut == 'livree' %}Livrée
+                                {% else %}Annulée{% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Équipements commandés -->
+            <div class="info-card">
+                <h5 class="mb-4">
+                    <i class="bi bi-box me-2"></i>Équipements commandés
+                    <span class="badge bg-secondary">{{ commande.equipements|length }}</span>
+                </h5>
+                
+                {% if commande.equipements|length > 0 %}
+                    <div class="row">
+                        {% for equipement in commande.equipements %}
+                            <div class="col-md-6 mb-3">
+                                <div class="equipement-item">
+                                    <div class="d-flex align-items-center">
+                                        {% if equipement.image %}
+                                            <img src="{{ asset('uploads/images/' ~ equipement.image) }}" 
+                                                 alt="{{ equipement.nom }}" 
+                                                 class="equipement-image me-3">
+                                        {% else %}
+                                            <div class="bg-secondary text-white d-flex align-items-center justify-content-center me-3 equipement-image">
+                                                <i class="bi bi-image"></i>
+                                            </div>
+                                        {% endif %}
+                                        <div>
+                                            <div class="fw-bold">{{ equipement.nom }}</div>
+                                            <div class="text-muted small">{{ equipement.categorie }}</div>
+                                            <div class="text-primary fw-bold">{{ equipement.prix }} DT</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mt-3 pt-3 border-top">
+                        <div class="d-flex justify-content-between">
+                            <div class="info-label">Total de la commande</div>
+                            <div class="info-value h4 text-primary">{{ commande.montantTotal }} DT</div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted py-3">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        Aucun équipement dans cette commande
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Actions et informations complémentaires -->
+        <div class="col-md-4">
+            <!-- Changement de statut -->
+            <div class="info-card">
+                <h5 class="mb-4"><i class="bi bi-arrow-repeat me-2"></i>Changer le statut</h5>
+                <form method="post" action="{{ path('commande_update_statut', {'id': commande.id}) }}">
+                    <div class="mb-3">
+                        <select name="statut" class="form-select statut-select">
+                            <option value="en_attente" {% if commande.statut == 'en_attente' %}selected{% endif %}>En attente</option>
+                            <option value="confirmee" {% if commande.statut == 'confirmee' %}selected{% endif %}>Confirmée</option>
+                            <option value="expediee" {% if commande.statut == 'expediee' %}selected{% endif %}>Expédiée</option>
+                            <option value="livree" {% if commande.statut == 'livree' %}selected{% endif %}>Livrée</option>
+                            <option value="annulee" {% if commande.statut == 'annulee' %}selected{% endif %}>Annulée</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-check-circle me-1"></i> Mettre à jour
+                    </button>
+                </form>
+            </div>
+
+            <!-- Informations de livraison -->
+            <div class="info-card">
+                <h5 class="mb-4"><i class="bi bi-truck me-2"></i>Livraison</h5>
+                <div class="mb-3">
+                    <div class="info-label">Adresse</div>
+                    <div class="info-value">
+                        {% if commande.adresseLivraison %}
+                            {{ commande.adresseLivraison }}
+                        {% else %}
+                            <span class="text-muted">Non spécifiée</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="info-label">Date de livraison estimée</div>
+                    <div class="info-value">
+                        {% if commande.dateLivraison %}
+                            {{ commande.dateLivraison|date('d/m/Y') }}
+                        {% else %}
+                            <span class="text-muted">Non définie</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="info-label">Méthode de paiement</div>
+                    <div class="info-value">
+                        {% if commande.methodePaiement %}
+                            {% if commande.methodePaiement == 'carte' %}Carte bancaire
+                            {% elseif commande.methodePaiement == 'espece' %}Espèces
+                            {% elseif commande.methodePaiement == 'virement' %}Virement bancaire
+                            {% else %}{{ commande.methodePaiement }}{% endif %}
+                        {% else %}
+                            <span class="text-muted">Non spécifiée</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact -->
+            <div class="info-card">
+                <h5 class="mb-4"><i class="bi bi-telephone me-2"></i>Contact</h5>
+                <div class="mb-3">
+                    <div class="info-label">Téléphone</div>
+                    <div class="info-value">
+                        {% if commande.telephone %}
+                            {{ commande.telephone }}
+                        {% else %}
+                            <span class="text-muted">Non spécifié</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="info-label">Email</div>
+                    <div class="info-value">
+                        {% if commande.email %}
+                            {{ commande.email }}
+                        {% else %}
+                            {{ commande.utilisateur.email }}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Remarques -->
+    {% if commande.remarques %}
+        <div class="info-card mt-3">
+            <h5 class="mb-4"><i class="bi bi-chat-text me-2"></i>Remarques</h5>
+            <div class="p-3 bg-light rounded">
+                {{ commande.remarques|nl2br }}
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

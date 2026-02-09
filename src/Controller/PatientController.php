@@ -13,6 +13,15 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class PatientController extends AbstractController
 {
+
+    #[Route('/patient', name: 'app_patient_interfce')]
+    public function patientDashboard(): Response
+    {
+        return $this->render('FrontOffice/patient/index.html.twig');
+    }
+
+
+
     #[Route('/patient/{id}/upload-dossier', name: 'patient_upload_dossier', methods: ['POST'])]
     public function uploadDossier(
         int $id,

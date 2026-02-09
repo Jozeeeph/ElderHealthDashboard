@@ -77,7 +77,7 @@
                                     <table class="table appointments-table">
                                         <thead>
                                             <tr>
-                                                <th><i class="bi bi-hash"></i> ID</th>
+                                                
                                                 <th><i class="bi bi-calendar"></i> Date</th>
                                                 <th><i class="bi bi-clock"></i> Heure</th>
                                                 <th><i class="bi bi-geo-alt"></i> Lieu</th>
@@ -89,7 +89,7 @@
                                         <tbody>
                                             {% for rdv in rendezVousList %}
                                             <tr class="fade-in">
-                                                <td><strong>#{{ rdv.id }}</strong></td>
+                                                
                                                 <td>{{ rdv.date|date('d/m/Y') }}</td>
                                                 <td>
                                                     <span class="badge bg-light text-dark">
@@ -167,7 +167,7 @@
                                     <table class="table appointments-table">
                                         <thead>
                                             <tr>
-                                                <th><i class="bi bi-hash"></i> ID</th>
+                                               
                                                 <th><i class="bi bi-tag"></i> Type</th>
                                                 <th><i class="bi bi-cash"></i> Tarif</th>
                                                 <th><i class="bi bi-clock-history"></i> Durée</th>
@@ -177,7 +177,7 @@
                                         <tbody>
                                             {% for type in typesRendezVous %}
                                             <tr class="fade-in">
-                                                <td><strong>#{{ type.id }}</strong></td>
+                                                
                                                 <td>
                                                     <span class="badge bg-warning text-dark">
                                                         <i class="bi bi-tag-fill me-1"></i>

@@ -1,12 +1,253 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Gestion{% endblock %}
+{% block title %}Gestion des Équipements Médicaux{% endblock %}
 
 {% block body %}
-  <div class="p-4">
-    <h2 class="mb-3">Gestion</h2>
-    <div class="alert alert-success mb-0">
-      {{ message }}
+<style>
+    .equipement-page {
+        --ink: #1e2a2f;
+        --muted: #6c7a80;
+        --brand: #0e8aa7;
+        --brand-2: #2bbf9f;
+        --bg: #f4f7f8;
+        --card: #ffffff;
+        background-color: var(--bg);
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .equipement-header {
+        background: linear-gradient(135deg, #e8f6f9 0%, #eef8f4 100%);
+        border-radius: 18px 28px 18px 28px;
+        padding: 24px 28px;
+        border: 1px solid #e2eef1;
+        margin-bottom: 24px;
+    }
+
+    .equipement-title {
+        color: var(--ink);
+        font-weight: 700;
+        font-size: 1.75rem;
+        margin-bottom: 8px;
+        letter-spacing: 0.2px;
+    }
+
+    .equipement-subtitle {
+        color: var(--muted);
+        font-size: 0.95rem;
+    }
+
+    .equipement-btn {
+        background: linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 100%);
+        color: white;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+        box-shadow: 0 8px 18px rgba(14, 138, 167, 0.25);
+    }
+
+    .equipement-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 12px 22px rgba(14, 138, 167, 0.3);
+        filter: brightness(0.98);
+    }
+
+    .commandes-btn {
+        background: linear-gradient(135deg, #6f42c1 0%, #9d6de9 100%);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+        box-shadow: 0 8px 18px rgba(111, 66, 193, 0.25);
+    }
+
+    .commandes-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 12px 22px rgba(111, 66, 193, 0.3);
+        filter: brightness(0.98);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--muted);
+        background: var(--card);
+        border-radius: 18px;
+        border: 2px dashed #e2eef1;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 20px;
+        color: #d6e4ea;
+    }
+
+    /* Style pour les erreurs Symfony */
+    .form-error-message {
+        color: #dc3545;
+        font-size: 0.875em;
+        margin-top: 0.25rem;
+    }
+</style>
+
+<div class="equipement-page">
+    <!-- Header -->
+    <div class="equipement-header d-flex align-items-center justify-content-between">
+        <div>
+            <h1 class="equipement-title">Gestion des Équipements Médicaux</h1>
+            <div class="equipement-subtitle">Vue rapide des équipements et leur disponibilité</div>
+        </div>
+        <div class="d-flex gap-2">
+            <!-- Bouton pour les commandes -->
+            <a href="{{ path('commande_index') }}" class="btn commandes-btn">
+                <i class="bi bi-cart me-1"></i> Voir les Commandes
+            </a>
+            
+            <!-- Bouton pour ajouter un équipement -->
+            <a href="{{ path('equipment_new') }}" class="btn equipement-btn">
+                <i class="bi bi-plus-circle me-1"></i> Nouvel équipement
+            </a>
+        </div>
     </div>
-  </div>
+
+    <!-- Flash Messages -->
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i>{{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i>{{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+
+    <!-- Equipment List -->
+    {% if equipements|length > 0 %}
+        <div class="card shadow">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Image</th>
+                                <th>Nom</th>
+                                <th>Catégorie</th>
+                                <th>Prix</th>
+                                <th>Quantité</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for equipement in equipements %}
+                                <tr>
+                                    <td>{{ equipement.id }}</td>
+                                    <td>
+                                        {% if equipement.image %}
+                                            <img src="{{ asset('uploads/images/' ~ equipement.image) }}" 
+                                                 alt="{{ equipement.nom }}" 
+                                                 class="img-thumbnail" 
+                                                 style="width: 50px; height: 50px; object-fit: cover;">
+                                        {% else %}
+                                            <div class="bg-secondary text-white d-flex align-items-center justify-content-center" 
+                                                 style="width: 50px; height: 50px;">
+                                                <i class="bi bi-image"></i>
+                                            </div>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ equipement.nom }}</td>
+                                    <td>
+                                        {% if equipement.categorie %}
+                                            <span class="badge bg-info">{{ equipement.categorie }}</span>
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ equipement.prix }} DT</td>
+                                    <td>{{ equipement.quantiteDisponible }}</td>
+                                    <td>
+                                        {% if equipement.statut == 'disponible' %}
+                                            <span class="badge bg-success">Disponible</span>
+                                        {% elseif equipement.statut == 'en_rupture' %}
+                                            <span class="badge bg-danger">En rupture</span>
+                                        {% else %}
+                                            <span class="badge bg-warning">En maintenance</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <!-- VIEW button -->
+                                            <button type="button" class="btn btn-sm btn-info" 
+                                                    data-bs-toggle="popover" 
+                                                    data-bs-html="true"
+                                                    data-bs-title="Détails de: {{ equipement.nom }}"
+                                                    data-bs-content="
+                                                        <strong>ID:</strong> {{ equipement.id }}<br>
+                                                        <strong>Nom:</strong> {{ equipement.nom }}<br>
+                                                        <strong>Catégorie:</strong> {{ equipement.categorie ? equipement.categorie : 'Non définie' }}<br>
+                                                        <strong>Prix:</strong> {{ equipement.prix }} DT<br>
+                                                        <strong>Quantité:</strong> {{ equipement.quantiteDisponible }}<br>
+                                                        <strong>Statut:</strong> {{ equipement.statut }}<br>
+                                                        <strong>Description:</strong> {{ equipement.description ? equipement.description : 'Aucune' }}
+                                                    "
+                                                    title="Voir">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                            
+                                            <!-- EDIT button -->
+                                            <a href="{{ path('equipment_edit', {'id': equipement.id}) }}" 
+                                               class="btn btn-sm btn-warning" title="Modifier">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            
+                                            <!-- DELETE button -->
+                                            <form method="post" 
+                                                  action="{{ path('equipment_delete', {'id': equipement.id}) }}" 
+                                                  style="display: inline;"
+                                                  onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet équipement ?');">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ equipement.id) }}">
+                                                <button type="submit" class="btn btn-sm btn-danger" title="Supprimer">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <i class="bi bi-clipboard-x"></i>
+            <h4 class="mb-2">Aucun équipement trouvé</h4>
+            <p class="mb-3">Commencez par ajouter votre premier équipement.</p>
+            <a href="{{ path('equipment_new') }}" class="btn equipement-btn">
+                <i class="bi bi-plus-circle me-1"></i> Ajouter un équipement
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<!-- JavaScript -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Bootstrap popovers
+        const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
+        const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl));
+    });
+</script>
 {% endblock %}

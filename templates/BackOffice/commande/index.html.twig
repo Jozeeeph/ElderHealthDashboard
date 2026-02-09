@@ -1,0 +1,265 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des Commandes{% endblock %}
+
+{% block body %}
+<style>
+    .commande-page {
+        --ink: #1e2a2f;
+        --muted: #6c7a80;
+        --brand: #6f42c1;
+        --brand-2: #9d6de9;
+        --bg: #f9f7fc;
+        --card: #ffffff;
+        background-color: var(--bg);
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .commande-header {
+        background: linear-gradient(135deg, #f3e8ff 0%, #eef2ff 100%);
+        border-radius: 18px 28px 18px 28px;
+        padding: 24px 28px;
+        border: 1px solid #e9d8fd;
+        margin-bottom: 24px;
+    }
+
+    .commande-title {
+        color: var(--ink);
+        font-weight: 700;
+        font-size: 1.75rem;
+        margin-bottom: 8px;
+        letter-spacing: 0.2px;
+    }
+
+    .commande-subtitle {
+        color: var(--muted);
+        font-size: 0.95rem;
+    }
+
+    .commande-btn {
+        background: linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 100%);
+        color: white;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+        box-shadow: 0 8px 18px rgba(111, 66, 193, 0.25);
+    }
+
+    .commande-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 12px 22px rgba(111, 66, 193, 0.3);
+        filter: brightness(0.98);
+    }
+
+    .statut-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .statut-en_attente {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
+    .statut-confirmee {
+        background-color: #d1ecf1;
+        color: #0c5460;
+    }
+
+    .statut-expediee {
+        background-color: #cce5ff;
+        color: #004085;
+    }
+
+    .statut-livree {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .statut-annulee {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    .equipement-count {
+        background-color: #e9ecef;
+        color: #495057;
+        border-radius: 12px;
+        padding: 4px 10px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+</style>
+
+<div class="commande-page">
+    <!-- Header -->
+    <div class="commande-header d-flex align-items-center justify-content-between">
+        <div>
+            <h1 class="commande-title">Gestion des Commandes</h1>
+            <div class="commande-subtitle">Suivi et gestion des commandes d'équipements médicaux</div>
+        </div>
+        <div>
+            <a href="{{ path('commande_new') }}" class="btn commande-btn">
+                <i class="bi bi-plus-circle me-1"></i> Nouvelle commande
+            </a>
+        </div>
+    </div>
+
+    <!-- Flash Messages -->
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i>{{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i>{{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+
+    <!-- Statistiques -->
+    <div class="row mb-4">
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card border-start border-warning border-4">
+                <div class="card-body">
+                    <h6 class="text-muted">En attente</h6>
+                    <h4>{{ commandes|filter(c => c.statut == 'en_attente')|length }}</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card border-start border-info border-4">
+                <div class="card-body">
+                    <h6 class="text-muted">Confirmées</h6>
+                    <h4>{{ commandes|filter(c => c.statut == 'confirmee')|length }}</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card border-start border-primary border-4">
+                <div class="card-body">
+                    <h6 class="text-muted">Expédiées</h6>
+                    <h4>{{ commandes|filter(c => c.statut == 'expediee')|length }}</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card border-start border-success border-4">
+                <div class="card-body">
+                    <h6 class="text-muted">Livrées</h6>
+                    <h4>{{ commandes|filter(c => c.statut == 'livree')|length }}</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Liste des commandes -->
+    <div class="card shadow">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Numéro</th>
+                            <th>Date</th>
+                            <th>Client</th>
+                            <th>Équipements</th>
+                            <th>Total</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for commande in commandes|sort((a, b) => b.dateCommande <=> a.dateCommande) %}
+                            <tr>
+                                <td><strong>{{ commande.numero }}</strong></td>
+                                <td>{{ commande.dateCommande|date('d/m/Y H:i') }}</td>
+                                <td>{{ commande.utilisateur.email }}</td>
+                                <td>
+                                    <span class="equipement-count">{{ commande.equipements|length }}</span>
+                                    {% if commande.equipements|length > 0 %}
+                                        <div class="mt-1">
+                                            {% for equipement in commande.equipements|slice(0, 2) %}
+                                                <small class="badge bg-light text-dark me-1">{{ equipement.nom }}</small>
+                                            {% endfor %}
+                                            {% if commande.equipements|length > 2 %}
+                                                <small class="text-muted">+{{ commande.equipements|length - 2 }} autres</small>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                </td>
+                                <td>{{ commande.montantTotal }} DT</td>
+                                <td>
+                                    <span class="statut-badge statut-{{ commande.statut }}">
+                                        {% if commande.statut == 'en_attente' %}
+                                            En attente
+                                        {% elseif commande.statut == 'confirmee' %}
+                                            Confirmée
+                                        {% elseif commande.statut == 'expediee' %}
+                                            Expédiée
+                                        {% elseif commande.statut == 'livree' %}
+                                            Livrée
+                                        {% else %}
+                                            Annulée
+                                        {% endif %}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ path('commande_show', {'id': commande.id}) }}" 
+                                           class="btn btn-sm btn-info" title="Voir">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="{{ path('commande_edit', {'id': commande.id}) }}" 
+                                           class="btn btn-sm btn-warning" title="Modifier">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <form method="post" 
+                                              action="{{ path('commande_delete', {'id': commande.id}) }}" 
+                                              style="display: inline;"
+                                              onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette commande ?');">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ commande.id) }}">
+                                            <button type="submit" class="btn btn-sm btn-danger" title="Supprimer">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="7" class="text-center py-4">
+                                    <div class="text-muted">
+                                        <i class="bi bi-cart-x display-6 d-block mb-2"></i>
+                                        Aucune commande trouvée
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript pour les sélections multiples -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Activer les selects multiples avec recherche
+        const selects = document.querySelectorAll('select[multiple]');
+        selects.forEach(select => {
+            select.setAttribute('data-choices', 'true');
+        });
+    });
+</script>
+{% endblock %}
