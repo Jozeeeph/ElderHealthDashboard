@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Connexion Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    :root{
+      --bg1:#0b1020;
+      --bg2:#0a2a43;
+      --card: rgba(255,255,255,.10);
+      --card2: rgba(255,255,255,.06);
+      --border: rgba(255,255,255,.18);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.70);
+      --danger-bg: rgba(255,80,80,.14);
+      --danger-border: rgba(255,80,80,.35);
+      --shadow: 0 20px 60px rgba(0,0,0,.35);
+      --radius: 18px;
+    }
+
+    *{ box-sizing: border-box; }
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color: var(--text);
+      background: radial-gradient(1200px 600px at 15% 20%, rgba(88,101,242,.35), transparent 60%),
+                  radial-gradient(900px 500px at 85% 25%, rgba(0,184,255,.25), transparent 55%),
+                  radial-gradient(900px 700px at 50% 90%, rgba(118,255,160,.12), transparent 55%),
+                  linear-gradient(135deg, var(--bg1), var(--bg2));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 28px 16px;
+      overflow:hidden;
+    }
+
+    /* petits "blobs" décoratifs */
+    .blob{
+      position: fixed;
+      inset:auto;
+      width: 420px;
+      height: 420px;
+      border-radius: 999px;
+      filter: blur(40px);
+      opacity: .40;
+      z-index:0;
+      pointer-events:none;
+    }
+    .blob.b1{ left:-120px; top:-140px; background: #6c5ce7; }
+    .blob.b2{ right:-140px; top:40px; background: #00c2ff; }
+    .blob.b3{ left:40%; bottom:-180px; background: #2ecc71; opacity:.18; }
+
+    .wrap{
+      width: min(980px, 100%);
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 18px;
+      z-index:1;
+    }
+
+    .brand{
+      padding: 22px 22px 22px 22px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, var(--card), var(--card2));
+      backdrop-filter: blur(14px);
+      box-shadow: var(--shadow);
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+    }
+
+    .brand-top{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+    }
+    .logo{
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.18);
+      display:grid;
+      place-items:center;
+      font-weight: 800;
+      letter-spacing:.5px;
+    }
+    .brand h1{
+      margin:0;
+      font-size: 22px;
+      font-weight: 800;
+      line-height:1.15;
+    }
+    .brand p{
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+      max-width: 52ch;
+    }
+
+    .tips{
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(255,255,255,.12);
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .chip{
+      font-size: 12px;
+      color: rgba(255,255,255,.80);
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      padding: 8px 10px;
+      border-radius: 999px;
+    }
+
+    .card{
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.06));
+      backdrop-filter: blur(16px);
+      box-shadow: var(--shadow);
+      padding: 22px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .title{
+      margin:0 0 6px;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: .2px;
+    }
+    .subtitle{
+      margin:0 0 18px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height:1.5;
+    }
+
+    .alert{
+      border: 1px solid var(--danger-border);
+      background: var(--danger-bg);
+      color: rgba(255,255,255,.92);
+      padding: 10px 12px;
+      border-radius: 12px;
+      margin-bottom: 14px;
+      font-size: 13px;
+    }
+
+    form{ display:grid; gap: 12px; }
+
+    .field label{
+      display:block;
+      font-size: 12px;
+      color: rgba(255,255,255,.78);
+      margin-bottom: 6px;
+    }
+
+    .input{
+      width:100%;
+      padding: 12px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(10, 16, 32, .35);
+      color: var(--text);
+      outline:none;
+      transition: border-color .18s ease, box-shadow .18s ease, transform .12s ease;
+    }
+    .input::placeholder{ color: rgba(255,255,255,.38); }
+    .input:focus{
+      border-color: rgba(0,194,255,.55);
+      box-shadow: 0 0 0 4px rgba(0,194,255,.14);
+    }
+
+    .row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      margin-top: 2px;
+    }
+
+    .btn{
+      appearance:none;
+      border: 0;
+      cursor:pointer;
+      width:100%;
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-weight: 800;
+      color: #071022;
+      background: linear-gradient(135deg, #00c2ff, #6c5ce7);
+      box-shadow: 0 12px 28px rgba(0,0,0,.28);
+      transition: transform .12s ease, filter .15s ease;
+    }
+    .btn:hover{ filter: brightness(1.03); }
+    .btn:active{ transform: translateY(1px); }
+
+    .links{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-top: 10px;
+      font-size: 12px;
+      color: rgba(255,255,255,.70);
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .a{
+      color: rgba(255,255,255,.80);
+      text-decoration:none;
+      border-bottom: 1px dashed rgba(255,255,255,.30);
+      padding-bottom: 2px;
+    }
+    .a:hover{ color:#fff; border-bottom-color: rgba(255,255,255,.60); }
+
+    @media (max-width: 860px){
+      .wrap{ grid-template-columns: 1fr; }
+      .brand{ display:none; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
+
+  <div class="wrap">
+
+    <section class="brand">
+      <div>
+        <div class="brand-top">
+          <div class="logo">EH</div>
+          <div>
+            <h1>Elder HealthCare</h1>
+            <p>Accès sécurisé réservé à l’administrateur. Utilise tes identifiants pour gérer les utilisateurs, les contenus et le backoffice.</p>
+          </div>
+        </div>
+
+        <div class="tips">
+          <div class="chip">🔒 Admin only</div>
+          <div class="chip">⚡ Accès rapide</div>
+          <div class="chip">🧾 Gestion complète</div>
+        </div>
+      </div>
+
+      <div class="links">
+        <span style="opacity:.75;">Besoin d’accéder au site public ?</span>
+        <a class="a" href="{{ path('app_public_site') }}">Retour au front office</a>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 class="title">Connexion Administrateur</h2>
+      <p class="subtitle">Merci de saisir votre email et mot de passe.</p>
+
+      {% if error %}
+        <div class="alert">
+          {{ error.messageKey|trans(error.messageData, 'security') }}
+        </div>
+      {% endif %}
+
+      <form method="post" action="{{ path('admin_login') }}">
+        <div class="field">
+          <label>Email</label>
+          <input class="input" type="text" name="_username" value="{{ last_username }}" placeholder="admin@exemple.com" required autofocus>
+        </div>
+
+        <div class="field">
+          <label>Mot de passe</label>
+          <input class="input" type="password" name="_password" placeholder="••••••••" required>
+        </div>
+
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+        <button class="btn" type="submit">Se connecter</button>
+
+        <div class="links">
+          <span>Connexion admin dédiée : <strong>/admin/login</strong></span>
+          <a class="a" href="{{ path('app_public_site') }}">Aller au site public</a>
+        </div>
+      </form>
+    </section>
+
+  </div>
+</body>
+</html>
