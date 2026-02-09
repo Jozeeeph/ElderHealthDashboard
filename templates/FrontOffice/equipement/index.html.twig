@@ -3,8 +3,44 @@
 {% block title %}Équipements Médicaux - ElderHealth{% endblock %}
 
 {% block stylesheets %}
+{{ parent() }}
 <style>
-    /* Styles inspirés de la capture d'écran */
+    /* FORCE HIDE SIDEBAR AND ALL RELATED ELEMENTS */
+    .sidebar, 
+    .navbar-sidebar, 
+    .aside, 
+    .nav-sidebar, 
+    [class*="sidebar"],
+    aside,
+    nav[role="navigation"] {
+        display: none !important;
+        visibility: hidden !important;
+        width: 0 !important;
+        height: 0 !important;
+        position: absolute !important;
+        left: -9999px !important;
+    }
+    
+    body, 
+    .wrapper, 
+    .main-wrapper,
+    .page-wrapper {
+        padding-left: 0 !important;
+        margin-left: 0 !important;
+        min-width: 100% !important;
+    }
+    
+    .main-content, 
+    .content-wrapper, 
+    .container-fluid,
+    .container {
+        margin-left: 0 !important;
+        padding-left: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    
+    /* Rest of your styles */
     :root {
         --primary-color: #0e8aa7;
         --secondary-color: #2bbf9f;
@@ -17,24 +53,10 @@
         --shadow-hover: 0 8px 24px rgba(0,0,0,0.12);
     }
 
-    /* SUPPRIMER LA SIDEBAR - MODIFICATION PRINCIPALE */
-    .sidebar {
-        display: none !important;
-    }
-    
-    .main-content {
-        margin-left: 0 !important;
-        width: 100% !important;
-        padding: 0 !important;
-    }
-    
-    .main-wrapper {
-        display: block !important;
-    }
-
     .products-page {
         background-color: #fff;
         min-height: 100vh;
+        width: 100% !important;
     }
 
     /* Hero Section */
@@ -43,6 +65,8 @@
         padding: 80px 40px 50px;
         text-align: center;
         border-bottom: 1px solid var(--border-color);
+        width: 100% !important;
+        margin-left: 0 !important;
     }
 
     .hero-title {
@@ -102,6 +126,7 @@
     .categories-section {
         padding: 40px;
         background: var(--bg-light);
+        width: 100% !important;
     }
 
     .categories-container {
@@ -139,6 +164,7 @@
         padding: 50px 40px 100px;
         max-width: 1400px;
         margin: 0 auto;
+        width: 100% !important;
     }
 
     .products-header {
@@ -249,7 +275,7 @@
         line-height: 1.6;
         display: -webkit-box;
         -webkit-line-clamp: 3;
-        -webkit-box-orvent: vertical;
+        -webkit-box-orient: vertical;
         overflow: hidden;
         min-height: 75px;
     }

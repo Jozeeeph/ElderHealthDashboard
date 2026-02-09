@@ -15,15 +15,17 @@ class EquipmentController extends AbstractController
     {
         return $this->render('FrontOffice/equipement/index.html.twig', [
             'equipements' => $equipementRepository->findAll(),
-            'current_category' => null, // Ajoute cette ligne
+            'current_category' => null,
         ]);
     }
 
     #[Route('/categorie/{categorie}', name: 'front_equipements_by_category', methods: ['GET'])]
     public function byCategory(string $categorie, EquipementRepository $equipementRepository): Response
     {
+        $equipements = $equipementRepository->findBy(['categorie' => $categorie]);
+        
         return $this->render('FrontOffice/equipement/index.html.twig', [
-            'equipements' => $equipementRepository->findBy(['categorie' => $categorie]),
+            'equipements' => $equipements,
             'current_category' => $categorie,
         ]);
     }
