@@ -44,7 +44,7 @@ class AdminLoginFormAuthenticator extends AbstractLoginFormAuthenticator
             throw new CustomUserMessageAuthenticationException("Accès réservé à l'administrateur.");
         }
 
-        return new RedirectResponse('/admin/users');
+        return new RedirectResponse($this->urlGenerator->generate('admin_home'));
     }
 
     protected function getLoginUrl(Request $request): string
