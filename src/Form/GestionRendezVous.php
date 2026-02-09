@@ -32,12 +32,16 @@ class GestionRendezVous extends AbstractType
             ])
             ->add('patient', EntityType::class, [
                 'class' => Utilisateur::class,
-                'choice_label' => 'id',
+                'choice_label' => function (Utilisateur $u) {
+                    return trim($u->getNom() . ' ' . $u->getPrenom());
+                },
                 'label' => 'Patient'
             ])
             ->add('personnelMedical', EntityType::class, [
                 'class' => Utilisateur::class,
-                'choice_label' => 'id',
+                'choice_label' => function (Utilisateur $u) {
+                    return trim($u->getNom() . ' ' . $u->getPrenom());
+                },
                 'label' => 'Personnel medical'
             ])
             

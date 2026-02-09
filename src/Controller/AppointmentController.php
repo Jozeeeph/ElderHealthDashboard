@@ -106,6 +106,8 @@ class AppointmentController extends AbstractController
         $em->remove($rdv);
         $em->flush();
 
+        $this->addFlash('success', 'Le rendez-vous a Ã©tÃ© supprimÃ© avec succÃ¨s.');
+
         return $this->redirectToRoute('appointment_index');
     }
 
@@ -114,6 +116,8 @@ class AppointmentController extends AbstractController
     {
         $em->remove($type);
         $em->flush();
+
+        $this->addFlash('success', 'Le type de rendez-vous a Ã©tÃ© supprimÃ© avec succÃ¨s.');
 
         return $this->redirectToRoute('appointment_index');
     }
