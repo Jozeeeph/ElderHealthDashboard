@@ -31,6 +31,10 @@ class Commande
     #[ORM\ManyToMany(targetEntity: Equipement::class, inversedBy: 'commandes')]
     private Collection $equipements;
 
+    #[ORM\ManyToOne(inversedBy: 'commandes')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?utilisateur $utilisateur = null;
+
     public function __construct()
     {
         $this->equipements = new ArrayCollection();
@@ -97,6 +101,18 @@ class Commande
     public function removeEquipement(Equipement $equipement): static
     {
         $this->equipements->removeElement($equipement);
+
+        return $this;
+    }
+
+    public function getUtilisateur(): ?utilisateur
+    {
+        return $this->utilisateur;
+    }
+
+    public function setUtilisateur(?utilisateur $utilisateur): static
+    {
+        $this->utilisateur = $utilisateur;
 
         return $this;
     }
