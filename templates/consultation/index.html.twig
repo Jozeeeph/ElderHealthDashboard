@@ -183,7 +183,7 @@
 <div class="consultation-page">
 <div class="consultation-header d-flex align-items-center justify-content-between mb-3">
     <div>
-        <h1 class="consultation-title mb-1">Liste des Consultations</h1>
+        <h1 class="consultation-title mb-1">🩺 Liste des Consultations</h1>
         <div class="consultation-subtitle">Vue rapide des rendez-vous et statuts</div>
     </div>
     <div class="d-flex gap-2">
@@ -196,7 +196,7 @@
                 data-bs-toggle="modal"
                 data-bs-target="#consultationNewModal"
                 data-new-url="{{ path('consultation_new') }}">
-            Nouvelle Consultation
+            ➕ Nouvelle Consultation
         </button>
     </div>
 </div>
@@ -206,17 +206,17 @@
         <form method="get" action="{{ path('consultation_index') }}">
             <div class="row g-3 align-items-end">
                 <div class="col-12 col-md-4">
-                    <label class="form-label small text-uppercase text-muted" for="filter-patient">Patient</label>
+                    <label class="form-label small text-uppercase text-muted" for="filter-patient">🧑‍🦳 Patient</label>
                     <input id="filter-patient" name="patient" class="form-control" type="text"
                            value="{{ filters.patient ?? '' }}" placeholder="Nom ou prénom du patient">
                 </div>
                 <div class="col-12 col-md-4">
-                    <label class="form-label small text-uppercase text-muted" for="filter-personnel">Personnel médical</label>
+                    <label class="form-label small text-uppercase text-muted" for="filter-personnel">👨‍⚕️ Personnel médical</label>
                     <input id="filter-personnel" name="personnel" class="form-control" type="text"
                            value="{{ filters.personnel ?? '' }}" placeholder="Nom ou prénom du personnel">
                 </div>
                 <div class="col-12 col-md-2">
-                    <label class="form-label small text-uppercase text-muted" for="filter-date">Date consultation</label>
+                    <label class="form-label small text-uppercase text-muted" for="filter-date">📅 Date consultation</label>
                     <input id="filter-date" name="date" class="form-control" type="date"
                            value="{{ filters.date ?? '' }}">
                 </div>
@@ -247,7 +247,7 @@
                     <div class="consultation-accent"></div>
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <div>
-                            <div class="consultation-label">Patient</div>
+                            <div class="consultation-label">🧑‍🦳 Patient</div>
                             <div class="consultation-name">
                                 {{ consultation.patient.prenom }} {{ consultation.patient.nom }}
                             </div>
@@ -257,25 +257,25 @@
 
                     <div class="consultation-meta">
                         <span class="consultation-chip">
-                            {{ consultation.dateConsultation ? consultation.dateConsultation|date('d/m/Y') : '-' }}
+                            📅 {{ consultation.dateConsultation ? consultation.dateConsultation|date('d/m/Y') : '-' }}
                         </span>
                         <span class="consultation-chip">
-                            {{ consultation.heureConsultation ? consultation.heureConsultation|date('H:i') : '-' }}
+                            ⏰ {{ consultation.heureConsultation ? consultation.heureConsultation|date('H:i') : '-' }}
                         </span>
                         {% if consultation.lieu %}
-                            <span class="consultation-chip">{{ consultation.lieu }}</span>
+                            <span class="consultation-chip">📍 {{ consultation.lieu }}</span>
                         {% endif %}
                     </div>
 
                     <div class="consultation-grid">
                         <div class="consultation-row">
-                            <div class="consultation-label">Personnel</div>
+                            <div class="consultation-label">👨‍⚕️ Personnel</div>
                             <div class="value">
                                 {{ consultation.personnelMedical.prenom }} {{ consultation.personnelMedical.nom }}
                             </div>
                         </div>
                         <div class="consultation-row">
-                            <div class="consultation-label">Créée par</div>
+                            <div class="consultation-label">🧾 Créée par</div>
                             <div class="value">
                                 {% if consultation.createdBy %}
                                     {{ consultation.createdBy.prenom }} {{ consultation.createdBy.nom }}
@@ -318,7 +318,7 @@
                                     data-bs-toggle="modal"
                                     data-bs-target="#rapportNewModal"
                                     data-new-url="{{ path('rapport_medical_new', {'id': consultation.id}) }}">
-                                Ajouter rapport
+                                ➕ Ajouter rapport
                             </button>
                         {% endif %}
 
@@ -337,7 +337,7 @@
                                     data-bs-toggle="modal"
                                     data-bs-target="#prescriptionNewModal"
                                     data-new-url="{{ path('prescription_new', {'id': consultation.id}) }}">
-                                Ajouter prescription
+                                ➕ Ajouter prescription
                             </button>
                         {% endif %}
                     </div>
