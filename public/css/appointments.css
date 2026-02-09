@@ -210,6 +210,18 @@
 .card-header-appointments .btn:hover {
     background: #f7f9fc;
 }
+                                                                                                                                                                                                                                                                
+/* ========================================
+   FLASH ALERTS
+   ======================================== */
+.flash-alert {
+    margin: 0 0 1rem 0;
+    border-radius: 12px;
+    border: 1px solid #bbf7d0;
+    background: #ecfdf3;
+    color: #14532d;
+    box-shadow: var(--shadow-sm);
+}
 
 /* ========================================
    EMPTY STATE
@@ -425,6 +437,42 @@
     padding: 1rem 1.5rem;
     background: #f9fafb;
     border-radius: 0 0 16px 16px;
+}
+
+/* ========================================
+   DELETE MODAL
+   ======================================== */
+.delete-modal {
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-md);
+}
+
+.delete-modal .modal-header {
+    background: #fff1f2;
+    color: #991b1b;
+    border-bottom: 1px solid #fecaca;
+}
+
+.delete-modal .modal-title {
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.delete-modal .modal-body {
+    padding: 1.25rem 1.5rem;
+}
+
+.delete-modal .modal-body p {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.delete-modal .alert {
+    margin-top: 0.75rem;
+    font-size: 0.9rem;
 }
 
 /* ========================================
