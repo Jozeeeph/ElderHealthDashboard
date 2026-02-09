@@ -3,25 +3,25 @@
 }) }}
     <div class="row g-3">
         <div class="col-12">
-            {{ form_row(form.medicaments) }}
+            {{ form_row(form.medicaments, { label: '💊 Médicaments' }) }}
         </div>
         <div class="col-12 col-md-6">
-            {{ form_row(form.frequence) }}
+            {{ form_row(form.frequence, { label: '🔁 Fréquence' }) }}
         </div>
         <div class="col-12 col-md-6">
-            {{ form_row(form.dosage) }}
+            {{ form_row(form.dosage, { label: '📏 Dosage' }) }}
         </div>
         <div class="col-12 col-md-6">
-            {{ form_row(form.dureeTraitement) }}
+            {{ form_row(form.dureeTraitement, { label: '📆 Durée du traitement' }) }}
         </div>
         <div class="col-12 col-md-6">
-            {{ form_row(form.dateDebut) }}
+            {{ form_row(form.dateDebut, { label: '📅 Date de début' }) }}
         </div>
         <div class="col-12 col-md-6">
-            {{ form_row(form.dateFin) }}
+            {{ form_row(form.dateFin, { label: '🏁 Date de fin' }) }}
         </div>
         <div class="col-12">
-            {{ form_row(form.consignes) }}
+            {{ form_row(form.consignes, { label: '📝 Consignes' }) }}
         </div>
     </div>
     <div class="mt-4 d-flex gap-2">

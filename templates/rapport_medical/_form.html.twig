@@ -3,16 +3,16 @@
 }) }}
     <div class="row g-3">
         <div class="col-12">
-            {{ form_row(form.diagnostic) }}
+            {{ form_row(form.diagnostic, { label: '🧾 Diagnostic' }) }}
         </div>
         <div class="col-12">
-            {{ form_row(form.recommandations) }}
+            {{ form_row(form.recommandations, { label: '💡 Recommandations' }) }}
         </div>
         <div class="col-12 col-md-6">
-            {{ form_row(form.niveauGravite) }}
+            {{ form_row(form.niveauGravite, { label: '⚠️ Niveau de gravité' }) }}
         </div>
         <div class="col-12">
-            {{ form_row(form.fichier) }}
+            {{ form_row(form.fichier, { label: '📎 Pièce jointe' }) }}
         </div>
     </div>
     <div class="mt-4 d-flex gap-2">
