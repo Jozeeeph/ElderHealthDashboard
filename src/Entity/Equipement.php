@@ -64,7 +64,7 @@ class Equipement
     private Collection $commandes;
 
     #[ORM\ManyToOne(inversedBy: 'equipements')]
-    private ?utilisateur $utilisateur = null;
+    private ?Utilisateur $utilisateur = null; // CHANGED: Capital U
 
     public function __construct()
     {
@@ -219,12 +219,12 @@ class Equipement
         return $this;
     }
 
-    public function getUtilisateur(): ?utilisateur
+    public function getUtilisateur(): ?Utilisateur // CHANGED: Capital U
     {
         return $this->utilisateur;
     }
 
-    public function setUtilisateur(?utilisateur $utilisateur): static
+    public function setUtilisateur(?Utilisateur $utilisateur): static // CHANGED: Capital U
     {
         $this->utilisateur = $utilisateur;
 
