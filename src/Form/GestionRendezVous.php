@@ -6,6 +6,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use App\Entity\RendezVous;
 use App\Entity\TypeRendezVous;
 use App\Entity\Utilisateur;
+use App\Repository\UtilisateurRepository;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -32,6 +33,12 @@ class GestionRendezVous extends AbstractType
             ])
             ->add('patient', EntityType::class, [
                 'class' => Utilisateur::class,
+                'query_builder' => function (UtilisateurRepository $repo) {
+                    return $repo->createQueryBuilder('u')
+                        ->andWhere('u.role = :role')
+                        ->setParameter('role', 'PATIENT')
+                        ->orderBy('u.nom', 'ASC');
+                },
                 'choice_label' => function (Utilisateur $u) {
                     return trim($u->getNom() . ' ' . $u->getPrenom());
                 },
@@ -39,6 +46,12 @@ class GestionRendezVous extends AbstractType
             ])
             ->add('personnelMedical', EntityType::class, [
                 'class' => Utilisateur::class,
+                'query_builder' => function (UtilisateurRepository $repo) {
+                    return $repo->createQueryBuilder('u')
+                        ->andWhere('u.role = :role')
+                        ->setParameter('role', 'PERSONNEL_MEDICAL')
+                        ->orderBy('u.nom', 'ASC');
+                },
                 'choice_label' => function (Utilisateur $u) {
                     return trim($u->getNom() . ' ' . $u->getPrenom());
                 },

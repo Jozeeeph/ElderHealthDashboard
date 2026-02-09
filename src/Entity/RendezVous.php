@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\RendezVousRepository;
 use App\Entity\Utilisateur;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 class RendezVous
@@ -15,21 +16,29 @@ class RendezVous
     private ?int $id = null;
 
     #[ORM\Column(type: 'date')]
+    #[Assert\NotBlank(message: 'La date est obligatoire.')]
     private ?\DateTimeInterface $date = null;
 
     #[ORM\Column(type: 'time')]
+    #[Assert\NotBlank(message: 'L heure est obligatoire.')]
     private ?\DateTimeInterface $heure = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le lieu est obligatoire.')]
+    #[Assert\Length(min: 2, max: 255, minMessage: 'Le lieu doit contenir au moins {{ limit }} caracteres.', maxMessage: 'Le lieu ne peut pas depasser {{ limit }} caracteres.')]
+    #[Assert\Regex(pattern: '/^[\\p{L}\\p{N}\\s\\-\'\\.]+$/u', message: 'Le lieu doit etre alphanumerique.')]
     private ?string $lieu = null;
 
     #[ORM\ManyToOne]
+    #[Assert\NotNull(message: 'Le patient est obligatoire.')]
     private ?Utilisateur $patient = null;
 
     #[ORM\ManyToOne]
+    #[Assert\NotNull(message: 'Le personnel medical est obligatoire.')]
     private ?Utilisateur $personnelMedical = null;
 
     #[ORM\ManyToOne]
+    #[Assert\NotNull(message: 'Le type de rendez-vous est obligatoire.')]
     private ?TypeRendezVous $typeRendezVous = null;
 
     #[ORM\ManyToOne]
@@ -37,7 +46,9 @@ class RendezVous
    
 
         #[ORM\Column(length: 20)]
-private ?string $etat = 'PLANIFIE';
+        #[Assert\NotBlank(message: 'L etat est obligatoire.')]
+        #[Assert\Choice(choices: ['PLANIFIE', 'PLANIFIEE', 'EN_COURS', 'TERMINE', 'TERMINEE', 'ANNULEE'], message: 'Etat invalide.')]
+private ?string $etat = 'PLANIFIEE';
 
 public function getEtat(): ?string
 {
