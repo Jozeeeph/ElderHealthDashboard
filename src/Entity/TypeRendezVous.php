@@ -22,7 +22,6 @@ class TypeRendezVous
     #[ORM\Column(length: 200)]
     #[Assert\NotBlank(message: 'Le type est obligatoire.')]
     #[Assert\Length(min: 2, max: 200, minMessage: 'Le type doit contenir au moins {{ limit }} caractères.', maxMessage: 'Le type ne peut pas dépasser {{ limit }} caractères.')]
-    #[Assert\Regex(pattern: '/^[\\p{L}\\p{N}\\s\\-\'\\.]+$/u', message: 'Le type doit être alphanumérique.')]
     private ?string $type = null;
 
     #[ORM\Column]
@@ -34,7 +33,6 @@ class TypeRendezVous
     
     #[ORM\Column(length: 200, nullable: true)]
     #[Assert\NotBlank(message: 'La durée est obligatoire.')]
-    #[Assert\Regex(pattern: '/^\\d{1,4}$/', message: 'La durée doit être numérique (minutes).')]
     #[Assert\Range(min: 1, max: 1440, notInRangeMessage: 'La durée doit être entre {{ min }} et {{ max }} minutes.')]
     private ?string $duree = null;
     #[ORM\ManyToOne]

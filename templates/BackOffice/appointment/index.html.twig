@@ -529,15 +529,11 @@
                 }
 
                 var lieuVal = (lieuField.val() || '').trim();
-                var alphaNum = /^[\\p{L}\\p{N}\\s\\-\\'\\.]+$/u;
                 if (!lieuVal) {
                     setFieldError(lieuField, 'Le lieu est obligatoire.');
                     valid = false;
                 } else if (lieuVal.length < 2 || lieuVal.length > 255) {
                     setFieldError(lieuField, 'Le lieu doit contenir entre 2 et 255 caracteres.');
-                    valid = false;
-                } else if (!alphaNum.test(lieuVal)) {
-                    setFieldError(lieuField, 'Le lieu doit etre alphanumerique.');
                     valid = false;
                 } else {
                     setFieldValid(lieuField);
@@ -557,15 +553,11 @@
                 var dureeField = form.find('input[name$="[duree]"]');
 
                 var typeVal = (typeText.val() || '').trim();
-                var alphaNumType = /^[\\p{L}\\p{N}\\s\\-\\'\\.]+$/u;
                 if (!typeVal) {
                     setFieldError(typeText, 'Le type est obligatoire.');
                     valid = false;
                 } else if (typeVal.length < 2 || typeVal.length > 200) {
                     setFieldError(typeText, 'Le type doit contenir entre 2 et 200 caracteres.');
-                    valid = false;
-                } else if (!alphaNumType.test(typeVal)) {
-                    setFieldError(typeText, 'Le type doit etre alphanumerique.');
                     valid = false;
                 } else {
                     setFieldValid(typeText);
@@ -586,15 +578,8 @@
                 }
 
                 var dureeVal = (dureeField.val() || '').trim();
-                var digits = /^\\d{1,4}$/;
                 if (!dureeVal) {
                     setFieldError(dureeField, 'La duree est obligatoire.');
-                    valid = false;
-                } else if (!digits.test(dureeVal)) {
-                    setFieldError(dureeField, 'La duree doit etre numerique.');
-                    valid = false;
-                } else if (Number(dureeVal) < 1 || Number(dureeVal) > 1440) {
-                    setFieldError(dureeField, 'La duree doit etre entre 1 et 1440 minutes.');
                     valid = false;
                 } else {
                     setFieldValid(dureeField);

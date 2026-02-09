@@ -26,7 +26,6 @@ class RendezVous
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Le lieu est obligatoire.')]
     #[Assert\Length(min: 2, max: 255, minMessage: 'Le lieu doit contenir au moins {{ limit }} caracteres.', maxMessage: 'Le lieu ne peut pas depasser {{ limit }} caracteres.')]
-    #[Assert\Regex(pattern: '/^[\\p{L}\\p{N}\\s\\-\'\\.]+$/u', message: 'Le lieu doit etre alphanumerique.')]
     private ?string $lieu = null;
 
     #[ORM\ManyToOne]
