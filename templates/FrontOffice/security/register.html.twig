@@ -1,0 +1,108 @@
+{% extends 'FrontOffice/base.html.twig' %}
+{% block title %}Register{% endblock %}
+
+{% block body %}
+<div class="container mt-5" style="max-width: 900px;">
+  <h2 class="mb-4">Créer un compte</h2>
+
+  {{ form_start(form, {'attr': {'id': 'registrationForm'}}) }}
+
+  <div class="row g-3">
+    <div class="col-md-6">{{ form_row(form.email) }}</div>
+    <div class="col-md-6">{{ form_row(form.roleMetier) }}</div>
+
+    <div class="col-md-6">{{ form_row(form.nom) }}</div>
+    <div class="col-md-6">{{ form_row(form.prenom) }}</div>
+
+    <div class="col-md-12">{{ form_row(form.adresse) }}</div>
+
+    <div class="col-md-4">{{ form_row(form.age) }}</div>
+    <div class="col-md-4">{{ form_row(form.dateNaissance) }}</div>
+    <div class="col-md-4">{{ form_row(form.numeroTelephone) }}</div>
+
+    <div class="col-md-6">{{ form_row(form.cin) }}</div>
+  </div>
+
+  <hr class="my-4">
+
+  <div id="patientFields" style="display:none;">
+    <h5 class="mb-3">Patient</h5>
+    {{ form_row(form.dossierMedicalFile) }}
+  </div>
+
+  <div id="medicalFields" style="display:none;">
+    <h5 class="mb-3">Personnel médical</h5>
+    <div class="row g-3">
+      <div class="col-md-6">{{ form_row(form.cvFile) }}</div>
+      <div class="col-md-6">{{ form_row(form.certificationFile) }}</div>
+
+      <div class="col-md-6">{{ form_row(form.hopitalAffectation) }}</div>
+      <div class="col-md-6">{{ form_row(form.nbAnneeExperience) }}</div>
+
+      <div class="col-md-6">{{ form_row(form.specialite) }}</div>
+      <div class="col-md-6">{{ form_row(form.fonction) }}</div>
+    </div>
+  </div>
+
+  <div id="ownerFields" style="display:none;">
+    <h5 class="mb-3">Propriétaire médicaux</h5>
+    <div class="row g-3">
+      <div class="col-md-6">{{ form_row(form.patante) }}</div>
+      <div class="col-md-6">{{ form_row(form.numeroFix) }}</div>
+    </div>
+  </div>
+
+  <hr class="my-4">
+
+  {{ form_row(form.password) }}
+
+  <button class="btn btn-primary mt-3">Envoyer la demande</button>
+
+  {{ form_rest(form) }}
+  {{ form_end(form) }}
+
+  <div class="mt-3">
+    <a href="{{ path('app_login') }}">Déjà un compte ? Login</a>
+  </div>
+</div>
+
+<script>
+(function(){
+  const form = document.getElementById('registrationForm');
+  if(!form){
+    console.warn('registrationForm not found');
+    return;
+  }
+
+  // ✅ ROBUST: works even if Symfony changes the id
+  const roleSelect =
+    form.querySelector('select[name$="[roleMetier]"]') ||
+    document.querySelector('select[name$="[roleMetier]"]');
+
+  const patient = document.getElementById('patientFields');
+  const medical = document.getElementById('medicalFields');
+  const owner = document.getElementById('ownerFields');
+
+  function hideAll(){
+    if(patient) patient.style.display = 'none';
+    if(medical) medical.style.display = 'none';
+    if(owner) owner.style.display = 'none';
+  }
+
+  function update(){
+    hideAll();
+    const v = roleSelect ? roleSelect.value : '';
+    if(v === 'PATIENT' && patient) patient.style.display = 'block';
+    if(v === 'PERSONNEL_MEDICAL' && medical) medical.style.display = 'block';
+    if(v === 'PROPRIETAIRE_MEDICAUX' && owner) owner.style.display = 'block';
+  }
+
+  if(roleSelect){
+    roleSelect.addEventListener('change', update);
+    update();
+  } else {
+    console.warn('roleMetier select not found. Check if the field is rendered.');
+  }
+})();
+</script>
+{% endblock %}

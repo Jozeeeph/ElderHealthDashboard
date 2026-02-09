@@ -1,0 +1,97 @@
+{% extends 'base.html.twig' %}
+{% block title %}Inscription{% endblock %}
+
+{% block body %}
+<div class="container mt-5" style="max-width: 900px;">
+    <h2 class="mb-4">Inscription</h2>
+
+    {{ form_start(form, {'attr': {'id': 'registerForm'}}) }}
+
+    <div class="row">
+        <div class="col-md-6">{{ form_row(form.email) }}</div>
+        <div class="col-md-6">{{ form_row(form.roleMetier) }}</div>
+
+        <div class="col-md-6">{{ form_row(form.nom) }}</div>
+        <div class="col-md-6">{{ form_row(form.prenom) }}</div>
+
+        <div class="col-md-6">{{ form_row(form.adresse) }}</div>
+        <div class="col-md-3">{{ form_row(form.age) }}</div>
+        <div class="col-md-3">{{ form_row(form.dateNaissance) }}</div>
+
+        <div class="col-md-6">{{ form_row(form.numeroTelephone) }}</div>
+        <div class="col-md-6">{{ form_row(form.cin) }}</div>
+    </div>
+
+    <hr>
+
+    {# Patient #}
+    <div id="patientFields" style="display:none;">
+        <h5>Patient</h5>
+        {{ form_row(form.dossierMedicalFile) }}
+    </div>
+
+    {# Personnel médical #}
+    <div id="medicalFields" style="display:none;">
+        <h5>Personnel médical</h5>
+        <div class="row">
+            <div class="col-md-6">{{ form_row(form.cvFile) }}</div>
+            <div class="col-md-6">{{ form_row(form.certificationFile) }}</div>
+
+            <div class="col-md-6">{{ form_row(form.hopitalAffectation) }}</div>
+            <div class="col-md-6">{{ form_row(form.nbAnneeExperience) }}</div>
+
+            <div class="col-md-6">{{ form_row(form.specialite) }}</div>
+            <div class="col-md-6">{{ form_row(form.fonction) }}</div>
+        </div>
+    </div>
+
+    {# Propriétaire médicaux #}
+    <div id="ownerFields" style="display:none;">
+        <h5>Propriétaire médicaux</h5>
+        <div class="row">
+            <div class="col-md-6">{{ form_row(form.patante) }}</div>
+            <div class="col-md-6">{{ form_row(form.numeroFix) }}</div>
+        </div>
+    </div>
+
+    <hr>
+
+    {{ form_row(form.password) }}
+
+    <button class="btn btn-success mt-3">Créer mon compte</button>
+
+    {{ form_end(form) }}
+
+    <div class="mt-3">
+        <a href="{{ path('app_login') }}">Déjà un compte ? Se connecter</a>
+    </div>
+</div>
+
+<script>
+(function(){
+  const roleSelect = document.querySelector('#registerForm select[name$="[roleMetier]"]');
+  const patient = document.getElementById('patientFields');
+  const medical = document.getElementById('medicalFields');
+  const owner = document.getElementById('ownerFields');
+
+  function hideAll(){
+    patient.style.display = 'none';
+    medical.style.display = 'none';
+    owner.style.display = 'none';
+  }
+
+  function update(){
+    hideAll();
+    const v = roleSelect ? roleSelect.value : '';
+    if(v === 'PATIENT') patient.style.display = 'block';
+    if(v === 'PERSONNEL_MEDICAL') medical.style.display = 'block';
+    if(v === 'PROPRIETAIRE_MEDICAUX') owner.style.display = 'block';
+  }
+
+  if(roleSelect){
+    roleSelect.addEventListener('change', update);
+    update();
+  }
+})();
+</script>
+{% endblock %}

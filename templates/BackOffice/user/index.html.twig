@@ -1,12 +1,66 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Gestion{% endblock %}
+{% block title %}Admin - Utilisateurs{% endblock %}
 
 {% block body %}
-  <div class="p-4">
-    <h2 class="mb-3">Gestion</h2>
-    <div class="alert alert-success mb-0">
-      {{ message }}
-    </div>
-  </div>
+<div class="container mt-4">
+
+    <h2>Demandes en attente</h2>
+
+    {% if pendingUsers is empty %}
+        <div class="alert alert-info">Aucune demande en attente.</div>
+    {% else %}
+        <ul class="list-group mb-4">
+            {% for u in pendingUsers %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>{{ u.email }} - {{ u.nom }} {{ u.prenom }}</span>
+
+                    <div class="d-flex gap-2">
+                        <form method="post" action="{{ path('admin_users_approve', {id: u.id}) }}">
+                            <button class="btn btn-sm btn-success">Accepter</button>
+                        </form>
+
+                        <form method="post" action="{{ path('admin_users_refuse', {id: u.id}) }}">
+                            <button class="btn btn-sm btn-danger">Refuser</button>
+                        </form>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <hr>
+
+    <h2>Tous les utilisateurs</h2>
+
+    {% if allUsers is empty %}
+        <div class="alert alert-warning">Aucun utilisateur.</div>
+    {% else %}
+        <ul class="list-group">
+            {% for u in allUsers %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>
+                        {{ u.email }} —
+                        {{ u.accountStatus }} —
+                        {{ u.isActive ? 'Actif' : 'Désactivé' }}
+                    </span>
+
+                    <div class="d-flex gap-2">
+                        <a href="{{ path('admin_users_show', {id: u.id}) }}" class="btn btn-sm btn-primary">Voir</a>
+                        <a href="{{ path('admin_users_edit', {id: u.id}) }}" class="btn btn-sm btn-secondary">Modifier</a>
+
+                        <form method="post" action="{{ path('admin_users_toggle_active', {id: u.id}) }}">
+                            <button class="btn btn-sm btn-warning">Activer/Désactiver</button>
+                        </form>
+
+                        <form method="post" action="{{ path('admin_users_delete', {id: u.id}) }}">
+                            <button class="btn btn-sm btn-danger">Supprimer</button>
+                        </form>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+</div>
 {% endblock %}

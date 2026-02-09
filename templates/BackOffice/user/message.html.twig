@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Information{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="alert alert-success">
+        {{ message }}
+    </div>
+
+    <div class="mt-3">
+        {% if return_route is defined %}
+            <a href="{{ path(return_route) }}" class="btn btn-primary">Retour</a>
+        {% else %}
+            {# Par défaut : retour au site public #}
+            <a href="{{ path('app_public_site') }}" class="btn btn-primary">Retour</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\Enum\Role;
 use App\Repository\UtilisateurRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -10,10 +9,13 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-
 #[ORM\Entity(repositoryClass: UtilisateurRepository::class)]
 class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    public const STATUS_PENDING  = 'PENDING';
+    public const STATUS_APPROVED = 'APPROVED';
+    public const STATUS_REFUSED  = 'REFUSED';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -34,7 +36,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?int $age = null;
 
-    #[ORM\Column(type: "date")]
+    #[ORM\Column(type: 'date')]
     private ?\DateTimeInterface $dateNaissance = null;
 
     #[ORM\Column(length: 20)]
@@ -43,12 +45,24 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 20)]
     private ?string $cin = null;
 
-    #[ORM\Column(length: 50)]
+    // Champ "status" (si tu l'utilises encore côté métier)
+    #[ORM\Column(length: 50, nullable: true)]
     private ?string $status = null;
 
-    // ✅ Role métier (enum) - مطابق للdiagramme
-    #[ORM\Column(enumType: Role::class)]
-    private ?Role $role = null;
+    // ✅ statut de la demande (validation admin)
+    #[ORM\Column(name: 'account_status', length: 50)]
+    private string $accountStatus = self::STATUS_PENDING;
+
+    // ✅ activation / désactivation
+    #[ORM\Column(name: 'is_active', options: ['default' => false])]
+    private bool $isActive = false;
+
+    /**
+     * ✅ Rôle métier stocké en STRING (ex: ADMIN, PATIENT, PERSONNEL_MEDICAL...)
+     * => ultra stable pour Doctrine (pas d'enumType)
+     */
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $role = null;
 
     // ✅ Roles Symfony Security (tableau)
     #[ORM\Column]
@@ -99,16 +113,44 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     public function __construct()
     {
         $this->participations = new ArrayCollection();
+
+        // Defaults
+        $this->accountStatus = self::STATUS_PENDING;
+        $this->isActive = false;
+
+        // rôle Symfony minimal
+        $this->roles = ['ROLE_USER'];
     }
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
+    // --------------------
+    // Security UserInterface
+    // --------------------
     public function getUserIdentifier(): string
     {
         return (string) $this->email;
+    }
+
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+
+        // garantit ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_values(array_unique($roles));
+    }
+
+    public function eraseCredentials(): void
+    {
+        // rien
+    }
+
+    // --------------------
+    // Getters / setters
+    // --------------------
+    public function getId(): ?int
+    {
+        return $this->id;
     }
 
     public function getEmail(): ?string
@@ -204,35 +246,63 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->status;
     }
 
-    public function setStatus(string $status): self
+    public function setStatus(?string $status): self
     {
         $this->status = $status;
         return $this;
     }
 
-    // ✅ Getter/Setter Role (enum)
-    public function getRole(): ?Role
+    // ✅ validation admin
+    public function getAccountStatus(): string
+    {
+        return $this->accountStatus;
+    }
+
+    public function setAccountStatus(string $status): self
+    {
+        $allowed = [self::STATUS_PENDING, self::STATUS_APPROVED, self::STATUS_REFUSED];
+        if (!in_array($status, $allowed, true)) {
+            throw new \InvalidArgumentException('accountStatus invalide: ' . $status);
+        }
+        $this->accountStatus = $status;
+        return $this;
+    }
+
+    // ✅ activation admin
+    public function isActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $active): self
+    {
+        $this->isActive = $active;
+        return $this;
+    }
+
+    /**
+     * ✅ Rôle métier string: ADMIN / PATIENT / PERSONNEL_MEDICAL / PROPRIETAIRE_MEDICAUX
+     */
+    public function getRoleMetier(): ?string
     {
         return $this->role;
     }
 
-    public function setRole(?Role $role): self
+    public function setRoleMetier(?string $role): self
     {
         $this->role = $role;
 
-        // ✅ sync automatique avec Symfony security roles
-        if ($role !== null) {
-            $this->roles = ['ROLE_' . $role->value];
+        // sync automatique roles Symfony
+        if ($role !== null && $role !== '') {
+            $this->roles = ['ROLE_' . $role];
         }
 
         return $this;
     }
 
-    public function getRoles(): array
+    public function getRolesSymfony(): array
     {
-        $roles = $this->roles;
-        $roles[] = 'ROLE_USER';
-        return array_unique($roles);
+        return $this->roles;
     }
 
     public function setRoles(array $roles): self
@@ -250,10 +320,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->password = $password;
         return $this;
-    }
-
-    public function eraseCredentials(): void
-    {
     }
 
     public function getDossierMedicalPath(): ?string
@@ -398,7 +464,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeParticipation(Participation $participation): static
     {
         if ($this->participations->removeElement($participation)) {
-            // set the owning side to null (unless already changed)
             if ($participation->getUtilisateur() === $this) {
                 $participation->setUtilisateur(null);
             }
