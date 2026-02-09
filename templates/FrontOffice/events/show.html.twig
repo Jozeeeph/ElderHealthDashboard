@@ -26,6 +26,13 @@
             </div>
         </div>
 
+        {# ✅ flash messages #}
+        {% for label, messages in app.flashes %}
+            {% for msg in messages %}
+                <div class="alert alert-{{ label }} mb-3">{{ msg }}</div>
+            {% endfor %}
+        {% endfor %}
+
         <div class="row justify-content-center">
             <div class="col-lg-10">
 
@@ -76,13 +83,31 @@
                         <div class="ev-infos ev-infos--big">
                             {% if event.capaciteMax %}
                                 <span class="ev-chip">
-                                    <i class="bi bi-people"></i> Capacité : {{ event.capaciteMax }}
+                                    <i class="bi bi-people"></i>
+                                    Capacité : {{ participantsCount }}/{{ event.capaciteMax }}
+                                </span>
+                            {% else %}
+                                <span class="ev-chip">
+                                    <i class="bi bi-people"></i>
+                                    Participants : {{ participantsCount }}
                                 </span>
                             {% endif %}
 
                             <span class="ev-chip">
                                 <i class="bi bi-megaphone"></i> Statut : {{ event.statut|default('BROUILLON') }}
                             </span>
+
+                            {% if isFull %}
+                                <span class="ev-chip" style="border-color:#dc3545;color:#dc3545;">
+                                    <i class="bi bi-x-circle"></i> Complet
+                                </span>
+                            {% endif %}
+
+                            {% if isParticipating %}
+                                <span class="ev-chip" style="border-color:#198754;color:#198754;">
+                                    <i class="bi bi-check-circle"></i> Vous participez
+                                </span>
+                            {% endif %}
                         </div>
 
                         <div class="ev-section">
@@ -90,6 +115,41 @@
                             <div class="ev-desc">
                                 {{ event.description|default('') }}
                             </div>
+                        </div>
+
+                        {# ✅ Actions Patient #}
+                        <div class="mt-4 d-flex flex-wrap gap-2">
+                            {% if app.user is null %}
+                                <a class="btn btn-primary" href="{{ path('app_login') }}">
+                                    <i class="bi bi-box-arrow-in-right"></i> Se connecter pour participer
+                                </a>
+                            {% else %}
+                                {# Participer #}
+                                <form method="post" action="{{ path('front_events_participer', {id: event.id}) }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('front_participer_' ~ event.id) }}">
+
+                                    <button
+                                        type="submit"
+                                        class="btn btn-outline-primary"
+                                        {% if isParticipating or isFull %}disabled{% endif %}
+                                    >
+                                        <i class="bi bi-check2-circle"></i>
+                                        Participer
+                                    </button>
+                                </form>
+
+                                {# Annuler (visible seulement si déjà participant) #}
+                                {% if isParticipating %}
+                                    <form method="post" action="{{ path('front_events_annuler', {id: event.id}) }}">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('front_annuler_' ~ event.id) }}">
+
+                                        <button type="submit" class="btn btn-outline-danger">
+                                            <i class="bi bi-x-circle"></i>
+                                            Annuler
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            {% endif %}
                         </div>
 
                     </div>
