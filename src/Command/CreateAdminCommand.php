@@ -49,7 +49,9 @@ class CreateAdminCommand extends Command
         $user->setNumeroTelephone('0600000000');
         $user->setCin($input->getOption('cin'));
         $user->setStatus('actif');
-        $user->setRole(Role::ADMIN);
+        $user->setRoleMetier(Role::ADMIN->value);
+        $user->setAccountStatus(Utilisateur::STATUS_APPROVED);
+        $user->setIsActive(true);
 
         $hashed = $this->hasher->hashPassword($user, (string) $input->getOption('password'));
         $user->setPassword($hashed);
