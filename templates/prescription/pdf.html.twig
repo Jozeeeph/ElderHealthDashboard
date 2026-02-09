@@ -4,57 +4,74 @@
     <meta charset="utf-8">
     <title>Prescription</title>
     <style>
-        body { font-family: DejaVu Sans, Arial, sans-serif; color: #1e2a2f; font-size: 12px; }
+        body { font-family: DejaVu Sans, Arial, sans-serif; color: #1e2a2f; font-size: 12px; background: #f8fafb; }
+        .page { padding: 16px 18px; background: #ffffff; border: 1px solid #e0e6ea; border-radius: 8px; }
         .header { padding: 8px 0 12px; border-bottom: 1px solid #e0e6ea; }
         .title { font-size: 20px; font-weight: 700; }
-        .sub { color: #5b6b73; font-size: 12px; }
-        .section { margin-top: 14px; }
-        .label { color: #5b6b73; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
-        .value { font-weight: 600; margin-top: 4px; }
-        .box { border: 1px solid #e0e6ea; border-radius: 6px; padding: 10px; }
+        .sub { color: #5b6b73; font-size: 12px; margin-top: 4px; }
+        .table-wrap { margin-top: 14px; }
+        table.prescription-table { width: 100%; border-collapse: collapse; }
+        .prescription-table th,
+        .prescription-table td { border: 1px solid #e2e8f0; padding: 8px 10px; vertical-align: top; }
+        .prescription-table th {
+            width: 200px;
+            background: #f5f7fb;
+            color: #4a6070;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .prescription-table td { background: #ffffff; font-weight: 600; }
+        .pill { display: inline-block; padding: 4px 8px; border-radius: 999px; background: #eef4ff; border: 1px solid #dfe7f5; color: #35506a; font-size: 11px; }
+        .notes { background: #f7fbff; border: 1px dashed #cfe0f2; border-radius: 6px; padding: 8px 10px; font-weight: 600; color: #294255; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="title">Prescription</div>
-        <div class="sub">
-            Consultation #{{ prescription.consultation.id }} -
-            {{ prescription.consultation.patient.prenom }} {{ prescription.consultation.patient.nom }}
+    <div class="page">
+        <div class="header">
+            <div class="title">Elder HealthCare</div>
+            <div class="sub">Prescription - Document officiel</div>
+            <div class="sub">
+                Consultation #{{ prescription.consultation.id }} -
+                {{ prescription.consultation.patient.prenom }} {{ prescription.consultation.patient.nom }}
+            </div>
+            <div class="sub">Date de génération : {{ "now"|date("d/m/Y H:i") }}</div>
         </div>
-    </div>
 
-    <div class="section box">
-        <div class="label">Frequence</div>
-        <div class="value">{{ prescription.frequence }}</div>
-    </div>
-
-    <div class="section box">
-        <div class="label">Dosage</div>
-        <div class="value">{{ prescription.dosage }}</div>
-    </div>
-
-    <div class="section box">
-        <div class="label">Duree du traitement</div>
-        <div class="value">{{ prescription.dureeTraitement }}</div>
-    </div>
-
-    <div class="section box">
-        <div class="label">Periode</div>
-        <div class="value">
-            {{ prescription.dateDebut ? prescription.dateDebut|date('d/m/Y') : '-' }}
-            -
-            {{ prescription.dateFin ? prescription.dateFin|date('d/m/Y') : '-' }}
+        <div class="table-wrap">
+            <table class="prescription-table" cellpadding="0" cellspacing="0">
+                <tbody>
+                    <tr>
+                        <th>Fréquence</th>
+                        <td><span class="pill">{{ prescription.frequence }}</span></td>
+                    </tr>
+                    <tr>
+                        <th>Dosage</th>
+                        <td><span class="pill">{{ prescription.dosage }}</span></td>
+                    </tr>
+                    <tr>
+                        <th>Durée du traitement</th>
+                        <td>{{ prescription.dureeTraitement }}</td>
+                    </tr>
+                    <tr>
+                        <th>Période</th>
+                        <td>
+                            {{ prescription.dateDebut ? prescription.dateDebut|date('d/m/Y') : '-' }}
+                            →
+                            {{ prescription.dateFin ? prescription.dateFin|date('d/m/Y') : '-' }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Médicaments</th>
+                        <td>{{ prescription.medicaments }}</td>
+                    </tr>
+                    <tr>
+                        <th>Consignes</th>
+                        <td><div class="notes">{{ prescription.consignes ?: '-' }}</div></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
-    </div>
-
-    <div class="section box">
-        <div class="label">Medicaments</div>
-        <div class="value">{{ prescription.medicaments }}</div>
-    </div>
-
-    <div class="section box">
-        <div class="label">Consignes</div>
-        <div class="value">{{ prescription.consignes ?: '-' }}</div>
     </div>
 </body>
 </html>

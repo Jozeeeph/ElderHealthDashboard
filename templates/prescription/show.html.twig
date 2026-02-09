@@ -35,6 +35,57 @@
     background: var(--card);
 }
 
+.prescription-grid {
+    display: grid;
+    gap: 14px;
+}
+
+.prescription-hero {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    padding: 16px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(238, 242, 255, 0.7), rgba(241, 247, 244, 0.9));
+    border: 1px solid #dfe7f5;
+}
+
+.prescription-hero .hero-chip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: #ffffff;
+    border: 1px solid #e7edf6;
+    box-shadow: 0 6px 14px rgba(52, 68, 92, 0.08);
+}
+
+.hero-icon {
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: #f1f5ff;
+    color: #3a5a7b;
+    font-size: 1rem;
+}
+
+.hero-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #5c6b79;
+    font-weight: 700;
+}
+
+.hero-value {
+    font-weight: 700;
+    color: #1e2a2f;
+}
+
 .prescription-pill {
     display: inline-flex;
     align-items: center;
@@ -46,6 +97,50 @@
     color: #1a5b6b;
     font-size: 0.85rem;
     font-weight: 600;
+}
+
+.prescription-section {
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid #e6edf0;
+    background: #ffffff;
+    box-shadow: 0 10px 24px rgba(30, 42, 47, 0.08);
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    color: #1f2d34;
+    margin-bottom: 10px;
+}
+
+.section-title .section-icon {
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: #eef4ff;
+    color: #2f5b7c;
+    font-size: 0.95rem;
+}
+
+.prescription-text {
+    font-weight: 600;
+    color: #2b3d46;
+    line-height: 1.5;
+}
+
+.prescription-notes {
+    background: #f7fbff;
+    border: 1px dashed #cfe0f2;
+    border-radius: 14px;
+    padding: 12px 14px;
+    font-weight: 600;
+    color: #294255;
 }
 
 .prescription-modal .modal-content {
@@ -76,19 +171,19 @@
 <div class="prescription-shell container py-4">
     <div class="prescription-header d-flex flex-wrap justify-content-between align-items-start mb-3 gap-2">
         <div>
-            <h1 class="prescription-title mb-1">Prescription</h1>
+            <h1 class="prescription-title mb-1">💊 Prescription</h1>
             <div class="text-muted">
-                Consultation #{{ prescription.consultation.id }} - {{ prescription.consultation.patient.prenom }} {{ prescription.consultation.patient.nom }}
+                🧑‍🦳 Consultation #{{ prescription.consultation.id }} - {{ prescription.consultation.patient.prenom }} {{ prescription.consultation.patient.nom }}
             </div>
         </div>
         <div class="prescription-actions d-flex gap-2">
-            <a class="btn btn-outline-secondary" href="{{ path('prescription_pdf', {'id': prescription.idPrescription}) }}">Telecharger PDF</a>
+            <a class="btn btn-outline-secondary" href="{{ path('prescription_pdf', {'id': prescription.idPrescription}) }}">📄 Télécharger PDF</a>
             <button type="button"
                     class="btn btn-outline-primary"
                     data-bs-toggle="modal"
                     data-bs-target="#prescriptionEditModal"
                     data-edit-url="{{ path('prescription_edit', {'id': prescription.idPrescription}) }}">
-                Modifier
+                ✏️ Modifier
             </button>
             <button type="button"
                     class="btn btn-outline-danger"
@@ -96,45 +191,65 @@
                     data-bs-target="#prescriptionDeleteModal"
                     data-delete-url="{{ path('prescription_delete', {'id': prescription.idPrescription}) }}"
                     data-delete-token="{{ csrf_token('delete_prescription_' ~ prescription.idPrescription) }}">
-                Supprimer
+                🗑️ Supprimer
             </button>
         </div>
     </div>
 
     <div class="card shadow-sm prescription-card">
-        <div class="table-responsive">
-            <table class="table table-bordered align-middle mb-0">
-                <tbody>
-                    <tr>
-                        <th class="text-muted small">Frequence</th>
-                        <td><span class="prescription-pill">{{ prescription.frequence }}</span></td>
-                    </tr>
-                    <tr>
-                        <th class="text-muted small">Dosage</th>
-                        <td><span class="prescription-pill">{{ prescription.dosage }}</span></td>
-                    </tr>
-                    <tr>
-                        <th class="text-muted small">Duree du traitement</th>
-                        <td class="fw-semibold">{{ prescription.dureeTraitement }}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-muted small">Periode</th>
-                        <td class="fw-semibold">
-                            {{ prescription.dateDebut ? prescription.dateDebut|date('d/m/Y') : '-' }}
-                            -
-                            {{ prescription.dateFin ? prescription.dateFin|date('d/m/Y') : '-' }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <th class="text-muted small">Medicaments</th>
-                        <td class="fw-semibold">{{ prescription.medicaments }}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-muted small">Consignes</th>
-                        <td class="fw-semibold">{{ prescription.consignes ?: '-' }}</td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="card-body">
+            <div class="prescription-grid">
+                <div class="prescription-hero">
+                    <div class="hero-chip">
+                        <span class="hero-icon">🔁</span>
+                        <div>
+                            <div class="hero-label">Fréquence</div>
+                            <div class="hero-value">{{ prescription.frequence }}</div>
+                        </div>
+                    </div>
+                    <div class="hero-chip">
+                        <span class="hero-icon">📏</span>
+                        <div>
+                            <div class="hero-label">Dosage</div>
+                            <div class="hero-value">{{ prescription.dosage }}</div>
+                        </div>
+                    </div>
+                    <div class="hero-chip">
+                        <span class="hero-icon">📆</span>
+                        <div>
+                            <div class="hero-label">Durée</div>
+                            <div class="hero-value">{{ prescription.dureeTraitement }}</div>
+                        </div>
+                    </div>
+                    <div class="hero-chip">
+                        <span class="hero-icon">🗓️</span>
+                        <div>
+                            <div class="hero-label">Période</div>
+                            <div class="hero-value">
+                                {{ prescription.dateDebut ? prescription.dateDebut|date('d/m/Y') : '-' }}
+                                →
+                                {{ prescription.dateFin ? prescription.dateFin|date('d/m/Y') : '-' }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="prescription-section">
+                    <div class="section-title">
+                        <span class="section-icon">💊</span>
+                        Médicaments
+                    </div>
+                    <div class="prescription-text">{{ prescription.medicaments }}</div>
+                </div>
+
+                <div class="prescription-section">
+                    <div class="section-title">
+                        <span class="section-icon">📝</span>
+                        Consignes
+                    </div>
+                    <div class="prescription-notes">📝 {{ prescription.consignes ?: '-' }}</div>
+                </div>
+            </div>
         </div>
     </div>
 
