@@ -1,0 +1,144 @@
+:root{
+  --elder-blue-1:#0b2a3f;
+  --elder-blue-2:#0a3b5a;
+  --elder-accent:#f4c989;
+  --elder-bg:#eef3f7;
+  --elder-text:#0f172a;
+  --elder-muted:#6c7a89;
+  --elder-radius:16px;
+  --elder-shadow:0 10px 25px rgba(16,24,40,.10);
+}
+
+.elder-body{
+  background: var(--elder-bg);
+}
+
+/* Top navbar */
+.elder-topnav{
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+.elder-brand img{
+  border-radius: 10px;
+}
+
+/* Layout spacing */
+.elder-layout{
+  padding: 18px;
+}
+
+/* Sidebar */
+.elder-sidebar{
+  background: transparent;
+  padding: 0;
+}
+
+.elder-sidebar-inner{
+  min-height: calc(100vh - 110px);
+  border-radius: 18px;
+  background: linear-gradient(180deg, var(--elder-blue-1), var(--elder-blue-2));
+  box-shadow: var(--elder-shadow);
+  padding: 16px;
+  position: sticky;
+  top: 90px;
+}
+
+.elder-sidebar-header{
+  margin-bottom: 14px;
+  padding: 10px;
+  border-radius: 14px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.08);
+}
+
+.elder-mini-brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.elder-mini-logo{
+  width:46px;
+  height:46px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 1px solid rgba(244,201,137,.35);
+  background: rgba(244,201,137,.12);
+}
+
+.elder-mini-title .t1{
+  font-weight:800;
+  font-size: 16px;
+  color:#fff;
+  line-height: 1.05;
+}
+.elder-mini-title .t2{
+  font-weight:800;
+  font-size: 16px;
+  color: var(--elder-accent);
+  line-height: 1.05;
+}
+
+/* Links */
+.elder-nav{
+  margin-top: 10px;
+  gap:10px;
+}
+
+.elder-link{
+  color:#eaf2ff !important;
+  border-radius: 14px;
+  padding: 12px 14px !important;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.08);
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  transition: .15s ease-in-out;
+}
+
+.elder-link:hover{
+  background: rgba(255,255,255,.10);
+  transform: translateY(-1px);
+}
+
+.elder-link.active{
+  background: rgba(255,255,255,.14);
+  border-color: rgba(255,255,255,.16);
+}
+
+/* Footer logout button */
+.elder-sidebar-footer{
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255,255,255,.10);
+}
+
+.elder-logout{
+  display:block;
+  text-align:center;
+  padding: 12px 14px;
+  border-radius: 14px;
+  text-decoration:none;
+  color:#fff;
+  font-weight:800;
+  background: rgba(0,0,0,.10);
+  border: 1px solid rgba(244,201,137,.25);
+}
+
+.elder-logout:hover{
+  background: rgba(0,0,0,.16);
+}
+
+/* Main content area */
+.elder-main{
+  padding-top: 18px;
+}
+
+/* Make main area look like cards on light bg */
+.elder-main .card,
+.elder-main .cardx{
+  border-radius: var(--elder-radius);
+}
