@@ -24,13 +24,39 @@
         </a>
 
         <div class="ms-auto d-flex gap-2">
-          <a class="btn btn-outline-primary" href="{{ path('app_home') }}">
-            Accueil app
-          </a>
-          <a class="btn btn-primary" href="{{ path('app_dashboard') }}">
-            Dashboard
-          </a>
-        </div>
+
+  {% if app.user %}
+
+    <a class="btn btn-outline-primary" href="{{ path('app_home') }}">
+      Accueil app
+    </a>
+
+    {# Dashboard uniquement pour l'admin #}
+    {% if is_granted('ROLE_ADMIN') %}
+      <a class="btn btn-primary" href="{{ path('admin_users_index') }}">
+        Dashboard Admin
+      </a>
+    {% endif %}
+
+    <a class="btn btn-outline-danger" href="{{ path('app_logout') }}">
+      <i class="bi bi-box-arrow-right"></i> Logout
+    </a>
+
+{% else %}
+
+    <a class="btn btn-outline-primary" href="{{ path('app_login') }}">
+      <i class="bi bi-person"></i> Login
+    </a>
+
+    <a class="btn btn-primary" href="{{ path('app_register') }}">
+      <i class="bi bi-person-plus"></i> Register
+    </a>
+
+{% endif %}
+
+
+</div>
+
       </div>
     </nav>
 

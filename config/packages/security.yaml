@@ -17,15 +17,12 @@ security:
             lazy: true
             provider: app_user_provider
 
-            user_checker: App\Security\UtilisateurChecker
-
-            form_login:
-                login_path: app_login
-                check_path: app_login
+            custom_authenticators:
+                - App\Security\LoginFormAuthenticator
 
             logout:
                 path: app_logout
-                target: app_login
+                target: app_public_site
 
     access_control:
         - { path: ^/admin, roles: ROLE_ADMIN }

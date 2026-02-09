@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/admin/users', name: 'admin_users_')]
 class AdminUtilisateurController extends AbstractController
 {
-    #[Route('/', name: 'index')]
+    #[Route('/', name: 'index', methods: ['GET'])]
     public function index(UtilisateurRepository $repo): Response
     {
         return $this->render('BackOffice/user/index.html.twig', [
@@ -31,7 +31,7 @@ class AdminUtilisateurController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'edit')]
+    #[Route('/{id}/edit', name: 'edit', methods: ['GET', 'POST'])]
     public function edit(Utilisateur $user, Request $request, EntityManagerInterface $em): Response
     {
         $form = $this->createForm(UtilisateurAdminType::class, $user);
@@ -39,6 +39,7 @@ class AdminUtilisateurController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em->flush();
+
             return $this->render('BackOffice/user/message.html.twig', [
                 'message' => 'Utilisateur modifié ✅',
             ]);
@@ -62,15 +63,22 @@ class AdminUtilisateurController extends AbstractController
     }
 
     #[Route('/{id}/toggle-active', name: 'toggle_active', methods: ['POST'])]
-    public function toggleActive(Utilisateur $user, EntityManagerInterface $em): Response
-    {
-        $user->setIsActive(!$user->isActive());
-        $em->flush();
+public function toggleActive(Utilisateur $user, EntityManagerInterface $em): Response
+{
+    $newState = !$user->isActive();
+    $user->setIsActive($newState);
+    $em->flush();
 
-        return $this->render('BackOffice/user/message.html.twig', [
-            'message' => 'Activation/Désactivation effectuée ✅',
-        ]);
-    }
+    $message = $newState
+        ? "✅ Compte ACTIVÉ avec succès."
+        : "⛔ Compte DÉSACTIVÉ avec succès.";
+
+    return $this->render('BackOffice/user/message.html.twig', [
+        'message' => $message,
+        'return_route' => 'admin_users_index',
+    ]);
+}
+
 
     #[Route('/{id}/approve', name: 'approve', methods: ['POST'])]
     public function approve(Utilisateur $user, EntityManagerInterface $em): Response

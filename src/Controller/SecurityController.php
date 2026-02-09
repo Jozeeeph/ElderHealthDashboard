@@ -13,18 +13,23 @@ class SecurityController extends AbstractController
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
         if ($this->getUser()) {
-            return $this->redirectToRoute('app_home');
+            // déjà connecté -> redirige vers dashboard admin (ou autre)
+            return $this->redirectToRoute('admin_users_index');
         }
 
-        return $this->render('BackOffice/user/login.html.twig', [
-            'last_username' => $authenticationUtils->getLastUsername(),
-            'error' => $authenticationUtils->getLastAuthenticationError(),
+        $error = $authenticationUtils->getLastAuthenticationError();
+        $lastUsername = $authenticationUtils->getLastUsername();
+
+        return $this->render('FrontOffice/security/login.html.twig', [
+            'last_username' => $lastUsername,
+            'error' => $error,
         ]);
     }
 
     #[Route('/logout', name: 'app_logout')]
     public function logout(): void
     {
-        throw new \LogicException('Intercepted by Symfony logout.');
+        // Symfony intercepte cette route automatiquement
+        throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
     }
 }
