@@ -99,52 +99,48 @@
                                     <p>Commencez par ajouter un nouveau rendez-vous</p>
                                 </div>
                             {% else %}
-                                <div class="table-responsive">
-                                    <table class="table appointments-table">
-                                        <thead>
-                                            <tr>
-                                                
-                                                <th><i class="bi bi-calendar"></i> Date</th>
-                                                <th><i class="bi bi-clock"></i> Heure</th>
-                                                <th><i class="bi bi-geo-alt"></i> Lieu</th>
-                                                <th><i class="bi bi-person-badge"></i> Personnel</th>
-                                                <th><i class="bi bi-person"></i> Patient</th>
-                                                <th><i class="bi bi-tag"></i> Type</th>
-                                                <th><i class="bi bi-circle"></i> État</th>
-                                                <th><i class="bi bi-gear"></i> Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for rdv in rendezVousList %}
-                                            <tr class="fade-in"
-                                                data-date="{{ rdv.date|date('Y-m-d') }}"
-                                                data-etat="{{ rdv.etat|upper }}">
-                                                
-                                                <td>{{ rdv.date|date('d/m/Y') }}</td>
-                                                <td>
-                                                    <span class="badge bg-light text-dark">
-                                                        <i class="bi bi-clock me-1"></i>
+                                <div class="rdv-cards">
+                                    {% for rdv in rendezVousList %}
+                                        <div class="rdv-card fade-in"
+                                             data-date="{{ rdv.date|date('Y-m-d') }}"
+                                             data-etat="{{ rdv.etat|upper }}">
+                                            <div class="rdv-main">
+                                                <div class="rdv-meta">
+                                                    <div class="rdv-date">
+                                                        <i class="bi bi-calendar"></i>
+                                                        {{ rdv.date|date('d/m/Y') }}
+                                                    </div>
+                                                    <div class="rdv-time">
+                                                        <i class="bi bi-clock"></i>
                                                         {{ rdv.heure|date('H:i') }}
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <i class="bi bi-geo-alt text-muted me-1"></i>
-                                                    {{ rdv.lieu|slice(0, 30) }}{{ rdv.lieu|length > 30 ? '...' : '' }}
-                                                </td>
-                                                <td>
-                                                    <i class="bi bi-person-badge text-muted me-1"></i>
-                                                    {{ rdv.personnelMedical ? (rdv.personnelMedical.nom ~ ' ' ~ rdv.personnelMedical.prenom) : 'Non assigné' }}
-                                                </td>
-                                                <td>
-                                                    <i class="bi bi-person text-muted me-1"></i>
-                                                    {{ rdv.patient ? (rdv.patient.nom ~ ' ' ~ rdv.patient.prenom) : 'Non assigné' }}
-                                                </td>
-                                                <td>
+                                                    </div>
+                                                    <div class="rdv-place">
+                                                        <i class="bi bi-geo-alt"></i>
+                                                        {{ rdv.lieu|slice(0, 40) }}{{ rdv.lieu|length > 40 ? '...' : '' }}
+                                                    </div>
+                                                </div>
+                                                <div class="rdv-people">
+                                                    <div class="rdv-personnel">
+                                                        <span class="label">Personnel</span>
+                                                        <span class="value">
+                                                            {{ rdv.personnelMedical ? (rdv.personnelMedical.nom ~ ' ' ~ rdv.personnelMedical.prenom) : 'Non assigné' }}
+                                                        </span>
+                                                    </div>
+                                                    <div class="rdv-patient">
+                                                        <span class="label">Patient</span>
+                                                        <span class="value">
+                                                            {{ rdv.patient ? (rdv.patient.nom ~ ' ' ~ rdv.patient.prenom) : 'Non assigné' }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="rdv-side">
+                                                <div class="rdv-type">
                                                     <span class="badge bg-info text-white">
                                                         {{ rdv.typeRendezVous.type }}
                                                     </span>
-                                                </td>
-                                                <td>
+                                                </div>
+                                                <div class="rdv-status">
                                                     {% set etatClass = {
                                                         'PLANIFIE': 'status-planifiee',
                                                         'PLANIFIEE': 'status-planifiee',
@@ -156,28 +152,25 @@
                                                     <span class="status-badge {{ etatClass[rdv.etat] ?? 'status-planifiee' }}">
                                                         {{ rdv.etat|replace({'_': ' '})|lower|title }}
                                                     </span>
-                                                </td>
-                                                <td>
-                                                    <div class="actions-group">
-                                                        <button class="btn-action edit" 
-                                                                onclick="loadModal('{{ path('appointment_edit', {'id': rdv.id}) }}', 'rdvModal')"
-                                                                title="Modifier">
-                                                            <i class="bi bi-pencil"></i>
-                                                        </button>
-                                                        <a class="btn-action delete js-delete" 
-                                                           href="{{ path('appointment_delete', {'id': rdv.id}) }}"
-                                                           data-delete-url="{{ path('appointment_delete', {'id': rdv.id}) }}"
-                                                           data-delete-name="{{ rdv.patient ? (rdv.patient.prenom ~ ' ' ~ rdv.patient.nom) : '' }}"
-                                                           data-entity="rendez-vous"
-                                                           title="Supprimer">
-                                                            <i class="bi bi-trash"></i>
-                                                        </a>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
+                                                </div>
+                                                <div class="rdv-actions">
+                                                    <button class="btn-action edit"
+                                                            onclick="loadModal('{{ path('appointment_edit', {'id': rdv.id}) }}', 'rdvModal')"
+                                                            title="Modifier">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </button>
+                                                    <a class="btn-action delete js-delete"
+                                                       href="{{ path('appointment_delete', {'id': rdv.id}) }}"
+                                                       data-delete-url="{{ path('appointment_delete', {'id': rdv.id}) }}"
+                                                       data-delete-name="{{ rdv.patient ? (rdv.patient.prenom ~ ' ' ~ rdv.patient.nom) : '' }}"
+                                                       data-entity="rendez-vous"
+                                                       title="Supprimer">
+                                                        <i class="bi bi-trash"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
                                 </div>
                             {% endif %}
                         </div>
@@ -221,60 +214,42 @@
                                     <p>Commencez par ajouter un type de rendez-vous</p>
                                 </div>
                             {% else %}
-                                <div class="table-responsive">
-                                    <table class="table appointments-table">
-                                        <thead>
-                                            <tr>
-                                               
-                                                <th><i class="bi bi-tag"></i> Type</th>
-                                                <th><i class="bi bi-cash"></i> Tarif</th>
-                                                <th><i class="bi bi-clock-history"></i> Durée</th>
-                                                <th><i class="bi bi-gear"></i> Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for type in typesRendezVous %}
-                                            <tr class="fade-in" data-type="{{ type.type|lower }}">
-                                                
-                                                <td>
-                                                    <span class="badge bg-warning text-dark">
-                                                        <i class="bi bi-tag-fill me-1"></i>
-                                                        {{ type.type }}
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <span class="badge bg-success text-white">
-                                                        <i class="bi bi-currency-euro me-1"></i>
+                                <div class="type-cards">
+                                    {% for type in typesRendezVous %}
+                                        <div class="type-card fade-in" data-type="{{ type.type|lower }}">
+                                            <div class="type-main">
+                                                <div class="type-title">
+                                                    <i class="bi bi-tag-fill"></i>
+                                                    {{ type.type }}
+                                                </div>
+                                                <div class="type-meta">
+                                                    <span class="type-chip">
+                                                        <i class="bi bi-currency-euro"></i>
                                                         {{ type.Tarif }} DT
                                                     </span>
-                                                </td>
-                                                <td>
-                                                    <span class="badge bg-secondary text-white">
-                                                        <i class="bi bi-clock me-1"></i>
+                                                    <span class="type-chip">
+                                                        <i class="bi bi-clock"></i>
                                                         {{ type.duree }} min
                                                     </span>
-                                                </td>
-                                                <td>
-                                                    <div class="actions-group">
-                                                        <button class="btn-action edit" 
-                                                                onclick="loadModal('{{ path('appointment_type_edit', {'id': type.id}) }}', 'typeModal')"
-                                                                title="Modifier">
-                                                            <i class="bi bi-pencil"></i>
-                                                        </button>
-                                                        <a class="btn-action delete js-delete" 
-                                                           href="{{ path('appointment_type_delete', {'id': type.id}) }}"
-                                                           data-delete-url="{{ path('appointment_type_delete', {'id': type.id}) }}"
-                                                           data-delete-name="{{ type.type }}"
-                                                           data-entity="type de rendez-vous"
-                                                           title="Supprimer">
-                                                            <i class="bi bi-trash"></i>
-                                                        </a>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
+                                                </div>
+                                            </div>
+                                            <div class="type-actions">
+                                                <button class="btn-action edit"
+                                                        onclick="loadModal('{{ path('appointment_type_edit', {'id': type.id}) }}', 'typeModal')"
+                                                        title="Modifier">
+                                                    <i class="bi bi-pencil"></i>
+                                                </button>
+                                                <a class="btn-action delete js-delete"
+                                                   href="{{ path('appointment_type_delete', {'id': type.id}) }}"
+                                                   data-delete-url="{{ path('appointment_type_delete', {'id': type.id}) }}"
+                                                   data-delete-name="{{ type.type }}"
+                                                   data-entity="type de rendez-vous"
+                                                   title="Supprimer">
+                                                    <i class="bi bi-trash"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
                                 </div>
                             {% endif %}
                         </div>
