@@ -47,14 +47,17 @@
         <div class="section box">
             <div class="label">Piece jointe</div>
             {% if attachment.missing is defined and attachment.missing %}
-                <div class="value">Fichier introuvable : {{ attachment.name }}</div>
+                <div class="value">Piece jointe indisponible</div>
             {% elseif attachment.is_image %}
-                <div class="value">Image jointe</div>
-                <div style="margin-top:8px;">
-                    <img src="{{ attachment.data_uri }}" alt="Piece jointe" style="max-width: 100%; height: auto;">
-                </div>
+                {% if attachment.data_uri is defined %}
+                    <div style="margin-top:8px;">
+                        <img src="{{ attachment.data_uri }}" alt="Piece jointe" style="max-width: 100%; height: auto;">
+                    </div>
+                {% else %}
+                    <div class="value">Image jointe indisponible</div>
+                {% endif %}
             {% else %}
-                <div class="value">Fichier joint : {{ attachment.name }}</div>
+                <div class="value">Fichier joint</div>
             {% endif %}
         </div>
     {% endif %}
