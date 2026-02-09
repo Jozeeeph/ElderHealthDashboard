@@ -38,21 +38,31 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
         );
     }
 
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?RedirectResponse
-    {
-        $user = $token->getUser();
 
-        // SI ADMIN → redirection vers dashboard admin
-        if (in_array('ROLE_ADMIN', $user->getRoles())) {
-            return new RedirectResponse($this->urlGenerator->generate('admin_users_index'));
-        }
+    public function onAuthenticationSuccess(
+    Request $request,
+    TokenInterface $token,
+    string $firewallName
+): ?RedirectResponse {
 
-        // SINON → vers page normale utilisateur
-        return new RedirectResponse($this->urlGenerator->generate('app_home'));
+    $roles = $token->getUser()->getRoles();
+
+    // ADMIN
+    if (in_array('ROLE_ADMIN', $roles, true)) {
+        return new RedirectResponse(
+            $this->urlGenerator->generate('admin_users_index')
+        );
     }
 
-    protected function getLoginUrl(Request $request): string
-    {
-        return $this->urlGenerator->generate(self::LOGIN_ROUTE);
+    // PATIENT
+    if (in_array('ROLE_PATIENT', $roles, true)) {
+        return new RedirectResponse(
+            $this->urlGenerator->generate('app_patient_interfce')
+        );
     }
+
+    return new RedirectResponse('/');
+}
+
+
 }
