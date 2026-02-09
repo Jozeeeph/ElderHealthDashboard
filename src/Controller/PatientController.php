@@ -10,7 +10,10 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+
+#[IsGranted('ROLE_PATIENT')]
 class PatientController extends AbstractController
 {
 
@@ -28,13 +31,19 @@ class PatientController extends AbstractController
         Request $request,
         EntityManagerInterface $em
     ): Response {
-        $patient = $em->getRepository(Utilisateur::class)->find($id);
+        $patient = $this->getUser();
+
+        if (!$patient || !in_array('ROLE_PATIENT', $patient->getRoles(), true)) {
+            return $this->json(['message' => 'Accès interdit'], 403);
+        }
+
         if (!$patient) {
             return $this->json(['message' => 'Patient introuvable'], 404);
         }
-        if ($patient->getRole() !== Role::PATIENT) {
-            return $this->json(['message' => 'Utilisateur non patient'], 400);
+        if (!in_array('ROLE_PATIENT', $patient->getRoles(), true)) {
+            return $this->json(['message' => 'Utilisateur non patient'], 403);          
         }
+
 
         $file = $request->files->get('dossierMedical'); // name="dossierMedical"
         if (!$file) {

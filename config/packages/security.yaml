@@ -17,6 +17,8 @@ security:
             lazy: true
             provider: app_user_provider
 
+            entry_point: App\Security\LoginFormAuthenticator
+
             custom_authenticators:
                 - App\Security\LoginFormAuthenticator
 
@@ -26,6 +28,9 @@ security:
 
     access_control:
         - { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/dashboard, roles: ROLE_ADMIN }
+        - { path: ^/patient, roles: ROLE_PATIENT }
+        - { path: ^/infermier, roles: ROLE_PERSONNEL_MEDICAL }
 
 when@test:
     security:
