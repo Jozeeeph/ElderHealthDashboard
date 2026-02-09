@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\ConsultationRepository;
 use App\Entity\Utilisateur;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ConsultationRepository::class)]
 #[ORM\Table(name: "consultation")]
@@ -16,15 +17,20 @@ class Consultation
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le type de consultation est obligatoire.')]
     private ?string $typeConsultation = null;
 
     #[ORM\Column(type: 'date')]
+    #[Assert\NotBlank(message: 'La date de consultation est obligatoire.')]
     private ?\DateTimeInterface $dateConsultation = null;
 
     #[ORM\Column(type: 'time')]
+    #[Assert\NotBlank(message: "L'heure de consultation est obligatoire.")]
     private ?\DateTimeInterface $heureConsultation = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le lieu est obligatoire.')]
+    #[Assert\Length(min: 2, max: 255, minMessage: 'Le lieu doit contenir au moins {{ limit }} caractères.')]
     private ?string $lieu = null;
 
     #[ORM\Column(length: 50)]
@@ -43,10 +49,12 @@ class Consultation
     // ================= RELATIONS =================
     #[ORM\ManyToOne(targetEntity: Utilisateur::class)]
     #[ORM\JoinColumn(name: "patient_id", referencedColumnName: "id", nullable: false, onDelete: "CASCADE")]
+    #[Assert\NotBlank(message: 'Le patient est obligatoire.')]
     private ?Utilisateur $patient = null;
 
     #[ORM\ManyToOne(targetEntity: Utilisateur::class)]
     #[ORM\JoinColumn(name: "personnel_medical_id", referencedColumnName: "id", nullable: false, onDelete: "CASCADE")]
+    #[Assert\NotBlank(message: 'Le personnel médical est obligatoire.')]
     private ?Utilisateur $personnelMedical = null;
 
     // ================= RELATIONS ONE TO ONE =================
