@@ -69,7 +69,7 @@ class RegistrationController extends AbstractController
             $em->persist($user);
             $em->flush();
 
-         return $this->render('BackOffice/message.html.twig', [
+         return $this->render('BackOffice/user/message.html.twig', [
     'message' => "✅ Demande envoyée. Votre compte est en attente de validation par l’administrateur.",
     'return_route' => 'app_public_site',
 ]);

@@ -88,7 +88,7 @@ class ConsultationController extends AbstractController
             $user = $this->getUser();
             if ($user instanceof \App\Entity\Utilisateur) {
                 $consultation->setCreatedBy($user);
-                $consultation->setCreatedRole($user->getRole() ? $user->getRole()->value : null);
+                $consultation->setCreatedRole($user->getRoleMetier());
             }
             $consultation->setCreatedAt(new \DateTime());
             if (!$consultation->getEtatConsultation()) {
