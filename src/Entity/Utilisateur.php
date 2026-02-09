@@ -110,6 +110,18 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Participation::class, mappedBy: 'utilisateur')]
     private Collection $participations;
 
+    /**
+     * @var Collection<int, Equipement>
+     */
+    #[ORM\OneToMany(targetEntity: Equipement::class, mappedBy: 'utilisateur')]
+    private Collection $equipements;
+
+    /**
+     * @var Collection<int, Commande>
+     */
+    #[ORM\OneToMany(targetEntity: Commande::class, mappedBy: 'utilisateur', orphanRemoval: true)]
+    private Collection $commandes;
+
     public function __construct()
     {
         $this->participations = new ArrayCollection();
@@ -120,6 +132,8 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
         // rôle Symfony minimal
         $this->roles = ['ROLE_USER'];
+        $this->equipements = new ArrayCollection();
+        $this->commandes = new ArrayCollection();
     }
 
     // --------------------
@@ -466,6 +480,66 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         if ($this->participations->removeElement($participation)) {
             if ($participation->getUtilisateur() === $this) {
                 $participation->setUtilisateur(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Equipement>
+     */
+    public function getEquipements(): Collection
+    {
+        return $this->equipements;
+    }
+
+    public function addEquipement(Equipement $equipement): static
+    {
+        if (!$this->equipements->contains($equipement)) {
+            $this->equipements->add($equipement);
+            $equipement->setUtilisateur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEquipement(Equipement $equipement): static
+    {
+        if ($this->equipements->removeElement($equipement)) {
+            // set the owning side to null (unless already changed)
+            if ($equipement->getUtilisateur() === $this) {
+                $equipement->setUtilisateur(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Commande>
+     */
+    public function getCommandes(): Collection
+    {
+        return $this->commandes;
+    }
+
+    public function addCommande(Commande $commande): static
+    {
+        if (!$this->commandes->contains($commande)) {
+            $this->commandes->add($commande);
+            $commande->setUtilisateur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommande(Commande $commande): static
+    {
+        if ($this->commandes->removeElement($commande)) {
+            // set the owning side to null (unless already changed)
+            if ($commande->getUtilisateur() === $this) {
+                $commande->setUtilisateur(null);
             }
         }
 
