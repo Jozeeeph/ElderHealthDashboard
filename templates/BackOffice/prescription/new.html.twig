@@ -4,12 +4,17 @@
 
 {% block body %}
 <div class="container py-4">
-    <h1 class="mb-3">Nouvelle prescription</h1>
-    <div class="text-muted mb-4">
-        Consultation #{{ consultation.id }} - {{ consultation.patient.prenom }} {{ consultation.patient.nom }}
+    <div class="d-flex flex-wrap align-items-start justify-content-between gap-2 mb-4">
+        <div>
+            <h1 class="mb-1">Nouvelle prescription</h1>
+            <div class="text-muted">
+                Consultation #{{ consultation.id }} - {{ consultation.patient.prenom }} {{ consultation.patient.nom }}
+            </div>
+        </div>
+        <a class="btn btn-light" href="{{ path('consultation_index') }}">Retour</a>
     </div>
 
-    {% include 'prescription/_form.html.twig' with {
+    {% include 'BackOffice/prescription/_form.html.twig' with {
         form: form,
         submit_label: 'Ajouter'
     } %}

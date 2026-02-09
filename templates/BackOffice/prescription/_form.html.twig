@@ -1,31 +1,43 @@
 {{ form_start(form, {
-    action: form_action|default(app.request.uri)
+    action: form_action|default(app.request.uri),
+    attr: { class: 'needs-validation' }
 }) }}
-    <div class="row g-3">
-        <div class="col-12">
-            {{ form_row(form.medicaments) }}
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+            <div class="row g-4">
+                <div class="col-12">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <span class="badge text-bg-primary">Prescription</span>
+                        <span class="text-muted small">Renseignez les informations principales</span>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    {{ form_row(form.medicaments, { label: '💊 Médicaments' }) }}
+                </div>
+                <div class="col-12 col-md-6">
+                    {{ form_row(form.frequence, { label: '⏱️ Fréquence' }) }}
+                </div>
+                <div class="col-12 col-md-6">
+                    {{ form_row(form.dosage, { label: '🧪 Dosage' }) }}
+                </div>
+                <div class="col-12 col-md-6">
+                    {{ form_row(form.dureeTraitement, { label: '📆 Durée du traitement' }) }}
+                </div>
+                <div class="col-12 col-md-6">
+                    {{ form_row(form.dateDebut, { label: '📅 Date de début' }) }}
+                </div>
+                <div class="col-12 col-md-6">
+                    {{ form_row(form.dateFin, { label: '📅 Date de fin' }) }}
+                </div>
+                <div class="col-12">
+                    {{ form_row(form.consignes, { label: '🧾 Consignes' }) }}
+                </div>
+            </div>
         </div>
-        <div class="col-12 col-md-6">
-            {{ form_row(form.frequence) }}
+        <div class="card-footer bg-white border-0 d-flex flex-wrap gap-2 p-4 pt-0">
+            <button class="btn btn-primary px-4" type="submit">{{ submit_label|default('Enregistrer') }}</button>
+            <a class="btn btn-outline-secondary" href="{{ path('consultation_index') }}">Retour</a>
         </div>
-        <div class="col-12 col-md-6">
-            {{ form_row(form.dosage) }}
-        </div>
-        <div class="col-12 col-md-6">
-            {{ form_row(form.dureeTraitement) }}
-        </div>
-        <div class="col-12 col-md-6">
-            {{ form_row(form.dateDebut) }}
-        </div>
-        <div class="col-12 col-md-6">
-            {{ form_row(form.dateFin) }}
-        </div>
-        <div class="col-12">
-            {{ form_row(form.consignes) }}
-        </div>
-    </div>
-    <div class="mt-4 d-flex gap-2">
-        <button class="btn btn-primary" type="submit">{{ submit_label|default('Enregistrer') }}</button>
-        <a class="btn btn-light" href="{{ path('consultation_index') }}">Retour</a>
     </div>
 {{ form_end(form) }}
