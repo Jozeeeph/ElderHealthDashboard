@@ -65,11 +65,12 @@ class ConsultationController extends AbstractController
         $user = $this->requirePersonnel();
         $consultation = new Consultation();
         $form = $this->createForm(ConsultationType::class, $consultation);
-        $form->remove('personnelMedical');
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $consultation->setPersonnelMedical($user);
+            if (!$consultation->getPersonnelMedical()) {
+                $consultation->setPersonnelMedical($user);
+            }
             $consultation->setCreatedBy($user);
             $consultation->setCreatedRole($user->getRoleMetier());
             $consultation->setCreatedAt(new \DateTime());
@@ -107,11 +108,9 @@ class ConsultationController extends AbstractController
         }
 
         $form = $this->createForm(ConsultationType::class, $consultation);
-        $form->remove('personnelMedical');
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $consultation->setPersonnelMedical($user);
             $em->flush();
             $this->addFlash('success', 'Consultation mise a jour !');
             return $this->redirectToRoute('front_infermier_consultation_index');
