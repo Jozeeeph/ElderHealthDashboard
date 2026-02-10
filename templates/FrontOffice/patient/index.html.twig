@@ -9,50 +9,7 @@
 	<div
 		class="patient-app">
 
-		<!-- TOPBAR -->
-		<header class="topbar">
-			<div
-				class="topbar-inner">
-
-				<!-- BRAND -->
-				<a href="{{ path('app_public_site') }}" class="brand">
-					<img src="{{ asset('img/logo.png') }}" alt="Elder HealthCare">
-					<span class="brand-text">
-						<span class="fw-bold text-primary">Elder</span>
-						<span class="fw-bold text-warning ms-1">HealthCare</span>
-					</span>
-				</span>
-			</a>
-
-			<!-- NAV -->
-			<nav class="top-nav">
-				<a class="active">Accueil</a>
-				<a href="{{ path('patient_rendezvous_index') }}">Rendez-vous</a>
-				<a href="{{ path('patient_consultations') }}">Consultation</a>
-				<a href="{{ path('patient_rendezvous_index') }}">Rendez-vous</a>
-				<a href="{{ path('equipment_list_index') }}">Equipement</a>
-				<a href="{{ path('forum_post_forum_index') }}">Forum</a>
-				<a href="{{ path('front_events_index') }}">Événements</a>
-				<a>Messages</a>
-				<a>Alertes</a>
-			</nav>
-
-			<!-- PROFILE -->
-			<a class="profile" href="{{ path('patient_profile') }}">
-				<div class="profile-emoji">🙂</div>
-				{% set display_name = 'Patient' %}
-				{% if app.user %}
-					{% if app.user.prenom is defined and app.user.nom is defined %}
-						{% set display_name = app.user.prenom ~ ' ' ~ app.user.nom %}
-					{% elseif app.user.email is defined %}
-						{% set display_name = app.user.email %}
-					{% endif %}
-				{% endif %}
-				<strong>{{ display_name }}</strong>
-			</a>
-
-		</div>
-	</header>
+		{% include 'FrontOffice/patient/_header.html.twig' %}
 
 	<!-- MAIN -->
 	<main class="patient-main">
@@ -63,18 +20,18 @@
 				<h1>
 					Bonjour
 					{{ patientName|default('Fatma') }}
-					<span class="wave">👋</span>
+					<span class="wave">ðŸ‘‹</span>
 				</h1>
 
 				<p>
-					Bienvenue dans votre espace santé.  
-																							      Gérez vos rendez-vous, documents médicaux et messages en toute simplicité.
+					Bienvenue dans votre espace santÃ©.  
+																							      GÃ©rez vos rendez-vous, documents mÃ©dicaux et messages en toute simplicitÃ©.
 				</p>
 
 				<div class="actions">
 					<a href="#" class="btn primary">Prendre rendez-vous</a>
-					<a href="#" class="btn ghost">Contacter médecin</a>
-					<a href="{{ path('patient_profile') }}" class="btn ghost">Mettre à jour profil</a>
+					<a href="#" class="btn ghost">Contacter mÃ©decin</a>
+					<a href="{{ path('patient_profile') }}" class="btn ghost">Mettre Ã  jour profil</a>
 				</div>
 			</div>
 		</section>
@@ -84,20 +41,20 @@
 		<section class="stats" id="rendezvous">
 			<div class="stat-card">
 				<h3>Prochain RDV</h3>
-				<p>12 Février 2026 – 10:30</p>
-				<span class="tag ok">Confirmé</span>
+				<p>12 FÃ©vrier 2026 â€“ 10:30</p>
+				<span class="tag ok">ConfirmÃ©</span>
 			</div>
 
 			<div class="stat-card">
 				<h3>Documents</h3>
 				<p>6 fichiers disponibles</p>
-				<span class="tag">PDF & Résultats</span>
+				<span class="tag">PDF & RÃ©sultats</span>
 			</div>
 
 			<div class="stat-card">
 				<h3>Alertes</h3>
 				<p>1 notification</p>
-				<span class="tag warn">À vérifier</span>
+				<span class="tag warn">Ã€ vÃ©rifier</span>
 			</div>
 		</section>
 
@@ -105,16 +62,16 @@
 		<section class="content-grid" id="consultations">
 
 			<div class="card">
-				<h2>Notifications récentes</h2>
+				<h2>Notifications rÃ©centes</h2>
 
 				<div class="item">
-					<strong>Rappel médicament</strong>
-					<p>Prendre votre traitement à 20h.</p>
+					<strong>Rappel mÃ©dicament</strong>
+					<p>Prendre votre traitement Ã  20h.</p>
 				</div>
 
 				<div class="item">
 					<strong>Nouveau document</strong>
-					<p>Résultat d’analyse ajouté.</p>
+					<p>RÃ©sultat dâ€™analyse ajoutÃ©.</p>
 				</div>
 			</div>
 
@@ -123,12 +80,12 @@
 
 				<div class="item">
 					<strong>Ordonnance</strong>
-					<p>Ajoutée le 04/02</p>
+					<p>AjoutÃ©e le 04/02</p>
 				</div>
 
 				<div class="item">
 					<strong>Analyse sanguine</strong>
-					<p>Ajoutée le 02/02</p>
+					<p>AjoutÃ©e le 02/02</p>
 				</div>
 			</div>
 
@@ -137,7 +94,7 @@
 
 				<div class="item">
 					<strong>Dr. Amina Trabelsi</strong>
-					<p>Vos résultats sont rassurants.</p>
+					<p>Vos rÃ©sultats sont rassurants.</p>
 				</div>
 
 				<a href="#" class="btn primary full">Nouveau message</a>
