@@ -14,7 +14,8 @@
 				align-items: start;
 			}
 
-			.consult-meta, .consult-docs {
+			.consult-meta,
+			.consult-docs {
 				display: grid;
 				gap: 10px;
 			}
@@ -39,41 +40,13 @@
 				color: var(--text);
 			}
 
-			@media (max-width: 900px) {
+			@media(max-width: 900px) {
 				.consult-card {
 					grid-template-columns: 1fr;
 				}
 			}
 		</style>
-<<<<<<< HEAD
 		{% include 'FrontOffice/patient/_header.html.twig' %}
-=======
-		<header class="topbar">
-			<div class="topbar-inner">
-				<a href="{{ path('app_public_site') }}" class="brand">
-					<img src="{{ asset('img/logo.png') }}" alt="Elder HealthCare">
-					<span class="brand-text">
-						<span class="fw-bold text-primary">Elder</span>
-						<span class="fw-bold text-warning ms-1">HealthCare</span>
-					</span>
-				</a>
-
-				<nav class="top-nav">
-					<a href="{{ path('app_patient_interfce') }}">Accueil</a>
-					<a href="{{ path('patient_consultations') }}">Consultations</a>
-
-					<a href="{{ path('equipment_list_index') }}">Equipement</a>
-					<a href="{{ path('forum_post_forum_index') }}">Forum</a>
-					<a href="{{ path('front_events_index') }}">Événements</a>
-				</nav>
-
-				<div class="profile">
-					<img src="{{ asset('img/home.jpg') }}" alt="Profil">
-					<strong>{{ patient.prenom ?? 'Patient' }}</strong>
-				</div>
-			</div>
-		</header>
->>>>>>> consultationnn
 
 		<main class="patient-main">
 			<section class="welcome-card">
@@ -81,11 +54,11 @@
 				<p>Voici la liste de vos consultations.</p>
 			</section>
 
-				<section class="content-grid" style="grid-template-columns: 1fr;">
+			<section class="content-grid" style="grid-template-columns: 1fr;">
 				{% for consultation in consultations %}
 					<div class="card consult-card">
 						<div>
-							<h2>🩺 Consultation {{ consultation.id }}</h2>
+							<h2>🩺 Consultation #{{ consultation.id }}</h2>
 							<div class="consult-meta">
 								<div class="consult-row">
 									<div class="consult-label">📅 Date</div>
@@ -105,7 +78,8 @@
 								</div>
 								<div class="consult-row">
 									<div class="consult-label">👨‍⚕️ Personnel</div>
-									<div class="consult-value">{{ consultation.personnelMedical.prenom }} {{ consultation.personnelMedical.nom }}</div>
+									<div class="consult-value">{{ consultation.personnelMedical.prenom }}
+										{{ consultation.personnelMedical.nom }}</div>
 								</div>
 							</div>
 						</div>
@@ -114,7 +88,7 @@
 								<strong>🧾 Rapport médical</strong>
 								{% if consultation.rapportMedical %}
 									<p>
-									<a class="btn ghost" href="{{ path('patient_rapport_show', {'id': consultation.rapportMedical.idRapport}) }}">Voir rapport</a>
+										<a class="btn ghost" href="{{ path('patient_rapport_show', {'id': consultation.rapportMedical.idRapport}) }}">Voir rapport</a>
 										<a class="btn ghost" href="{{ path('rapport_medical_pdf', {'id': consultation.rapportMedical.idRapport}) }}">Télécharger PDF</a>
 									</p>
 								{% else %}
@@ -125,7 +99,7 @@
 								<strong>💊 Prescription</strong>
 								{% if consultation.prescription %}
 									<p>
-									<a class="btn primary" href="{{ path('patient_prescription_show', {'id': consultation.prescription.idPrescription}) }}">Voir prescription</a>
+										<a class="btn primary" href="{{ path('patient_prescription_show', {'id': consultation.prescription.idPrescription}) }}">Voir prescription</a>
 										<a class="btn ghost" href="{{ path('prescription_pdf', {'id': consultation.prescription.idPrescription}) }}">Télécharger PDF</a>
 									</p>
 								{% else %}

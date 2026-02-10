@@ -1,86 +1,84 @@
-
-
-
 {% block stylesheets %}
-	<link rel="stylesheet" href="{{ asset('css/patient.css') }}?v=2">
+	<link rel="stylesheet" href="{{ asset('css/patient.css') }}?v=3">
 	<link rel="stylesheet" href="{{ asset('css/patient-rendezvous.css') }}">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 {% endblock %}
 
 {% block public_nav %}{% endblock %}
 
 {% block body %}
 	<div class="patient-app">
+
 		{% include 'FrontOffice/patient/_header.html.twig' %}
-	<main class="patient-main">
-		<section class="welcome-card">
-			<div class="welcome-content">
-				<h1>Mes rendez-vous</h1>
-				<p>Consultez et ajoutez vos rendez-vous.</p>
-				<div class="actions">
-					<a class="btn primary" href="{{ path('patient_rendezvous_new') }}">Prendre rendez-vous</a>
-				</div>
-			</div>
-		</section>
 
-		{% for message in app.flashes('success') %}
-			<div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-				{{ message }}
-				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-			</div>
-		{% endfor %}
-
-		<section class="content-grid">
-			<div class="card" style="grid-column: 1 / -1;">
-				<h2>Liste des rendez-vous</h2>
-
-				{% if rendezVousList is empty %}
-					<div class="item">
-						<strong>Aucun rendez-vous</strong>
-						<p>Commencez par ajouter un nouveau rendez-vous.</p>
+		<main class="patient-main">
+			<section class="welcome-card">
+				<div class="welcome-content">
+					<h1>Mes rendez-vous</h1>
+					<p>Consultez et ajoutez vos rendez-vous.</p>
+					<div class="actions">
+						<a class="btn primary" href="{{ path('patient_rendezvous_new') }}">Prendre rendez-vous</a>
 					</div>
-				{% else %}
-					<div class="rdv-cards">
-						{% for rdv in rendezVousList %}
-							<div class="rdv-card fade-in">
-								<div class="rdv-main">
-									<div class="rdv-meta">
-										<div class="rdv-date">
-											<i class="bi bi-calendar"></i>
-											{{ rdv.date|date('d/m/Y') }}
+				</div>
+			</section>
+
+			{% for message in app.flashes('success') %}
+				<div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+					{{ message }}
+					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+				</div>
+			{% endfor %}
+
+			<section class="content-grid">
+				<div class="card" style="grid-column: 1 / -1;">
+					<h2>Liste des rendez-vous</h2>
+
+					{% if rendezVousList is empty %}
+						<div class="item">
+							<strong>Aucun rendez-vous</strong>
+							<p>Commencez par ajouter un nouveau rendez-vous.</p>
+						</div>
+					{% else %}
+						<div class="rdv-cards">
+							{% for rdv in rendezVousList %}
+								<div class="rdv-card fade-in">
+									<div class="rdv-main">
+										<div class="rdv-meta">
+											<div class="rdv-date">
+												<i class="bi bi-calendar"></i>
+												{{ rdv.date|date('d/m/Y') }}
+											</div>
+											<div class="rdv-time">
+												<i class="bi bi-clock"></i>
+												{{ rdv.heure|date('H:i') }}
+											</div>
+											<div class="rdv-place">
+												<i class="bi bi-geo-alt"></i>
+												{{ rdv.lieu|slice(0, 40) }}{{ rdv.lieu|length > 40 ? '...' : '' }}
+											</div>
 										</div>
-										<div class="rdv-time">
-											<i class="bi bi-clock"></i>
-											{{ rdv.heure|date('H:i') }}
-										</div>
-										<div class="rdv-place">
-											<i class="bi bi-geo-alt"></i>
-											{{ rdv.lieu|slice(0, 40) }}{{ rdv.lieu|length > 40 ? '...' : '' }}
+										<div class="rdv-people">
+											<div class="rdv-personnel">
+												<span class="label">Personnel</span>
+												<span class="value">
+													{{ rdv.personnelMedical ? (rdv.personnelMedical.nom ~ ' ' ~ rdv.personnelMedical.prenom) : 'Non assigne' }}
+												</span>
+											</div>
+											<div class="rdv-patient">
+												<span class="label">Patient</span>
+												<span class="value">
+													{{ rdv.patient ? (rdv.patient.nom ~ ' ' ~ rdv.patient.prenom) : 'Non assigne' }}
+												</span>
+											</div>
 										</div>
 									</div>
-									<div class="rdv-people">
-										<div class="rdv-personnel">
-											<span class="label">Personnel</span>
-											<span class="value">
-												{{ rdv.personnelMedical ? (rdv.personnelMedical.nom ~ ' ' ~ rdv.personnelMedical.prenom) : 'Non assigne' }}
+									<div class="rdv-side">
+										<div class="rdv-type">
+											<span class="badge bg-info text-white">
+												{{ rdv.typeRendezVous.type }}
 											</span>
 										</div>
-										<div class="rdv-patient">
-											<span class="label">Patient</span>
-											<span class="value">
-												{{ rdv.patient ? (rdv.patient.nom ~ ' ' ~ rdv.patient.prenom) : 'Non assigne' }}
-											</span>
-										</div>
-									</div>
-								</div>
-								<div class="rdv-side">
-									<div class="rdv-type">
-										<span class="badge bg-info text-white">
-											{{ rdv.typeRendezVous.type }}
-										</span>
-									</div>
-									<div class="rdv-status">
-										{% set etatClass = {
+										<div class="rdv-status">
+											{% set etatClass = {
 											'EN_ATTENTE': 'status-en_attente',
 											'PLANIFIE': 'status-planifiee',
 											'PLANIFIEE': 'status-planifiee',
@@ -90,31 +88,27 @@
 											'ANNULEE': 'status-annulee',
 											'REFUSEE': 'status-refusee'
 										} %}
-										<span class="status-badge {{ etatClass[rdv.etat] ?? 'status-planifiee' }}">
-											{{ rdv.etat|replace({'_': ' '})|lower|title }}
-										</span>
-									</div>
-									<div class="rdv-actions">
-										<a class="btn-action edit"
-										   href="{{ path('patient_rendezvous_edit', {'id': rdv.id}) }}"
-										   title="Modifier">
-											<i class="bi bi-pencil"></i>
-										</a>
-										{% if rdv.etat != 'ANNULEE' %}
-											<a class="btn-action delete js-delete"
-											   href="{{ path('patient_rendezvous_cancel', {'id': rdv.id}) }}"
-											   title="Annuler">
-												<i class="bi bi-x-circle"></i>
+											<span class="status-badge {{ etatClass[rdv.etat] ?? 'status-planifiee' }}">
+												{{ rdv.etat|replace({'_': ' '})|lower|title }}
+											</span>
+										</div>
+										<div class="rdv-actions">
+											<a class="btn-action edit" href="{{ path('patient_rendezvous_edit', {'id': rdv.id}) }}" title="Modifier">
+												<i class="bi bi-pencil"></i>
 											</a>
-										{% endif %}
+											{% if rdv.etat != 'ANNULEE' %}
+												<a class="btn-action delete js-delete" href="{{ path('patient_rendezvous_cancel', {'id': rdv.id}) }}" title="Annuler">
+													<i class="bi bi-x-circle"></i>
+												</a>
+											{% endif %}
+										</div>
 									</div>
 								</div>
-							</div>
-						{% endfor %}
-					</div>
-				{% endif %}
-			</div>
-		</section>
-	</main>
-</div>
+							{% endfor %}
+						</div>
+					{% endif %}
+				</div>
+			</section>
+		</main>
+	</div>
 {% endblock %}

@@ -1,184 +1,138 @@
-{% block stylesheets %}
-	<link rel="stylesheet" href="{{ asset('css/forumFront.css') }}?v=3">
-{% endblock %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Forum communautaire</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-{% block body %}
-	<div
-		class="patient-app forum-page">
+  {# Bootstrap CSS #}
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-		{# EXACT same header #}
-		{% include 'FrontOffice/patient/_header.html.twig' %}
+  {# Bootstrap Icons #}
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
-		<main class="patient-main forum-main">
-			<div
-				class="container">
+  {# Your CSS #}
+  <link rel="stylesheet" href="{{ asset('css/patient.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/forum.css') }}">
+</head>
 
-				<!-- HERO -->
-				<section class="forum-hero">
-					<div class="forum-hero__inner">
-						<div class="forum-hero__text">
-							<h1 class="forum-hero__title">Forum</h1>
-							<p class="forum-hero__subtitle">
-								Partagez des infos, posez des questions et échangez avec la communauté.
-							</p>
-						</div>
+<body>
 
-						<div class="forum-hero__actions">
-							{% if app.user %}
-								<a href="{{ path('forum_post_new') }}" class="btn btn-primary btn-forum">
-									<i class="bi bi-plus-circle"></i>
-									Nouvelle publication
-								</a>
-							{% else %}
-								<a href="{{ path('app_login') }}" class="btn btn-outline-primary btn-forum">
-									<i class="bi bi-box-arrow-in-right"></i>
-									Se connecter
-								</a>
-							{% endif %}
-						</div>
-					</div>
-				</section>
+<div class="patient-app forum-page">
 
-				<!-- FEED -->
-				<div class="forum-layout">
-					<div class="forum-feed">
+  {# HEADER #}
+  {% include 'FrontOffice/patient/_header.html.twig' %}
 
-						{% for post in posts %}
-							<article
-								class="post-card">
+  <main class="patient-main">
 
-								<!-- TOP -->
-								<header class="post-top">
-									<div class="post-user">
-										<div class="post-avatar">
-											{% if post.utilisateur %}
-												{{ post.utilisateur.prenom|slice(0,1)|upper }}
-											{% else %}
-												U
-											{% endif %}
-										</div>
+    <!-- HERO -->
+    <section class="forum-hero">
+      <div class="forum-hero__inner">
+        <div>
+          <h1>Forum communautaire</h1>
+          <p>Échangez avec la communauté Elder HealthCare</p>
+        </div>
 
-										<div class="post-meta">
-											<div class="post-name">
-												{% if post.utilisateur %}
-													{{ post.utilisateur.prenom }}
-													{{ post.utilisateur.nom }}
-												{% else %}
-													Utilisateur
-												{% endif %}
-											</div>
+        {% if app.user %}
+          <button
+            class="btn btn-primary rounded-pill px-4"
+            data-bs-toggle="modal"
+            data-bs-target="#newPostModal">
+            <i class="bi bi-plus-circle"></i>
+            Nouvelle publication
+          </button>
+        {% endif %}
+      </div>
+    </section>
 
-											<div class="post-time">
-												<i class="bi bi-clock"></i>
-												{{ post.dateDeCreation ? post.dateDeCreation|date('d/m/Y H:i') : 'Publié récemment' }}
-											</div>
-										</div>
-									</div>
+    <!-- POSTS -->
+    <div class="forum-wrap container">
 
-									{% if post.status %}
-										<span class="status-pill {{ post.status == 'ACTIVE' ? 'is-active' : 'is-inactive' }}">
-											<span class="dot"></span>
-											{{ post.status }}
-										</span>
-									{% endif %}
-								</header>
+      {% for post in posts %}
+        <article class="post-card">
 
-								<!-- BODY -->
-								<div class="post-body">
-									<h5 class="post-title">{{ post.title }}</h5>
-									<p class="post-text">{{ post.content }}</p>
+          <!-- TOP -->
+          <header class="post-card__top">
+            <div class="post-meta">
+              <h5>{{ post.title }}</h5>
+              <span class="small">
+                {{ post.utilisateur.prenom }}
+                {{ post.utilisateur.nom }}
+                ·
+                {{ post.dateDeCreation|date('d/m/Y H:i') }}
+              </span>
+            </div>
 
-									{% if post.imageName %}
-										<div class="post-media">
-											<img src="{{ asset('uploads/posts/' ~ post.imageName) }}" alt="Image de la publication" loading="lazy">
-										</div>
-										{% else %}
-									{# optional placeholder, you can remove this block if you want #}
-										{# <div class="post-media post-media--empty">
-										      <i class="bi bi-image"></i>
-										    </div> #}
-									{% endif %}
+            <span class="badge-soft badge-active">
+              <span class="badge-color bg-success"></span>
+              ACTIVE
+            </span>
+          </header>
 
-								</div>
+          <!-- BODY -->
+          <div class="post-card__body">
+            <p class="post-content">{{ post.content }}</p>
 
-								<!-- ACTIONS -->
-								<footer class="post-actions">
-									<button class="action-btn" type="button" data-bs-toggle="collapse" data-bs-target="#comments-{{ post.id }}" aria-expanded="false" aria-controls="comments-{{ post.id }}">
-										<i class="bi bi-chat-dots"></i>
-										Commentaires
-										<span class="count">{{ post.commentaires|length }}</span>
-									</button>
+            {% if post.imageName %}
+              <div class="post-image-wrapper mt-3">
+                <img
+                  src="{{ asset('uploads/posts/' ~ post.imageName) }}"
+                  class="post-image"
+                  alt="Image du post">
+              </div>
+            {% endif %}
+          </div>
 
-									{% if app.user %}
-										<a class="action-btn" href="{{ path('forum_comment_new', { postId: post.id }) }}">
-											<i class="bi bi-chat-left-text"></i>
-											Ajouter
-										</a>
-									{% else %}
-										<a class="action-btn" href="{{ path('app_login') }}">
-											<i class="bi bi-box-arrow-in-right"></i>
-											Se connecter
-										</a>
-									{% endif %}
-								</footer>
+          <!-- ACTIONS -->
+          <div class="actions">
+            <button
+              class="btn btn-outline-primary btn-pill"
+              data-bs-toggle="modal"
+              data-bs-target="#commentModal-{{ post.id }}">
+              <i class="bi bi-chat"></i>
+              Ajouter un commentaire
+            </button>
 
-								<!-- COMMENTS -->
-								<div class="collapse" id="comments-{{ post.id }}">
-									<div class="comments-wrap">
+            <span class="btn-pill text-muted">
+              {{ post.commentaires|length }} commentaires
+            </span>
+          </div>
 
-										{% if post.commentaires|length > 0 %}
-											{% for c in post.commentaires %}
-												<div class="comment-item">
+          <!-- COMMENTS -->
+          <div class="comments">
+            {% if post.commentaires is empty %}
+              <div class="empty">Aucun commentaire</div>
+            {% else %}
+              {% for c in post.commentaires %}
+                <div class="comment-item">
+                  <div class="comment-top">
+                    <strong>{{ c.utilisateur.prenom }}</strong>
+                    <span>{{ c.date|date('d/m/Y H:i') }}</span>
+                  </div>
+                  <div>{{ c.content }}</div>
+                </div>
+              {% endfor %}
+            {% endif %}
+          </div>
 
-													<div class="comment-avatar">
-														{% if c.utilisateur %}
-															{{ c.utilisateur.prenom|slice(0,1)|upper }}
-														{% else %}
-															U
-														{% endif %}
-													</div>
+        </article>
 
-													<div class="comment-bubble">
-														<div class="comment-top">
-															<div class="comment-left">
-																<span class="comment-name">
-																	{% if c.utilisateur %}
-																		{{ c.utilisateur.prenom }}
-																		{{ c.utilisateur.nom }}
-																	{% else %}
-																		Utilisateur
-																	{% endif %}
-																</span>
-																<span class="comment-time">{{ c.date|date('d/m/Y H:i') }}</span>
-															</div>
+        {# COMMENT MODAL (per post) #}
+        {% include 'FrontOffice/forum/_modal_comment.html.twig' with { post: post } %}
+      {% else %}
+        <div class="empty mt-5">Aucune publication pour le moment 🙂</div>
+      {% endfor %}
 
-															{% if c.status %}
-																<span class="mini-pill {{ c.status == 'ACTIVE' ? 'is-active' : 'is-inactive' }}">
-																	{{ c.status }}
-																</span>
-															{% endif %}
-														</div>
+    </div>
 
-														<div class="comment-text">{{ c.content }}</div>
-													</div>
-												</div>
-											{% endfor %}
-										{% else %}
-											<div class="empty-state">Aucun commentaire pour le moment 🙂</div>
-										{% endif %}
+  </main>
+</div>
 
-									</div>
-								</div>
+{# NEW POST MODAL #}
+{% include 'FrontOffice/forum/_modal_post.html.twig' %}
 
-							</article>
-						{% else %}
-							<div class="empty-state">Aucune publication pour le moment 🙂</div>
-						{% endfor %}
+{# Bootstrap JS – REQUIRED FOR MODALS #}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-					</div>
-				</div>
-
-			</div>
-		</main>
-	</div>
-{% endblock %}
+</body>
+</html>

@@ -9,104 +9,134 @@
 	<div
 		class="patient-app">
 
+		<!-- TOPBAR -->
 		{% include 'FrontOffice/patient/_header.html.twig' %}
 
-	<!-- MAIN -->
-	<main class="patient-main">
 
-		<!-- WELCOME -->
-		<section class="welcome-card">
-			<div class="welcome-content">
-				<h1>
-					Bonjour
-					{{ patientName|default('Fatma') }}
-					<span class="wave">ðŸ‘‹</span>
-				</h1>
+		<!-- MAIN -->
+		<main
+			class="patient-main">
 
-				<p>
-					Bienvenue dans votre espace santÃ©.  
-																							      GÃ©rez vos rendez-vous, documents mÃ©dicaux et messages en toute simplicitÃ©.
-				</p>
+			<!-- WELCOME -->
+			<section class="welcome-card">
+				<div class="welcome-content">
+					<h1>
+						Bonjour
+						{{ app.user.prenom }}
+						<span class="wave">👋</span>
+					</h1>
 
-				<div class="actions">
-					<a href="#" class="btn primary">Prendre rendez-vous</a>
-					<a href="#" class="btn ghost">Contacter mÃ©decin</a>
-					<a href="{{ path('patient_profile') }}" class="btn ghost">Mettre Ã  jour profil</a>
+					<p>
+						Bienvenue dans votre espace santé.  
+																																																					      Gérez vos rendez-vous, documents médicaux et messages en toute simplicité.
+					</p>
+
+					<div class="actions">
+						<a href="#" class="btn primary">Prendre rendez-vous</a>
+						<a href="#" class="btn ghost">Contacter médecin</a>
+						<a href="{{ path('patient_profile') }}" class="btn ghost">Mettre à jour profil</a>
+					</div>
 				</div>
-			</div>
-		</section>
+			</section>
 
 
-		<!-- STATS -->
-		<section class="stats" id="rendezvous">
-			<div class="stat-card">
-				<h3>Prochain RDV</h3>
-				<p>12 FÃ©vrier 2026 â€“ 10:30</p>
-				<span class="tag ok">ConfirmÃ©</span>
-			</div>
-
-			<div class="stat-card">
-				<h3>Documents</h3>
-				<p>6 fichiers disponibles</p>
-				<span class="tag">PDF & RÃ©sultats</span>
-			</div>
-
-			<div class="stat-card">
-				<h3>Alertes</h3>
-				<p>1 notification</p>
-				<span class="tag warn">Ã€ vÃ©rifier</span>
-			</div>
-		</section>
-
-		<!-- CONTENT -->
-		<section class="content-grid" id="consultations">
-
-			<div class="card">
-				<h2>Notifications rÃ©centes</h2>
-
-				<div class="item">
-					<strong>Rappel mÃ©dicament</strong>
-					<p>Prendre votre traitement Ã  20h.</p>
+			<!-- STATS -->
+			<section class="stats" id="rendezvous">
+				<div class="stat-card">
+					<h3>Prochain RDV</h3>
+					<p>12 Février 2026 – 10:30</p>
+					<span class="tag ok">Confirmé</span>
 				</div>
 
-				<div class="item">
-					<strong>Nouveau document</strong>
-					<p>RÃ©sultat dâ€™analyse ajoutÃ©.</p>
-				</div>
-			</div>
+				<div class="stat-card">
+					<h3>Dossier médical</h3>
 
-			<div class="card">
-				<h2>Derniers documents</h2>
-
-				<div class="item">
-					<strong>Ordonnance</strong>
-					<p>AjoutÃ©e le 04/02</p>
-				</div>
-
-				<div class="item">
-					<strong>Analyse sanguine</strong>
-					<p>AjoutÃ©e le 02/02</p>
-				</div>
-			</div>
-
-			<div class="card">
-				<h2>Messages</h2>
-
-				<div class="item">
-					<strong>Dr. Amina Trabelsi</strong>
-					<p>Vos rÃ©sultats sont rassurants.</p>
+					{% if app.user.dossierMedicalPath %}
+						<p>Dossier disponible</p>
+						<a href="{{ app.user.dossierMedicalPath }}" target="_blank" class="tag ok">
+							Voir PDF
+						</a>
+					{% else %}
+						<p>Aucun dossier</p>
+						<span class="tag warn">À uploader</span>
+					{% endif %}
 				</div>
 
-				<a href="#" class="btn primary full">Nouveau message</a>
-			</div>
+				<div class="stat-card">
+					<h3>Alertes</h3>
+					<p>1 notification</p>
+					<span class="tag warn">À vérifier</span>
+				</div>
+			</section>
 
-	</main>
-</div>
+			<!-- CONTENT -->
+			<section
+				class="content-grid" id="consultations">
 
-  <script>
-	  window.addEventListener('scroll', () => {
-	    document.querySelector('.topbar')
-	      ?.classList.toggle('is-scrolled', window.scrollY > 10);
-	  });
+				<!-- PATIENT INFO -->
+				<div class="card">
+					<h2>Mes informations</h2>
 
-	</script>{% endblock %}
+					<div class="item">
+						<strong>Nom :</strong>
+						{{ app.user.nom }}</div>
+					<div class="item">
+						<strong>Prénom :</strong>
+						{{ app.user.prenom }}</div>
+					<div class="item">
+						<strong>Email :</strong>
+						{{ app.user.email }}</div>
+					<div class="item">
+						<strong>Téléphone :</strong>
+						{{ app.user.numeroTelephone }}</div>
+					<div class="item">
+						<strong>Adresse :</strong>
+						{{ app.user.adresse }}</div>
+					<div class="item">
+						<strong>Date de naissance :</strong>
+						{{ app.user.dateNaissance|date('d/m/Y') }}
+					</div>
+					<div class="item">
+						<strong>Âge :</strong>
+						{{ app.user.age }}
+						ans</div>
+				</div>
+
+				<div class="card">
+					<h2>Documents récents</h2>
+
+					{% if app.user.dossierMedicalPath %}
+						<div class="item">
+							<strong>Dossier médical</strong>
+							<p>Disponible</p>
+							<a href="{{ app.user.dossierMedicalPath }}" target="_blank" class="btn ghost">
+								Ouvrir
+							</a>
+						</div>
+					{% else %}
+						<p class="text-muted">Aucun document médical pour le moment.</p>
+					{% endif %}
+				</div>
+
+				<div class="card">
+					<h2>Messages</h2>
+
+					<div class="item">
+						<strong>Dr. Amina Trabelsi</strong>
+						<p>Vos résultats sont rassurants.</p>
+					</div>
+
+					<a href="#" class="btn primary full">Nouveau message</a>
+				</div>
+
+			</main>
+		</div>
+
+		 <script>
+											  window.addEventListener('scroll', () => {
+											    document.querySelector('.topbar')
+											      ?.classList.toggle('is-scrolled', window.scrollY > 10);
+											  });
+										
+											</script>
+	{% endblock %}
