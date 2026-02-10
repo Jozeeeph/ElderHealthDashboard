@@ -1,203 +1,120 @@
+{% extends 'FrontOffice/base.html.twig' %}
+
 {% block stylesheets %}
-	<link rel="stylesheet" href="{{ asset('css/infermier.css') }}">
+	<link rel="stylesheet" href="{{ asset('css/patient.css') }}?v=2">
+	<link rel="stylesheet" href="{{ asset('css/patient-rendezvous.css') }}">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 {% endblock %}
+
+{% block public_nav %}{% endblock %}
+
 {% block body %}
-	<div class="nurse-app">
-		<header class="topbar">
-			<div class="topbar-inner">
-				<a href="{{ path('app_public_site') }}" class="brand">
-					<img src="{{ asset('img/logo.png') }}" alt="Elder HealthCare">
-					<span>Elder<span>HealthCare</span></span>
-				</a>
-				<nav class="top-nav">
-					<a class="active">Tableau</a>
-					<a>Patients</a>
-					<a href="{{ path('patient_rendezvous_new') }}">Rendez-vous</a>
-					<a >Consultations</a>
-					<a href="{{ path('equipment_list_index') }}">Equipement</a>
-					<a href="{{ path('forum_post_forum_index') }}">Forum</a>
-					<a href="{{ path('front_events_index') }}">Evenements</a>
-					<a>Messages</a>
-				</nav>
-				<div class="profile">
-					<img src="{{ asset('img/home.jpg') }}" alt="Profil">
-					<div class="who">
-						<small>Infirmier</small>
-						<strong>{{ nurseName|default('Fatma') }}</strong>
-					</div>
+<div class="patient-app">
+	{% include 'FrontOffice/patient/_header.html.twig' %}
+
+	<main class="patient-main">
+		<section class="welcome-card">
+			<div class="welcome-content">
+				<h1>Mes rendez-vous</h1>
+				<p>Consultez et ajoutez vos rendez-vous.</p>
+				<div class="actions">
+					<a class="btn primary" href="{{ path('patient_rendezvous_new') }}">Prendre rendez-vous</a>
 				</div>
 			</div>
-		</header>
+		</section>
 
-		<main class="nurse-main">
-			<section class="hero">
-				<div class="hero-left">
-					<span class="badge">Service de jour</span>
-					<h1>Bonjour {{ nurseName|default('Fatma') }}</h1>
-					<p>
-						Voici votre tableau de bord infirmier. Priorites, suivis patients
-						et rendez-vous du jour en un coup d'oeil.
-					</p>
-					<div class="actions">
-						<a href="#" class="btn primary">Nouvelle consultation</a>
-						<a href="#" class="btn ghost">Ajouter note</a>
-						<a href="#" class="btn ghost">Voir planning</a>
-					</div>
-				</div>
-				<div class="hero-right">
-					<div class="mini-card">
-						<h3>Patients actifs</h3>
-						<p class="big">24</p>
-						<p class="muted">6 nouveaux aujourd'hui</p>
-					</div>
-					<div class="mini-card">
-						<h3>Alertes cliniques</h3>
-						<p class="big danger">3</p>
-						<p class="muted">Suivis prioritaires</p>
-					</div>
-				</div>
-			</section>
+		{% for message in app.flashes('success') %}
+			<div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+				{{ message }}
+				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+			</div>
+		{% endfor %}
 
-			<section class="stats">
-				<div class="stat">
-					<div>
-						<small>Rendez-vous</small>
-						<strong>7</strong>
-					</div>
-					<span class="chip ok">Confirmee</span>
-				</div>
-				<div class="stat">
-					<div>
-						<small>Consultations</small>
-						<strong>5</strong>
-					</div>
-					<span class="chip">En cours</span>
-				</div>
-				<div class="stat">
-					<div>
-						<small>Urgences</small>
-						<strong>2</strong>
-					</div>
-					<span class="chip warn">A traiter</span>
-				</div>
-				<div class="stat">
-					<div>
-						<small>Documents</small>
-						<strong>12</strong>
-					</div>
-					<span class="chip">A valider</span>
-				</div>
-			</section>
+		<section class="content-grid">
+			<div class="card" style="grid-column: 1 / -1;">
+				<h2>Liste des rendez-vous</h2>
 
-			<section class="grid">
-				<div class="card span-2">
-					<div class="card-head">
-						<h2>Planning du jour</h2>
-						<a class="link" href="#">Voir tout</a>
+				{% if rendezVousList is empty %}
+					<div class="item">
+						<strong>Aucun rendez-vous</strong>
+						<p>Commencez par ajouter un nouveau rendez-vous.</p>
 					</div>
-					<div class="table">
-						<div class="row head">
-							<span>Heure</span>
-							<span>Patient</span>
-							<span>Service</span>
-							<span>Priorite</span>
-							<span>Etat</span>
-						</div>
-						<div class="row">
-							<span class="mono">08:30</span>
-							<span class="bold">Samir H.</span>
-							<span>Cardiologie</span>
-							<span class="pill warn">Moyen</span>
-							<span class="pill ok">Confirme</span>
-						</div>
-						<div class="row">
-							<span class="mono">10:00</span>
-							<span class="bold">Leila M.</span>
-							<span>Geriatrie</span>
-							<span class="pill ok">Faible</span>
-							<span class="pill">En cours</span>
-						</div>
-						<div class="row">
-							<span class="mono">11:30</span>
-							<span class="bold">Noura S.</span>
-							<span>Neurologie</span>
-							<span class="pill danger">Elevee</span>
-							<span class="pill warn">En attente</span>
-						</div>
-					</div>
-				</div>
-
-				<div class="card">
-					<div class="card-head">
-						<h2>Alertes</h2>
-						<a class="link" href="#">Tout</a>
-					</div>
-					<div class="list">
-						<div class="item">
-							<div class="bubble">BP</div>
-							<div class="content">
-								<b>Tension instable</b>
-								<p>Patient: Noura S. - controle requis</p>
+				{% else %}
+					<div class="rdv-cards">
+						{% for rdv in rendezVousList %}
+							<div class="rdv-card fade-in">
+								<div class="rdv-main">
+									<div class="rdv-meta">
+										<div class="rdv-date">
+											<i class="bi bi-calendar"></i>
+											{{ rdv.date|date('d/m/Y') }}
+										</div>
+										<div class="rdv-time">
+											<i class="bi bi-clock"></i>
+											{{ rdv.heure|date('H:i') }}
+										</div>
+										<div class="rdv-place">
+											<i class="bi bi-geo-alt"></i>
+											{{ rdv.lieu|slice(0, 40) }}{{ rdv.lieu|length > 40 ? '...' : '' }}
+										</div>
+									</div>
+									<div class="rdv-people">
+										<div class="rdv-personnel">
+											<span class="label">Personnel</span>
+											<span class="value">
+												{{ rdv.personnelMedical ? (rdv.personnelMedical.nom ~ ' ' ~ rdv.personnelMedical.prenom) : 'Non assigne' }}
+											</span>
+										</div>
+										<div class="rdv-patient">
+											<span class="label">Patient</span>
+											<span class="value">
+												{{ rdv.patient ? (rdv.patient.nom ~ ' ' ~ rdv.patient.prenom) : 'Non assigne' }}
+											</span>
+										</div>
+									</div>
+								</div>
+								<div class="rdv-side">
+									<div class="rdv-type">
+										<span class="badge bg-info text-white">
+											{{ rdv.typeRendezVous.type }}
+										</span>
+									</div>
+									<div class="rdv-status">
+										{% set etatClass = {
+											'EN_ATTENTE': 'status-en_attente',
+											'PLANIFIE': 'status-planifiee',
+											'PLANIFIEE': 'status-planifiee',
+											'EN_COURS': 'status-en_cours',
+											'TERMINE': 'status-terminee',
+											'TERMINEE': 'status-terminee',
+											'ANNULEE': 'status-annulee',
+											'REFUSEE': 'status-refusee'
+										} %}
+										<span class="status-badge {{ etatClass[rdv.etat] ?? 'status-planifiee' }}">
+											{{ rdv.etat|replace({'_': ' '})|lower|title }}
+										</span>
+									</div>
+									<div class="rdv-actions">
+										<a class="btn-action edit"
+										   href="{{ path('patient_rendezvous_edit', {'id': rdv.id}) }}"
+										   title="Modifier">
+											<i class="bi bi-pencil"></i>
+										</a>
+										{% if rdv.etat != 'ANNULEE' %}
+											<a class="btn-action delete js-delete"
+											   href="{{ path('patient_rendezvous_cancel', {'id': rdv.id}) }}"
+											   title="Annuler">
+												<i class="bi bi-x-circle"></i>
+											</a>
+										{% endif %}
+									</div>
+								</div>
 							</div>
-						</div>
-						<div class="item">
-							<div class="bubble">Rx</div>
-							<div class="content">
-								<b>Traitement a administrer</b>
-								<p>Ordonnance a 14:00</p>
-							</div>
-						</div>
-						<div class="item">
-							<div class="bubble">Lab</div>
-							<div class="content">
-								<b>Resultats disponibles</b>
-								<p>Analyser et valider</p>
-							</div>
-						</div>
+						{% endfor %}
 					</div>
-				</div>
-
-				<div class="card">
-					<div class="card-head">
-						<h2>Patients suivis</h2>
-						<a class="link" href="#">Liste</a>
-					</div>
-					<div class="patients">
-						<div class="p-item">
-							<img src="{{ asset('img/home.jpg') }}" alt="Patient">
-							<div class="p-info">
-								<strong>Hichem K.</strong>
-								<p>Controle post-op</p>
-							</div>
-							<span class="risk high">Eleve</span>
-						</div>
-						<div class="p-item">
-							<img src="{{ asset('img/home.jpg') }}" alt="Patient">
-							<div class="p-info">
-								<strong>Amel R.</strong>
-								<p>Suivi diabete</p>
-							</div>
-							<span class="risk mid">Moyen</span>
-						</div>
-						<div class="p-item">
-							<img src="{{ asset('img/home.jpg') }}" alt="Patient">
-							<div class="p-info">
-								<strong>Yassine B.</strong>
-								<p>Visite hebdomadaire</p>
-							</div>
-							<span class="risk low">Faible</span>
-						</div>
-					</div>
-				</div>
-
-				<div class="card span-2">
-					<div class="card-head">
-						<h2>Note rapide</h2>
-						<a class="link" href="#">Sauvegarder</a>
-					</div>
-					<textarea class="note" placeholder="Ecrire une note rapide pour l'equipe..."></textarea>
-				</div>
-			</section>
-		</main>
-	</div>
+				{% endif %}
+			</div>
+		</section>
+	</main>
+</div>
 {% endblock %}
