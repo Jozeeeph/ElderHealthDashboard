@@ -1,109 +1,198 @@
 {% block stylesheets %}
-	<link rel="stylesheet" href="{{ asset('css/patient.css') }}">
+	<link rel="stylesheet" href="{{ asset('css/infermier.css') }}">
 {% endblock %}
 {% block body %}
-	<div
-		class="patient-app">
-		<!-- TOPBAR -->
+	<div class="nurse-app">
+<<<<<<< HEAD
+		{% include 'FrontOffice/infermier/_header.html.twig' %}
+=======
 		<header class="topbar">
-			<div
-				class="topbar-inner">
-				<!-- BRAND -->
+			<div class="topbar-inner">
 				<a href="{{ path('app_public_site') }}" class="brand">
 					<img src="{{ asset('img/logo.png') }}" alt="Elder HealthCare">
-					<span>Elder<span>HealthCare</span>
-					</span>
+					<span>Elder<span>HealthCare</span></span>
 				</a>
-				<!-- NAV -->
 				<nav class="top-nav">
-					<a class="active">Accueil</a>
-					<a>Rendez-vous</a>
-					<a>Consultation</a>
+					<a class="active">Tableau</a>
+					<a>Patients</a>
+					<a href="{{ path('front_infermier_rendezvous_index') }}">Rendez-vous</a>
+					<a href="{{ path('front_infermier_consultation_index') }}">Consultations</a>
 					<a href="{{ path('equipment_list_index') }}">Equipement</a>
 					<a href="{{ path('forum_post_forum_index') }}">Forum</a>
-					<a href="{{ path('front_events_index') }}">Événements</a>
+					<a href="{{ path('front_events_index') }}">Evenements</a>
 					<a>Messages</a>
-					<a>Alertes</a>
 				</nav>
-				<!-- PROFILE -->
 				<div class="profile">
 					<img src="{{ asset('img/home.jpg') }}" alt="Profil">
-					<strong>Fatma</strong>
+					<div class="who">
+						<small>Infirmier</small>
+						<strong>{{ nurseName|default('Fatma') }}</strong>
+					</div>
 				</div>
 			</div>
 		</header>
-		<!-- MAIN -->
-		<main
-			class="patient-main">
-			<!-- WELCOME -->
-			<section class="welcome-card">
-				<div class="welcome-content">
-					<h1>
-						Bonjour
-						{{ patientName|default('Fatma') }}
-						<span class="wave">👋</span>
-					</h1>
+>>>>>>> rendezvous_client
+
+		<main class="nurse-main">
+			<section class="hero">
+				<div class="hero-left">
+					<span class="badge">Service de jour</span>
+					<h1>Bonjour {{ nurseName|default('Fatma') }}</h1>
 					<p>
-						Bienvenue dans votre espace santé. Gérez vos rendez-vous, documents médicaux et messages en toute simplicité.
+						Voici votre tableau de bord infirmier. Priorites, suivis patients ,Consultation
+						et rendez-vous du jour en un coup d'oeil.
 					</p>
-					<div class="actions">
-						<a href="#" class="btn primary">Prendre rendez-vous</a>
-						<a href="#" class="btn ghost">Contacter médecin</a>
-						<a href="#" class="btn ghost">Mettre à jour profil</a>
+					
+				</div>
+				<div class="hero-right">
+					<div class="mini-card">
+						<h3>Patients actifs</h3>
+						<p class="big">24</p>
+						<p class="muted">6 nouveaux aujourd'hui</p>
+					</div>
+					<div class="mini-card">
+						<h3>Alertes cliniques</h3>
+						<p class="big danger">3</p>
+						<p class="muted">Suivis prioritaires</p>
 					</div>
 				</div>
 			</section>
-			<!-- STATS -->
+
 			<section class="stats">
-				<div class="stat-card">
-					<h3>Prochain RDV</h3>
-					<p>12 Février 2026 – 10:30</p>
-					<span class="tag ok">Confirmé</span>
+				<div class="stat">
+					<div>
+						<small>Rendez-vous</small>
+						<strong>{{ plannedRdvCount|default(0) }}</strong>
+					</div>
+					<span class="chip ok">Planifie</span>
 				</div>
-				<div class="stat-card">
-					<h3>Documents</h3>
-					<p>6 fichiers disponibles</p>
-					<span class="tag">PDF & Résultats</span>
+				<div class="stat">
+					<div>
+						<small>Consultations</small>
+						<strong>{{ consultationCount|default(0) }}</strong>
+					</div>
+					<span class="chip">En cours</span>
 				</div>
-				<div class="stat-card">
-					<h3>Alertes</h3>
-					<p>1 notification</p>
-					<span class="tag warn">À vérifier</span>
+				<div class="stat">
+					<div>
+						<small>Urgences</small>
+						<strong>2</strong>
+					</div>
+					<span class="chip warn">A traiter</span>
+				</div>
+				<div class="stat">
+					<div>
+						<small>Documents</small>
+						<strong>12</strong>
+					</div>
+					<span class="chip">A valider</span>
 				</div>
 			</section>
-			<!-- CONTENT -->
-			<section class="content-grid">
-				<div class="card">
-					<h2>Notifications récentes</h2>
-					<div class="item">
-						<strong>Rappel médicament</strong>
-						<p>Prendre votre traitement à 20h.</p>
+
+			<section class="grid">
+				<div class="card span-2">
+					<div class="card-head">
+						<h2>Planning des rendez-vous</h2>
+						<a class="link" href="#">Voir tout</a>
 					</div>
-					<div class="item">
-						<strong>Nouveau document</strong>
-						<p>Résultat d’analyse ajouté.</p>
+					<div class="table">
+						<div class="row head">
+							<span>Heure</span>
+							<span>Patient</span>
+							<span>Type</span>
+							<span>Lieu</span>
+							<span>Etat</span>
+						</div>
+						{% for rdv in plannedRendezVous|default([]) %}
+							<div class="row">
+								<span class="mono">{{ rdv.heure ? rdv.heure|date('H:i') : '-' }}</span>
+								<span class="bold">
+									{{ rdv.patient ? rdv.patient.prenom ~ ' ' ~ rdv.patient.nom : '-' }}
+								</span>
+								<span>{{ rdv.typeRendezVous ? rdv.typeRendezVous.type : '-' }}</span>
+								<span>{{ rdv.lieu ?? '-' }}</span>
+								<span class="pill ok">{{ rdv.etat ? rdv.etat|lower : 'planifie' }}</span>
+							</div>
+						{% else %}
+							<div class="row">
+								<span class="muted">Aucun rendez-vous planifie.</span>
+							</div>
+						{% endfor %}
 					</div>
 				</div>
+
 				<div class="card">
-					<h2>Derniers documents</h2>
-					<div class="item">
-						<strong>Ordonnance</strong>
-						<p>Ajoutée le 04/02</p>
+					<div class="card-head">
+						<h2>Alertes</h2>
+						<a class="link" href="#">Tout</a>
 					</div>
-					<div class="item">
-						<strong>Analyse sanguine</strong>
-						<p>Ajoutée le 02/02</p>
+					<div class="list">
+						<div class="item">
+							<div class="bubble">BP</div>
+							<div class="content">
+								<b>Tension instable</b>
+								<p>Patient: Noura S. - controle requis</p>
+							</div>
+						</div>
+						<div class="item">
+							<div class="bubble">Rx</div>
+							<div class="content">
+								<b>Traitement a administrer</b>
+								<p>Ordonnance a 14:00</p>
+							</div>
+						</div>
+						<div class="item">
+							<div class="bubble">Lab</div>
+							<div class="content">
+								<b>Resultats disponibles</b>
+								<p>Analyser et valider</p>
+							</div>
+						</div>
 					</div>
 				</div>
+
 				<div class="card">
-					<h2>Messages</h2>
-					<div class="item">
-						<strong>Dr. Amina Trabelsi</strong>
-						<p>Vos résultats sont rassurants.</p>
+					<div class="card-head">
+						<h2>Patients suivis</h2>
+						<a class="link" href="#">Liste</a>
 					</div>
-					<a href="#" class="btn primary full">Nouveau message</a>
+					<div class="patients">
+						<div class="p-item">
+							<img src="{{ asset('img/home.jpg') }}" alt="Patient">
+							<div class="p-info">
+								<strong>Hichem K.</strong>
+								<p>Controle post-op</p>
+							</div>
+							<span class="risk high">Eleve</span>
+						</div>
+						<div class="p-item">
+							<img src="{{ asset('img/home.jpg') }}" alt="Patient">
+							<div class="p-info">
+								<strong>Amel R.</strong>
+								<p>Suivi diabete</p>
+							</div>
+							<span class="risk mid">Moyen</span>
+						</div>
+						<div class="p-item">
+							<img src="{{ asset('img/home.jpg') }}" alt="Patient">
+							<div class="p-info">
+								<strong>Yassine B.</strong>
+								<p>Visite hebdomadaire</p>
+							</div>
+							<span class="risk low">Faible</span>
+						</div>
+					</div>
+				</div>
+
+				<div class="card span-2">
+					<div class="card-head">
+						<h2>Note rapide</h2>
+						<a class="link" href="#">Sauvegarder</a>
+					</div>
+					<textarea class="note" placeholder="Ecrire une note rapide pour l'equipe..."></textarea>
 				</div>
 			</section>
 		</main>
 	</div>
 {% endblock %}
+

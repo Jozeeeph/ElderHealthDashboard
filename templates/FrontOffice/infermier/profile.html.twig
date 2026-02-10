@@ -1,0 +1,49 @@
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{ asset('css/infermier.css') }}">
+{% endblock %}
+
+{% block body %}
+	<div class="nurse-app nurse-profile">
+		{% include 'FrontOffice/infermier/_header.html.twig' %}
+
+		<main class="nurse-main">
+			<section class="profile-hero">
+				<div>
+					<h1>👩‍⚕️ Profil personnel Medical</h1>
+					<p>Un espace clair et soigné pour vos informations professionnelles.</p>
+				</div>
+				<div class="profile-badge">💙 Profil personnel Medical</div>
+			</section>
+
+			<section class="profile-shell">
+				<div class="profile-card info-card">
+					<h2>🩺📝 Informations professionnelles</h2>
+					{% if form is defined %}
+						{% include 'FrontOffice/infermier/_profile_form.html.twig' with { form: form } %}
+					{% else %}
+						<p class="muted">Formulaire non disponible.</p>
+					{% endif %}
+					<div class="actions" style="margin-top: 12px;">
+						<a class="btn ghost" href="{{ path('front_infermier_consultation_index') }}">⬅️ Retour</a>
+					</div>
+				</div>
+
+				<div class="profile-side">
+					<div class="profile-mini">
+						<div class="mini-title">✨ Conseils</div>
+						<ul class="mini-list">
+							<li>Verifiez votre specialite.</li>
+							<li>Gardez votre numero a jour.</li>
+							<li>Ajoutez une photo si possible.</li>
+						</ul>
+					</div>
+					<div class="profile-mini">
+						<div class="mini-title">🔒 Confidentialite</div>
+						<p class="mini-text">Vos informations sont visibles uniquement par vous.</p>
+					</div>
+				</div>
+			</section>
+		</main>
+	</div>
+{% endblock %}
+

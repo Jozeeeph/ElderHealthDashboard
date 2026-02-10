@@ -1,0 +1,39 @@
+{% extends 'FrontOffice/base.html.twig' %}
+
+{% block title %}Panier{% endblock %}
+
+{% block body %}
+    <h1>Votre panier</h1>
+
+    {% if equipements is empty %}
+        <p>Le panier est vide.</p>
+    {% else %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Prix</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for e in equipements %}
+                    <tr>
+                        <td>{{ e.nom ?? "-" }}</td>
+                        <td>{{ e.prix ?? '0.00' }} DT</td>
+                        <td>
+                            <a href="{{ path('cart_remove', {id: e.id}) }}" class="btn btn-sm btn-danger">Retirer</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <p><strong>Total :</strong> {{ total }} DT</p>
+
+        <form action="{{ path('cart_checkout') }}" method="post">
+            <button type="submit" class="btn btn-primary">Valider la commande</button>
+        </form>
+    {% endif %}
+
+{% endblock %}

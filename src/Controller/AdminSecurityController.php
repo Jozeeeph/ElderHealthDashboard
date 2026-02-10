@@ -16,7 +16,7 @@ class AdminSecurityController extends AbstractController
         if ($this->getUser()) {
             // ✅ Admin -> ok, on l'envoie au backoffice
             if ($this->isGranted('ROLE_ADMIN')) {
-                return $this->redirect('/admin/users');
+                return $this->redirectToRoute('admin_home'); // /admin/home ✅
             }
 
             // ❌ Patient / Infermier connecté -> il ne doit pas voir la page login admin

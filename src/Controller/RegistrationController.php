@@ -43,7 +43,8 @@ class RegistrationController extends AbstractController
 
             // helper upload
             $uploadPdf = function (?UploadedFile $file) use ($uploadDir): ?string {
-                if (!$file) return null;
+                if (!$file)
+                    return null;
                 $safeName = uniqid('f_', true) . '.' . $file->guessExtension();
                 $file->move($uploadDir, $safeName);
                 return '/uploads/' . $safeName;
@@ -69,15 +70,14 @@ class RegistrationController extends AbstractController
             $em->persist($user);
             $em->flush();
 
-         return $this->render('BackOffice/user/message.html.twig', [
-    'message' => "✅ Demande envoyée. Votre compte est en attente de validation par l’administrateur.",
-    'return_route' => 'app_public_site',
-]);
+            $this->addFlash('success', "Demande envoyée. Votre compte est en attente de validation par l’administrateur.");
+            return $this->redirectToRoute('app_home'); 
 
-                }
-                    return $this->render('FrontOffice/security/register.html.twig', [
-    'form' => $form->createView(),
-]);
+
+        }
+        return $this->render('FrontOffice/security/register.html.twig', [
+            'form' => $form->createView(),
+        ]);
 
     }
 }

@@ -1,0 +1,318 @@
+/* =========================================================
+   EVENT FRONT (Patient UI) - Page entière (SANS toucher .topbar)
+   Remplace tout le fichier eventFront.css par ce contenu.
+   ========================================================= */
+
+/* ---------- Page layout ---------- */
+.events-main {
+  padding: 22px 0 60px;
+}
+
+/* si ton patient.css a déjà un container, ça reste OK */
+.events-main .events-hero,
+.events-main .events-grid,
+.events-main .events-empty-card {
+  width: min(1150px, calc(100% - 44px));
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ---------- HERO (plus moderne + compact, sans gros vide) ---------- */
+.events-hero {
+  position: relative;
+  overflow: hidden;
+  margin-top: 18px;
+  border-radius: 22px;
+  padding: 26px 26px;
+  background: linear-gradient(135deg, rgba(45,108,223,0.14), rgba(99,102,241,0.10));
+  border: 1px solid rgba(30, 41, 59, 0.10);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+}
+
+/* décor léger */
+.events-hero::before,
+.events-hero::after {
+  content: "";
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(1px);
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+.events-hero::before {
+  width: 340px;
+  height: 340px;
+  right: -140px;
+  top: -150px;
+  background: radial-gradient(circle, rgba(45,108,223,0.35), transparent 60%);
+}
+
+.events-hero::after {
+  width: 260px;
+  height: 260px;
+  left: -110px;
+  bottom: -130px;
+  background: radial-gradient(circle, rgba(99,102,241,0.28), transparent 60%);
+}
+
+.events-hero .welcome-content {
+  position: relative;
+  z-index: 1;
+  max-width: 760px;
+}
+
+.events-hero h1 {
+  margin: 0 0 10px;
+  font-size: 30px;
+  line-height: 1.15;
+  letter-spacing: -0.3px;
+  color: #0f172a;
+  font-weight: 1000;
+}
+
+.events-hero p {
+  margin: 0;
+  color: #475569;
+  font-size: 14.5px;
+  line-height: 1.55;
+}
+
+.events-hero .wave {
+  display: inline-flex;
+  transform: translateY(2px);
+}
+
+/* ---------- Empty state ---------- */
+.events-empty-card {
+  margin-top: 18px;
+  padding: 22px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.92);
+  border: 1px solid rgba(30,41,59,0.10);
+  box-shadow: 0 14px 34px rgba(15,23,42,0.06);
+}
+
+.events-empty-card h2 {
+  margin: 0 0 6px;
+  font-size: 18px;
+  font-weight: 1000;
+  color: #0f172a;
+}
+
+.events-empty-card p {
+  margin: 0;
+  color: #556277;
+}
+
+/* ---------- GRID (vrai rendu cards) ---------- */
+.events-grid {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+/* Tablet */
+@media (max-width: 1100px) {
+  .events-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Mobile */
+@media (max-width: 680px) {
+  .events-main {
+    padding: 14px 0 50px;
+  }
+  .events-hero {
+    padding: 20px 18px;
+  }
+  .events-hero h1 {
+    font-size: 22px;
+  }
+  .events-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- EVENT CARD (plus clean, plus stable) ---------- */
+.event-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  padding: 16px 16px 14px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(30, 41, 59, 0.10);
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+/* petit highlight top */
+.event-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 5px;
+  width: 100%;
+  background: linear-gradient(90deg, rgba(45,108,223,0.85), rgba(99,102,241,0.75));
+  opacity: 0.55;
+}
+
+.event-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 22px 50px rgba(15, 23, 42, 0.10);
+  border-color: rgba(45, 108, 223, 0.18);
+}
+
+/* ---------- Top row ---------- */
+.event-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+/* icon plus propre */
+.event-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  border: 2px solid #2d6cdf;
+  background: rgba(45, 108, 223, 0.10);
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+.event-icon i {
+  font-size: 20px;
+}
+
+/* type pill meilleure lisibilité */
+.event-pill {
+  --c: #2d6cdf;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 950;
+  color: var(--c);
+  background: color-mix(in srgb, var(--c) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--c) 22%, transparent);
+  white-space: nowrap;
+}
+
+/* ---------- Title / desc (meilleure coupe) ---------- */
+.event-title {
+  margin: 2px 0 0;
+  font-size: 16px;
+  font-weight: 1000;
+  color: #0f172a;
+
+  /* 2 lignes max */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 42px;
+}
+
+.event-desc {
+  margin: 0;
+  color: #556277;
+  font-size: 13px;
+  line-height: 1.55;
+
+  /* 3 lignes max */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 62px;
+}
+
+/* ---------- Meta (plus “chips”) ---------- */
+.event-meta {
+  display: grid;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.event-meta-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12.8px;
+  color: #334155;
+
+  padding: 8px 10px;
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.04);
+  border: 1px solid rgba(30, 41, 59, 0.06);
+}
+
+.event-meta-row i {
+  color: #64748b;
+  font-size: 14px;
+}
+
+/* ---------- Image (plus belle + ratio stable) ---------- */
+.event-image {
+  margin-top: 2px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(30, 41, 59, 0.10);
+  background: #eef2ff;
+}
+
+.event-image img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  display: block;
+  transform: scale(1.02);
+  transition: transform 220ms ease;
+}
+
+.event-card:hover .event-image img {
+  transform: scale(1.06);
+}
+
+/* ---------- CTA button (full width, clean) ---------- */
+.event-btn {
+  margin-top: auto;
+  width: 100%;
+  display: inline-flex;
+  justify-content: space-between;
+   justify-content: center !important;  /* au lieu de space-between */
+  gap: 10px;
+  text-align: center;
+
+  text-decoration: none;
+  font-weight: 1000;
+  color: #0b5ed7;
+
+  border-radius: 16px;
+
+  background: rgba(11, 94, 215, 0.10);
+  border: 1px solid rgba(11, 94, 215, 0.18);
+
+  transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+}
+
+.event-btn:hover {
+  background: rgba(11, 94, 215, 0.14);
+  border-color: rgba(11, 94, 215, 0.26);
+  transform: translateY(-1px);
+}
+
+.event-btn i {
+  font-size: 15px;
+}
