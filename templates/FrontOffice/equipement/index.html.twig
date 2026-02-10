@@ -1,9 +1,6 @@
-{% extends 'base.html.twig' %}
-
-{% block title %}Équipements Médicaux - ElderHealth{% endblock %}
 
 {% block stylesheets %}
-{{ parent() }}
+
 <style>
     /* FORCE HIDE SIDEBAR AND ALL RELATED ELEMENTS */
     .sidebar, 
@@ -520,6 +517,8 @@
 {% endblock %}
 
 {% block body %}
+
+{% include 'FrontOffice/patient/_header.html.twig' %}
 <div class="products-page">
     <!-- Hero Section -->
     <section class="hero-section">

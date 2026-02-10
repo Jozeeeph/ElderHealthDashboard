@@ -24,6 +24,7 @@ class CommentaireController extends AbstractController
 
         $comment = new Commentaire();
         $comment->setPost($post);
+        $comment->setUtilisateur($this->getUser());
 
         $form = $this->createForm(CommentaireType::class, $comment);
         $form->handleRequest($request);
@@ -32,7 +33,7 @@ class CommentaireController extends AbstractController
             $em->persist($comment);
             $em->flush();
 
-            return $this->redirectToRoute('forum_post_index');
+            return $this->redirectToRoute('forum_post_forum_index');
         }
 
         return $this->render('BackOffice/commentaire/new.html.twig', [
@@ -40,6 +41,7 @@ class CommentaireController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
 
     #[Route('/{id}/edit', name: 'edit', methods: ['GET', 'POST'])]
     public function edit(int $postId, Commentaire $comment, Request $request, EntityManagerInterface $em): Response

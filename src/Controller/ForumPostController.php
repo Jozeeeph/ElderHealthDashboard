@@ -44,6 +44,9 @@ class ForumPostController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
+            // ✅ Save author
+            $post->setUtilisateur($this->getUser());
+
             $imageFile = $form->get('image')->getData();
 
             if ($imageFile) {
@@ -52,12 +55,8 @@ class ForumPostController extends AbstractController
                 $newFilename = $safeFilename . '-' . uniqid() . '.' . $imageFile->guessExtension();
 
                 try {
-                    $imageFile->move(
-                        $this->getParameter('post_images_dir'), // set in services.yaml
-                        $newFilename
-                    );
-
-                    $post->setImageName($newFilename); // field in Post entity
+                    $imageFile->move($this->getParameter('post_images_dir'), $newFilename);
+                    $post->setImageName($newFilename);
                 } catch (FileException $e) {
                     $this->addFlash('danger', 'Image upload failed.');
                 }
@@ -66,13 +65,14 @@ class ForumPostController extends AbstractController
             $em->persist($post);
             $em->flush();
 
-            return $this->redirectToRoute('forum_post_index');
+            return $this->redirectToRoute('forum_post_forum_index'); // ✅ front forum page (adjust if needed)
         }
 
         return $this->render('BackOffice/forum_post/new.html.twig', [
             'form' => $form->createView(),
         ]);
     }
+
 
     #[Route('/{id}/edit', name: 'edit', methods: ['GET', 'POST'])]
     public function edit(Post $post, Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
