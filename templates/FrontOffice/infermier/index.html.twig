@@ -3,7 +3,35 @@
 {% endblock %}
 {% block body %}
 	<div class="nurse-app">
+<<<<<<< HEAD
 		{% include 'FrontOffice/infermier/_header.html.twig' %}
+=======
+		<header class="topbar">
+			<div class="topbar-inner">
+				<a href="{{ path('app_public_site') }}" class="brand">
+					<img src="{{ asset('img/logo.png') }}" alt="Elder HealthCare">
+					<span>Elder<span>HealthCare</span></span>
+				</a>
+				<nav class="top-nav">
+					<a class="active">Tableau</a>
+					<a>Patients</a>
+					<a href="{{ path('front_infermier_rendezvous_index') }}">Rendez-vous</a>
+					<a href="{{ path('front_infermier_consultation_index') }}">Consultations</a>
+					<a href="{{ path('equipment_list_index') }}">Equipement</a>
+					<a href="{{ path('forum_post_forum_index') }}">Forum</a>
+					<a href="{{ path('front_events_index') }}">Evenements</a>
+					<a>Messages</a>
+				</nav>
+				<div class="profile">
+					<img src="{{ asset('img/home.jpg') }}" alt="Profil">
+					<div class="who">
+						<small>Infirmier</small>
+						<strong>{{ nurseName|default('Fatma') }}</strong>
+					</div>
+				</div>
+			</div>
+		</header>
+>>>>>>> rendezvous_client
 
 		<main class="nurse-main">
 			<section class="hero">
