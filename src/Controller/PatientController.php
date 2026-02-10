@@ -6,6 +6,7 @@ use App\Entity\Utilisateur;
 use App\Entity\Prescription;
 use App\Entity\RapportMedical;
 use App\Enum\Role;
+use App\Form\PatientProfileType;
 use App\Repository\ConsultationRepository;
 use App\Repository\UtilisateurRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -37,6 +38,36 @@ class PatientController extends AbstractController
 
         return $this->render('FrontOffice/patient/consultations.html.twig', [
             'consultations' => $consultations,
+            'patient' => $patient,
+        ]);
+    }
+
+    #[Route('/patient/profil', name: 'patient_profile', methods: ['GET', 'POST'])]
+    public function patientProfile(Request $request, EntityManagerInterface $em, UtilisateurRepository $utilisateurRepository): Response
+    {
+        $patient = $this->resolveCurrentPatient($utilisateurRepository);
+        if (!$patient) {
+            $this->addFlash('danger', 'Patient introuvable.');
+            return $this->redirectToRoute('app_patient_interfce');
+        }
+
+        $form = $this->createForm(PatientProfileType::class, $patient);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->flush();
+            $this->addFlash('success', 'Profil mis à jour.');
+            return $this->redirectToRoute('patient_profile');
+        }
+
+        if ($request->isXmlHttpRequest()) {
+            return $this->render('FrontOffice/patient/_profile_form.html.twig', [
+                'form' => $form->createView(),
+            ]);
+        }
+
+        return $this->render('FrontOffice/patient/profile.html.twig', [
+            'form' => $form->createView(),
             'patient' => $patient,
         ]);
     }

@@ -1,0 +1,39 @@
+{{ form_start(form, { attr: { novalidate: 'novalidate', class: 'profile-form' } }) }}
+	<div class="profile-grid">
+		<div class="field">
+			<label>Nom</label>
+			{{ form_widget(form.nom) }}
+		</div>
+		<div class="field">
+			<label>Prénom</label>
+			{{ form_widget(form.prenom) }}
+		</div>
+		<div class="field">
+			<label>Email</label>
+			{{ form_widget(form.email) }}
+		</div>
+		<div class="field">
+			<label>Téléphone</label>
+			{{ form_widget(form.numeroTelephone) }}
+		</div>
+		<div class="field field-wide">
+			<label>Adresse</label>
+			{{ form_widget(form.adresse) }}
+		</div>
+		<div class="field">
+			<label>Âge</label>
+			{{ form_widget(form.age) }}
+		</div>
+		<div class="field">
+			<label>Date de naissance</label>
+			{{ form_widget(form.dateNaissance) }}
+		</div>
+		<div class="field">
+			<label>CIN</label>
+			{{ form_widget(form.cin) }}
+		</div>
+	</div>
+	<div class="mt-3 d-flex gap-2">
+		<button class="btn btn-primary" type="submit">✅ Enregistrer</button>
+	</div>
+{{ form_end(form) }}

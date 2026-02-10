@@ -35,10 +35,18 @@
 			</nav>
 
 			<!-- PROFILE -->
-			<div class="profile">
-				<img src="{{ asset('img/home.jpg') }}" alt="Profil">
-				<strong>Fatma</strong>
-			</div>
+			<a class="profile" href="{{ path('patient_profile') }}">
+				<div class="profile-emoji">🙂</div>
+				{% set display_name = 'Patient' %}
+				{% if app.user %}
+					{% if app.user.prenom is defined and app.user.nom is defined %}
+						{% set display_name = app.user.prenom ~ ' ' ~ app.user.nom %}
+					{% elseif app.user.email is defined %}
+						{% set display_name = app.user.email %}
+					{% endif %}
+				{% endif %}
+				<strong>{{ display_name }}</strong>
+			</a>
 
 		</div>
 	</header>
@@ -63,7 +71,7 @@
 				<div class="actions">
 					<a href="#" class="btn primary">Prendre rendez-vous</a>
 					<a href="#" class="btn ghost">Contacter médecin</a>
-					<a href="#" class="btn ghost">Mettre à jour profil</a>
+					<a href="{{ path('patient_profile') }}" class="btn ghost">Mettre à jour profil</a>
 				</div>
 			</div>
 		</section>
@@ -135,9 +143,10 @@
 	</main>
 </div>
 
- <script>
+  <script>
 	  window.addEventListener('scroll', () => {
 	    document.querySelector('.topbar')
 	      ?.classList.toggle('is-scrolled', window.scrollY > 10);
 	  });
+
 	</script>{% endblock %}
