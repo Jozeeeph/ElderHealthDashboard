@@ -4,7 +4,112 @@
 {% endblock %}
 {% block body %}
 	<div class="nurse-app">
+<<<<<<< HEAD
 
+=======
+		<style>
+			.consultation-page{
+				background:
+					radial-gradient(circle at 12% 10%, rgba(56, 189, 248, 0.18), transparent 40%),
+					radial-gradient(circle at 88% 18%, rgba(16, 185, 129, 0.14), transparent 42%),
+					linear-gradient(180deg, #f7fbff 0%, #f2fbf7 55%, #ffffff 100%);
+				border-radius: 22px;
+				padding: 18px;
+			}
+			.consultation-header{
+				background: linear-gradient(135deg, #e6f6ff 0%, #eafff3 60%, #ffffff 100%);
+				border-radius: 18px 26px 18px 26px;
+				padding: 18px 20px;
+				border: 1px solid #e3f0f5;
+				box-shadow: 0 12px 26px rgba(15, 23, 42, 0.08);
+			}
+			.consultation-title{
+				color:#153243;
+				font-weight:800;
+			}
+			.consultation-subtitle{
+				color:#5b6b74;
+				font-weight:700;
+			}
+			.consultation-card{
+				border:1px solid #e6edf0;
+				border-radius:20px;
+				background:
+					linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+				box-shadow:0 16px 34px rgba(15,23,42,.08);
+				position:relative;
+				overflow:hidden;
+				padding:18px 18px 16px 18px;
+			}
+			.consultation-card::after{
+				content:"";
+				position:absolute;
+				inset:0;
+				border-radius:20px;
+				pointer-events:none;
+				background:
+					radial-gradient(circle at 88% 16%, rgba(56,189,248,.12), transparent 40%),
+					radial-gradient(circle at 10% 85%, rgba(16,185,129,.10), transparent 45%);
+			}
+			.consultation-accent{
+				display:none;
+			}
+			.consultation-card .card-head{
+				padding-bottom:10px;
+				border-bottom:1px dashed #e4edf4;
+				margin-bottom:12px;
+			}
+			.consultation-card h2{
+				font-size:1.05rem;
+				font-weight:800;
+				color:#0f172a;
+			}
+			.consultation-card .badge-soft{
+				border-radius:999px;
+				padding:6px 12px;
+				background:linear-gradient(135deg, #e0f2fe 0%, #dcfce7 100%);
+				border:1px solid #d6e7ec;
+				color:#0f172a;
+			}
+			.consultation-chip{
+				background:#f8fafc;
+				border:1px solid #e2e8f0;
+				color:#0f172a;
+				font-weight:700;
+				border-radius:12px;
+			}
+			.consultation-btn{
+				background: linear-gradient(135deg, #7dd3fc 0%, #34d399 100%);
+				border:none;
+				color:#083344;
+				box-shadow:0 10px 20px rgba(14, 116, 144, 0.2);
+			}
+			.consultation-btn:hover{
+				filter:brightness(0.98);
+			}
+			.btn-sm{
+				border-radius:999px;
+				border:1px solid #e2e8f0;
+				background:#f8fafc;
+				color:#0f172a;
+			}
+			.btn-sm.primary{
+				background:#e0f2fe;
+				color:#075985;
+				border-color:#bae6fd;
+			}
+			.btn-sm.danger{
+				background:#fee2e2;
+				color:#991b1b;
+				border-color:#fecaca;
+			}
+			.btn-outline{
+				background:#fff7ed;
+				color:#9a3412;
+				border:1px solid #fed7aa;
+			}
+		</style>
+>>>>>>> consultationnn
 		{% include 'FrontOffice/infermier/_header.html.twig' %}
 
 		
@@ -61,7 +166,7 @@
 					<div class="card consultation-card" data-status="{{ status }}">
 						<div class="consultation-accent"></div>
 						<div class="card-head">
-							<h2>Consultation #{{ consultation.id }}</h2>
+							<h2>Consultation {{ consultation.id }}</h2>
 							<span class="badge-soft">{{ status_label }}</span>
 						</div>
 						<div class="consultation-meta">
@@ -183,18 +288,14 @@
 						modalBody.innerHTML = await response.text();
 						bindForm();
 					} catch (e) {
-						modalBody.innerHTML = '<div class="alert alert-danger mb-0">Impossible d\\'envoyer le formulaire.</div>';
+						modalBody.innerHTML = '<div class="alert alert-danger mb-0">Impossible d\'envoyer le formulaire.</div>';
 					}
 				});
 			};
 
-			modalEl.addEventListener('show.bs.modal', async (event) => {
-				const trigger = event.relatedTarget;
-				if (!trigger) return;
-				const newUrl = trigger.getAttribute('data-new-url');
+			const loadNewForm = async (newUrl) => {
 				if (!newUrl) return;
 				modalBody.innerHTML = '<div class="text-muted small">Chargement...</div>';
-
 				try {
 					const response = await fetch(newUrl, {
 						headers: { 'X-Requested-With': 'XMLHttpRequest' }
@@ -205,7 +306,22 @@
 				} catch (e) {
 					modalBody.innerHTML = '<div class="alert alert-danger mb-0">Impossible de charger le formulaire.</div>';
 				}
+			};
+
+			modalEl.addEventListener('show.bs.modal', async (event) => {
+				const trigger = event.relatedTarget;
+				if (!trigger) return;
+				const newUrl = trigger.getAttribute('data-new-url');
+				await loadNewForm(newUrl);
 			});
+
+			const triggerBtn = document.querySelector('[data-bs-target="#consultationNewModal"][data-new-url]');
+			if (triggerBtn) {
+				triggerBtn.addEventListener('click', async () => {
+					const newUrl = triggerBtn.getAttribute('data-new-url');
+					await loadNewForm(newUrl);
+				});
+			}
 		});
 	</script>
 {% endblock %}

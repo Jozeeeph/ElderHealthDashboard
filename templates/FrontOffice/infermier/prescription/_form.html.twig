@@ -4,31 +4,31 @@
 	<p class="form-subtitle">Renseignez les informations principales.</p>
 
 	{% if form_action is defined %}
-		{{ form_start(form, {'attr': {'class': 'consultation-form no-error-text', 'novalidate': 'novalidate'}, 'action': form_action}) }}
+		{{ form_start(form, {'attr': {'class': 'consultation-form', 'novalidate': 'novalidate'}, 'action': form_action}) }}
 	{% else %}
-		{{ form_start(form, {'attr': {'class': 'consultation-form no-error-text', 'novalidate': 'novalidate'}}) }}
+		{{ form_start(form, {'attr': {'class': 'consultation-form', 'novalidate': 'novalidate'}}) }}
 	{% endif %}
 		<div class="form-grid">
 			<div class="full">
-				{{ form_row(form.medicaments, { label: 'Medicaments' }) }}
+				{{ form_row(form.medicaments, { label: '💊 Médicaments' }) }}
 			</div>
 			<div>
-				{{ form_row(form.frequence, { label: 'Frequence' }) }}
+				{{ form_row(form.frequence, { label: '⏱️ Fréquence' }) }}
 			</div>
 			<div>
-				{{ form_row(form.dosage, { label: 'Dosage' }) }}
+				{{ form_row(form.dosage, { label: '🧪 Dosage' }) }}
 			</div>
 			<div>
-				{{ form_row(form.dureeTraitement, { label: 'Duree du traitement' }) }}
+				{{ form_row(form.dureeTraitement, { label: '📆 Durée du traitement' }) }}
 			</div>
 			<div>
-				{{ form_row(form.dateDebut, { label: 'Date de debut' }) }}
+				{{ form_row(form.dateDebut, { label: '📅 Date de début' }) }}
 			</div>
 			<div>
-				{{ form_row(form.dateFin, { label: 'Date de fin' }) }}
+				{{ form_row(form.dateFin, { label: '📅 Date de fin' }) }}
 			</div>
 			<div class="full">
-				{{ form_row(form.consignes, { label: 'Consignes' }) }}
+				{{ form_row(form.consignes, { label: '🧾 Consignes' }) }}
 			</div>
 		</div>
 

@@ -171,7 +171,7 @@
                 </div>
                 <h1 class="hero-title mb-1">Fiche de prescription</h1>
                 <div class="hero-subtitle">
-                    Consultation #{{ prescription.consultation.id }} •
+                    Consultation {{ prescription.consultation.id }} •
                     {{ prescription.consultation.patient.prenom }} {{ prescription.consultation.patient.nom }}
                 </div>
             </div>
@@ -207,7 +207,7 @@
                 </div>
                 <div class="mt-4 d-flex flex-wrap gap-2">
                     <span class="prescription-chip">👤 {{ prescription.consultation.patient.prenom }} {{ prescription.consultation.patient.nom }}</span>
-                    <span class="prescription-chip">📍 Consultation #{{ prescription.consultation.id }}</span>
+                    <span class="prescription-chip">📍 Consultation {{ prescription.consultation.id }}</span>
                 </div>
             </div>
         </div>

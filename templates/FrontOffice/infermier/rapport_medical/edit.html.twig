@@ -38,7 +38,7 @@
 					<div class="popup-head">
 						<div>
 							<h2>🩺🧾 Modifier rapport medical</h2>
-							<p class="muted">🧾 Consultation #{{ consultation.id }}</p>
+							<p class="muted">🧾 Consultation {{ consultation.id }}</p>
 						</div>
 						<a class="btn-outline" href="{{ path('front_infermier_rapport_show', {'id': rapport.idRapport}) }}">Retour</a>
 					</div>
@@ -50,4 +50,3 @@
 		</main>
 	</div>
 {% endblock %}
-
