@@ -3,31 +3,7 @@
 {% endblock %}
 {% block body %}
 	<div class="nurse-app">
-		<header class="topbar">
-			<div class="topbar-inner">
-				<a href="{{ path('app_public_site') }}" class="brand">
-					<img src="{{ asset('img/logo.png') }}" alt="Elder HealthCare">
-					<span>Elder<span>HealthCare</span></span>
-				</a>
-				<nav class="top-nav">
-					<a class="active">Tableau</a>
-					<a>Patients</a>
-					<a>Rendez-vous</a>
-					<a href="{{ path('front_infermier_consultation_index') }}">Consultations</a>
-					<a href="{{ path('equipment_list_index') }}">Equipement</a>
-					<a href="{{ path('forum_post_forum_index') }}">Forum</a>
-					<a href="{{ path('front_events_index') }}">Evenements</a>
-					<a>Messages</a>
-				</nav>
-				<div class="profile">
-					<img src="{{ asset('img/home.jpg') }}" alt="Profil">
-					<div class="who">
-						<small>Infirmier</small>
-						<strong>{{ nurseName|default('Fatma') }}</strong>
-					</div>
-				</div>
-			</div>
-		</header>
+		{% include 'FrontOffice/infermier/_header.html.twig' %}
 
 		<main class="nurse-main">
 			<section class="hero">
@@ -35,14 +11,10 @@
 					<span class="badge">Service de jour</span>
 					<h1>Bonjour {{ nurseName|default('Fatma') }}</h1>
 					<p>
-						Voici votre tableau de bord infirmier. Priorites, suivis patients
+						Voici votre tableau de bord infirmier. Priorites, suivis patients ,Consultation
 						et rendez-vous du jour en un coup d'oeil.
 					</p>
-					<div class="actions">
-						<a href="#" class="btn primary">Nouvelle consultation</a>
-						<a href="#" class="btn ghost">Ajouter note</a>
-						<a href="#" class="btn ghost">Voir planning</a>
-					</div>
+					
 				</div>
 				<div class="hero-right">
 					<div class="mini-card">
@@ -62,14 +34,14 @@
 				<div class="stat">
 					<div>
 						<small>Rendez-vous</small>
-						<strong>7</strong>
+						<strong>{{ plannedRdvCount|default(0) }}</strong>
 					</div>
-					<span class="chip ok">Confirmee</span>
+					<span class="chip ok">Planifie</span>
 				</div>
 				<div class="stat">
 					<div>
 						<small>Consultations</small>
-						<strong>5</strong>
+						<strong>{{ consultationCount|default(0) }}</strong>
 					</div>
 					<span class="chip">En cours</span>
 				</div>
@@ -92,38 +64,32 @@
 			<section class="grid">
 				<div class="card span-2">
 					<div class="card-head">
-						<h2>Planning du jour</h2>
+						<h2>Planning des rendez-vous</h2>
 						<a class="link" href="#">Voir tout</a>
 					</div>
 					<div class="table">
 						<div class="row head">
 							<span>Heure</span>
 							<span>Patient</span>
-							<span>Service</span>
-							<span>Priorite</span>
+							<span>Type</span>
+							<span>Lieu</span>
 							<span>Etat</span>
 						</div>
-						<div class="row">
-							<span class="mono">08:30</span>
-							<span class="bold">Samir H.</span>
-							<span>Cardiologie</span>
-							<span class="pill warn">Moyen</span>
-							<span class="pill ok">Confirme</span>
-						</div>
-						<div class="row">
-							<span class="mono">10:00</span>
-							<span class="bold">Leila M.</span>
-							<span>Geriatrie</span>
-							<span class="pill ok">Faible</span>
-							<span class="pill">En cours</span>
-						</div>
-						<div class="row">
-							<span class="mono">11:30</span>
-							<span class="bold">Noura S.</span>
-							<span>Neurologie</span>
-							<span class="pill danger">Elevee</span>
-							<span class="pill warn">En attente</span>
-						</div>
+						{% for rdv in plannedRendezVous|default([]) %}
+							<div class="row">
+								<span class="mono">{{ rdv.heure ? rdv.heure|date('H:i') : '-' }}</span>
+								<span class="bold">
+									{{ rdv.patient ? rdv.patient.prenom ~ ' ' ~ rdv.patient.nom : '-' }}
+								</span>
+								<span>{{ rdv.typeRendezVous ? rdv.typeRendezVous.type : '-' }}</span>
+								<span>{{ rdv.lieu ?? '-' }}</span>
+								<span class="pill ok">{{ rdv.etat ? rdv.etat|lower : 'planifie' }}</span>
+							</div>
+						{% else %}
+							<div class="row">
+								<span class="muted">Aucun rendez-vous planifie.</span>
+							</div>
+						{% endfor %}
 					</div>
 				</div>
 
@@ -201,3 +167,4 @@
 		</main>
 	</div>
 {% endblock %}
+

@@ -3,41 +3,24 @@
 {% endblock %}
 {% block body %}
 	<div class="nurse-app">
-		<header class="topbar">
-			<div class="topbar-inner">
-				<a href="{{ path('app_public_site') }}" class="brand">
-					<img src="{{ asset('img/logo.png') }}" alt="Elder HealthCare">
-					<span>Elder<span>HealthCare</span></span>
-				</a>
-				<nav class="top-nav">
-					<a href="{{ path('front_infermier_consultation_index') }}">Consultations</a>
-					<a>Patients</a>
-					<a>Rendez-vous</a>
-					<a href="{{ path('equipment_list_index') }}">Equipement</a>
-					<a href="{{ path('forum_post_forum_index') }}">Forum</a>
-					<a href="{{ path('front_events_index') }}">Evenements</a>
-					<a>Messages</a>
-				</nav>
-				<div class="profile">
-					<img src="{{ asset('img/home.jpg') }}" alt="Profil">
-					<div class="who">
-						<small>Infirmier</small>
-						<strong>{{ nurseName|default('Infirmier') }}</strong>
-					</div>
-				</div>
-			</div>
-		</header>
+		{% include 'FrontOffice/infermier/_header.html.twig' %}
 
 		<main class="nurse-main">
-			<section class="card">
-				<div class="card-head">
-					<h2>Modifier rapport medical</h2>
-					<a class="btn-outline" href="{{ path('front_infermier_rapport_show', {'id': rapport.idRapport}) }}">Retour</a>
-				</div>
-				<p class="muted">Consultation #{{ consultation.id }}</p>
-			</section>
-
-			{{ include('FrontOffice/infermier/rapport_medical/_form.html.twig', { form: form, submit_label: 'Mettre a jour' }) }}
+			<div class="popup-backdrop">
+				<section class="popup-card">
+					<div class="popup-head">
+						<div>
+							<h2>🩺🧾 Modifier rapport medical</h2>
+							<p class="muted">🧾 Consultation #{{ consultation.id }}</p>
+						</div>
+						<a class="btn-outline" href="{{ path('front_infermier_rapport_show', {'id': rapport.idRapport}) }}">Retour</a>
+					</div>
+					<div class="popup-body">
+						{{ include('FrontOffice/infermier/rapport_medical/_form.html.twig', { form: form, submit_label: 'Mettre a jour' }) }}
+					</div>
+				</section>
+			</div>
 		</main>
 	</div>
 {% endblock %}
+
