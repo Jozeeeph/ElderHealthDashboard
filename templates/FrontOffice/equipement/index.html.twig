@@ -524,6 +524,13 @@
     <section class="hero-section">
         <h1 class="hero-title">Équipements Médicaux</h1>
         <p class="hero-subtitle">Découvrez notre sélection d'équipements médicaux de qualité pour professionnels et particuliers</p>
+        <div class="d-flex justify-content-end mb-3">
+            <a href="{{ path('cart_view') }}" class="btn btn-outline-secondary position-relative">
+                <i class="bi bi-cart"></i>
+                Panier
+                <span id="cart-count" class="badge bg-danger rounded-pill ms-2">{{ (app.session.get('cart')|default([]))|length }}</span>
+            </a>
+        </div>
         
         <!-- Search Bar -->
         <div class="search-container">
@@ -641,9 +648,9 @@
                                 <a href="{{ path('front_equipements_show', {'id': equipement.id}) }}" class="btn-view">
                                     <i class="bi bi-eye"></i> Voir détails
                                 </a>
-                                <button class="btn-cart" onclick="addToCart({{ equipement.id }})">
+                                <a href="{{ path('cart_add', {'id': equipement.id}) }}" class="btn-cart">
                                     <i class="bi bi-cart-plus"></i> Ajouter
-                                </button>
+                                </a>
                             </div>
                         </div>
                     </div>
