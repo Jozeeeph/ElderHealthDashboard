@@ -1,84 +1,118 @@
-{% extends 'FrontOffice/base.html.twig' %}
-
-{% block title %}Événements{% endblock %}
-
 {% block stylesheets %}
-    <link rel="stylesheet" href="{{ asset('css/public-site.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/eventsCards.css') }}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <link rel="stylesheet" href="{{ asset('css/patient.css') }}?v=2">
+    <link rel="stylesheet" href="{{ asset('css/eventFront.css') }}?v=1">
 {% endblock %}
 
 {% block body %}
-<div class="container py-5">
+<div class="patient-app">
 
-    <div class="text-center mb-4">
-        <h2 class="section-title">ÉVÉNEMENTS DISPONIBLES</h2>
-        <p class="section-subtitle">Découvrez les événements publiés et choisissez celui qui vous intéresse.</p>
-    </div>
+    <!-- TOPBAR (exact style patient.css) -->
+    {% include 'FrontOffice/patient/_header.html.twig' %}
 
-    {% if events is empty %}
-        <div class="alert alert-info">
-            Aucun événement disponible pour le moment.
-        </div>
-    {% else %}
-        <div class="row g-4 row-cols-1 row-cols-md-2 row-cols-lg-3">
-            {% for e in events %}
-                {% set typeColor = e.type and e.type.couleur ? e.type.couleur : '#0d6efd' %}
+    <!-- MAIN -->
+    <main class="patient-main events-main">
 
-                <div class="col">
-                    <div class="event-card h-100">
+        <!-- HERO (même vibe que welcome-card) -->
+        <section class="welcome-card events-hero">
+            <div class="welcome-content">
+                <h1>
+                    Événements disponibles <span class="wave">🎉</span>
+                </h1>
+                <p>
+                    Découvrez les événements publiés et choisissez celui qui vous intéresse.
+                </p>
+            </div>
+        </section>
 
-                        <div class="event-icon" style="border-color: {{ typeColor }};">
-                            <i class="bi bi-calendar-event" style="color: {{ typeColor }};"></i>
+        {% if events is empty %}
+            <section class="card events-empty-card">
+                <h2>Aucun événement</h2>
+                <p>Aucun événement disponible pour le moment 🙂</p>
+            </section>
+        {% else %}
+            <!-- GRID -->
+            <section class="events-grid">
+                {% for e in events %}
+                    {% set typeColor = e.type and e.type.couleur ? e.type.couleur : '#2d6cdf' %}
+
+                    <article class="event-card">
+                        <div class="event-card-head">
+                            <div class="event-icon" style="border-color: {{ typeColor }};">
+                                <i class="bi bi-calendar-event" style="color: {{ typeColor }};"></i>
+                            </div>
+
+                            {% if e.type %}
+                                <span class="event-pill" style="--c: {{ typeColor }};">
+                                    <i class="bi bi-tag"></i>
+                                    {{ e.type.libelle }}
+                                </span>
+                            {% endif %}
                         </div>
 
-                        <h5 class="event-name">{{ e.titre }}</h5>
+                        <h3 class="event-title">{{ e.titre }}</h3>
 
-                        {% if e.type %}
-                            <div class="event-badge" style="background: {{ typeColor }}1a; color: {{ typeColor }};">
-                                <i class="bi bi-tag"></i> {{ e.type.libelle }}
-                            </div>
-                        {% endif %}
-
-                        <p class="event-text">
+                        <p class="event-desc">
                             {{ e.description|default('')|length > 0 ? e.description|slice(0,120) ~ '…' : 'Aucune description.' }}
                         </p>
 
-                        <div class="event-meta">
-                            <div class="event-meta-item">
-                                <i class="bi bi-clock"></i>
-                                {{ e.dateDebut ? e.dateDebut|date('d/m/Y H:i') : 'Date non définie' }}
-                            </div>
+                   <div class="event-meta">
 
-                            {% if e.lieu %}
-                                <div class="event-meta-item">
-                                    <i class="bi bi-geo-alt"></i>
-                                    {{ e.lieu }}
-                                </div>
-                            {% endif %}
+  {# TYPE (optionnel) #}
+  <div class="event-meta-row">
+    <i class="bi bi-tag"></i>
+    <span class="meta-label">Type :</span>
+    <span class="meta-value">{{ e.type ? e.type.libelle : 'Non défini' }}</span>
+  </div>
 
-                            {% if e.capaciteMax %}
-                                <div class="event-meta-item">
-                                    <i class="bi bi-people"></i>
-                                    Capacité : {{ e.capaciteMax }}
-                                </div>
-                            {% endif %}
-                        </div>
+  {# DATE #}
+  <div class="event-meta-row">
+    <i class="bi bi-clock"></i>
+    <span class="meta-label">Date :</span>
+    <span class="meta-value">
+      {{ e.dateDebut ? e.dateDebut|date('d/m/Y H:i') : 'Non définie' }}
+    </span>
+  </div>
+
+  {# LIEU #}
+  <div class="event-meta-row">
+    <i class="bi bi-geo-alt"></i>
+    <span class="meta-label">Lieu :</span>
+    <span class="meta-value">{{ e.lieu ? e.lieu : 'Non défini' }}</span>
+  </div>
+
+  {# CAPACITÉ #}
+  <div class="event-meta-row">
+    <i class="bi bi-people"></i>
+    <span class="meta-label">Capacité :</span>
+    <span class="meta-value">{{ e.capaciteMax ? e.capaciteMax : '—' }}</span>
+  </div>
+
+</div>
+
 
                         {% if e.image %}
-                            <div class="event-thumb">
+                            <div class="event-image">
                                 <img src="{{ asset('uploads/events/' ~ e.image) }}" alt="Image event" loading="lazy">
                             </div>
                         {% endif %}
 
-                        <a href="{{ path('front_events_show', {id: e.id}) }}" class="event-link">
-                            <i class="bi bi-arrow-right"></i>
-                            Voir détails
+                        <a class="event-btn" href="{{ path('front_events_show', {id: e.id}) }}">
+                            Voir détails <i class="bi bi-arrow-right"></i>
                         </a>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
+                    </article>
+                {% endfor %}
+            </section>
+        {% endif %}
 
+    </main>
 </div>
+
+<script>
+  window.addEventListener('scroll', () => {
+    document.querySelector('.topbar')
+      ?.classList.toggle('is-scrolled', window.scrollY > 10);
+  });
+</script>
 {% endblock %}
