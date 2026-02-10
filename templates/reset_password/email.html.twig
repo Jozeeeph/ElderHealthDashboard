@@ -1,9 +1,23 @@
-<h1>Hi!</h1>
+<p>Bonjour,</p>
 
-<p>To reset your password, please visit the following link</p>
+<p>Vous avez demandé la réinitialisation de votre mot de passe.</p>
 
-<a href="{{ url('app_reset_password', {token: resetToken.token}) }}">{{ url('app_reset_password', {token: resetToken.token}) }}</a>
+<p>
+    <a href="{{ resetUrl }}"
+       style="display:inline-block;background:#0d6efd;color:#fff;padding:12px 18px;border-radius:8px;text-decoration:none;">
+        Réinitialiser mon mot de passe
+    </a>
+</p>
 
-<p>This link will expire in {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.</p>
+<p style="color:#6c757d;font-size:14px;">
+    Ce lien expire dans {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.
+</p>
 
-<p>Cheers!</p>
+<p style="color:#6c757d;font-size:14px;">
+    Si vous n’êtes pas à l’origine de cette demande, ignorez cet email.
+</p>
+
+<hr>
+<p style="color:#6c757d;font-size:12px;">
+    ElderHealthCare
+</p>

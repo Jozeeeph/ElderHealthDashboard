@@ -5,13 +5,17 @@ framework:
     # Note that the session will be started ONLY if you read or write from it.
     session: true
 
-    #esi: true
-    #fragments: true
+    # ✅ Important: URL de base pour générer les liens absolus
+    router:
+        default_uri: '%env(APP_URL)%'
+        http_port: 8000
+        strict_requirements: null
+
+    mailer:
+        dsn: '%env(MAILER_DSN)%'
 
 when@test:
     framework:
         test: true
         session:
             storage_factory_id: session.storage.factory.mock_file
-        router:
-            default_uri: '%env(APP_URL)%'

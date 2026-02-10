@@ -3,8 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Utilisateur;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Attribute\Route;
 
 class HomeController extends AbstractController
@@ -24,10 +27,28 @@ class HomeController extends AbstractController
         return $this->render('front/home.html.twig'); // adapte si tu as un autre twig
     }
 
-    // ✅ Page d'accueil ADMIN (celle que tu veux)
+    // ✅ Page d'accueil ADMIN
     #[Route('/admin/home', name: 'admin_home')]
     public function adminHome(): Response
     {
         return $this->render('BackOffice/home/index.html.twig');
+    }
+
+    // ✅ Route de test: envoi email DIRECT (sans reset password)
+    #[Route('/test-email', name: 'app_test_email')]
+    public function testEmail(MailerInterface $mailer): Response
+    {
+        $email = (new TemplatedEmail())
+            ->from(new Address('arijbejaoui1991@gmail.com', 'ElderHealthCare Test'))
+            ->to('arijbejaoui1991@gmail.com')
+            ->subject('TEST EMAIL DIRECT - ElderHealthCare')
+            ->htmlTemplate('emails/test_email.html.twig')
+            ->context([
+                'now' => new \DateTimeImmutable(),
+            ]);
+
+        $mailer->send($email);
+
+        return new Response('✅ Email envoyé ! Vérifie Gmail (Spam / Tous les messages).');
     }
 }
