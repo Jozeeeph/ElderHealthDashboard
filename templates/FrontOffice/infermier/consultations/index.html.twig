@@ -156,13 +156,43 @@
 			const modalEl = document.getElementById('consultationNewModal');
 			if (!modalEl) return;
 
+			const modalBody = modalEl.querySelector('.modal-body');
+			if (!modalBody) return;
+
+			const bindForm = () => {
+				const form = modalBody.querySelector('form');
+				if (!form) return;
+
+				form.addEventListener('submit', async (event) => {
+					event.preventDefault();
+					const formData = new FormData(form);
+
+					try {
+						const response = await fetch(form.action, {
+							method: form.method || 'POST',
+							body: formData,
+							headers: { 'X-Requested-With': 'XMLHttpRequest' }
+						});
+
+						if (response.redirected) {
+							window.location.href = response.url;
+							return;
+						}
+
+						if (!response.ok) throw new Error('Envoi impossible.');
+						modalBody.innerHTML = await response.text();
+						bindForm();
+					} catch (e) {
+						modalBody.innerHTML = '<div class="alert alert-danger mb-0">Impossible d\\'envoyer le formulaire.</div>';
+					}
+				});
+			};
+
 			modalEl.addEventListener('show.bs.modal', async (event) => {
 				const trigger = event.relatedTarget;
 				if (!trigger) return;
 				const newUrl = trigger.getAttribute('data-new-url');
 				if (!newUrl) return;
-				const modalBody = modalEl.querySelector('.modal-body');
-				if (!modalBody) return;
 				modalBody.innerHTML = '<div class="text-muted small">Chargement...</div>';
 
 				try {
@@ -171,6 +201,7 @@
 					});
 					if (!response.ok) throw new Error('Chargement impossible.');
 					modalBody.innerHTML = await response.text();
+					bindForm();
 				} catch (e) {
 					modalBody.innerHTML = '<div class="alert alert-danger mb-0">Impossible de charger le formulaire.</div>';
 				}
@@ -178,4 +209,3 @@
 		});
 	</script>
 {% endblock %}
-

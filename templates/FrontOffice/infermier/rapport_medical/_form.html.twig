@@ -1,11 +1,12 @@
+{% form_theme form 'bootstrap_5_layout.html.twig' %}
 <div class="form-card">
 	<h3 class="form-title">🧾 Rapport medical</h3>
 	<p class="form-subtitle">📝 Renseignez les informations principales.</p>
 
 	{% if form_action is defined %}
-		{{ form_start(form, {'attr': {'class': 'consultation-form'}, 'action': form_action}) }}
+		{{ form_start(form, {'attr': {'class': 'consultation-form no-error-text', 'novalidate': 'novalidate'}, 'action': form_action}) }}
 	{% else %}
-		{{ form_start(form, {'attr': {'class': 'consultation-form'}}) }}
+		{{ form_start(form, {'attr': {'class': 'consultation-form no-error-text', 'novalidate': 'novalidate'}}) }}
 	{% endif %}
 		<div class="form-grid">
 			<div class="full">

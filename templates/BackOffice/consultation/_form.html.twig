@@ -52,16 +52,31 @@
     border: none;
     box-shadow: 0 8px 18px rgba(14, 138, 167, 0.25);
 }
+
+.consultation-form .invalid-feedback ul,
+.consultation-form .form-error ul,
+.consultation-form .form-errors ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.consultation-form .invalid-feedback li::marker,
+.consultation-form .form-error li::marker,
+.consultation-form .form-errors li::marker {
+    content: "";
+}
 </style>
 
+{% form_theme form 'bootstrap_5_layout.html.twig' %}
 <div class="consultation-form-wrapper">
     <div class="consultation-form-title">🩺 Détails de la consultation</div>
     <div class="consultation-form-subtitle">📝 Renseignez les informations principales</div>
 
     {% if form_action is defined %}
-        {{ form_start(form, {'attr': {'class': 'consultation-form'}, 'action': form_action}) }}
+        {{ form_start(form, {'attr': {'class': 'consultation-form', 'novalidate': 'novalidate'}, 'action': form_action}) }}
     {% else %}
-        {{ form_start(form, {'attr': {'class': 'consultation-form'}}) }}
+        {{ form_start(form, {'attr': {'class': 'consultation-form', 'novalidate': 'novalidate'}}) }}
     {% endif %}
         <div class="row g-3">
             <div class="col-12 col-md-6">

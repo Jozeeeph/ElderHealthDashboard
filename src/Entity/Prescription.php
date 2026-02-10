@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\PrescriptionRepository;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity(repositoryClass: PrescriptionRepository::class)]
 #[ORM\Table(name: "prescription")]
@@ -15,29 +17,50 @@ class Prescription
     private ?int $id_prescription = null;
 
     #[ORM\Column(type: 'text')]
+    #[Assert\NotBlank(message: 'Ce champ est obligatoire.')]
     private ?string $medicaments = null;
 
     #[ORM\Column(type: 'string', length: 50)]
+    #[Assert\NotBlank(message: 'Ce champ est obligatoire.')]
     private ?string $frequence = null;
 
     #[ORM\Column(type: 'string', length: 50)]
+    #[Assert\NotBlank(message: 'Ce champ est obligatoire.')]
     private ?string $dosage = null;
 
     #[ORM\Column(type: 'string', length: 50)]
+    #[Assert\NotBlank(message: 'Ce champ est obligatoire.')]
     private ?string $duree_traitement = null;
 
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $consignes = null;
 
     #[ORM\Column(type: 'date')]
+    #[Assert\NotNull(message: 'Ce champ est obligatoire.')]
     private ?\DateTimeInterface $date_debut = null;
 
     #[ORM\Column(type: 'date')]
+    #[Assert\NotNull(message: 'Ce champ est obligatoire.')]
     private ?\DateTimeInterface $date_fin = null;
 
     #[ORM\OneToOne(targetEntity: Consultation::class)]
     #[ORM\JoinColumn(name: "consultation_id", referencedColumnName: "id", nullable: false, unique: true)]
+    #[Assert\NotNull(message: 'Ce champ est obligatoire.')]
     private ?Consultation $consultation = null;
+
+    #[Assert\Callback]
+    public function validateDateRange(ExecutionContextInterface $context): void
+    {
+        if (!$this->date_debut || !$this->date_fin) {
+            return;
+        }
+
+        if ($this->date_fin < $this->date_debut) {
+            $context->buildViolation('La date de fin doit etre apres la date de debut.')
+                ->atPath('dateFin')
+                ->addViolation();
+        }
+    }
 
     // ===================== GETTERS & SETTERS =====================
 
