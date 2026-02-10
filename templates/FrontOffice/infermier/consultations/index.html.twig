@@ -1,0 +1,200 @@
+{% block stylesheets %}
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="{{ asset('css/infermier.css') }}">
+{% endblock %}
+{% block body %}
+	<div class="nurse-app">
+		<header class="topbar">
+			<div class="topbar-inner">
+				<a href="{{ path('app_public_site') }}" class="brand">
+					<img src="{{ asset('img/logo.png') }}" alt="Elder HealthCare">
+					<span>Elder<span>HealthCare</span></span>
+				</a>
+				<nav class="top-nav">
+					<a href="{{ path('front_infermier_consultation_index') }}" class="active">Consultations</a>
+					<a>Patients</a>
+					<a>Rendez-vous</a>
+					<a href="{{ path('equipment_list_index') }}">Equipement</a>
+					<a href="{{ path('forum_post_forum_index') }}">Forum</a>
+					<a href="{{ path('front_events_index') }}">Evenements</a>
+					<a>Messages</a>
+				</nav>
+				<div class="profile">
+					<img src="{{ asset('img/home.jpg') }}" alt="Profil">
+					<div class="who">
+						<small>Infirmier</small>
+						<strong>{{ nurseName|default('Infirmier') }}</strong>
+					</div>
+				</div>
+			</div>
+		</header>
+
+		<main class="nurse-main consultation-page">
+			<section class="consultation-header">
+				<div class="card-head">
+					<div>
+						<h2 class="consultation-title">Gestion des consultations</h2>
+						<p class="consultation-subtitle">Suivi des consultations creees pour vos patients.</p>
+					</div>
+					<button class="btn-sm consultation-btn"
+						type="button"
+						data-bs-toggle="modal"
+						data-bs-target="#consultationNewModal"
+						data-new-url="{{ path('front_infermier_consultation_new') }}">
+						Nouvelle consultation
+					</button>
+				</div>
+			</section>
+
+			<section class="card consult-filters">
+				<div class="card-head">
+					<h2>Filtres</h2>
+				</div>
+				<form method="get" action="{{ path('front_infermier_consultation_index') }}">
+					<div class="form-grid">
+						<div class="full">
+							<label class="form-label" for="filter-patient">Patient</label>
+							<input id="filter-patient" name="patient" class="form-control" type="text"
+								value="{{ filters.patient ?? '' }}" placeholder="Nom ou prenom du patient">
+						</div>
+						<div class="full">
+							<label class="form-label" for="filter-date">Date consultation</label>
+							<input id="filter-date" name="date" class="form-control" type="date"
+								value="{{ filters.date ?? '' }}">
+						</div>
+					</div>
+					<div class="form-actions">
+						<button class="btn-solid" type="submit">Filtrer</button>
+						<a class="btn-outline" href="{{ path('front_infermier_consultation_index') }}">Reinitialiser</a>
+					</div>
+				</form>
+			</section>
+
+			<section class="grid consult-grid">
+				{% for consultation in consultations %}
+					{% set status = consultation.etatConsultation ? consultation.etatConsultation|lower : '' %}
+					{% set status_label = status == 'en_cours' ? 'En cours'
+						: (status == 'terminee' or status == 'terminée' ? 'Terminee'
+						: (status == 'planifiee' or status == 'planifiée' ? 'Planifiee'
+						: (status == 'realisee' or status == 'réalisée' ? 'Realisee'
+						: (status == 'annulee' or status == 'annulée' ? 'Annulee' : (consultation.etatConsultation ?? ''))))) %}
+					<div class="card consultation-card" data-status="{{ status }}">
+						<div class="consultation-accent"></div>
+						<div class="card-head">
+							<h2>Consultation #{{ consultation.id }}</h2>
+							<span class="badge-soft">{{ status_label }}</span>
+						</div>
+						<div class="consultation-meta">
+							<span class="consultation-chip">Patient: {{ consultation.patient.prenom }} {{ consultation.patient.nom }}</span>
+							<span class="consultation-chip">Type: {{ consultation.typeConsultation }}</span>
+						</div>
+						<div class="consultation-meta">
+							<span class="consultation-chip">Date: {{ consultation.dateConsultation ? consultation.dateConsultation|date('d/m/Y') : '-' }}</span>
+							<span class="consultation-chip">Heure: {{ consultation.heureConsultation ? consultation.heureConsultation|date('H:i') : '-' }}</span>
+							{% if consultation.lieu %}
+								<span class="consultation-chip">Lieu: {{ consultation.lieu }}</span>
+							{% endif %}
+						</div>
+						<div class="consultation-grid">
+							<div class="consultation-row">
+								<div class="consultation-label">Personnel medical</div>
+								<div class="value">
+									{% if consultation.personnelMedical %}
+										{{ consultation.personnelMedical.prenom }} {{ consultation.personnelMedical.nom }}
+									{% else %}
+										-
+									{% endif %}
+								</div>
+							</div>
+							<div class="consultation-row">
+								<div class="consultation-label">Cree par</div>
+								<div class="value">
+									{% if consultation.createdBy %}
+										{{ consultation.createdBy.prenom }} {{ consultation.createdBy.nom }}
+										{% if consultation.createdRole ?? false %}
+											<span class="muted">• {{ consultation.createdRole }}</span>
+										{% elseif consultation.createdBy.role %}
+											<span class="muted">• {{ consultation.createdBy.role.value }}</span>
+										{% endif %}
+									{% else %}
+										-
+									{% endif %}
+								</div>
+							</div>
+						</div>
+						<div class="consultation-actions">
+							<a class="btn-sm primary" href="{{ path('front_infermier_consultation_edit', {'id': consultation.id}) }}">Modifier</a>
+							{% if consultation.rapportMedical %}
+								<a class="btn-sm" href="{{ path('front_infermier_rapport_show', {'id': consultation.rapportMedical.idRapport}) }}">Rapport</a>
+								<a class="btn-sm" href="{{ path('front_infermier_rapport_pdf', {'id': consultation.rapportMedical.idRapport}) }}">PDF rapport</a>
+							{% else %}
+								<a class="btn-sm primary" href="{{ path('front_infermier_rapport_new', {'id': consultation.id}) }}">Ajouter rapport</a>
+							{% endif %}
+
+							{% if consultation.prescription %}
+								<a class="btn-sm" href="{{ path('front_infermier_prescription_show', {'id': consultation.prescription.idPrescription}) }}">Prescription</a>
+								<a class="btn-sm" href="{{ path('front_infermier_prescription_pdf', {'id': consultation.prescription.idPrescription}) }}">PDF prescription</a>
+							{% else %}
+								<a class="btn-sm primary" href="{{ path('front_infermier_prescription_new', {'id': consultation.id}) }}">Ajouter prescription</a>
+							{% endif %}
+							<form method="post" action="{{ path('front_infermier_consultation_delete', {'id': consultation.id}) }}"
+								onsubmit="return confirm('Supprimer cette consultation ?');">
+								<input type="hidden" name="_token" value="{{ csrf_token('delete_consultation_' ~ consultation.id) }}">
+								<button class="btn-sm danger" type="submit">Supprimer</button>
+							</form>
+						</div>
+					</div>
+				{% else %}
+					<div class="card consultation-card">
+						<div class="consultation-accent"></div>
+						<p class="muted">Aucune consultation pour le moment.</p>
+					</div>
+				{% endfor %}
+			</section>
+		</main>
+	</div>
+
+	<div class="modal fade" id="consultationNewModal" tabindex="-1" aria-labelledby="consultationNewModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="consultationNewModalLabel">Nouvelle consultation</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+				</div>
+				<div class="modal-body">
+					<div class="text-muted small">Chargement...</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block javascripts %}
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+	<script>
+		document.addEventListener('DOMContentLoaded', () => {
+			const modalEl = document.getElementById('consultationNewModal');
+			if (!modalEl) return;
+
+			modalEl.addEventListener('show.bs.modal', async (event) => {
+				const trigger = event.relatedTarget;
+				if (!trigger) return;
+				const newUrl = trigger.getAttribute('data-new-url');
+				if (!newUrl) return;
+				const modalBody = modalEl.querySelector('.modal-body');
+				if (!modalBody) return;
+				modalBody.innerHTML = '<div class="text-muted small">Chargement...</div>';
+
+				try {
+					const response = await fetch(newUrl, {
+						headers: { 'X-Requested-With': 'XMLHttpRequest' }
+					});
+					if (!response.ok) throw new Error('Chargement impossible.');
+					modalBody.innerHTML = await response.text();
+				} catch (e) {
+					modalBody.innerHTML = '<div class="alert alert-danger mb-0">Impossible de charger le formulaire.</div>';
+				}
+			});
+		});
+	</script>
+{% endblock %}
