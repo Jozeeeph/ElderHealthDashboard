@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UtilisateurRepository::class)]
 class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
@@ -22,52 +23,76 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
+    #[Assert\NotBlank(message: "L'email est obligatoire.")]
+    #[Assert\Email(message: "Veuillez saisir un email valide.")]
+    #[Assert\Length(max: 180, maxMessage: "L'email ne doit pas dépasser {{ limit }} caractères.")]
     private ?string $email = null;
 
     #[ORM\Column(length: 100)]
+    #[Assert\NotBlank(message: "Le nom est obligatoire.")]
+    #[Assert\Length(min: 2, max: 100, minMessage: "Le nom doit contenir au moins {{ limit }} caractères.", maxMessage: "Le nom ne doit pas dépasser {{ limit }} caractères.")]
+    #[Assert\Regex(pattern: "/^[\p{L}\s'\-]+$/u", message: "Le nom doit contenir uniquement des lettres.")]
     private ?string $nom = null;
 
     #[ORM\Column(length: 100)]
+    #[Assert\NotBlank(message: "Le prénom est obligatoire.")]
+    #[Assert\Length(min: 2, max: 100, minMessage: "Le prénom doit contenir au moins {{ limit }} caractères.", maxMessage: "Le prénom ne doit pas dépasser {{ limit }} caractères.")]
+    #[Assert\Regex(pattern: "/^[\p{L}\s'\-]+$/u", message: "Le prénom doit contenir uniquement des lettres.")]
     private ?string $prenom = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "L'adresse est obligatoire.")]
+    #[Assert\Length(min: 5, max: 255, minMessage: "L'adresse doit contenir au moins {{ limit }} caractères.", maxMessage: "L'adresse ne doit pas dépasser {{ limit }} caractères.")]
     private ?string $adresse = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank(message: "L'âge est obligatoire.")]
+    #[Assert\Positive(message: "L'âge doit être un nombre positif.")]
+    #[Assert\Range(min: 1, max: 120, notInRangeMessage: "L'âge doit être entre {{ min }} et {{ max }}.")]
     private ?int $age = null;
 
     #[ORM\Column(type: 'date')]
+    #[Assert\NotNull(message: "La date de naissance est obligatoire.")]
+    #[Assert\LessThanOrEqual("today", message: "La date de naissance ne peut pas être dans le futur.")]
     private ?\DateTimeInterface $dateNaissance = null;
 
     #[ORM\Column(length: 20)]
+    #[Assert\NotBlank(message: "Le numéro de téléphone est obligatoire.")]
+    #[Assert\Regex(pattern: "/^\+?\d{8,15}$/", message: "Numéro invalide. Exemple: 22123456 ou +21622123456.")]
     private ?string $numeroTelephone = null;
 
     #[ORM\Column(length: 20)]
+    #[Assert\NotBlank(message: "Le CIN est obligatoire.")]
+    #[Assert\Regex(pattern: "/^\d{8}$/", message: "Le CIN doit contenir exactement 8 chiffres.")]
     private ?string $cin = null;
 
-    // Champ "status" (si tu l'utilises encore côté métier)
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $status = null;
 
-    // ✅ statut de la demande (validation admin)
     #[ORM\Column(name: 'account_status', length: 50)]
     private string $accountStatus = self::STATUS_PENDING;
 
-    // ✅ activation / désactivation
     #[ORM\Column(name: 'is_active', options: ['default' => false])]
     private bool $isActive = false;
 
     /**
-     * ✅ Rôle métier stocké en STRING (ex: ADMIN, PATIENT, PERSONNEL_MEDICAL...)
-     * => ultra stable pour Doctrine (pas d'enumType)
+     * ✅ Rôle métier stocké en string : ADMIN / PATIENT / PERSONNEL_MEDICAL / PROPRIETAIRE_MEDICAUX
      */
     #[ORM\Column(length: 50, nullable: true)]
+    #[Assert\Choice(
+        choices: ["ADMIN", "PATIENT", "PERSONNEL_MEDICAL", "PROPRIETAIRE_MEDICAUX"],
+        message: "Rôle invalide."
+    )]
     private ?string $role = null;
 
-    // ✅ Roles Symfony Security (tableau)
     #[ORM\Column]
     private array $roles = [];
 
+    /**
+     * ✅ IMPORTANT :
+     * Ce champ contient un HASH (bcrypt/argon2id...) donc ON NE MET PAS de Regex “mot de passe fort” ici.
+     * La validation du mot de passe se fait avec plainPassword (dans le FormType, mapped=false).
+     */
     #[ORM\Column]
     private ?string $password = null;
 
@@ -87,21 +112,27 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $hopitalAffectation = null;
 
     #[ORM\Column(nullable: true)]
+    #[Assert\PositiveOrZero(message: "Le nombre d'années d'expérience doit être positif ou zéro.")]
+    #[Assert\Range(min: 0, max: 70, notInRangeMessage: "Expérience invalide.")]
     private ?int $nbAnneeExperience = null;
 
     #[ORM\Column(length: 100, nullable: true)]
+    #[Assert\Length(max: 100, maxMessage: "La spécialité ne doit pas dépasser {{ limit }} caractères.")]
     private ?string $specialite = null;
 
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $disponibilite = null;
 
     #[ORM\Column(length: 100, nullable: true)]
+    #[Assert\Length(max: 100, maxMessage: "La fonction ne doit pas dépasser {{ limit }} caractères.")]
     private ?string $fonction = null;
 
     #[ORM\Column(length: 100, nullable: true)]
+    #[Assert\Length(max: 100, maxMessage: "Le champ patente ne doit pas dépasser {{ limit }} caractères.")]
     private ?string $patante = null;
 
     #[ORM\Column(length: 20, nullable: true)]
+    #[Assert\Regex(pattern: "/^\+?\d{8,15}$/", message: "Numéro fixe invalide.")]
     private ?string $numeroFix = null;
 
     /**
@@ -125,19 +156,17 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     public function __construct()
     {
         $this->participations = new ArrayCollection();
+        $this->equipements = new ArrayCollection();
+        $this->commandes = new ArrayCollection();
 
-        // Defaults
         $this->accountStatus = self::STATUS_PENDING;
         $this->isActive = false;
 
-        // rôle Symfony minimal
         $this->roles = ['ROLE_USER'];
-        $this->equipements = new ArrayCollection();
-        $this->commandes = new ArrayCollection();
     }
 
     // --------------------
-    // Security UserInterface
+    // Security
     // --------------------
     public function getUserIdentifier(): string
     {
@@ -147,10 +176,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
-
-        // garantit ROLE_USER
         $roles[] = 'ROLE_USER';
-
         return array_values(array_unique($roles));
     }
 
@@ -266,7 +292,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    // ✅ validation admin
     public function getAccountStatus(): string
     {
         return $this->accountStatus;
@@ -282,7 +307,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    // ✅ activation admin
     public function isActive(): bool
     {
         return $this->isActive;
@@ -294,9 +318,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * ✅ Rôle métier string: ADMIN / PATIENT / PERSONNEL_MEDICAL / PROPRIETAIRE_MEDICAUX
-     */
     public function getRoleMetier(): ?string
     {
         return $this->role;
@@ -306,7 +327,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->role = $role;
 
-        // sync automatique roles Symfony
         if ($role !== null && $role !== '') {
             $this->roles = ['ROLE_' . $role];
         }
@@ -457,9 +477,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, Participation>
-     */
     public function getParticipations(): Collection
     {
         return $this->participations;
@@ -471,7 +488,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
             $this->participations->add($participation);
             $participation->setUtilisateur($this);
         }
-
         return $this;
     }
 
@@ -482,13 +498,9 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
                 $participation->setUtilisateur(null);
             }
         }
-
         return $this;
     }
 
-    /**
-     * @return Collection<int, Equipement>
-     */
     public function getEquipements(): Collection
     {
         return $this->equipements;
@@ -500,25 +512,19 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
             $this->equipements->add($equipement);
             $equipement->setUtilisateur($this);
         }
-
         return $this;
     }
 
     public function removeEquipement(Equipement $equipement): static
     {
         if ($this->equipements->removeElement($equipement)) {
-            // set the owning side to null (unless already changed)
             if ($equipement->getUtilisateur() === $this) {
                 $equipement->setUtilisateur(null);
             }
         }
-
         return $this;
     }
 
-    /**
-     * @return Collection<int, Commande>
-     */
     public function getCommandes(): Collection
     {
         return $this->commandes;
@@ -530,19 +536,16 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
             $this->commandes->add($commande);
             $commande->setUtilisateur($this);
         }
-
         return $this;
     }
 
     public function removeCommande(Commande $commande): static
     {
         if ($this->commandes->removeElement($commande)) {
-            // set the owning side to null (unless already changed)
             if ($commande->getUtilisateur() === $this) {
                 $commande->setUtilisateur(null);
             }
         }
-
         return $this;
     }
 }
