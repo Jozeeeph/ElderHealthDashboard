@@ -1,0 +1,495 @@
+{% extends 'FrontOffice/base.html.twig' %}
+
+{% block title %}Gestion des Équipements{% endblock %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  <style>
+    :root {
+      --brand: #0e8aa7;
+      --brand-2: #2bbf9f;
+      --ink: #1e2a2f;
+      --muted: #6c7a80;
+      --bg: #f6fafb;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --shadow: 0 12px 28px rgba(14, 138, 167, 0.12);
+    }
+
+    .prop-page {
+      background: var(--bg);
+      min-height: 100vh;
+      padding: 30px 16px 80px;
+    }
+
+    .prop-shell {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .prop-hero {
+      background: linear-gradient(135deg, #e8f6f9 0%, #eef8f4 100%);
+      border: 1px solid #e2eef1;
+      border-radius: 18px;
+      padding: 22px 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .prop-title {
+      margin: 0 0 6px 0;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--ink);
+    }
+
+    .prop-sub {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.98rem;
+    }
+
+    .prop-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-prop {
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-weight: 700;
+      border: 0;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-prop.primary {
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: #fff;
+      box-shadow: 0 10px 20px rgba(14, 138, 167, 0.25);
+    }
+
+    .btn-prop.secondary {
+      background: #fff;
+      color: var(--brand);
+      border: 2px solid var(--brand);
+    }
+
+    .btn-prop:hover {
+      transform: translateY(-1px);
+    }
+
+    .prop-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .prop-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 18px;
+    }
+
+    @media (max-width: 992px) {
+      .prop-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .prop-card-head {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .prop-card-title {
+      margin: 0;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .prop-meta {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .prop-table {
+      width: 100%;
+      margin: 0;
+    }
+
+    .prop-table th {
+      font-size: 0.85rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: #f3f8f9;
+      border-bottom: 1px solid var(--border);
+      padding: 14px 16px;
+    }
+
+    .prop-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    .prop-chip {
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .prop-chip.ok { background: #d4edda; color: #155724; }
+    .prop-chip.warn { background: #fff3cd; color: #856404; }
+    .prop-chip.danger { background: #f8d7da; color: #721c24; }
+
+    .prop-actions-cell {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .prop-btn-sm {
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      font-size: 0.9rem;
+      background: #f2f4f7;
+      color: #374151;
+      text-decoration: none;
+    }
+
+    .prop-btn-sm.edit { background: #fff7e6; color: #8a5200; }
+    .prop-btn-sm.delete { background: #ffecec; color: #b42318; border-color: #ffd2d2; }
+
+    .prop-empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+
+    .prop-empty h3 {
+      color: var(--ink);
+      margin-bottom: 6px;
+    }
+
+    .prop-form {
+      display: grid;
+      gap: 12px;
+      padding: 16px 20px 20px;
+    }
+
+    .prop-form label {
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .prop-input,
+    .prop-textarea,
+    .prop-select {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 0.95rem;
+    }
+
+    .prop-textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    .prop-form-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 6px;
+    }
+
+    .prop-view {
+      padding: 16px 20px 20px;
+      display: grid;
+      gap: 10px;
+      color: var(--ink);
+    }
+
+    .prop-view-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+    }
+
+    .prop-view-row strong {
+      color: var(--ink);
+    }
+
+    .prop-image-preview {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      object-fit: cover;
+      max-height: 180px;
+    }
+  </style>
+{% endblock %}
+
+{% block body %}
+<div class="prop-page">
+  <div class="prop-shell">
+    <div class="prop-hero">
+      <div>
+        <h1 class="prop-title">Équipements</h1>
+        <p class="prop-sub">Gérez vos équipements médicaux : ajout, édition et suppression.</p>
+      </div>
+      <div class="prop-actions">
+        <a class="btn-prop primary" href="#equipement-form">
+          <i class="bi bi-plus-circle"></i> Nouvel équipement
+        </a>
+        <a class="btn-prop secondary" href="#commandes">
+          <i class="bi bi-cart-check"></i> Voir commandes
+        </a>
+      </div>
+    </div>
+
+    {% for message in app.flashes('success') %}
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-2"></i>{{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endfor %}
+
+    {% for message in app.flashes('error') %}
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle me-2"></i>{{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endfor %}
+
+    <div class="prop-grid">
+      <div>
+        {% if equipements|length > 0 %}
+          <div class="prop-card">
+            <div class="prop-card-head">
+              <h2 class="prop-card-title">Liste des équipements</h2>
+              <div class="prop-meta">Total : <strong>{{ equipements|length }}</strong></div>
+            </div>
+            <div class="table-responsive">
+              <table class="prop-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Nom</th>
+                    <th>Catégorie</th>
+                    <th>Prix</th>
+                    <th>Quantité</th>
+                    <th>Statut</th>
+                    <th class="text-end">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for equipement in equipements %}
+                    <tr>
+                      <td>{{ equipement.id }}</td>
+                      <td><strong>{{ equipement.nom }}</strong></td>
+                      <td>{{ equipement.categorie ?? '-' }}</td>
+                      <td>{{ equipement.prix }} DT</td>
+                      <td>{{ equipement.quantiteDisponible }}</td>
+                      <td>
+                        {% if equipement.statut == 'disponible' %}
+                          <span class="prop-chip ok">Disponible</span>
+                        {% elseif equipement.statut == 'en_rupture' %}
+                          <span class="prop-chip danger">En rupture</span>
+                        {% else %}
+                          <span class="prop-chip warn">Maintenance</span>
+                        {% endif %}
+                      </td>
+                      <td class="text-end">
+                        <div class="prop-actions-cell">
+                          <a class="prop-btn-sm" href="{{ path('front_proprietaire_equipements_show', {'id': equipement.id}) }}" title="Voir">
+                            <i class="bi bi-eye"></i>
+                          </a>
+                          <a class="prop-btn-sm edit" href="{{ path('front_proprietaire_equipements_edit', {'id': equipement.id}) }}" title="Modifier">
+                            <i class="bi bi-pencil"></i>
+                          </a>
+                          <form method="post" action="{{ path('front_proprietaire_equipements_delete', {'id': equipement.id}) }}"
+                                onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet équipement ?');">
+                            <input type="hidden" name="_token" value="{{ csrf_token('equipement_delete' ~ equipement.id) }}">
+                            <button type="submit" class="prop-btn-sm delete" title="Supprimer">
+                              <i class="bi bi-trash"></i>
+                            </button>
+                          </form>
+                        </div>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        {% else %}
+          <div class="prop-card prop-empty">
+            <h3>Aucun équipement trouvé</h3>
+            <p>Commencez par ajouter votre premier équipement.</p>
+          </div>
+        {% endif %}
+
+        <div class="prop-card mt-3" id="commandes">
+          <div class="prop-card-head">
+            <h2 class="prop-card-title">Commandes liées à vos équipements</h2>
+            <div class="prop-meta">
+              Total :
+              <strong>{{ commandes is defined ? commandes|length : 0 }}</strong>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="prop-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Date</th>
+                  <th>Statut</th>
+                  <th>Total</th>
+                  <th>Équipements</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% if commandes is defined and commandes|length > 0 %}
+                  {% for commande in commandes %}
+                    {% set ownedEquipements = commande.equipements|filter(e => e.utilisateur and e.utilisateur.id == app.user.id) %}
+                    <tr>
+                      <td>#{{ commande.id }}</td>
+                      <td>{{ commande.dateCommande|date('d/m/Y H:i') }}</td>
+                      <td>{{ commande.getStatutCommandeReadable() }}</td>
+                      <td>{{ commande.montantTotal }} DT</td>
+                      <td>
+                        {% if ownedEquipements|length > 0 %}
+                          {{ ownedEquipements|map(e => e.nom)|join(', ') }}
+                        {% else %}
+                          <span class="text-muted">-</span>
+                        {% endif %}
+                      </td>
+                    </tr>
+                  {% endfor %}
+                {% else %}
+                  <tr>
+                    <td colspan="5" class="text-center text-muted">Aucune commande trouvée.</td>
+                  </tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="prop-card" id="equipement-form">
+        <div class="prop-card-head">
+          <h2 class="prop-card-title">
+            {% if mode == 'edit' %}
+              Modifier l'équipement
+            {% elseif mode == 'view' %}
+              Détails de l'équipement
+            {% else %}
+              Nouvel équipement
+            {% endif %}
+          </h2>
+        </div>
+
+        {% if mode == 'view' and selected %}
+          <div class="prop-view">
+            {% if selected.image %}
+              <img class="prop-image-preview" src="{{ asset('uploads/images/' ~ selected.image) }}" alt="{{ selected.nom }}">
+            {% endif %}
+            <div class="prop-view-row"><strong>Nom</strong><span>{{ selected.nom }}</span></div>
+            <div class="prop-view-row"><strong>Catégorie</strong><span>{{ selected.categorie ?? '-' }}</span></div>
+            <div class="prop-view-row"><strong>Prix</strong><span>{{ selected.prix }} DT</span></div>
+            <div class="prop-view-row"><strong>Quantité</strong><span>{{ selected.quantiteDisponible }}</span></div>
+            <div class="prop-view-row"><strong>Statut</strong><span>{{ selected.statut }}</span></div>
+            <div class="prop-view-row"><strong>Description</strong><span>{{ selected.description ?? '-' }}</span></div>
+            <div class="prop-form-actions">
+              <a class="btn-prop secondary" href="{{ path('front_proprietaire_equipements_edit', {'id': selected.id}) }}">
+                Modifier
+              </a>
+            </div>
+          </div>
+        {% else %}
+          <form class="prop-form" method="post"
+                action="{% if mode == 'edit' and selected %}{{ path('front_proprietaire_equipements_edit', {'id': selected.id}) }}{% else %}{{ path('front_proprietaire_equipements_new') }}{% endif %}"
+                enctype="multipart/form-data">
+            <input type="hidden" name="_token"
+                   value="{% if mode == 'edit' and selected %}{{ csrf_token('equipement_edit' ~ selected.id) }}{% else %}{{ csrf_token('equipement_create') }}{% endif %}">
+
+            <div>
+              <label>Nom</label>
+              <input class="prop-input" name="nom" type="text" value="{{ selected.nom ?? '' }}" required>
+            </div>
+
+            <div>
+              <label>Catégorie</label>
+              <input class="prop-input" name="categorie" type="text" value="{{ selected.categorie ?? '' }}">
+            </div>
+
+            <div>
+              <label>Prix (DT)</label>
+              <input class="prop-input" name="prix" type="number" step="0.01" value="{{ selected.prix ?? '' }}" required>
+            </div>
+
+            <div>
+              <label>Quantité</label>
+              <input class="prop-input" name="quantiteDisponible" type="number" min="0" value="{{ selected.quantiteDisponible ?? 0 }}" required>
+            </div>
+
+            <div>
+              <label>Statut</label>
+              <select class="prop-select" name="statut">
+                <option value="disponible" {% if selected and selected.statut == 'disponible' %}selected{% endif %}>Disponible</option>
+                <option value="en_rupture" {% if selected and selected.statut == 'en_rupture' %}selected{% endif %}>En rupture</option>
+                <option value="en_maintenance" {% if selected and selected.statut == 'en_maintenance' %}selected{% endif %}>En maintenance</option>
+              </select>
+            </div>
+
+            <div>
+              <label>Description</label>
+              <textarea class="prop-textarea" name="description">{{ selected.description ?? '' }}</textarea>
+            </div>
+
+            <div>
+              <label>Image</label>
+              <input class="prop-input" type="file" name="image" accept="image/*">
+              {% if selected and selected.image %}
+                <img class="prop-image-preview mt-2" src="{{ asset('uploads/images/' ~ selected.image) }}" alt="{{ selected.nom }}">
+              {% endif %}
+            </div>
+
+            <div class="prop-form-actions">
+              {% if mode == 'edit' %}
+                <a class="btn-prop secondary" href="{{ path('front_proprietaire_equipements') }}">Annuler</a>
+              {% endif %}
+              <button class="btn-prop primary" type="submit">
+                {% if mode == 'edit' %}Enregistrer{% else %}Ajouter{% endif %}
+              </button>
+            </div>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
