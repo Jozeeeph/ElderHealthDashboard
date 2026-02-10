@@ -1,131 +1,184 @@
-{% extends 'FrontOffice/base.html.twig' %}
-
-{% block title %}Forum
-{% endblock %}
-
 {% block stylesheets %}
-	<link rel="stylesheet" href="{{ asset('css/forumFront.css') }}">
-	<link rel="stylesheet" href="{{ asset('css/public-site.css') }}">
+	<link rel="stylesheet" href="{{ asset('css/forumFront.css') }}?v=3">
 {% endblock %}
 
 {% block body %}
-	<div class="forum-fb py-5">
-		<div class="container">
+	<div
+		class="patient-app forum-page">
 
-			<div class="fb-header mb-4">
-				<h1 class="fb-title">Forum</h1>
-				<p class="fb-subtitle">Partagez des infos, posez des questions et échangez avec la communauté.</p>
-			</div>
+		{# EXACT same header #}
+		{% include 'FrontOffice/patient/_header.html.twig' %}
 
-			<div class="row justify-content-center">
-				<div
-					class="col-lg-8">
+		<main class="patient-main forum-main">
+			<div
+				class="container">
 
-					{# POSTS #}
-					{% for post in posts %}
-						<div
-							class="fb-card mb-4">
+				<!-- HERO -->
+				<section class="forum-hero">
+					<div class="forum-hero__inner">
+						<div class="forum-hero__text">
+							<h1 class="forum-hero__title">Forum</h1>
+							<p class="forum-hero__subtitle">
+								Partagez des infos, posez des questions et échangez avec la communauté.
+							</p>
+						</div>
 
-							{# TOP (avatar + title + date) #}
-							<div class="fb-card__top">
-								<div class="fb-avatar">
-									{{ post.title|default('E')|slice(0,1)|upper }}
-								</div>
+						<div class="forum-hero__actions">
+							{% if app.user %}
+								<a href="{{ path('forum_post_new') }}" class="btn btn-primary btn-forum">
+									<i class="bi bi-plus-circle"></i>
+									Nouvelle publication
+								</a>
+							{% else %}
+								<a href="{{ path('app_login') }}" class="btn btn-outline-primary btn-forum">
+									<i class="bi bi-box-arrow-in-right"></i>
+									Se connecter
+								</a>
+							{% endif %}
+						</div>
+					</div>
+				</section>
 
-								<div class="fb-meta">
-									<div class="fb-name">{{ post.title }}</div>
+				<!-- FEED -->
+				<div class="forum-layout">
+					<div class="forum-feed">
 
-									<div class="fb-time">
-										<i class="bi bi-clock"></i>
-										{% if post.dateDeCreation is defined and post.dateDeCreation %}
-											{{ post.dateDeCreation|date('d/m/Y H:i') }}
-										{% else %}
-											Publié récemment
-										{% endif %}
-									</div>
-								</div>
+						{% for post in posts %}
+							<article
+								class="post-card">
 
-								{# optional badge if you have status #}
-								{% if post.status is defined %}
-									<span class="fb-badge {{ post.status == 'ACTIVE' ? 'fb-badge--active' : 'fb-badge--inactive' }}">
-										{{ post.status == 'ACTIVE' ? 'Actif' : 'Inactif' }}
-									</span>
-								{% endif %}
-							</div>
+								<!-- TOP -->
+								<header class="post-top">
+									<div class="post-user">
+										<div class="post-avatar">
+											{% if post.utilisateur %}
+												{{ post.utilisateur.prenom|slice(0,1)|upper }}
+											{% else %}
+												U
+											{% endif %}
+										</div>
 
-							{# CONTENT #}
-							<div class="fb-card__body">
-								<p class="fb-text">{{ post.content|default('') }}</p>
-
-								{# IMAGE #}
-								{% if post.imageName %}
-									<div class="fb-image">
-										<img src="{{ asset('uploads/posts/' ~ post.imageName) }}" alt="Image du post" loading="lazy">
-									</div>
-								{% endif %}
-							</div>
-
-							{# ACTIONS #}
-							<div class="fb-actions">
-								<button class="fb-action" type="button" data-bs-toggle="collapse" data-bs-target="#comments-{{ post.id }}">
-									<i class="bi bi-chat-dots"></i>
-									Commentaires ({{ post.commentaires|length }})
-								</button>
-
-								{# If you already have add comment route #}
-								{% if post.id %}
-									<a class="fb-action" href="{{ path('forum_comment_new', { postId: post.id }) }}">
-										<i class="bi bi-chat-left-text"></i>
-										Ajouter
-									</a>
-								{% endif %}
-							</div>
-
-							{# COMMENTS #}
-							<div class="collapse" id="comments-{{ post.id }}">
-								<div class="fb-comments">
-
-									{% if post.commentaires|length > 0 %}
-										{% for c in post.commentaires %}
-											<div class="fb-comment">
-												<div class="fb-comment__avatar">
-													{{ c.content|default('U')|slice(0,1)|upper }}
-												</div>
-
-												<div class="fb-comment__bubble">
-													<div class="fb-comment__top">
-														<span class="fb-comment__name">Utilisateur</span>
-
-														{% if c.date is defined and c.date %}
-															<span class="fb-comment__time">{{ c.date|date('d/m/Y H:i') }}</span>
-														{% endif %}
-
-														{% if c.status is defined %}
-															<span class="fb-mini-badge {{ c.status == 'ACTIVE' ? 'fb-mini-badge--active' : 'fb-mini-badge--inactive' }}">
-																{{ c.status == 'ACTIVE' ? 'Actif' : 'Inactif' }}
-															</span>
-														{% endif %}
-													</div>
-
-													<div class="fb-comment__text">{{ c.content }}</div>
-												</div>
+										<div class="post-meta">
+											<div class="post-name">
+												{% if post.utilisateur %}
+													{{ post.utilisateur.prenom }}
+													{{ post.utilisateur.nom }}
+												{% else %}
+													Utilisateur
+												{% endif %}
 											</div>
-										{% endfor %}
-									{% else %}
-										<div class="fb-empty">Aucun commentaire pour le moment 🙂</div>
+
+											<div class="post-time">
+												<i class="bi bi-clock"></i>
+												{{ post.dateDeCreation ? post.dateDeCreation|date('d/m/Y H:i') : 'Publié récemment' }}
+											</div>
+										</div>
+									</div>
+
+									{% if post.status %}
+										<span class="status-pill {{ post.status == 'ACTIVE' ? 'is-active' : 'is-inactive' }}">
+											<span class="dot"></span>
+											{{ post.status }}
+										</span>
+									{% endif %}
+								</header>
+
+								<!-- BODY -->
+								<div class="post-body">
+									<h5 class="post-title">{{ post.title }}</h5>
+									<p class="post-text">{{ post.content }}</p>
+
+									{% if post.imageName %}
+										<div class="post-media">
+											<img src="{{ asset('uploads/posts/' ~ post.imageName) }}" alt="Image de la publication" loading="lazy">
+										</div>
+										{% else %}
+									{# optional placeholder, you can remove this block if you want #}
+										{# <div class="post-media post-media--empty">
+										      <i class="bi bi-image"></i>
+										    </div> #}
 									{% endif %}
 
 								</div>
-							</div>
 
-						</div>
-					{% else %}
-						<div class="fb-empty">Aucune publication pour le moment 🙂</div>
-					{% endfor %}
+								<!-- ACTIONS -->
+								<footer class="post-actions">
+									<button class="action-btn" type="button" data-bs-toggle="collapse" data-bs-target="#comments-{{ post.id }}" aria-expanded="false" aria-controls="comments-{{ post.id }}">
+										<i class="bi bi-chat-dots"></i>
+										Commentaires
+										<span class="count">{{ post.commentaires|length }}</span>
+									</button>
 
+									{% if app.user %}
+										<a class="action-btn" href="{{ path('forum_comment_new', { postId: post.id }) }}">
+											<i class="bi bi-chat-left-text"></i>
+											Ajouter
+										</a>
+									{% else %}
+										<a class="action-btn" href="{{ path('app_login') }}">
+											<i class="bi bi-box-arrow-in-right"></i>
+											Se connecter
+										</a>
+									{% endif %}
+								</footer>
+
+								<!-- COMMENTS -->
+								<div class="collapse" id="comments-{{ post.id }}">
+									<div class="comments-wrap">
+
+										{% if post.commentaires|length > 0 %}
+											{% for c in post.commentaires %}
+												<div class="comment-item">
+
+													<div class="comment-avatar">
+														{% if c.utilisateur %}
+															{{ c.utilisateur.prenom|slice(0,1)|upper }}
+														{% else %}
+															U
+														{% endif %}
+													</div>
+
+													<div class="comment-bubble">
+														<div class="comment-top">
+															<div class="comment-left">
+																<span class="comment-name">
+																	{% if c.utilisateur %}
+																		{{ c.utilisateur.prenom }}
+																		{{ c.utilisateur.nom }}
+																	{% else %}
+																		Utilisateur
+																	{% endif %}
+																</span>
+																<span class="comment-time">{{ c.date|date('d/m/Y H:i') }}</span>
+															</div>
+
+															{% if c.status %}
+																<span class="mini-pill {{ c.status == 'ACTIVE' ? 'is-active' : 'is-inactive' }}">
+																	{{ c.status }}
+																</span>
+															{% endif %}
+														</div>
+
+														<div class="comment-text">{{ c.content }}</div>
+													</div>
+												</div>
+											{% endfor %}
+										{% else %}
+											<div class="empty-state">Aucun commentaire pour le moment 🙂</div>
+										{% endif %}
+
+									</div>
+								</div>
+
+							</article>
+						{% else %}
+							<div class="empty-state">Aucune publication pour le moment 🙂</div>
+						{% endfor %}
+
+					</div>
 				</div>
-			</div>
 
-		</div>
+			</div>
+		</main>
 	</div>
 {% endblock %}
