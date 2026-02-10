@@ -29,31 +29,35 @@
 		</header>
 
 		<main class="nurse-main">
-			<section class="card">
-				<div class="card-head">
-					<h2>Rapport medical</h2>
-					<div class="consultation-actions">
+			<section class="card rapport-card">
+				<div class="rapport-split">
+					<div class="rapport-left">
+						<div class="rapport-title">Rapport medical</div>
+						<div class="consultation-meta">
+							<span class="consultation-chip">Consultation #{{ consultation.id }}</span>
+							<span class="consultation-chip">Patient: {{ consultation.patient.prenom }} {{ consultation.patient.nom }}</span>
+							<span class="consultation-chip">Type: {{ consultation.typeConsultation }}</span>
+							<span class="consultation-chip">Date: {{ consultation.dateConsultation ? consultation.dateConsultation|date('d/m/Y') : '-' }}</span>
+							<span class="consultation-chip">Heure: {{ consultation.heureConsultation ? consultation.heureConsultation|date('H:i') : '-' }}</span>
+						</div>
+					</div>
+					<div class="rapport-actions">
 						<a class="btn-sm primary" href="{{ path('front_infermier_rapport_edit', {'id': rapport.idRapport}) }}">Modifier</a>
 						<a class="btn-sm" href="{{ path('front_infermier_rapport_pdf', {'id': rapport.idRapport}) }}">PDF</a>
 						<a class="btn-sm" href="{{ path('front_infermier_consultation_index') }}">Retour</a>
 					</div>
 				</div>
-				<div class="consultation-meta">
-					<span class="consultation-chip">Consultation #{{ consultation.id }}</span>
-					<span class="consultation-chip">Patient: {{ consultation.patient.prenom }} {{ consultation.patient.nom }}</span>
-					<span class="consultation-chip">Type: {{ consultation.typeConsultation }}</span>
-					<span class="consultation-chip">Date: {{ consultation.dateConsultation ? consultation.dateConsultation|date('d/m/Y') : '-' }}</span>
-					<span class="consultation-chip">Heure: {{ consultation.heureConsultation ? consultation.heureConsultation|date('H:i') : '-' }}</span>
-				</div>
 			</section>
 
-			<section class="card">
-				<div class="card-head">
-					<h2>Details du rapport</h2>
-				</div>
-				<div class="consultation-meta">
-					<span class="consultation-chip">Gravite: {{ rapport.niveauGravite }}</span>
-					<span class="consultation-chip">Date: {{ rapport.dateRapport ? rapport.dateRapport|date('d/m/Y H:i') : '-' }}</span>
+			<section class="card rapport-card">
+				<div class="rapport-split rapport-split-top">
+					<div class="rapport-left">
+						<div class="rapport-title">Details du rapport</div>
+						<div class="consultation-meta">
+							<span class="consultation-chip">Gravite: {{ rapport.niveauGravite }}</span>
+							<span class="consultation-chip">Date: {{ rapport.dateRapport ? rapport.dateRapport|date('d/m/Y H:i') : '-' }}</span>
+						</div>
+					</div>
 				</div>
 				<div class="item">
 					<strong>Diagnostic</strong>

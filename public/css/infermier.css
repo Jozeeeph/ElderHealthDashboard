@@ -453,6 +453,39 @@ body{
   align-items:center;
 }
 
+/* Rapport medical horizontal cards */
+.rapport-card{
+  border-radius:18px;
+  border:1px solid #e6edf0;
+  box-shadow:0 14px 28px rgba(15,23,42,.08);
+}
+.rapport-split{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:16px;
+  padding-bottom:12px;
+  border-bottom:1px dashed #eef2f5;
+  margin-bottom:12px;
+}
+.rapport-split-top{
+  border-bottom:1px solid #eef2f5;
+}
+.rapport-left{ flex:1 1 auto; min-width:0; }
+.rapport-title{
+  font-weight:800;
+  font-size:1.15rem;
+  margin-bottom:8px;
+  color:#1f2a33;
+}
+.rapport-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:flex-end;
+}
+
 /* Consultations page (BackOffice style applied to FrontOffice) */
 .consultation-page {
   --ink: #1e2a2f;
@@ -617,49 +650,55 @@ body{
 
 /* Consultation form (BackOffice style) */
 .consultation-form-wrapper {
-  background: linear-gradient(180deg, #f9fbfc 0%, #ffffff 100%);
+  background:
+    radial-gradient(circle at 10% 10%, rgba(14,138,167,.08), transparent 40%),
+    linear-gradient(180deg, #f9fbfc 0%, #ffffff 100%);
   border: 1px solid #e6edf0;
-  border-radius: 18px 28px 18px 28px;
-  padding: 22px 22px 18px;
-  box-shadow: 0 14px 30px rgba(30, 42, 47, 0.08);
-  max-width: 860px;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 18px 40px rgba(30, 42, 47, 0.10);
+  max-width: 920px;
   margin: 0 auto;
 }
 .consultation-form-header{
-  padding-bottom: 12px;
+  padding-bottom: 14px;
   border-bottom: 1px solid #eef2f5;
-  margin-bottom: 18px;
+  margin-bottom: 20px;
 }
 .consultation-form-title {
   font-weight: 800;
   color: #1e2a2f;
-  margin-bottom: 4px;
-  font-size: 1.1rem;
+  margin-bottom: 6px;
+  font-size: 1.25rem;
 }
 .consultation-form-subtitle {
   color: #6c7a80;
-  font-size: 0.9rem;
-  margin-bottom: 18px;
+  font-size: 0.92rem;
+  margin-bottom: 0;
   font-weight:700;
 }
+.consultation-form-grid{
+  display: block;
+}
 .consultation-form-section{
-  margin: 6px 0 12px;
+  background: #ffffff;
+  border: 1px solid #eef2f5;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+  width: 100%;
+  margin-bottom: 16px;
 }
 .consultation-form-section-title{
   font-weight: 800;
   color: #1f2a33;
   font-size: 0.95rem;
-  margin-bottom: 2px;
+  margin-bottom: 4px;
 }
 .consultation-form-section-subtitle{
   color: #7a8791;
   font-size: 0.85rem;
   font-weight: 700;
-}
-.consultation-form-divider{
-  height: 1px;
-  background: #eef2f5;
-  margin: 16px 0;
 }
 .consultation-form .form-label {
   font-size: 0.78rem;
@@ -694,7 +733,7 @@ body{
   display: flex;
   gap: 10px;
   justify-content: flex-end;
-  margin-top: 14px;
+  margin-top: 18px;
 }
 .consultation-form-actions .btn-success {
   background: linear-gradient(135deg, #0e8aa7 0%, #2bbf9f 100%);
@@ -717,6 +756,12 @@ body{
 .consultation-form .row.g-3 > [class*="col-"] .form-control,
 .consultation-form .row.g-3 > [class*="col-"] .form-select{
   flex:1 1 auto;
+}
+
+@media (max-width: 980px){
+  .consultation-form-wrapper{
+    padding: 20px 18px;
+  }
 }
 
 /* Responsive */
