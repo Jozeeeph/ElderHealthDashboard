@@ -17,35 +17,35 @@ class Prescription
     private ?int $id_prescription = null;
 
     #[ORM\Column(type: 'text')]
-    #[Assert\NotBlank(message: 'Les medicaments sont obligatoires.')]
+    #[Assert\NotBlank(message: 'Ce champ est obligatoire.')]
     private ?string $medicaments = null;
 
     #[ORM\Column(type: 'string', length: 50)]
-    #[Assert\NotBlank(message: 'La frequence est obligatoire.')]
+    #[Assert\NotBlank(message: 'Ce champ est obligatoire.')]
     private ?string $frequence = null;
 
     #[ORM\Column(type: 'string', length: 50)]
-    #[Assert\NotBlank(message: 'Le dosage est obligatoire.')]
+    #[Assert\NotBlank(message: 'Ce champ est obligatoire.')]
     private ?string $dosage = null;
 
     #[ORM\Column(type: 'string', length: 50)]
-    #[Assert\NotBlank(message: 'La duree du traitement est obligatoire.')]
+    #[Assert\NotBlank(message: 'Ce champ est obligatoire.')]
     private ?string $duree_traitement = null;
 
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $consignes = null;
 
     #[ORM\Column(type: 'date')]
-    #[Assert\NotNull(message: 'La date de debut est obligatoire.')]
+    #[Assert\NotNull(message: 'Ce champ est obligatoire.')]
     private ?\DateTimeInterface $date_debut = null;
 
     #[ORM\Column(type: 'date')]
-    #[Assert\NotNull(message: 'La date de fin est obligatoire.')]
+    #[Assert\NotNull(message: 'Ce champ est obligatoire.')]
     private ?\DateTimeInterface $date_fin = null;
 
     #[ORM\OneToOne(targetEntity: Consultation::class)]
     #[ORM\JoinColumn(name: "consultation_id", referencedColumnName: "id", nullable: false, unique: true)]
-    #[Assert\NotNull(message: 'La consultation est obligatoire.')]
+    #[Assert\NotNull(message: 'Ce champ est obligatoire.')]
     private ?Consultation $consultation = null;
 
     #[Assert\Callback]

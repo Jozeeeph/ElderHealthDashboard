@@ -16,20 +16,20 @@ class RapportMedical
     private ?int $id_rapport = null;
 
     #[ORM\Column(type: 'text')]
-    #[Assert\NotBlank(message: 'Le diagnostic est obligatoire.')]
+    #[Assert\NotBlank(message: 'Ce champ est obligatoire.')]
     private ?string $diagnostic = null;
 
     #[ORM\Column(type: 'text')]
-    #[Assert\NotBlank(message: 'Les recommandations sont obligatoires.')]
+    #[Assert\NotBlank(message: 'Ce champ est obligatoire.')]
     private ?string $recommandations = null;
 
     #[ORM\Column(type: 'string', length: 10)]
-    #[Assert\NotBlank(message: 'Le niveau de gravite est obligatoire.')]
+    #[Assert\NotBlank(message: 'Ce champ est obligatoire.')]
     #[Assert\Choice(choices: ['faible', 'moyen', 'eleve'], message: 'Niveau de gravite invalide.')]
     private ?string $niveau_gravite = null; // faible / moyen / elevé
 
     #[ORM\Column(type: 'datetime')]
-    #[Assert\NotNull(message: 'La date du rapport est obligatoire.')]
+    #[Assert\NotNull(message: 'Ce champ est obligatoire.')]
     private ?\DateTimeInterface $date_rapport = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]

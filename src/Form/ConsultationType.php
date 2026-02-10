@@ -21,12 +21,12 @@ class ConsultationType extends AbstractType
         $builder
             ->add('typeConsultation', ChoiceType::class, [
                 'choices' => [
-                    'Consultation gÃ©nÃ©rale' => 'consultation_generale',
+                    'Consultation générale' => 'consultation_generale',
                     'Suivi' => 'suivi',
                     'Urgence' => 'urgence',
-                    'TÃ©lÃ©consultation' => 'teleconsultation',
+                    'Téléconsultation' => 'teleconsultation',
                 ],
-                'placeholder' => 'SÃ©lectionner un type',
+                'placeholder' => 'Sélectionner un type',
             ])
             ->add('dateConsultation', DateType::class, [
                 'widget' => 'single_text',
