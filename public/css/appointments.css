@@ -341,6 +341,12 @@
     border: 1px solid transparent;
 }
 
+.status-en_attente {
+    background: #fff7ed;
+    color: #c2410c;
+    border-color: #fed7aa;
+}
+
 .status-planifiee {
     background: #e3f2fd;
     color: #1565c0;
