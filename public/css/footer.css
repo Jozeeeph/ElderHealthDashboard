@@ -1,0 +1,55 @@
+/* ===== FOOTER STYLE IDENTIQUE À LA SIDEBAR ===== */
+
+.ehc-footer {
+    background-color: #0B3A55 !important;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+}
+
+/* Titres du footer */
+.ehc-footer .footer-title {
+    color: #ffffff;
+    border-bottom: 2px solid rgba(255,255,255,0.15);
+    font-weight: 600;
+}
+
+/* Texte général */
+.ehc-footer p,
+.ehc-footer li {
+    color: #e6f0f7;
+}
+
+/* Icônes */
+.ehc-footer i {
+    color: #4aa3ff;
+}
+
+/* Liens et marque */
+.ehc-footer .footer-brand {
+    color: #4aa3ff;
+    font-weight: bold;
+}
+
+/* Réseaux sociaux */
+.footer-social-btn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: #0F4C75;
+    color: white;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.footer-social-btn:hover {
+    background-color: #156594;
+    transform: scale(1.05);
+}
+
+/* Bordure du bas */
+.ehc-footer .border-top {
+    border-color: rgba(255,255,255,0.15) !important;
+}
