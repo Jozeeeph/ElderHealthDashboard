@@ -109,6 +109,39 @@ class ConsultationRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @return Consultation[]
+     */
+    public function findForPersonnel(
+        \App\Entity\Utilisateur $personnel,
+        ?string $patient,
+        ?\DateTimeInterface $date
+    ): array {
+        $qb = $this->createQueryBuilder('c')
+            ->leftJoin('c.patient', 'p')->addSelect('p')
+            ->andWhere('c.personnelMedical = :personnel')
+            ->setParameter('personnel', $personnel)
+            ->orderBy('c.dateConsultation', 'DESC')
+            ->addOrderBy('c.heureConsultation', 'DESC');
+
+        if ($patient) {
+            $patientLike = '%' . mb_strtolower($patient) . '%';
+            $qb->andWhere('LOWER(p.nom) LIKE :patient OR LOWER(p.prenom) LIKE :patient')
+                ->setParameter('patient', $patientLike);
+        }
+
+        if ($date) {
+            $start = \DateTimeImmutable::createFromInterface($date)->setTime(0, 0, 0);
+            $end = $start->modify('+1 day');
+            $qb->andWhere('c.dateConsultation >= :startDate')
+                ->andWhere('c.dateConsultation < :endDate')
+                ->setParameter('startDate', $start)
+                ->setParameter('endDate', $end);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
 
 
 //    /**

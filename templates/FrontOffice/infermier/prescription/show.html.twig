@@ -1,0 +1,82 @@
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{ asset('css/infermier.css') }}">
+{% endblock %}
+{% block body %}
+	<div class="nurse-app">
+		<header class="topbar">
+			<div class="topbar-inner">
+				<a href="{{ path('app_public_site') }}" class="brand">
+					<img src="{{ asset('img/logo.png') }}" alt="Elder HealthCare">
+					<span>Elder<span>HealthCare</span></span>
+				</a>
+				<nav class="top-nav">
+					<a href="{{ path('front_infermier_consultation_index') }}">Consultations</a>
+					<a>Patients</a>
+					<a>Rendez-vous</a>
+					<a href="{{ path('equipment_list_index') }}">Equipement</a>
+					<a href="{{ path('forum_post_forum_index') }}">Forum</a>
+					<a href="{{ path('front_events_index') }}">Evenements</a>
+					<a>Messages</a>
+				</nav>
+				<div class="profile">
+					<img src="{{ asset('img/home.jpg') }}" alt="Profil">
+					<div class="who">
+						<small>Infirmier</small>
+						<strong>{{ nurseName|default('Infirmier') }}</strong>
+					</div>
+				</div>
+			</div>
+		</header>
+
+		<main class="nurse-main">
+			<section class="card">
+				<div class="card-head">
+					<h2>Prescription</h2>
+					<div class="consultation-actions">
+						<a class="btn-sm primary" href="{{ path('front_infermier_prescription_edit', {'id': prescription.idPrescription}) }}">Modifier</a>
+						<a class="btn-sm" href="{{ path('front_infermier_prescription_pdf', {'id': prescription.idPrescription}) }}">PDF</a>
+						<a class="btn-sm" href="{{ path('front_infermier_consultation_index') }}">Retour</a>
+					</div>
+				</div>
+				<div class="consultation-meta">
+					<span class="consultation-chip">Consultation #{{ consultation.id }}</span>
+					<span class="consultation-chip">Patient: {{ consultation.patient.prenom }} {{ consultation.patient.nom }}</span>
+					<span class="consultation-chip">Type: {{ consultation.typeConsultation }}</span>
+					<span class="consultation-chip">Date: {{ consultation.dateConsultation ? consultation.dateConsultation|date('d/m/Y') : '-' }}</span>
+					<span class="consultation-chip">Heure: {{ consultation.heureConsultation ? consultation.heureConsultation|date('H:i') : '-' }}</span>
+				</div>
+			</section>
+
+			<section class="card">
+				<div class="card-head">
+					<h2>Details de la prescription</h2>
+				</div>
+				<div class="consultation-meta">
+					<span class="consultation-chip">Frequence: {{ prescription.frequence }}</span>
+					<span class="consultation-chip">Dosage: {{ prescription.dosage }}</span>
+					<span class="consultation-chip">Duree: {{ prescription.dureeTraitement }}</span>
+					<span class="consultation-chip">
+						Periode: {{ prescription.dateDebut ? prescription.dateDebut|date('d/m/Y') : '-' }}
+						-
+						{{ prescription.dateFin ? prescription.dateFin|date('d/m/Y') : '-' }}
+					</span>
+				</div>
+				<div class="item">
+					<strong>Medicaments</strong>
+					<p>{{ prescription.medicaments }}</p>
+				</div>
+				<div class="item">
+					<strong>Consignes</strong>
+					<p>{{ prescription.consignes ?: '-' }}</p>
+				</div>
+				<div class="consultation-actions">
+					<form method="post" action="{{ path('front_infermier_prescription_delete', {'id': prescription.idPrescription}) }}"
+						onsubmit="return confirm('Supprimer cette prescription ?');">
+						<input type="hidden" name="_token" value="{{ csrf_token('delete_prescription_' ~ prescription.idPrescription) }}">
+						<button class="btn-sm danger" type="submit">Supprimer</button>
+					</form>
+				</div>
+			</section>
+		</main>
+	</div>
+{% endblock %}
