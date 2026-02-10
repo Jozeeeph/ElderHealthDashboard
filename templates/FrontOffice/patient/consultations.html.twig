@@ -1,0 +1,82 @@
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{ asset('css/patient.css') }}?v=2">
+{% endblock %}
+
+{% block body %}
+	<div class="patient-app">
+		<header class="topbar">
+			<div class="topbar-inner">
+				<a href="{{ path('app_public_site') }}" class="brand">
+					<img src="{{ asset('img/logo.png') }}" alt="Elder HealthCare">
+					<span class="brand-text">
+						<span class="fw-bold text-primary">Elder</span>
+						<span class="fw-bold text-warning ms-1">HealthCare</span>
+					</span>
+				</a>
+
+				<nav class="top-nav">
+					<a href="{{ path('app_patient_interfce') }}">Accueil</a>
+					<a href="{{ path('app_patient_interfce') }}#rendezvous">Rendez-vous</a>
+					<a class="active">Consultation</a>
+					<a href="{{ path('equipment_list_index') }}">Equipement</a>
+					<a href="{{ path('forum_post_forum_index') }}">Forum</a>
+					<a href="{{ path('front_events_index') }}">Événements</a>
+				</nav>
+
+				<div class="profile">
+					<img src="{{ asset('img/home.jpg') }}" alt="Profil">
+					<strong>{{ patient.prenom ?? 'Patient' }}</strong>
+				</div>
+			</div>
+		</header>
+
+		<main class="patient-main">
+			<section class="welcome-card">
+				<h1>Mes consultations</h1>
+				<p>Voici la liste de vos consultations.</p>
+			</section>
+
+			<section class="content-grid" style="grid-template-columns: 1fr;">
+				{% for consultation in consultations %}
+					<div class="card">
+						<h2>Consultation #{{ consultation.id }}</h2>
+						<div class="item">
+							<strong>Date & Heure</strong>
+							<p>
+								{{ consultation.dateConsultation ? consultation.dateConsultation|date('d/m/Y') : '-' }}
+								• {{ consultation.heureConsultation ? consultation.heureConsultation|date('H:i') : '-' }}
+							</p>
+						</div>
+						<div class="item">
+							<strong>Type</strong>
+							<p>{{ consultation.typeConsultation }}</p>
+						</div>
+						<div class="item">
+							<strong>Lieu</strong>
+							<p>{{ consultation.lieu }}</p>
+						</div>
+						<div class="item">
+							<strong>Personnel médical</strong>
+							<p>{{ consultation.personnelMedical.prenom }} {{ consultation.personnelMedical.nom }}</p>
+						</div>
+						<div class="actions">
+							{% if consultation.rapportMedical %}
+								<a class="btn ghost" href="{{ path('rapport_medical_show', {'id': consultation.rapportMedical.idRapport}) }}">Voir rapport</a>
+								<a class="btn ghost" href="{{ path('rapport_medical_pdf', {'id': consultation.rapportMedical.idRapport}) }}">PDF rapport</a>
+							{% endif %}
+							{% if consultation.prescription %}
+								<a class="btn primary" href="{{ path('prescription_show', {'id': consultation.prescription.idPrescription}) }}">Voir prescription</a>
+								<a class="btn ghost" href="{{ path('prescription_pdf', {'id': consultation.prescription.idPrescription}) }}">PDF prescription</a>
+							{% endif %}
+						</div>
+					</div>
+				{% else %}
+					<div class="card">
+						<h2>Aucune consultation</h2>
+						<p>Vous n'avez pas encore de consultation enregistrée.</p>
+					</div>
+				{% endfor %}
+			</section>
+		</main>
+	</div>
+{% endblock %}

@@ -93,6 +93,24 @@ class ConsultationRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
+    /**
+     * @return Consultation[]
+     */
+    public function findByPatient(\App\Entity\Utilisateur $patient): array
+    {
+        return $this->createQueryBuilder('c')
+            ->leftJoin('c.patient', 'p')->addSelect('p')
+            ->leftJoin('c.personnelMedical', 'm')->addSelect('m')
+            ->andWhere('c.patient = :patient')
+            ->setParameter('patient', $patient)
+            ->orderBy('c.dateConsultation', 'DESC')
+            ->addOrderBy('c.heureConsultation', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+
+
 //    /**
 //     * @return Consultation[] Returns an array of Consultation objects
 //     */

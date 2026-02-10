@@ -24,9 +24,8 @@
 
 			<!-- NAV -->
 			<nav class="top-nav">
-				<a class="active">Accueil</a>(')
-				<a>Rendez-vous</a>
-				
+				<a class="active">Accueil</a>
+				<a href="{{ path('app_patient_interfce') }}#rendezvous">Rendez-vous</a>
 				<a href="{{ path('patient_consultations') }}">Consultation</a>
 				<a href="{{ path('equipment_list_index') }}">Equipement</a>
 				<a href="{{ path('forum_post_forum_index') }}">Forum</a>
@@ -45,8 +44,7 @@
 	</header>
 
 	<!-- MAIN -->
-	<main
-		class="patient-main">
+	<main class="patient-main">
 
 		<!-- WELCOME -->
 		<section class="welcome-card">
@@ -72,7 +70,7 @@
 
 
 		<!-- STATS -->
-		<section class="stats">
+		<section class="stats" id="rendezvous">
 			<div class="stat-card">
 				<h3>Prochain RDV</h3>
 				<p>12 Février 2026 – 10:30</p>
@@ -93,7 +91,7 @@
 		</section>
 
 		<!-- CONTENT -->
-		<section class="content-grid">
+		<section class="content-grid" id="consultations">
 
 			<div class="card">
 				<h2>Notifications récentes</h2>
@@ -133,8 +131,6 @@
 
 				<a href="#" class="btn primary full">Nouveau message</a>
 			</div>
-
-		</section>
 
 	</main>
 </div>

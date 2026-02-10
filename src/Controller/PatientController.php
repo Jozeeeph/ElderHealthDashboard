@@ -4,16 +4,15 @@ namespace App\Controller;
 
 use App\Entity\Utilisateur;
 use App\Enum\Role;
+use App\Repository\ConsultationRepository;
+use App\Repository\UtilisateurRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Routing\Attribute\Route;
 
-
-#[IsGranted('ROLE_PATIENT')]
 class PatientController extends AbstractController
 {
 
@@ -23,6 +22,25 @@ class PatientController extends AbstractController
         return $this->render('FrontOffice/patient/index.html.twig');
     }
 
+    #[Route('/patient/consultations', name: 'patient_consultations')]
+    public function patientConsultations(ConsultationRepository $consultationRepository, UtilisateurRepository $utilisateurRepository): Response
+    {
+        $patient = $this->resolveCurrentPatient($utilisateurRepository);
+        if (!$patient) {
+            $this->addFlash('danger', 'Patient introuvable.');
+            return $this->redirectToRoute('app_patient_interfce');
+        }
+
+        $consultations = $consultationRepository->findByPatient($patient);
+
+        return $this->render('FrontOffice/patient/consultations.html.twig', [
+            'consultations' => $consultations,
+            'patient' => $patient,
+        ]);
+    }
+
+
+
 
 
     #[Route('/patient/{id}/upload-dossier', name: 'patient_upload_dossier', methods: ['POST'])]
@@ -31,19 +49,13 @@ class PatientController extends AbstractController
         Request $request,
         EntityManagerInterface $em
     ): Response {
-        $patient = $this->getUser();
-
-        if (!$patient || !in_array('ROLE_PATIENT', $patient->getRoles(), true)) {
-            return $this->json(['message' => 'Accès interdit'], 403);
-        }
-
+        $patient = $em->getRepository(Utilisateur::class)->find($id);
         if (!$patient) {
             return $this->json(['message' => 'Patient introuvable'], 404);
         }
-        if (!in_array('ROLE_PATIENT', $patient->getRoles(), true)) {
-            return $this->json(['message' => 'Utilisateur non patient'], 403);          
+        if ($patient->getRole() !== Role::PATIENT) {
+            return $this->json(['message' => 'Utilisateur non patient'], 400);
         }
-
 
         $file = $request->files->get('dossierMedical'); // name="dossierMedical"
         if (!$file) {
@@ -70,4 +82,22 @@ class PatientController extends AbstractController
 
         return $this->json(['message' => 'Dossier médical uploadé', 'path' => $patient->getDossierMedicalPath()]);
     }
+
+    private function resolveCurrentPatient(UtilisateurRepository $utilisateurRepository): ?Utilisateur
+    {
+        $user = $this->getUser();
+        if ($user instanceof Utilisateur) {
+            return $user;
+        }
+
+        if ($user instanceof \App\Entity\User) {
+            $email = $user->getEmail();
+            if ($email) {
+                return $utilisateurRepository->findOneBy(['email' => $email]);
+            }
+        }
+
+        return null;
+    }
+
 }
