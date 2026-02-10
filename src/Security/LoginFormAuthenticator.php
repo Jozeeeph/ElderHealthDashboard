@@ -73,7 +73,7 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
 
         // 👩‍⚕️ INFIRMIER / PERSONNEL MEDICAL
         if (in_array('ROLE_PROPRIETAIRE_MEDICAUX', $roles, true)) {
-            return new RedirectResponse('/proprietaire');
+            return new RedirectResponse('/proprietaire/equipements');
         }
 
         // fallback
