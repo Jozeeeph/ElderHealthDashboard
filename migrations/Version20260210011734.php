@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20260209211315 extends AbstractMigration
+final class Version20260210011734 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,7 +20,7 @@ final class Version20260209211315 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('CREATE TABLE commande (id INT AUTO_INCREMENT NOT NULL, date_commande DATETIME NOT NULL, montant_total NUMERIC(10, 2) NOT NULL, remarques LONGTEXT DEFAULT NULL, utilisateur_id INT NOT NULL, INDEX IDX_6EEAA67DFB88E14F (utilisateur_id), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4');
+        $this->addSql('CREATE TABLE commande (id INT AUTO_INCREMENT NOT NULL, date_commande DATETIME NOT NULL, montant_total NUMERIC(10, 2) NOT NULL, remarques LONGTEXT DEFAULT NULL, statut_commande VARCHAR(255) NOT NULL, utilisateur_id INT NOT NULL, INDEX IDX_6EEAA67DFB88E14F (utilisateur_id), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4');
         $this->addSql('CREATE TABLE commande_equipement (commande_id INT NOT NULL, equipement_id INT NOT NULL, INDEX IDX_2076EA1582EA2E54 (commande_id), INDEX IDX_2076EA15806F0F5C (equipement_id), PRIMARY KEY (commande_id, equipement_id)) DEFAULT CHARACTER SET utf8mb4');
         $this->addSql('CREATE TABLE commentaire (id INT AUTO_INCREMENT NOT NULL, content LONGTEXT NOT NULL, date DATETIME NOT NULL, status VARCHAR(30) NOT NULL, post_id INT NOT NULL, INDEX IDX_67F068BC4B89032C (post_id), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4');
         $this->addSql('CREATE TABLE consultation (id INT AUTO_INCREMENT NOT NULL, type_consultation VARCHAR(255) NOT NULL, date_consultation DATE NOT NULL, heure_consultation TIME NOT NULL, lieu VARCHAR(255) NOT NULL, etat_consultation VARCHAR(50) NOT NULL, created_role VARCHAR(50) DEFAULT NULL, created_at DATETIME DEFAULT NULL, created_by_id INT DEFAULT NULL, patient_id INT NOT NULL, personnel_medical_id INT NOT NULL, INDEX IDX_964685A6B03A8386 (created_by_id), INDEX IDX_964685A66B899279 (patient_id), INDEX IDX_964685A65E412A67 (personnel_medical_id), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4');

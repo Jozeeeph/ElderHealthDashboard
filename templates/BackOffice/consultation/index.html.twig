@@ -301,19 +301,19 @@
                                 data-bs-toggle="modal"
                                 data-bs-target="#consultationEditModal"
                                 data-edit-url="{{ path('consultation_edit', {'id': consultation.id}) }}">
-                            ✏️ Éditer
+                            ✏️ 
                         </button>
                         <button type="button"
                                 class="btn btn-danger btn-sm js-delete-consultation"
                                 data-delete-url="{{ path('consultation_delete', {'id': consultation.id}) }}"
                                 data-delete-name="{{ consultation.patient.prenom }} {{ consultation.patient.nom }}"
                                 data-delete-token="{{ csrf_token('delete_consultation_' ~ consultation.id) }}">
-                            🗑️ Supprimer
+                            🗑️ 
                         </button>
                         {% if consultation.rapportMedical %}
                             <a class="btn btn-outline-primary btn-sm"
                                href="{{ path('rapport_medical_show', {'id': consultation.rapportMedical.idRapport}) }}">
-                                🧾 Rapport
+                                🧾 rapport
                             </a>
                             <a class="btn btn-outline-secondary btn-sm"
                                href="{{ path('rapport_medical_pdf', {'id': consultation.rapportMedical.idRapport}) }}">
