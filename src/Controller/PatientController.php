@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Utilisateur;
+use App\Entity\Prescription;
+use App\Entity\RapportMedical;
 use App\Enum\Role;
 use App\Repository\ConsultationRepository;
 use App\Repository\UtilisateurRepository;
@@ -35,6 +37,46 @@ class PatientController extends AbstractController
 
         return $this->render('FrontOffice/patient/consultations.html.twig', [
             'consultations' => $consultations,
+            'patient' => $patient,
+        ]);
+    }
+
+    #[Route('/patient/prescription/{id}', name: 'patient_prescription_show', methods: ['GET'])]
+    public function patientPrescriptionShow(Prescription $prescription, UtilisateurRepository $utilisateurRepository): Response
+    {
+        $patient = $this->resolveCurrentPatient($utilisateurRepository);
+        if (!$patient) {
+            $this->addFlash('danger', 'Patient introuvable.');
+            return $this->redirectToRoute('app_patient_interfce');
+        }
+
+        $consultation = $prescription->getConsultation();
+        if (!$consultation || $consultation->getPatient()?->getId() !== $patient->getId()) {
+            throw $this->createNotFoundException('Prescription introuvable.');
+        }
+
+        return $this->render('FrontOffice/patient/prescription_show.html.twig', [
+            'prescription' => $prescription,
+            'patient' => $patient,
+        ]);
+    }
+
+    #[Route('/patient/rapport/{id}', name: 'patient_rapport_show', methods: ['GET'])]
+    public function patientRapportShow(RapportMedical $rapport, UtilisateurRepository $utilisateurRepository): Response
+    {
+        $patient = $this->resolveCurrentPatient($utilisateurRepository);
+        if (!$patient) {
+            $this->addFlash('danger', 'Patient introuvable.');
+            return $this->redirectToRoute('app_patient_interfce');
+        }
+
+        $consultation = $rapport->getConsultation();
+        if (!$consultation || $consultation->getPatient()?->getId() !== $patient->getId()) {
+            throw $this->createNotFoundException('Rapport introuvable.');
+        }
+
+        return $this->render('FrontOffice/patient/rapport_show.html.twig', [
+            'rapport' => $rapport,
             'patient' => $patient,
         ]);
     }
