@@ -1,6 +1,7 @@
+{% form_theme form 'bootstrap_5_layout.html.twig' %}
 {{ form_start(form, {
     action: form_action|default(app.request.uri),
-    attr: { class: 'needs-validation' }
+    attr: { class: 'needs-validation no-error-text', novalidate: 'novalidate' }
 }) }}
     <div class="card border-0 shadow-sm">
         <div class="card-body p-4">

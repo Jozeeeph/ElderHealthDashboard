@@ -7,10 +7,10 @@ use App\Entity\Utilisateur;
 use App\Enum\Role;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -21,15 +21,19 @@ class ConsultationType extends AbstractType
         $builder
             ->add('typeConsultation', ChoiceType::class, [
                 'choices' => [
-                    'Consultation générale' => 'consultation_generale',
+                    'Consultation gÃ©nÃ©rale' => 'consultation_generale',
                     'Suivi' => 'suivi',
                     'Urgence' => 'urgence',
-                    'Téléconsultation' => 'teleconsultation',
+                    'TÃ©lÃ©consultation' => 'teleconsultation',
                 ],
-                'placeholder' => 'Sélectionner un type',
+                'placeholder' => 'SÃ©lectionner un type',
             ])
-            ->add('dateConsultation', DateType::class, ['widget' => 'single_text'])
-            ->add('heureConsultation', TimeType::class, ['widget' => 'single_text'])
+            ->add('dateConsultation', DateType::class, [
+                'widget' => 'single_text',
+            ])
+            ->add('heureConsultation', TimeType::class, [
+                'widget' => 'single_text',
+            ])
             ->add('lieu', TextType::class)
             ->add('patient', EntityType::class, [
                 'class' => Utilisateur::class,
