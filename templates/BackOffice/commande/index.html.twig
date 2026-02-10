@@ -62,19 +62,29 @@
         font-weight: 600;
     }
 
+    .statut-panier {
+        background-color: #e2e3e5;
+        color: #383d41;
+    }
+
     .statut-en_attente {
         background-color: #fff3cd;
         color: #856404;
     }
 
-    .statut-confirmee {
+    .statut-validee {
         background-color: #d1ecf1;
         color: #0c5460;
     }
 
-    .statut-expediee {
+    .statut-en_preparation {
         background-color: #cce5ff;
         color: #004085;
+    }
+
+    .statut-expediee {
+        background-color: #d6d8db;
+        color: #1b1e21;
     }
 
     .statut-livree {
@@ -105,7 +115,7 @@
             <div class="commande-subtitle">Suivi et gestion des commandes d'équipements médicaux</div>
         </div>
         <div>
-            <a href="{{ path('commande_new') }}" class="btn commande-btn">
+            <a href="{{ path('commande_new') }}" class="btn commande-btn"> {# CHANGED: Use actual route name #}
                 <i class="bi bi-plus-circle me-1"></i> Nouvelle commande
             </a>
         </div>
@@ -128,35 +138,51 @@
 
     <!-- Statistiques -->
     <div class="row mb-4">
-        <div class="col-md-3 col-sm-6 mb-3">
+        <div class="col-md-2 col-6 mb-3">
+            <div class="card border-start border-secondary border-4">
+                <div class="card-body">
+                    <h6 class="text-muted">Panier</h6>
+                    <h4>{{ commandes|filter(c => c.statutCommande == 'panier')|length }}</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2 col-6 mb-3">
             <div class="card border-start border-warning border-4">
                 <div class="card-body">
                     <h6 class="text-muted">En attente</h6>
-                    <h4>{{ commandes|filter(c => c.statut == 'en_attente')|length }}</h4>
+                    <h4>{{ commandes|filter(c => c.statutCommande == 'en_attente')|length }}</h4>
                 </div>
             </div>
         </div>
-        <div class="col-md-3 col-sm-6 mb-3">
+        <div class="col-md-2 col-6 mb-3">
             <div class="card border-start border-info border-4">
                 <div class="card-body">
-                    <h6 class="text-muted">Confirmées</h6>
-                    <h4>{{ commandes|filter(c => c.statut == 'confirmee')|length }}</h4>
+                    <h6 class="text-muted">Validées</h6>
+                    <h4>{{ commandes|filter(c => c.statutCommande == 'validee')|length }}</h4>
                 </div>
             </div>
         </div>
-        <div class="col-md-3 col-sm-6 mb-3">
+        <div class="col-md-2 col-6 mb-3">
             <div class="card border-start border-primary border-4">
                 <div class="card-body">
-                    <h6 class="text-muted">Expédiées</h6>
-                    <h4>{{ commandes|filter(c => c.statut == 'expediee')|length }}</h4>
+                    <h6 class="text-muted">En préparation</h6>
+                    <h4>{{ commandes|filter(c => c.statutCommande == 'en_preparation')|length }}</h4>
                 </div>
             </div>
         </div>
-        <div class="col-md-3 col-sm-6 mb-3">
+        <div class="col-md-2 col-6 mb-3">
+            <div class="card border-start border-dark border-4">
+                <div class="card-body">
+                    <h6 class="text-muted">Expédiées</h6>
+                    <h4>{{ commandes|filter(c => c.statutCommande == 'expediee')|length }}</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2 col-6 mb-3">
             <div class="card border-start border-success border-4">
                 <div class="card-body">
                     <h6 class="text-muted">Livrées</h6>
-                    <h4>{{ commandes|filter(c => c.statut == 'livree')|length }}</h4>
+                    <h4>{{ commandes|filter(c => c.statutCommande == 'livree')|length }}</h4>
                 </div>
             </div>
         </div>
@@ -169,7 +195,7 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th>Numéro</th>
+                            <th>ID</th> {# CHANGED: From "Numéro" to "ID" #}
                             <th>Date</th>
                             <th>Client</th>
                             <th>Équipements</th>
@@ -181,9 +207,12 @@
                     <tbody>
                         {% for commande in commandes|sort((a, b) => b.dateCommande <=> a.dateCommande) %}
                             <tr>
-                                <td><strong>{{ commande.numero }}</strong></td>
+                                <td><strong>#{{ commande.id }}</strong></td> {# CHANGED: Use id instead of numero #}
                                 <td>{{ commande.dateCommande|date('d/m/Y H:i') }}</td>
-                                <td>{{ commande.utilisateur.email }}</td>
+                                <td>
+                                    {{ commande.utilisateur.nom }} {{ commande.utilisateur.prenom }}
+                                    <br><small class="text-muted">{{ commande.utilisateur.email }}</small>
+                                </td>
                                 <td>
                                     <span class="equipement-count">{{ commande.equipements|length }}</span>
                                     {% if commande.equipements|length > 0 %}
@@ -199,32 +228,22 @@
                                 </td>
                                 <td>{{ commande.montantTotal }} DT</td>
                                 <td>
-                                    <span class="statut-badge statut-{{ commande.statut }}">
-                                        {% if commande.statut == 'en_attente' %}
-                                            En attente
-                                        {% elseif commande.statut == 'confirmee' %}
-                                            Confirmée
-                                        {% elseif commande.statut == 'expediee' %}
-                                            Expédiée
-                                        {% elseif commande.statut == 'livree' %}
-                                            Livrée
-                                        {% else %}
-                                            Annulée
-                                        {% endif %}
+                                    <span class="statut-badge statut-{{ commande.statutCommande }}">
+                                        {{ commande.getStatutCommandeReadable() }} {# Use entity method #}
                                     </span>
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group">
-                                        <a href="{{ path('commande_show', {'id': commande.id}) }}" 
+                                        <a href="{{ path('commande_show', {'id': commande.id}) }}" {# CHANGED: Use actual route name #}
                                            class="btn btn-sm btn-info" title="Voir">
                                             <i class="bi bi-eye"></i>
                                         </a>
-                                        <a href="{{ path('commande_edit', {'id': commande.id}) }}" 
+                                        <a href="{{ path('commande_edit', {'id': commande.id}) }}" {# CHANGED: Use actual route name #}
                                            class="btn btn-sm btn-warning" title="Modifier">
                                             <i class="bi bi-pencil"></i>
                                         </a>
                                         <form method="post" 
-                                              action="{{ path('commande_delete', {'id': commande.id}) }}" 
+                                              action="{{ path('commande_delete', {'id': commande.id}) }}" {# CHANGED: Use actual route name #}
                                               style="display: inline;"
                                               onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette commande ?');">
                                             <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ commande.id) }}">
@@ -251,15 +270,4 @@
         </div>
     </div>
 </div>
-
-<!-- JavaScript pour les sélections multiples -->
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Activer les selects multiples avec recherche
-        const selects = document.querySelectorAll('select[multiple]');
-        selects.forEach(select => {
-            select.setAttribute('data-choices', 'true');
-        });
-    });
-</script>
 {% endblock %}

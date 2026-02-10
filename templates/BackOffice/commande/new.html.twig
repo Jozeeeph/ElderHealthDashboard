@@ -86,7 +86,7 @@
             </h1>
             <div class="text-muted">
                 {% if commande.id %}
-                    Numéro: {{ commande.numero }}
+                    Numéro: {{ commande.id }}
                 {% else %}
                     Création d'une nouvelle commande
                 {% endif %}
@@ -105,13 +105,15 @@
             <div class="row">
                 <!-- Colonne gauche -->
                 <div class="col-md-6">
-                    <div class="mb-3">
-                        {{ form_label(form.utilisateur, 'Client', {'label_attr': {'class': 'form-label'}}) }}
-                        {{ form_widget(form.utilisateur, {'attr': {'class': 'form-select'}}) }}
-                        <div class="form-error">
-                            {{ form_errors(form.utilisateur) }}
+                    {% if form.utilisateur is defined %}
+                        <div class="mb-3">
+                            {{ form_label(form.utilisateur, 'Client', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.utilisateur, {'attr': {'class': 'form-select'}}) }}
+                            <div class="form-error">
+                                {{ form_errors(form.utilisateur) }}
+                            </div>
                         </div>
-                    </div>
+                    {% endif %}
 
                     <div class="mb-3">
                         {{ form_label(form.equipements, 'Équipements', {'label_attr': {'class': 'form-label'}}) }}
@@ -122,50 +124,35 @@
                         <small class="text-muted">Maintenez Ctrl (Cmd sur Mac) pour sélectionner plusieurs équipements</small>
                     </div>
 
+                    {% if form.statutCommande is defined %}
+                        <div class="mb-3">
+                            {{ form_label(form.statutCommande, 'Statut', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.statutCommande, {'attr': {'class': 'form-select'}}) }}
+                            <div class="form-error">
+                                {{ form_errors(form.statutCommande) }}
+                            </div>
+                        </div>
+                    {% endif %}
+
                     <div class="mb-3">
-                        {{ form_label(form.statut, 'Statut', {'label_attr': {'class': 'form-label'}}) }}
-                        {{ form_widget(form.statut, {'attr': {'class': 'form-select'}}) }}
+                        {{ form_label(form.dateCommande, 'Date de commande', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.dateCommande, {'attr': {'class': 'form-control'}}) }}
                         <div class="form-error">
-                            {{ form_errors(form.statut) }}
+                            {{ form_errors(form.dateCommande) }}
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        {{ form_label(form.methodePaiement, 'Méthode de paiement', {'label_attr': {'class': 'form-label'}}) }}
-                        {{ form_widget(form.methodePaiement, {'attr': {'class': 'form-select'}}) }}
+                        {{ form_label(form.montantTotal, 'Montant total', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.montantTotal, {'attr': {'class': 'form-control', 'placeholder': '0.00'}}) }}
                         <div class="form-error">
-                            {{ form_errors(form.methodePaiement) }}
+                            {{ form_errors(form.montantTotal) }}
                         </div>
                     </div>
                 </div>
 
                 <!-- Colonne droite -->
                 <div class="col-md-6">
-                    <div class="mb-3">
-                        {{ form_label(form.adresseLivraison, 'Adresse de livraison', {'label_attr': {'class': 'form-label'}}) }}
-                        {{ form_widget(form.adresseLivraison, {'attr': {'class': 'form-control', 'placeholder': 'Adresse complète'}}) }}
-                        <div class="form-error">
-                            {{ form_errors(form.adresseLivraison) }}
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            {{ form_label(form.telephone, 'Téléphone', {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(form.telephone, {'attr': {'class': 'form-control', 'placeholder': 'Numéro de téléphone'}}) }}
-                            <div class="form-error">
-                                {{ form_errors(form.telephone) }}
-                            </div>
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            {{ form_label(form.email, 'Email', {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(form.email, {'attr': {'class': 'form-control', 'placeholder': 'Email de contact'}}) }}
-                            <div class="form-error">
-                                {{ form_errors(form.email) }}
-                            </div>
-                        </div>
-                    </div>
 
                     <div class="mb-3">
                         {{ form_label(form.remarques, 'Remarques', {'label_attr': {'class': 'form-label'}}) }}
