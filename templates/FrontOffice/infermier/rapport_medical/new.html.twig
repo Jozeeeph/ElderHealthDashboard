@@ -11,11 +11,10 @@
 					<h2>Nouveau rapport medical</h2>
 					<a class="btn-outline" href="{{ path('front_infermier_consultation_index') }}">Retour</a>
 				</div>
-				<p class="muted">Consultation #{{ consultation.id }}</p>
+				<p class="muted">Consultation {{ consultation.id }}</p>
 			</section>
 
 			{{ include('FrontOffice/infermier/rapport_medical/_form.html.twig', { form: form, submit_label: 'Ajouter' }) }}
 		</main>
 	</div>
 {% endblock %}
-

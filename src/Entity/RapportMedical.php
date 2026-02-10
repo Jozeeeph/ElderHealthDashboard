@@ -52,7 +52,7 @@ class RapportMedical
         return $this->diagnostic;
     }
 
-    public function setDiagnostic(string $diagnostic): self
+    public function setDiagnostic(?string $diagnostic): self
     {
         $this->diagnostic = $diagnostic;
         return $this;
@@ -63,7 +63,7 @@ class RapportMedical
         return $this->recommandations;
     }
 
-    public function setRecommandations(string $recommandations): self
+    public function setRecommandations(?string $recommandations): self
     {
         $this->recommandations = $recommandations;
         return $this;
@@ -74,7 +74,7 @@ class RapportMedical
         return $this->niveau_gravite;
     }
 
-    public function setNiveauGravite(string $niveau_gravite): self
+    public function setNiveauGravite(?string $niveau_gravite): self
     {
         $this->niveau_gravite = $niveau_gravite;
         return $this;
@@ -85,7 +85,7 @@ class RapportMedical
         return $this->date_rapport;
     }
 
-    public function setDateRapport(\DateTimeInterface $date_rapport): self
+    public function setDateRapport(?\DateTimeInterface $date_rapport): self
     {
         $this->date_rapport = $date_rapport;
         return $this;

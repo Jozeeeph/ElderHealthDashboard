@@ -6,7 +6,7 @@
 <div class="container py-4">
     <h1 class="mb-3">Nouveau rapport medical</h1>
     <div class="text-muted mb-4">
-        Consultation #{{ consultation.id }} - {{ consultation.patient.prenom }} {{ consultation.patient.nom }}
+        Consultation {{ consultation.id }} - {{ consultation.patient.prenom }} {{ consultation.patient.nom }}
     </div>
 
     {% include 'BackOffice/rapport_medical/_form.html.twig' with {

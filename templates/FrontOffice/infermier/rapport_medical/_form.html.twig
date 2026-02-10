@@ -4,9 +4,9 @@
 	<p class="form-subtitle">📝 Renseignez les informations principales.</p>
 
 	{% if form_action is defined %}
-		{{ form_start(form, {'attr': {'class': 'consultation-form no-error-text', 'novalidate': 'novalidate'}, 'action': form_action}) }}
+		{{ form_start(form, {'attr': {'class': 'consultation-form', 'novalidate': 'novalidate'}, 'action': form_action}) }}
 	{% else %}
-		{{ form_start(form, {'attr': {'class': 'consultation-form no-error-text', 'novalidate': 'novalidate'}}) }}
+		{{ form_start(form, {'attr': {'class': 'consultation-form', 'novalidate': 'novalidate'}}) }}
 	{% endif %}
 		<div class="form-grid">
 			<div class="full">

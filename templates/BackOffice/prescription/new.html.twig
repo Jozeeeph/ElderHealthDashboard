@@ -8,7 +8,7 @@
         <div>
             <h1 class="mb-1">Nouvelle prescription</h1>
             <div class="text-muted">
-                Consultation #{{ consultation.id }} - {{ consultation.patient.prenom }} {{ consultation.patient.nom }}
+                Consultation {{ consultation.id }} - {{ consultation.patient.prenom }} {{ consultation.patient.nom }}
             </div>
         </div>
         <a class="btn btn-light" href="{{ path('consultation_index') }}">Retour</a>

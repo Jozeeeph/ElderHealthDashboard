@@ -32,7 +32,8 @@ class Prescription
     #[Assert\NotBlank(message: 'Ce champ est obligatoire.')]
     private ?string $duree_traitement = null;
 
-    #[ORM\Column(type: 'text', nullable: true)]
+    #[ORM\Column(type: 'text')]
+    #[Assert\NotBlank(message: 'Ce champ est obligatoire.')]
     private ?string $consignes = null;
 
     #[ORM\Column(type: 'date')]
@@ -58,6 +59,23 @@ class Prescription
         if ($this->date_fin < $this->date_debut) {
             $context->buildViolation('La date de fin doit etre apres la date de debut.')
                 ->atPath('dateFin')
+                ->addViolation();
+        }
+    }
+
+    #[Assert\Callback]
+    public function validateConsignesWordCount(ExecutionContextInterface $context): void
+    {
+        if ($this->consignes === null || trim($this->consignes) === '') {
+            return;
+        }
+
+        $words = preg_split('/\s+/u', trim($this->consignes), -1, PREG_SPLIT_NO_EMPTY);
+        $count = $words ? count($words) : 0;
+
+        if ($count > 1000) {
+            $context->buildViolation('Maximum 1000 mots.')
+                ->atPath('consignes')
                 ->addViolation();
         }
     }
@@ -129,7 +147,7 @@ class Prescription
         return $this->date_debut;
     }
 
-    public function setDateDebut(\DateTimeInterface $date_debut): self
+    public function setDateDebut(?\DateTimeInterface $date_debut): self
     {
         $this->date_debut = $date_debut;
         return $this;
@@ -140,7 +158,7 @@ class Prescription
         return $this->date_fin;
     }
 
-    public function setDateFin(\DateTimeInterface $date_fin): self
+    public function setDateFin(?\DateTimeInterface $date_fin): self
     {
         $this->date_fin = $date_fin;
         return $this;
