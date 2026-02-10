@@ -1,46 +1,54 @@
-{% block stylesheets %}
-	<link rel="stylesheet" href="{{ asset('css/patient.css') }}?v=2">
-{% endblock %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil patient</title>
 
-{% block public_nav %}{% endblock %}
+    <link rel="stylesheet" href="{{ asset('css/patient.css') }}?v=2">
+</head>
 
-{% block body %}
-	<div class="patient-app">
-		{% include 'FrontOffice/patient/_header.html.twig' %}
+<body>
+    <div class="patient-app">
+        {% include 'FrontOffice/patient/_header.html.twig' %}
 
-		<main class="patient-main">
-			<section class="profile-hero">
-				<div>
-					<h1>ðŸ‘¤ Mon profil</h1>
-					<p>Un espace clair et soignÃ© pour vos informations personnelles.</p>
-				</div>
-				<div class="profile-badge">ðŸ’– Profil patient</div>
-			</section>
+        <main class="patient-main">
+            <section class="profile-hero">
+                <div>
+                    <h1>👤 Mon profil</h1>
+                    <p>Un espace clair et soigné pour vos informations personnelles.</p>
+                </div>
+                <div class="profile-badge">💖 Profil patient</div>
+            </section>
 
-			<section class="profile-shell">
-				<div class="profile-card">
-					<h2>ðŸ“ Informations</h2>
-					{% include 'FrontOffice/patient/_profile_form.html.twig' with { form: form } %}
-					<div class="actions" style="margin-top: 12px;">
-						<a class="btn ghost" href="{{ path('app_patient_interfce') }}">â¬…ï¸ Retour</a>
-					</div>
-				</div>
+            <section class="profile-shell">
+                <div class="profile-card">
+                    <h2>📝 Informations</h2>
 
-				<div class="profile-side">
-					<div class="profile-mini">
-						<div class="mini-title">âœ¨ Conseils</div>
-						<ul class="mini-list">
-							<li>Gardez votre email Ã  jour.</li>
-							<li>Ajoutez un numÃ©ro valide.</li>
-							<li>VÃ©rifiez la date de naissance.</li>
-						</ul>
-					</div>
-					<div class="profile-mini">
-						<div class="mini-title">ðŸ”’ SÃ©curitÃ©</div>
-						<p class="mini-text">Vos informations sont protÃ©gÃ©es et visibles uniquement par vous.</p>
-					</div>
-				</div>
-			</section>
-		</main>
-	</div>
-{% endblock %}
+                    {% include 'FrontOffice/patient/_profile_form.html.twig' with { form: form } %}
+
+                    <div class="actions" style="margin-top: 12px;">
+                        <a class="btn ghost" href="{{ path('app_patient_interfce') }}">⬅️ Retour</a>
+                    </div>
+                </div>
+
+                <div class="profile-side">
+                    <div class="profile-mini">
+                        <div class="mini-title">✨ Conseils</div>
+                        <ul class="mini-list">
+                            <li>Gardez votre email à jour.</li>
+                            <li>Ajoutez un numéro valide.</li>
+                            <li>Vérifiez la date de naissance.</li>
+                        </ul>
+                    </div>
+
+                    <div class="profile-mini">
+                        <div class="mini-title">🔒 Sécurité</div>
+                        <p class="mini-text">Vos informations sont protégées et visibles uniquement par vous.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
