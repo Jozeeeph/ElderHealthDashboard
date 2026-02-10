@@ -25,8 +25,13 @@
 			<!-- NAV -->
 			<nav class="top-nav">
 				<a class="active">Accueil</a>
+<<<<<<< HEAD
 				<a href="{{ path('app_patient_interfce') }}#rendezvous">Rendez-vous</a>
 				<a href="{{ path('patient_consultations') }}">Consultation</a>
+=======
+				<a href="{{ path('patient_rendezvous_index') }}">Rendez-vous</a>
+				<a>Consultation</a>
+>>>>>>> rendez_vous
 				<a href="{{ path('equipment_list_index') }}">Equipement</a>
 				<a href="{{ path('forum_post_forum_index') }}">Forum</a>
 				<a href="{{ path('front_events_index') }}">Événements</a>
@@ -69,7 +74,7 @@
 				</p>
 
 				<div class="actions">
-					<a href="#" class="btn primary">Prendre rendez-vous</a>
+					<a href="{{ path('patient_rendezvous_index') }}" class="btn primary">Prendre rendez-vous</a>
 					<a href="#" class="btn ghost">Contacter médecin</a>
 					<a href="{{ path('patient_profile') }}" class="btn ghost">Mettre à jour profil</a>
 				</div>

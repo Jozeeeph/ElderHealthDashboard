@@ -46,7 +46,7 @@ class RendezVous
 
         #[ORM\Column(length: 20)]
         #[Assert\NotBlank(message: 'L etat est obligatoire.')]
-        #[Assert\Choice(choices: ['PLANIFIE', 'PLANIFIEE', 'EN_COURS', 'TERMINE', 'TERMINEE', 'ANNULEE'], message: 'Etat invalide.')]
+        #[Assert\Choice(choices: ['EN_ATTENTE', 'PLANIFIE', 'PLANIFIEE', 'EN_COURS', 'TERMINE', 'TERMINEE', 'ANNULEE'], message: 'Etat invalide.')]
 private ?string $etat = 'PLANIFIEE';
 
 public function getEtat(): ?string
