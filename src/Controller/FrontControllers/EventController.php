@@ -115,7 +115,6 @@ class EventController extends AbstractController
         $em->flush();
 
 
-        $this->addFlash('success', 'Participation confirmée ✅');
 
         return $this->redirectToRoute('front_events_show', ['id' => $event->getId()]);
     }
