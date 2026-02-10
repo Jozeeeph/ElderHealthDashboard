@@ -372,6 +372,13 @@
     text-decoration: line-through;
 }
 
+.status-refusee {
+    background: #fef2f2;
+    color: #b91c1c;
+    border-color: #fecaca;
+    text-decoration: line-through;
+}
+
 /* ========================================
    ACTIONS
    ======================================== */

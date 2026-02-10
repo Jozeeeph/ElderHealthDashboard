@@ -22,7 +22,7 @@ class RendezVousEtatService
             if (!$rdv->getDate() || !$rdv->getHeure()) {
                 continue;
             }
-            if (in_array($rdv->getEtat(), ['EN_ATTENTE', 'ANNULEE'], true)) {
+            if (in_array($rdv->getEtat(), ['EN_ATTENTE', 'ANNULEE', 'REFUSEE'], true)) {
                 continue;
             }
 

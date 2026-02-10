@@ -1,0 +1,100 @@
+{% block stylesheets %}
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="{{ asset('css/infermier.css') }}">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+{% endblock %}
+
+{% block body %}
+	<div class="nurse-app">
+		<header class="topbar">
+			<div class="topbar-inner">
+				<a href="{{ path('app_public_site') }}" class="brand">
+					<img src="{{ asset('img/logo.png') }}" alt="Elder HealthCare">
+					<span>Elder<span>HealthCare</span></span>
+				</a>
+				<nav class="top-nav">
+					<a href="{{ path('front_infermier_consultation_index') }}">Consultations</a>
+					<a>Patients</a>
+					<a class="active" href="{{ path('front_infermier_rendezvous_index') }}">Rendez-vous</a>
+					<a href="{{ path('equipment_list_index') }}">Equipement</a>
+					<a href="{{ path('forum_post_forum_index') }}">Forum</a>
+					<a href="{{ path('front_events_index') }}">Evenements</a>
+					<a>Messages</a>
+				</nav>
+				<div class="profile">
+					<img src="{{ asset('img/home.jpg') }}" alt="Profil">
+					<div class="who">
+						<small>Infirmier</small>
+						<strong>{{ nurseName|default('Infirmier') }}</strong>
+					</div>
+				</div>
+			</div>
+		</header>
+
+		<main class="nurse-main consultation-page">
+			<section class="consultation-header">
+				<div class="card-head">
+					<div>
+						<h2 class="consultation-title">Demandes de rendez-vous</h2>
+						<p class="consultation-subtitle">Acceptez ou refusez les demandes de vos patients.</p>
+					</div>
+				</div>
+			</section>
+
+			{% for message in app.flashes('success') %}
+				<div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+					{{ message }}
+					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+				</div>
+			{% endfor %}
+
+			<section class="grid consult-grid">
+				{% for rdv in rendezVousList %}
+					{% set etatClass = {
+						'EN_ATTENTE': 'status-en_attente',
+						'PLANIFIE': 'status-planifiee',
+						'PLANIFIEE': 'status-planifiee',
+						'EN_COURS': 'status-en_cours',
+						'TERMINE': 'status-terminee',
+						'TERMINEE': 'status-terminee',
+						'ANNULEE': 'status-annulee',
+						'REFUSEE': 'status-refusee'
+					} %}
+					<div class="card consultation-card">
+						<div class="consultation-accent"></div>
+						<div class="card-head">
+							<h2>Rendez-vous #{{ rdv.id }}</h2>
+							<span class="status-badge {{ etatClass[rdv.etat] ?? 'status-planifiee' }}">
+								{{ rdv.etat|replace({'_': ' '})|lower|title }}
+							</span>
+						</div>
+						<div class="consultation-meta">
+							<span class="consultation-chip">Patient: {{ rdv.patient ? (rdv.patient.prenom ~ ' ' ~ rdv.patient.nom) : '-' }}</span>
+							<span class="consultation-chip">Type: {{ rdv.typeRendezVous ? rdv.typeRendezVous.type : '-' }}</span>
+						</div>
+						<div class="consultation-meta">
+							<span class="consultation-chip">Date: {{ rdv.date ? rdv.date|date('d/m/Y') : '-' }}</span>
+							<span class="consultation-chip">Heure: {{ rdv.heure ? rdv.heure|date('H:i') : '-' }}</span>
+							<span class="consultation-chip">Lieu: {{ rdv.lieu }}</span>
+						</div>
+						<div class="consultation-actions">
+							{% if rdv.etat == 'EN_ATTENTE' %}
+								<a class="btn-sm primary" href="{{ path('front_infermier_rendezvous_accept', {'id': rdv.id}) }}">Accepter</a>
+								<a class="btn-sm danger" href="{{ path('front_infermier_rendezvous_refuse', {'id': rdv.id}) }}">Refuser</a>
+							{% endif %}
+						</div>
+					</div>
+				{% else %}
+					<div class="card consultation-card">
+						<div class="consultation-accent"></div>
+						<p class="muted">Aucun rendez-vous pour le moment.</p>
+					</div>
+				{% endfor %}
+			</section>
+		</main>
+	</div>
+{% endblock %}
+
+{% block javascripts %}
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}

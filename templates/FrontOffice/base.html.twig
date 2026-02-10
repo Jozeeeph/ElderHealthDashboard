@@ -18,7 +18,7 @@
 			class="{% block body_class %}{% endblock %}">
 
 			{# Header public simple #}
-			
+			{% block public_nav %}
 				<nav id="publicNavbar" class="navbar navbar-expand-lg navbar-light navbar-yoopies">
 					<div class="container">
 
@@ -137,6 +137,7 @@
 						</div>
 					</div>
 				</nav>
+			{% endblock %}
 
 
 			{% block body %}{% endblock %}
