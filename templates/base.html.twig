@@ -18,6 +18,7 @@
 
     {# ✅ NEW: ton design sidebar bleu + layout #}
     <link rel="stylesheet" href="{{ asset('css/elder-layout.css') }}">
+      <link rel="stylesheet" href="{{ asset('css/footer.css') }}">
 
     {% block stylesheets %}{% endblock %}
 </head>
@@ -66,12 +67,12 @@
                         Mon compte
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li>
+                        {# <li>
                             <a class="dropdown-item" href="#">
                                 <i class="fas fa-gear me-2"></i>
                                 Paramètres
                             </a>
-                        </li>
+                        </li> #}
                         <li>
                             <a class="dropdown-item text-danger" href="{{ path('app_logout') }}">
                                 <i class="fas fa-right-from-bracket me-2"></i>
