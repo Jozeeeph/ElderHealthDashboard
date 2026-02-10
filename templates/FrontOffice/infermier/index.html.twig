@@ -1,20 +1,203 @@
-{% extends 'base.html.twig' %}
-
-{% block title %}Hello InfermierController!{% endblock %}
-
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{ asset('css/infermier.css') }}">
+{% endblock %}
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+	<div class="nurse-app">
+		<header class="topbar">
+			<div class="topbar-inner">
+				<a href="{{ path('app_public_site') }}" class="brand">
+					<img src="{{ asset('img/logo.png') }}" alt="Elder HealthCare">
+					<span>Elder<span>HealthCare</span></span>
+				</a>
+				<nav class="top-nav">
+					<a class="active">Tableau</a>
+					<a>Patients</a>
+					<a>Rendez-vous</a>
+					
+					<a href="{{ path('equipment_list_index') }}">Equipement</a>
+					<a href="{{ path('forum_post_forum_index') }}">Forum</a>
+					<a href="{{ path('front_events_index') }}">Evenements</a>
+					<a>Messages</a>
+				</nav>
+				<div class="profile">
+					<img src="{{ asset('img/home.jpg') }}" alt="Profil">
+					<div class="who">
+						<small>Infirmier</small>
+						<strong>{{ nurseName|default('Fatma') }}</strong>
+					</div>
+				</div>
+			</div>
+		</header>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+		<main class="nurse-main">
+			<section class="hero">
+				<div class="hero-left">
+					<span class="badge">Service de jour</span>
+					<h1>Bonjour {{ nurseName|default('Fatma') }}</h1>
+					<p>
+						Voici votre tableau de bord infirmier. Priorites, suivis patients
+						et rendez-vous du jour en un coup d'oeil.
+					</p>
+					<div class="actions">
+						<a href="#" class="btn primary">Nouvelle consultation</a>
+						<a href="#" class="btn ghost">Ajouter note</a>
+						<a href="#" class="btn ghost">Voir planning</a>
+					</div>
+				</div>
+				<div class="hero-right">
+					<div class="mini-card">
+						<h3>Patients actifs</h3>
+						<p class="big">24</p>
+						<p class="muted">6 nouveaux aujourd'hui</p>
+					</div>
+					<div class="mini-card">
+						<h3>Alertes cliniques</h3>
+						<p class="big danger">3</p>
+						<p class="muted">Suivis prioritaires</p>
+					</div>
+				</div>
+			</section>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>D:/youssef/piEsprit/ElderHealthCare/ElderHealthDashboard/src/Controller/InfermierController.php</code></li>
-        <li>Your template at <code>D:/youssef/piEsprit/ElderHealthCare/ElderHealthDashboard/templates/infermier/index.html.twig</code></li>
-    </ul>
-</div>
+			<section class="stats">
+				<div class="stat">
+					<div>
+						<small>Rendez-vous</small>
+						<strong>7</strong>
+					</div>
+					<span class="chip ok">Confirmee</span>
+				</div>
+				<div class="stat">
+					<div>
+						<small>Consultations</small>
+						<strong>5</strong>
+					</div>
+					<span class="chip">En cours</span>
+				</div>
+				<div class="stat">
+					<div>
+						<small>Urgences</small>
+						<strong>2</strong>
+					</div>
+					<span class="chip warn">A traiter</span>
+				</div>
+				<div class="stat">
+					<div>
+						<small>Documents</small>
+						<strong>12</strong>
+					</div>
+					<span class="chip">A valider</span>
+				</div>
+			</section>
+
+			<section class="grid">
+				<div class="card span-2">
+					<div class="card-head">
+						<h2>Planning du jour</h2>
+						<a class="link" href="#">Voir tout</a>
+					</div>
+					<div class="table">
+						<div class="row head">
+							<span>Heure</span>
+							<span>Patient</span>
+							<span>Service</span>
+							<span>Priorite</span>
+							<span>Etat</span>
+						</div>
+						<div class="row">
+							<span class="mono">08:30</span>
+							<span class="bold">Samir H.</span>
+							<span>Cardiologie</span>
+							<span class="pill warn">Moyen</span>
+							<span class="pill ok">Confirme</span>
+						</div>
+						<div class="row">
+							<span class="mono">10:00</span>
+							<span class="bold">Leila M.</span>
+							<span>Geriatrie</span>
+							<span class="pill ok">Faible</span>
+							<span class="pill">En cours</span>
+						</div>
+						<div class="row">
+							<span class="mono">11:30</span>
+							<span class="bold">Noura S.</span>
+							<span>Neurologie</span>
+							<span class="pill danger">Elevee</span>
+							<span class="pill warn">En attente</span>
+						</div>
+					</div>
+				</div>
+
+				<div class="card">
+					<div class="card-head">
+						<h2>Alertes</h2>
+						<a class="link" href="#">Tout</a>
+					</div>
+					<div class="list">
+						<div class="item">
+							<div class="bubble">BP</div>
+							<div class="content">
+								<b>Tension instable</b>
+								<p>Patient: Noura S. - controle requis</p>
+							</div>
+						</div>
+						<div class="item">
+							<div class="bubble">Rx</div>
+							<div class="content">
+								<b>Traitement a administrer</b>
+								<p>Ordonnance a 14:00</p>
+							</div>
+						</div>
+						<div class="item">
+							<div class="bubble">Lab</div>
+							<div class="content">
+								<b>Resultats disponibles</b>
+								<p>Analyser et valider</p>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="card">
+					<div class="card-head">
+						<h2>Patients suivis</h2>
+						<a class="link" href="#">Liste</a>
+					</div>
+					<div class="patients">
+						<div class="p-item">
+							<img src="{{ asset('img/home.jpg') }}" alt="Patient">
+							<div class="p-info">
+								<strong>Hichem K.</strong>
+								<p>Controle post-op</p>
+							</div>
+							<span class="risk high">Eleve</span>
+						</div>
+						<div class="p-item">
+							<img src="{{ asset('img/home.jpg') }}" alt="Patient">
+							<div class="p-info">
+								<strong>Amel R.</strong>
+								<p>Suivi diabete</p>
+							</div>
+							<span class="risk mid">Moyen</span>
+						</div>
+						<div class="p-item">
+							<img src="{{ asset('img/home.jpg') }}" alt="Patient">
+							<div class="p-info">
+								<strong>Yassine B.</strong>
+								<p>Visite hebdomadaire</p>
+							</div>
+							<span class="risk low">Faible</span>
+						</div>
+					</div>
+				</div>
+
+				<div class="card span-2">
+					<div class="card-head">
+						<h2>Note rapide</h2>
+						<a class="link" href="#">Sauvegarder</a>
+					</div>
+					<textarea class="note" placeholder="Ecrire une note rapide pour l'equipe..."></textarea>
+				</div>
+			</section>
+		</main>
+	</div>
 {% endblock %}
