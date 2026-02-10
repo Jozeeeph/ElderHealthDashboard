@@ -6,7 +6,7 @@ use App\Entity\Commande;
 use App\Form\CommandeType;
 use App\Repository\CommandeRepository;
 use App\Repository\EquipementRepository;
-use App\Repository\UserRepository;
+use App\Repository\UtilisateurRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,10 +23,10 @@ class CommandeController extends AbstractController
         
         // Calculer le total pour chaque commande
         foreach ($commandes as $commande) {
-            $commande->calculerMontantTotal();
+            $commande->calculateMontantTotal();
         }
         
-        return $this->render('backoffice/commande/index.html.twig', [
+        return $this->render('BackOffice/commande/index.html.twig', [
             'commandes' => $commandes,
         ]);
     }
@@ -36,20 +36,23 @@ class CommandeController extends AbstractController
         Request $request, 
         EntityManagerInterface $entityManager, 
         EquipementRepository $equipementRepository,
-        UserRepository $userRepository
+        UtilisateurRepository $utilisateurRepository
     ): Response
     {
         $commande = new Commande();
+
         $form = $this->createForm(CommandeType::class, $commande, [
             'equipements' => $equipementRepository->findAll(),
-            'users' => $userRepository->findAll(),
+            'users' => $utilisateurRepository->findAll(),
+            'can_choose_user' => true,
+            'can_edit_status' => true,
         ]);
         
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             // Calculer le montant total
-            $commande->calculerMontantTotal();
+            $commande->calculateMontantTotal();
             
             $entityManager->persist($commande);
             $entityManager->flush();
@@ -59,7 +62,7 @@ class CommandeController extends AbstractController
             return $this->redirectToRoute('commande_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('backoffice/commande/new.html.twig', [
+        return $this->render('BackOffice/commande/new.html.twig', [
             'commande' => $commande,
             'form' => $form,
         ]);
@@ -69,9 +72,9 @@ class CommandeController extends AbstractController
     public function show(Commande $commande): Response
     {
         // Calculer le montant total
-        $commande->calculerMontantTotal();
+        $commande->calculateMontantTotal();
         
-        return $this->render('backoffice/commande/show.html.twig', [
+        return $this->render('BackOffice/commande/show.html.twig', [
             'commande' => $commande,
         ]);
     }
@@ -82,19 +85,21 @@ class CommandeController extends AbstractController
         Commande $commande, 
         EntityManagerInterface $entityManager,
         EquipementRepository $equipementRepository,
-        UserRepository $userRepository
+        UtilisateurRepository $utilisateurRepository
     ): Response
     {
         $form = $this->createForm(CommandeType::class, $commande, [
             'equipements' => $equipementRepository->findAll(),
-            'users' => $userRepository->findAll(),
+            'users' => $utilisateurRepository->findAll(),
+            'can_choose_user' => true,
+            'can_edit_status' => true,
         ]);
         
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             // Recalculer le montant total
-            $commande->calculerMontantTotal();
+            $commande->calculateMontantTotal();
             
             $entityManager->flush();
 
@@ -103,7 +108,7 @@ class CommandeController extends AbstractController
             return $this->redirectToRoute('commande_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('backoffice/commande/edit.html.twig', [
+        return $this->render('BackOffice/commande/edit.html.twig', [
             'commande' => $commande,
             'form' => $form,
         ]);
@@ -127,18 +132,10 @@ class CommandeController extends AbstractController
     {
         $nouveauStatut = $request->request->get('statut');
         
-        if (in_array($nouveauStatut, ['en_attente', 'confirmee', 'expediee', 'livree', 'annulee'])) {
-            $commande->setStatut($nouveauStatut);
-            
-            // Si le statut est "expédiée", définir la date d'expédition
-            if ($nouveauStatut === 'expediee') {
-                $commande->setDateLivraison(new \DateTime('+3 days'));
-            }
-            
-            // Si le statut est "livrée", définir la date de livraison à aujourd'hui
-            if ($nouveauStatut === 'livree') {
-                $commande->setDateLivraison(new \DateTime());
-            }
+        $statutsAutorises = array_values(Commande::getStatuses());
+
+        if (in_array($nouveauStatut, $statutsAutorises, true)) {
+            $commande->setStatutCommande($nouveauStatut);
             
             $entityManager->flush();
             
