@@ -24,7 +24,7 @@
 
         <!-- PROFILE -->
         <a class="profile" href="{{ path('patient_profile') }}">
-            <div class="profile-emoji">ðŸ™‚</div>
+            <div class="profile-emoji"></div>
             {% set display_name = 'Patient' %}
             {% if app.user %}
                 {% if app.user.prenom is defined and app.user.nom is defined %}

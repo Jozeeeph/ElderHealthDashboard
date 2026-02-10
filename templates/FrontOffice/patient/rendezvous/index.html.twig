@@ -1,6 +1,5 @@
 
 
-
 {% block stylesheets %}
 	<link rel="stylesheet" href="{{ asset('css/patient.css') }}?v=2">
 	<link rel="stylesheet" href="{{ asset('css/patient-rendezvous.css') }}">
@@ -10,8 +9,9 @@
 {% block public_nav %}{% endblock %}
 
 {% block body %}
-	<div class="patient-app">
-		{% include 'FrontOffice/patient/_header.html.twig' %}
+<div class="patient-app">
+	{% include 'FrontOffice/patient/_header.html.twig' %}
+
 	<main class="patient-main">
 		<section class="welcome-card">
 			<div class="welcome-content">

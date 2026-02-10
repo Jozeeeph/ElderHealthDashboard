@@ -1,81 +1,85 @@
 /* ========================================
-   PATIENT RENDEZ-VOUS - COLORFUL THEME
+   PATIENT RDV - VIF & PRESENTABLE
    ======================================== */
 :root {
-    --rdv-primary: #2563eb;
-    --rdv-primary-700: #1d4ed8;
-    --rdv-accent: #f59e0b;
-    --rdv-success: #16a34a;
-    --rdv-danger: #dc2626;
+    --rdv-primary: #0ea5a6;
+    --rdv-primary-700: #0f766e;
+    --rdv-accent: #6366f1;
     --rdv-text: #0f172a;
-    --rdv-muted: #64748b;
-    --rdv-border: #e2e8f0;
-    --rdv-card: #ffffff;
-    --rdv-shadow: 0 10px 24px rgba(37, 99, 235, 0.12);
+    --rdv-muted: #6b7280;
+    --rdv-border: #e5e7eb;
+    --rdv-shadow: 0 14px 30px rgba(15, 23, 42, 0.14);
 }
 
-/* ===== HERO / WELCOME ===== */
-.patient-app .welcome-card {
-    background: linear-gradient(135deg, #eaf1ff 0%, #fce7f3 55%, #fff7ed 100%);
-    border: 1px solid #e2e8f0;
-    border-left: 8px solid var(--rdv-primary);
-    box-shadow: var(--rdv-shadow);
+/* ===== FLASH ===== */
+.rdv-flash {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 1px solid #bbf7d0;
+    background: linear-gradient(135deg, #ecfdf3 0%, #f0fdf4 100%);
+    color: #166534;
+    font-weight: 800;
+    box-shadow: 0 8px 18px rgba(22, 163, 74, 0.12);
 }
-
-.patient-app .welcome-card h1 {
-    color: var(--rdv-text);
-}
-
-.patient-app .welcome-card .btn.primary {
-    background: linear-gradient(135deg, var(--rdv-primary) 0%, var(--rdv-primary-700) 100%);
-    color: #fff;
-    box-shadow: 0 8px 16px rgba(37, 99, 235, 0.25);
-}
-
-/* ===== CARDS ===== */
-.patient-app .card {
-    border: 1px solid var(--rdv-border);
-    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+.rdv-flash::before {
+    content: "✔";
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #dcfce7;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+    font-weight: 900;
+    flex: 0 0 auto;
 }
 
 /* ===== RDV LIST ===== */
 .rdv-cards {
     display: grid;
-    gap: 12px;
-    padding: 1rem;
+    gap: 14px;
+    padding-top: 1rem;
 }
 
 .rdv-card {
-    display: flex;
-    justify-content: space-between;
-    gap: 16px;
-    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
-    border: 1px solid #dbe7ff;
-    border-radius: 14px;
-    padding: 14px 16px;
-    box-shadow: 0 10px 22px rgba(37, 99, 235, 0.10);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 18px;
     align-items: center;
+    background:
+        radial-gradient(circle at 8% 10%, rgba(14,165,166,.16), transparent 42%),
+        radial-gradient(circle at 92% 18%, rgba(99,102,241,.16), transparent 40%),
+        linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    border: 1px solid #e6edf2;
+    border-radius: 18px;
+    padding: 16px 18px;
+    box-shadow: var(--rdv-shadow);
+    transition: all .25s ease;
 }
-
 .rdv-card:hover {
-    border-color: #bfdbfe;
-    box-shadow: 0 14px 28px rgba(37, 99, 235, 0.18);
+    transform: translateY(-2px);
+    border-color: #c7d2fe;
+    box-shadow: 0 18px 38px rgba(15, 23, 42, 0.18);
 }
 
 .rdv-main {
     display: grid;
     gap: 10px;
-    flex: 1 1 auto;
 }
 
 .rdv-meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 14px;
+    font-size: .85rem;
+    font-weight: 700;
     color: #374151;
-    font-weight: 600;
 }
-
 .rdv-meta i {
     color: var(--rdv-primary);
     margin-right: 6px;
@@ -83,77 +87,65 @@
 
 .rdv-people {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 8px;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
 }
-
 .rdv-people .label {
-    font-size: 0.75rem;
+    font-size: .7rem;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: .06em;
     color: var(--rdv-muted);
-    display: block;
+    font-weight: 800;
 }
-
 .rdv-people .value {
-    font-weight: 700;
+    font-weight: 800;
     color: var(--rdv-text);
 }
 
 .rdv-side {
     display: grid;
     gap: 10px;
-    align-items: center;
     justify-items: end;
-}
-
-.rdv-actions {
-    display: flex;
-    gap: 8px;
+    align-items: center;
 }
 
 .rdv-type .badge {
-    background: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%) !important;
-    border: none;
-    box-shadow: 0 6px 14px rgba(37, 99, 235, 0.25);
+    background: linear-gradient(135deg, #6366f1 0%, #a5b4fc 100%) !important;
+    color: #111827 !important;
+    border: 1px solid #c7d2fe;
+    font-weight: 800;
+    box-shadow: 0 6px 14px rgba(99, 102, 241, 0.22);
 }
 
-/* ===== STATUS ===== */
 .status-badge {
-    padding: 0.4rem 0.8rem;
+    padding: .4rem .85rem;
     border-radius: 999px;
-    font-weight: 700;
-    font-size: 0.75rem;
+    font-size: .7rem;
+    font-weight: 900;
     text-transform: uppercase;
-    letter-spacing: 0.4px;
-    display: inline-block;
+    letter-spacing: .04em;
     border: 1px solid transparent;
 }
-
 .status-en_attente {
-    background: #fff1e6;
+    background: #fff7ed;
     color: #c2410c;
     border-color: #fed7aa;
 }
-
 .status-planifiee {
-    background: #e0f2fe;
-    color: #0369a1;
-    border-color: #bae6fd;
+    background: #ecfeff;
+    color: #0f766e;
+    border-color: #a5f3fc;
 }
-
 .status-en_cours {
-    background: #ffe4e6;
-    color: #be123c;
-    border-color: #fecdd3;
+    background: #eef2ff;
+    color: #3730a3;
+    border-color: #c7d2fe;
 }
-
 .status-terminee {
     background: #dcfce7;
     color: #166534;
     border-color: #bbf7d0;
 }
-
 .status-annulee,
 .status-refusee {
     background: #f3f4f6;
@@ -162,7 +154,10 @@
     text-decoration: line-through;
 }
 
-/* ===== ACTIONS ===== */
+.rdv-actions {
+    display: flex;
+    gap: 8px;
+}
 .btn-action {
     width: 34px;
     height: 34px;
@@ -170,80 +165,105 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
+    background: #ffffff;
     border: 1px solid #e5e7eb;
-    cursor: pointer;
-    text-decoration: none;
-    font-size: 0.95rem;
-    background: #fff;
-    color: #1f3a5f;
-    box-shadow: 0 6px 14px rgba(15, 23, 42, 0.08);
+    color: #0f172a;
+    font-size: .95rem;
+    box-shadow: 0 6px 14px rgba(15,23,42,.08);
+    transition: all .2s ease;
 }
-
 .btn-action.edit:hover {
-    color: #1d4ed8;
-    border-color: #bfdbfe;
-    background: #eff6ff;
+    background: #ecfeff;
+    color: #0f766e;
+    border-color: #99f6e4;
 }
-
 .btn-action.delete:hover {
+    background: #fef2f2;
     color: #b91c1c;
     border-color: #fecaca;
-    background: #fef2f2;
 }
 
-/* ===== FORM ===== */
+/* ===== FORM (ADD/EDIT) ===== */
 .modal-appointment {
-    border-radius: 16px;
+    border-radius: 18px;
     border: 1px solid var(--rdv-border);
-    box-shadow: 0 12px 26px rgba(37, 99, 235, 0.12);
+    box-shadow: 0 16px 36px rgba(15, 23, 42, 0.14);
+    background: #ffffff;
 }
-
 .modal-appointment .modal-header {
-    background: #eef2ff;
-    color: #1e3a8a;
-    border-radius: 16px 16px 0 0;
+    background: linear-gradient(135deg, #e0f2fe 0%, #ecfeff 60%, #ffffff 100%);
+    color: #0f172a;
+    border-radius: 18px 18px 0 0;
     padding: 1.25rem;
     border-bottom: 1px solid var(--rdv-border);
 }
-
 .modal-appointment .modal-title {
-    font-weight: 700;
+    font-weight: 800;
 }
-
 .modal-appointment .modal-body {
     padding: 1.5rem;
 }
-
-.modal-appointment .form-label {
-    font-weight: 600;
-    color: #1e3a8a;
-    margin-bottom: 0.4rem;
-    font-size: 0.9rem;
+.modal-appointment .row.g-3 {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
 }
-
+.modal-appointment .row.g-3 > [class*="col-"] {
+    flex: 0 0 100%;
+    max-width: 100%;
+    width: 100%;
+}
+.modal-appointment .form-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #475569;
+    font-weight: 800;
+    margin-bottom: 6px;
+}
 .modal-appointment .form-control,
 .modal-appointment .form-select {
-    border-radius: 10px;
+    min-height: 46px;
+    background: #ffffff;
+    border-radius: 12px;
     border: 1.5px solid var(--rdv-border);
     padding: 0.7rem 0.9rem;
-    transition: all 0.2s ease;
 }
-
 .modal-appointment .form-control:focus,
 .modal-appointment .form-select:focus {
-    border-color: #93c5fd;
-    box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.2);
+    border-color: #7dd3fc;
+    box-shadow: 0 0 0 0.2rem rgba(14, 165, 166, 0.2);
+}
+.modal-appointment .mt-3.text-end {
+    margin-top: 14px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+.modal-appointment .btn.btn-primary {
+    background: linear-gradient(135deg, #0ea5a6 0%, #22d3ee 100%);
+    border: none;
+    box-shadow: 0 10px 22px rgba(14, 165, 166, 0.25);
+    font-weight: 800;
+}
+.modal-appointment .btn.btn-secondary {
+    background: #ffffff;
+    color: #0f172a;
+    border: 1px solid #c7d2fe;
+    font-weight: 800;
+}
+.modal-appointment .btn.btn-secondary:hover {
+    background: #eef2ff;
 }
 
+/* ===== RESPONSIVE ===== */
 @media (max-width: 992px) {
     .rdv-card {
-        flex-direction: column;
-        align-items: stretch;
+        grid-template-columns: 1fr;
+        gap: 14px;
     }
-
     .rdv-side {
         justify-items: start;
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     }
 }

@@ -70,8 +70,8 @@
 		<main class="patient-main">
 			<section class="cute-header">
 				<div>
-					<div class="cute-title">ðŸ§¾ Rapport mÃ©dical doux</div>
-					<div class="cute-chip">ðŸ©º Consultation #{{ rapport.consultation.id }}</div>
+					<div class="cute-title"> Rapport mÃ©dical doux</div>
+					<div class="cute-chip"> Consultation #{{ rapport.consultation.id }}</div>
 				</div>
 				<div class="cute-chip">âœ¨ Bon rÃ©tablissement</div>
 			</section>
@@ -85,28 +85,28 @@
 							<div class="cute-value">{{ rapport.niveauGravite }}</div>
 						</div>
 						<div class="cute-card">
-							<div class="cute-label">ðŸ“… Date</div>
+							<div class="cute-label"> Date</div>
 							<div class="cute-value">{{ rapport.dateRapport ? rapport.dateRapport|date('d/m/Y H:i') : '-' }}</div>
 						</div>
 					</div>
 					<div class="item">
-						<strong>ðŸ§  Diagnostic</strong>
+						<strong>  Diagnostic</strong>
 						<p>{{ rapport.diagnostic }}</p>
 					</div>
 					<div class="item">
-						<strong>ðŸ’¡ Recommandations</strong>
+						<strong> Recommandations</strong>
 						<p>{{ rapport.recommandations }}</p>
 					</div>
 					{% if rapport.fichierPath %}
 						<div class="item">
-							<strong>ðŸ“Ž PiÃ¨ce jointe</strong>
+							<strong> PiÃ¨ce jointe</strong>
 							<p>
 								<a class="btn ghost" href="{{ asset(rapport.fichierPath) }}" target="_blank" rel="noopener">Ouvrir le fichier</a>
 							</p>
 						</div>
 					{% endif %}
 					<div class="actions">
-						<a class="btn primary" href="{{ path('rapport_medical_pdf', {'id': rapport.idRapport}) }}">ðŸ“„ TÃ©lÃ©charger PDF</a>
+						<a class="btn primary" href="{{ path('rapport_medical_pdf', {'id': rapport.idRapport}) }}"> TÃ©lÃ©charger PDF</a>
 						<a class="btn ghost" href="{{ path('patient_consultations') }}">â¬…ï¸ Retour</a>
 					</div>
 				</div>

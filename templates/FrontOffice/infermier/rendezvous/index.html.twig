@@ -26,32 +26,51 @@
 
 			<section class="grid consult-grid">
 				{% for rdv in rendezVousList %}
-					{% set etatClass = {
-						'EN_ATTENTE': 'status-en_attente',
-						'PLANIFIE': 'status-planifiee',
-						'PLANIFIEE': 'status-planifiee',
-						'EN_COURS': 'status-en_cours',
-						'TERMINE': 'status-terminee',
-						'TERMINEE': 'status-terminee',
-						'ANNULEE': 'status-annulee',
-						'REFUSEE': 'status-refusee'
-					} %}
-					<div class="card consultation-card">
+					{% set status = rdv.etat ? rdv.etat|lower : '' %}
+					{% set status_label = status == 'en_attente' ? 'En attente'
+						: (status == 'planifie' or status == 'planifiee' ? 'Planifie'
+						: (status == 'en_cours' ? 'En cours'
+						: (status == 'termine' or status == 'terminee' ? 'Termine'
+						: (status == 'annulee' ? 'Annulee'
+						: (status == 'refusee' ? 'Refusee' : (rdv.etat ?? '')))))) %}
+					<div class="card consultation-card" data-status="{{ status }}">
 						<div class="consultation-accent"></div>
 						<div class="card-head">
-							<h2>Rendez-vous #{{ rdv.id }}</h2>
-							<span class="status-badge {{ etatClass[rdv.etat] ?? 'status-planifiee' }}">
-								{{ rdv.etat|replace({'_': ' '})|lower|title }}
-							</span>
+							<h2><i class="bi bi-calendar2-week"></i>Rendez-vous</h2>
+							<span class="badge-soft">{{ status_label }}</span>
 						</div>
 						<div class="consultation-meta">
-							<span class="consultation-chip">Patient: {{ rdv.patient ? (rdv.patient.prenom ~ ' ' ~ rdv.patient.nom) : '-' }}</span>
-							<span class="consultation-chip">Type: {{ rdv.typeRendezVous ? rdv.typeRendezVous.type : '-' }}</span>
+							<span class="consultation-chip chip-green"><i class="bi bi-person-circle"></i> {{ rdv.patient ? (rdv.patient.prenom ~ ' ' ~ rdv.patient.nom) : '-' }}</span>
+							<span class="consultation-chip"><i class="bi bi-bookmark-heart"></i> {{ rdv.typeRendezVous ? rdv.typeRendezVous.type : '-' }}</span>
 						</div>
 						<div class="consultation-meta">
-							<span class="consultation-chip">Date: {{ rdv.date ? rdv.date|date('d/m/Y') : '-' }}</span>
-							<span class="consultation-chip">Heure: {{ rdv.heure ? rdv.heure|date('H:i') : '-' }}</span>
-							<span class="consultation-chip">Lieu: {{ rdv.lieu }}</span>
+							<span class="consultation-chip chip-amber"><i class="bi bi-calendar-event"></i> {{ rdv.date ? rdv.date|date('d/m/Y') : '-' }}</span>
+							<span class="consultation-chip chip-amber"><i class="bi bi-clock"></i> {{ rdv.heure ? rdv.heure|date('H:i') : '-' }}</span>
+							{% if rdv.lieu %}
+								<span class="consultation-chip chip-pink"><i class="bi bi-geo-alt"></i> {{ rdv.lieu }}</span>
+							{% endif %}
+						</div>
+						<div class="consultation-grid">
+							<div class="consultation-row">
+								<div class="consultation-label">Personnel medical</div>
+								<div class="value">
+									{% if rdv.personnelMedical %}
+										{{ rdv.personnelMedical.prenom }} {{ rdv.personnelMedical.nom }}
+									{% else %}
+										-
+									{% endif %}
+								</div>
+							</div>
+							<div class="consultation-row">
+								<div class="consultation-label">Patient</div>
+								<div class="value">
+									{% if rdv.patient %}
+										{{ rdv.patient.prenom }} {{ rdv.patient.nom }}
+									{% else %}
+										-
+									{% endif %}
+								</div>
+							</div>
 						</div>
 						<div class="consultation-actions">
 							{% if rdv.etat == 'EN_ATTENTE' %}

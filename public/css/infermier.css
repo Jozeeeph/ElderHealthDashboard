@@ -772,45 +772,48 @@ body{
 .consultation-card {
   border: 1px solid #e6edf0;
   border-radius: 18px 28px 18px 28px;
-  background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
+  background:
+    radial-gradient(circle at 12% 8%, rgba(59,130,246,.20), transparent 42%),
+    radial-gradient(circle at 88% 18%, rgba(34,197,94,.18), transparent 40%),
+    linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
   transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
   overflow: hidden;
 }
 .consultation-card:hover {
   transform: translateY(-2px);
-  border-color: #d6e4ea;
-  box-shadow: 0 10px 28px rgba(30, 42, 47, 0.12);
+  border-color: #cfe1ff;
+  box-shadow: 0 16px 36px rgba(37, 99, 235, 0.18);
 }
 .consultation-card:focus-within {
   outline: 2px solid var(--ring);
   outline-offset: 2px;
 }
 .consultation-accent {
-  height: 6px;
+  height: 7px;
   border-radius: 18px 28px 0 0;
   margin: -1px -1px 12px -1px;
 }
 .consultation-card[data-status^="planif"] .consultation-accent {
-  background: linear-gradient(90deg, #b8e1ff, #e5f3ff);
+  background: linear-gradient(90deg, #2563eb, #60a5fa);
 }
 .consultation-card[data-status^="real"] .consultation-accent,
 .consultation-card[data-status^="réal"] .consultation-accent {
-  background: linear-gradient(90deg, #bff3dd, #e8fff5);
+  background: linear-gradient(90deg, #10b981, #6ee7b7);
 }
 .consultation-card[data-status^="en_cours"] .consultation-accent,
 .consultation-card[data-status^="en cours"] .consultation-accent {
-  background: linear-gradient(90deg, #ffe8a3, #fff4cc);
+  background: linear-gradient(90deg, #f59e0b, #fcd34d);
 }
 .consultation-card[data-status^="term"] .consultation-accent {
-  background: linear-gradient(90deg, #c9f2e9, #e9fffb);
+  background: linear-gradient(90deg, #22c55e, #86efac);
 }
 .consultation-card[data-status^="annul"] .consultation-accent {
-  background: linear-gradient(90deg, #ffd3d3, #ffe8e8);
+  background: linear-gradient(90deg, #ef4444, #fca5a5);
 }
 .badge-soft {
-  background: #f3f6fb;
-  color: #1f2a33;
-  border: 1px solid #e1e8f0;
+  background: #eef2ff;
+  color: #1e3a8a;
+  border: 1px solid #c7d2fe;
   font-weight:800;
 }
 .consultation-meta{
@@ -822,11 +825,43 @@ body{
   gap: 6px;
   padding: 6px 12px;
   border-radius: 999px;
-  background: #f3f6fb;
-  border: 1px solid #e1e8f0;
-  color: #1f2a33;
+  background: #f1f5ff;
+  border: 1px solid #dbe4ff;
+  color: #1e293b;
   font-size: 0.85rem;
   font-weight: 700;
+}
+
+.consultation-chip i {
+  color: #2563eb;
+  font-size: 0.95rem;
+}
+
+.consultation-chip.chip-green i { color: #10b981; }
+.consultation-chip.chip-amber i { color: #f59e0b; }
+.consultation-chip.chip-pink i { color: #ec4899; }
+
+.consultation-card .card-head h2 {
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.consultation-card .card-head h2 i {
+  color: #2563eb;
+  margin-right: 6px;
+}
+
+.consultation-actions .btn-sm.primary {
+  background: linear-gradient(135deg, #2563eb 0%, #60a5fa 100%);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 10px 22px rgba(37, 99, 235, 0.22);
+}
+.consultation-actions .btn-sm.danger {
+  background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 10px 22px rgba(239, 68, 68, 0.2);
 }
 .consultation-actions{
   margin-top:12px;

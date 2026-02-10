@@ -1,112 +1,109 @@
 {% block stylesheets %}
-	<link rel="stylesheet" href="{{ asset('css/patient.css') }}?v=2">
-
+    <link rel="stylesheet" href="{{ asset('css/patient.css') }}?v=2">
 {% endblock %}
 
 {% block public_nav %}{% endblock %}
 
 {% block body %}
-	<div
-		class="patient-app">
+<div class="patient-app">
 
-		{% include 'FrontOffice/patient/_header.html.twig' %}
+    {% include 'FrontOffice/patient/_header.html.twig' %}
 
-	<!-- MAIN -->
-	<main class="patient-main">
+    <!-- MAIN -->
+    <main class="patient-main">
 
-		<!-- WELCOME -->
-		<section class="welcome-card">
-			<div class="welcome-content">
-				<h1>
-					Bonjour
-					{{ patientName|default('Fatma') }}
-					<span class="wave">ðŸ‘‹</span>
-				</h1>
+        <!-- WELCOME -->
+        <section class="welcome-card">
+            <div class="welcome-content">
+                <h1>
+                    Bonjour {{ patientName|default('Fatma') }}
+                    <span class="wave">👋</span>
+                </h1>
 
-				<p>
-					Bienvenue dans votre espace santÃ©.  
-																							      GÃ©rez vos rendez-vous, documents mÃ©dicaux et messages en toute simplicitÃ©.
-				</p>
+                <p>
+                    Bienvenue dans votre espace santé.  
+                    Gérez vos rendez-vous, documents médicaux et messages en toute simplicité.
+                </p>
 
-				<div class="actions">
-					<a href="#" class="btn primary">Prendre rendez-vous</a>
-					<a href="#" class="btn ghost">Contacter mÃ©decin</a>
-					<a href="{{ path('patient_profile') }}" class="btn ghost">Mettre Ã  jour profil</a>
-				</div>
-			</div>
-		</section>
+                <div class="actions">
+                    <a href="#" class="btn primary">Prendre rendez-vous</a>
+                    <a href="#" class="btn ghost">Contacter médecin</a>
+                    <a href="{{ path('patient_profile') }}" class="btn ghost">Mettre à jour profil</a>
+                </div>
+            </div>
+        </section>
 
+        <!-- STATS -->
+        <section class="stats" id="rendezvous">
+            <div class="stat-card">
+                <h3>Prochain RDV</h3>
+                <p>12 Février 2026 – 10:30</p>
+                <span class="tag ok">Confirmé</span>
+            </div>
 
-		<!-- STATS -->
-		<section class="stats" id="rendezvous">
-			<div class="stat-card">
-				<h3>Prochain RDV</h3>
-				<p>12 FÃ©vrier 2026 â€“ 10:30</p>
-				<span class="tag ok">ConfirmÃ©</span>
-			</div>
+            <div class="stat-card">
+                <h3>Documents</h3>
+                <p>6 fichiers disponibles</p>
+                <span class="tag">PDF & Résultats</span>
+            </div>
 
-			<div class="stat-card">
-				<h3>Documents</h3>
-				<p>6 fichiers disponibles</p>
-				<span class="tag">PDF & RÃ©sultats</span>
-			</div>
+            <div class="stat-card">
+                <h3>Alertes</h3>
+                <p>1 notification</p>
+                <span class="tag warn">À vérifier</span>
+            </div>
+        </section>
 
-			<div class="stat-card">
-				<h3>Alertes</h3>
-				<p>1 notification</p>
-				<span class="tag warn">Ã€ vÃ©rifier</span>
-			</div>
-		</section>
+        <!-- CONTENT -->
+        <section class="content-grid" id="consultations">
 
-		<!-- CONTENT -->
-		<section class="content-grid" id="consultations">
+            <div class="card">
+                <h2>Notifications récentes</h2>
 
-			<div class="card">
-				<h2>Notifications rÃ©centes</h2>
+                <div class="item">
+                    <strong>Rappel médicament</strong>
+                    <p>Prendre votre traitement à 20h.</p>
+                </div>
 
-				<div class="item">
-					<strong>Rappel mÃ©dicament</strong>
-					<p>Prendre votre traitement Ã  20h.</p>
-				</div>
+                <div class="item">
+                    <strong>Nouveau document</strong>
+                    <p>Résultat d’analyse ajouté.</p>
+                </div>
+            </div>
 
-				<div class="item">
-					<strong>Nouveau document</strong>
-					<p>RÃ©sultat dâ€™analyse ajoutÃ©.</p>
-				</div>
-			</div>
+            <div class="card">
+                <h2>Derniers documents</h2>
 
-			<div class="card">
-				<h2>Derniers documents</h2>
+                <div class="item">
+                    <strong>Ordonnance</strong>
+                    <p>Ajoutée le 04/02</p>
+                </div>
 
-				<div class="item">
-					<strong>Ordonnance</strong>
-					<p>AjoutÃ©e le 04/02</p>
-				</div>
+                <div class="item">
+                    <strong>Analyse sanguine</strong>
+                    <p>Ajoutée le 02/02</p>
+                </div>
+            </div>
 
-				<div class="item">
-					<strong>Analyse sanguine</strong>
-					<p>AjoutÃ©e le 02/02</p>
-				</div>
-			</div>
+            <div class="card">
+                <h2>Messages</h2>
 
-			<div class="card">
-				<h2>Messages</h2>
+                <div class="item">
+                    <strong>Dr. Amina Trabelsi</strong>
+                    <p>Vos résultats sont rassurants.</p>
+                </div>
 
-				<div class="item">
-					<strong>Dr. Amina Trabelsi</strong>
-					<p>Vos rÃ©sultats sont rassurants.</p>
-				</div>
+                <a href="#" class="btn primary full">Nouveau message</a>
+            </div>
 
-				<a href="#" class="btn primary full">Nouveau message</a>
-			</div>
-
-	</main>
+        </section>
+    </main>
 </div>
 
-  <script>
-	  window.addEventListener('scroll', () => {
-	    document.querySelector('.topbar')
-	      ?.classList.toggle('is-scrolled', window.scrollY > 10);
-	  });
-
-	</script>{% endblock %}
+<script>
+    window.addEventListener('scroll', () => {
+        document.querySelector('.topbar')
+            ?.classList.toggle('is-scrolled', window.scrollY > 10);
+    });
+</script>
+{% endblock %}
