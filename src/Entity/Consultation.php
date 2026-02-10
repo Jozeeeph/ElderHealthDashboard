@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\ConsultationRepository;
 use App\Entity\Utilisateur;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ConsultationRepository::class)]
 #[ORM\Table(name: "consultation")]
@@ -16,15 +17,29 @@ class Consultation
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le type de consultation est obligatoire.')]
+    #[Assert\Choice(
+        choices: ['consultation_generale', 'suivi', 'urgence', 'teleconsultation'],
+        message: 'Type de consultation invalide.'
+    )]
     private ?string $typeConsultation = null;
 
     #[ORM\Column(type: 'date')]
+    #[Assert\NotNull(message: 'La date de consultation est obligatoire.')]
     private ?\DateTimeInterface $dateConsultation = null;
 
     #[ORM\Column(type: 'time')]
+    #[Assert\NotNull(message: 'L heure de consultation est obligatoire.')]
     private ?\DateTimeInterface $heureConsultation = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le lieu est obligatoire.')]
+    #[Assert\Length(
+        min: 2,
+        max: 255,
+        minMessage: 'Le lieu doit contenir au moins {{ limit }} caracteres.',
+        maxMessage: 'Le lieu ne peut pas depasser {{ limit }} caracteres.'
+    )]
     private ?string $lieu = null;
 
     #[ORM\Column(length: 50)]
@@ -43,10 +58,12 @@ class Consultation
     // ================= RELATIONS =================
     #[ORM\ManyToOne(targetEntity: Utilisateur::class)]
     #[ORM\JoinColumn(name: "patient_id", referencedColumnName: "id", nullable: false, onDelete: "CASCADE")]
+    #[Assert\NotNull(message: 'Le patient est obligatoire.')]
     private ?Utilisateur $patient = null;
 
     #[ORM\ManyToOne(targetEntity: Utilisateur::class)]
     #[ORM\JoinColumn(name: "personnel_medical_id", referencedColumnName: "id", nullable: false, onDelete: "CASCADE")]
+    #[Assert\NotNull(message: 'Le personnel medical est obligatoire.')]
     private ?Utilisateur $personnelMedical = null;
 
     // ================= RELATIONS ONE TO ONE =================
@@ -64,10 +81,10 @@ class Consultation
     public function setTypeConsultation(string $typeConsultation): self { $this->typeConsultation = $typeConsultation; return $this; }
 
     public function getDateConsultation(): ?\DateTimeInterface { return $this->dateConsultation; }
-    public function setDateConsultation(\DateTimeInterface $dateConsultation): self { $this->dateConsultation = $dateConsultation; return $this; }
+    public function setDateConsultation(?\DateTimeInterface $dateConsultation): self { $this->dateConsultation = $dateConsultation; return $this; }
 
     public function getHeureConsultation(): ?\DateTimeInterface { return $this->heureConsultation; }
-    public function setHeureConsultation(\DateTimeInterface $heureConsultation): self { $this->heureConsultation = $heureConsultation; return $this; }
+    public function setHeureConsultation(?\DateTimeInterface $heureConsultation): self { $this->heureConsultation = $heureConsultation; return $this; }
 
     public function getLieu(): ?string { return $this->lieu; }
     public function setLieu(string $lieu): self { $this->lieu = $lieu; return $this; }

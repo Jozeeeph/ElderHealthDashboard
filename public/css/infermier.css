@@ -410,6 +410,43 @@ body{
   box-shadow:0 0 0 4px rgba(37,99,235,.12);
 }
 
+.form-control.is-invalid,
+.form-select.is-invalid,
+.consultation-form .form-control.is-invalid,
+.consultation-form .form-select.is-invalid{
+  border-color:#dc2626;
+  box-shadow:0 0 0 3px rgba(220,38,38,.15);
+}
+
+.form-error,
+.form-errors,
+.invalid-feedback,
+.form-error-message{
+  color:#dc2626;
+  font-weight:700;
+  font-size:.85rem;
+  margin-top:6px;
+}
+
+.form-error ul,
+.form-errors ul{
+  margin:6px 0 0;
+  padding-left:18px;
+  list-style: none;
+}
+
+.no-error-text .invalid-feedback,
+.no-error-text .form-error,
+.no-error-text .form-errors{
+  display:none;
+}
+
+.form-error li,
+.form-errors li,
+.invalid-feedback li{
+  margin:2px 0;
+}
+
 .form-actions{
   margin-top:16px;
   display:flex;
@@ -1018,4 +1055,3 @@ body{
 @media (max-width: 520px){
   .stats{ grid-template-columns: 1fr; }
 }
-

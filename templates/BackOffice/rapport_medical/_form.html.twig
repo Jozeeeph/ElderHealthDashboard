@@ -1,5 +1,23 @@
+<style>
+.rapport-form .invalid-feedback ul,
+.rapport-form .form-error ul,
+.rapport-form .form-errors ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.rapport-form .invalid-feedback li::marker,
+.rapport-form .form-error li::marker,
+.rapport-form .form-errors li::marker {
+    content: "";
+}
+</style>
+
+{% form_theme form 'bootstrap_5_layout.html.twig' %}
 {{ form_start(form, {
-    action: form_action|default(app.request.uri)
+    action: form_action|default(app.request.uri),
+    attr: { novalidate: 'novalidate', class: 'rapport-form' }
 }) }}
     <div class="row g-3">
         <div class="col-12">

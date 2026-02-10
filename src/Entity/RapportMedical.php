@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\RapportMedicalRepository;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: RapportMedicalRepository::class)]
 #[ORM\Table(name: "rapport_medical")]
@@ -15,15 +16,20 @@ class RapportMedical
     private ?int $id_rapport = null;
 
     #[ORM\Column(type: 'text')]
+    #[Assert\NotBlank(message: 'Ce champ est obligatoire.')]
     private ?string $diagnostic = null;
 
     #[ORM\Column(type: 'text')]
+    #[Assert\NotBlank(message: 'Ce champ est obligatoire.')]
     private ?string $recommandations = null;
 
     #[ORM\Column(type: 'string', length: 10)]
-    private ?string $niveau_gravite = null; // faible / moyen / élevé
+    #[Assert\NotBlank(message: 'Ce champ est obligatoire.')]
+    #[Assert\Choice(choices: ['faible', 'moyen', 'eleve'], message: 'Niveau de gravite invalide.')]
+    private ?string $niveau_gravite = null; // faible / moyen / elevé
 
     #[ORM\Column(type: 'datetime')]
+    #[Assert\NotNull(message: 'Ce champ est obligatoire.')]
     private ?\DateTimeInterface $date_rapport = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
@@ -31,6 +37,7 @@ class RapportMedical
 
     #[ORM\OneToOne(targetEntity: Consultation::class)]
     #[ORM\JoinColumn(name: "consultation_id", referencedColumnName: "id", nullable: false, unique: true)]
+    #[Assert\NotNull(message: 'La consultation est obligatoire.')]
     private ?Consultation $consultation = null;
 
     // ===================== GETTERS & SETTERS =====================
@@ -45,7 +52,7 @@ class RapportMedical
         return $this->diagnostic;
     }
 
-    public function setDiagnostic(string $diagnostic): self
+    public function setDiagnostic(?string $diagnostic): self
     {
         $this->diagnostic = $diagnostic;
         return $this;
@@ -56,7 +63,7 @@ class RapportMedical
         return $this->recommandations;
     }
 
-    public function setRecommandations(string $recommandations): self
+    public function setRecommandations(?string $recommandations): self
     {
         $this->recommandations = $recommandations;
         return $this;
@@ -67,7 +74,7 @@ class RapportMedical
         return $this->niveau_gravite;
     }
 
-    public function setNiveauGravite(string $niveau_gravite): self
+    public function setNiveauGravite(?string $niveau_gravite): self
     {
         $this->niveau_gravite = $niveau_gravite;
         return $this;
@@ -78,7 +85,7 @@ class RapportMedical
         return $this->date_rapport;
     }
 
-    public function setDateRapport(\DateTimeInterface $date_rapport): self
+    public function setDateRapport(?\DateTimeInterface $date_rapport): self
     {
         $this->date_rapport = $date_rapport;
         return $this;

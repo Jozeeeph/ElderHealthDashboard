@@ -466,6 +466,41 @@ document.addEventListener('DOMContentLoaded', () => {
         errorToast.show();
     };
 
+    const bindFormSubmit = (modal) => {
+        const modalBody = modal.querySelector('.modal-body');
+        if (!modalBody) return;
+        const form = modalBody.querySelector('form');
+        if (!form) return;
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch(form.action, {
+                    method: form.method || 'POST',
+                    body: formData,
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                });
+
+                if (response.redirected) {
+                    window.location.href = response.url;
+                    return;
+                }
+
+                if (!response.ok) {
+                    throw new Error("Impossible d'envoyer le formulaire.");
+                }
+
+                const html = await response.text();
+                modalBody.innerHTML = html;
+                bindFormSubmit(modal);
+            } catch (e) {
+                showErrorToast(e.message || 'Erreur lors de l\'envoi.');
+            }
+        });
+    };
+
     const loadFormIntoModal = async (modal, url) => {
         const modalBody = modal.querySelector('.modal-body');
         if (!modalBody) return;
@@ -479,6 +514,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             const html = await response.text();
             modalBody.innerHTML = html;
+            bindFormSubmit(modal);
         } catch (e) {
             modalBody.innerHTML = '<div class="alert alert-danger mb-0">Impossible de charger le formulaire.</div>';
             showErrorToast(e.message || 'Erreur de chargement.');

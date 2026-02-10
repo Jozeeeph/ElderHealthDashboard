@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\PrescriptionRepository;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity(repositoryClass: PrescriptionRepository::class)]
 #[ORM\Table(name: "prescription")]
@@ -15,29 +17,68 @@ class Prescription
     private ?int $id_prescription = null;
 
     #[ORM\Column(type: 'text')]
+    #[Assert\NotBlank(message: 'Ce champ est obligatoire.')]
     private ?string $medicaments = null;
 
     #[ORM\Column(type: 'string', length: 50)]
+    #[Assert\NotBlank(message: 'Ce champ est obligatoire.')]
     private ?string $frequence = null;
 
     #[ORM\Column(type: 'string', length: 50)]
+    #[Assert\NotBlank(message: 'Ce champ est obligatoire.')]
     private ?string $dosage = null;
 
     #[ORM\Column(type: 'string', length: 50)]
+    #[Assert\NotBlank(message: 'Ce champ est obligatoire.')]
     private ?string $duree_traitement = null;
 
-    #[ORM\Column(type: 'text', nullable: true)]
+    #[ORM\Column(type: 'text')]
+    #[Assert\NotBlank(message: 'Ce champ est obligatoire.')]
     private ?string $consignes = null;
 
     #[ORM\Column(type: 'date')]
+    #[Assert\NotNull(message: 'Ce champ est obligatoire.')]
     private ?\DateTimeInterface $date_debut = null;
 
     #[ORM\Column(type: 'date')]
+    #[Assert\NotNull(message: 'Ce champ est obligatoire.')]
     private ?\DateTimeInterface $date_fin = null;
 
     #[ORM\OneToOne(targetEntity: Consultation::class)]
     #[ORM\JoinColumn(name: "consultation_id", referencedColumnName: "id", nullable: false, unique: true)]
+    #[Assert\NotNull(message: 'Ce champ est obligatoire.')]
     private ?Consultation $consultation = null;
+
+    #[Assert\Callback]
+    public function validateDateRange(ExecutionContextInterface $context): void
+    {
+        if (!$this->date_debut || !$this->date_fin) {
+            return;
+        }
+
+        if ($this->date_fin < $this->date_debut) {
+            $context->buildViolation('La date de fin doit etre apres la date de debut.')
+                ->atPath('dateFin')
+                ->addViolation();
+        }
+    }
+
+    #[Assert\Callback]
+    public function validateConsignesWordCount(ExecutionContextInterface $context): void
+    {
+        if ($this->consignes === null || trim($this->consignes) === '') {
+            return;
+        }
+
+        $words = preg_split('/\s+/u', trim($this->consignes), -1, PREG_SPLIT_NO_EMPTY);
+        $count = $words ? count($words) : 0;
+
+        if ($count > 1000) {
+            $context->buildViolation('Maximum 1000 mots.')
+                ->atPath('consignes')
+                ->addViolation();
+        }
+    }
 
     // ===================== GETTERS & SETTERS =====================
 
@@ -106,7 +147,7 @@ class Prescription
         return $this->date_debut;
     }
 
-    public function setDateDebut(\DateTimeInterface $date_debut): self
+    public function setDateDebut(?\DateTimeInterface $date_debut): self
     {
         $this->date_debut = $date_debut;
         return $this;
@@ -117,7 +158,7 @@ class Prescription
         return $this->date_fin;
     }
 
-    public function setDateFin(\DateTimeInterface $date_fin): self
+    public function setDateFin(?\DateTimeInterface $date_fin): self
     {
         $this->date_fin = $date_fin;
         return $this;

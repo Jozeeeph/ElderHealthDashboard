@@ -54,14 +54,15 @@
 }
 </style>
 
+{% form_theme form 'bootstrap_5_layout.html.twig' %}
 <div class="consultation-form-wrapper">
     <div class="consultation-form-title">🩺 Détails de la consultation</div>
     <div class="consultation-form-subtitle">📝 Renseignez les informations principales</div>
 
     {% if form_action is defined %}
-        {{ form_start(form, {'attr': {'class': 'consultation-form'}, 'action': form_action}) }}
+        {{ form_start(form, {'attr': {'class': 'consultation-form', 'novalidate': 'novalidate'}, 'action': form_action}) }}
     {% else %}
-        {{ form_start(form, {'attr': {'class': 'consultation-form'}}) }}
+        {{ form_start(form, {'attr': {'class': 'consultation-form', 'novalidate': 'novalidate'}}) }}
     {% endif %}
         <div class="row g-3">
             <div class="col-12 col-md-6">
