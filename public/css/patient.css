@@ -385,9 +385,6 @@ body {
         grid-template-columns: 1fr;
     }
 }
-<<<<<<< HEAD
-=======
-
 /* ===== RDV CARDS ===== */
 .rdv-cards {
     display: grid;
@@ -509,4 +506,3 @@ body {
         grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     }
 }
->>>>>>> rendez_vous
