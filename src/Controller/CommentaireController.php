@@ -33,7 +33,7 @@ class CommentaireController extends AbstractController
             $em->persist($comment);
             $em->flush();
 
-            return $this->redirectToRoute('forum_post_forum_index');
+            return $this->redirectToRoute('forum_post_index');
         }
 
         return $this->render('BackOffice/commentaire/new.html.twig', [

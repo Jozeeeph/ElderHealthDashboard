@@ -26,4 +26,21 @@ class PostRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+
+    public function findAllActiveWithComments(): array
+    {
+        return $this->createQueryBuilder('p')
+            ->leftJoin('p.commentaires', 'c')
+            ->addSelect('c')
+            ->where('p.status = :status')
+            ->setParameter('status', 'ACTIVE')
+            ->orderBy('p.dateDeCreation', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+
+
+
 }

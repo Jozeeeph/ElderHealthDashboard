@@ -1,28 +1,23 @@
 <div class="modal fade" id="commentModal-{{ post.id }}" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content rounded-4 shadow">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content rounded-4 shadow">
 
-      <div class="modal-header border-0">
-        <h5 class="modal-title fw-bold">Ajouter un commentaire</h5>
-        <button class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
+			<div class="modal-header border-0">
+				<h5 class="modal-title fw-bold">Ajouter un commentaire</h5>
+				<button class="btn-close" data-bs-dismiss="modal"></button>
+			</div>
 
-      <form action="{{ path('forum_comment_new', { postId: post.id }) }}" method="post">
-        <div class="modal-body">
-          <textarea
-            class="form-control"
-            name="content"
-            rows="4"
-            placeholder="Votre commentaire..."
-            required></textarea>
-        </div>
+			<form action="{{ path('forum_post_forum_comment_new', { postId: post.id }) }}" method="post">
+				<div class="modal-body">
+					<textarea class="form-control" name="content" rows="4" placeholder="Votre commentaire..." required></textarea>
+				</div>
 
-        <div class="modal-footer border-0">
-          <button class="btn btn-light rounded-pill" data-bs-dismiss="modal">Annuler</button>
-          <button class="btn btn-primary rounded-pill px-4">Envoyer</button>
-        </div>
-      </form>
+				<div class="modal-footer border-0">
+					<button class="btn btn-light rounded-pill" data-bs-dismiss="modal">Annuler</button>
+					<button class="btn btn-primary rounded-pill px-4">Envoyer</button>
+				</div>
+			</form>
 
-    </div>
-  </div>
+		</div>
+	</div>
 </div>
