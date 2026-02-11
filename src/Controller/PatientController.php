@@ -56,7 +56,7 @@ class PatientController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em->flush();
-            $this->addFlash('success', 'Profil mis à jour.');
+            // $this->addFlash('success', 'Profil mis à jour.');
             return $this->redirectToRoute('patient_profile');
         }
 
