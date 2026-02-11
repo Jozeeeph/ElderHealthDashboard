@@ -1,0 +1,181 @@
+{% extends 'FrontOffice/base.html.twig' %}
+
+{% block title %}Détails équipement{% endblock %}
+
+{% block stylesheets %}
+  <link rel="stylesheet" href="{{ asset('css/patient.css') }}?v=3">
+  <link rel="stylesheet" href="{{ asset('css/equipementFront.css') }}?v=2">
+  <style>
+    :root {
+      --brand: #0e8aa7;
+      --brand-2: #2bbf9f;
+      --ink: #1e2a2f;
+      --muted: #6c7a80;
+      --bg: #f6fafb;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --shadow: 0 12px 28px rgba(14, 138, 167, 0.12);
+    }
+
+    .equip-show {
+      background: var(--bg);
+      min-height: 100vh;
+      padding: 28px 16px 80px;
+    }
+
+    .equip-shell {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .equip-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+    }
+
+    @media (max-width: 992px) {
+      .equip-card {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .equip-media {
+      min-height: 320px;
+      background: linear-gradient(135deg, #e8f6f9 0%, #eef8f4 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .equip-media img {
+      max-width: 100%;
+      max-height: 380px;
+      border-radius: 16px;
+      box-shadow: 0 10px 24px rgba(14, 138, 167, 0.2);
+      object-fit: cover;
+    }
+
+    .equip-body {
+      padding: 24px 28px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .equip-title {
+      margin: 0;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--ink);
+    }
+
+    .equip-meta {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .equip-price {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--brand);
+    }
+
+    .equip-badges {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .equip-badge {
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    .equip-badge.ok { background: #d4edda; color: #155724; }
+    .equip-badge.warn { background: #fff3cd; color: #856404; }
+    .equip-badge.danger { background: #f8d7da; color: #721c24; }
+
+    .equip-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+
+    .equip-btn {
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-weight: 700;
+      border: 0;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .equip-btn.primary {
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: #fff;
+      box-shadow: 0 10px 20px rgba(14, 138, 167, 0.25);
+    }
+
+    .equip-btn.secondary {
+      background: #fff;
+      color: var(--brand);
+      border: 2px solid var(--brand);
+    }
+  </style>
+{% endblock %}
+
+{% block body %}
+  {% include 'FrontOffice/patient/_header.html.twig' %}
+
+  <div class="equip-show">
+    <div class="equip-shell">
+      <div class="equip-card">
+        <div class="equip-media">
+          {% if equipement.image %}
+            <img src="{{ asset('uploads/images/' ~ equipement.image) }}" alt="{{ equipement.nom }}">
+          {% else %}
+            <i class="bi bi-heart-pulse" style="font-size: 5rem; color: var(--brand); opacity: 0.5;"></i>
+          {% endif %}
+        </div>
+        <div class="equip-body">
+          <h1 class="equip-title">{{ equipement.nom }}</h1>
+          <div class="equip-meta">
+            {% if equipement.categorie %}Catégorie : {{ equipement.categorie }}{% else %}Catégorie : -{% endif %}
+          </div>
+          <div class="equip-price">{{ equipement.prix ?? '0.00' }} DT</div>
+          <div class="equip-badges">
+            {% if equipement.statut == 'disponible' and equipement.quantiteDisponible > 5 %}
+              <span class="equip-badge ok">En stock</span>
+            {% elseif equipement.statut == 'disponible' and equipement.quantiteDisponible <= 5 %}
+              <span class="equip-badge warn">Stock limité</span>
+            {% else %}
+              <span class="equip-badge danger">Rupture</span>
+            {% endif %}
+            <span class="equip-badge warn">Quantité : {{ equipement.quantiteDisponible ?? 0 }}</span>
+          </div>
+          <p class="equip-meta">{{ equipement.description ?? 'Aucune description.' }}</p>
+          <div class="equip-actions">
+            <a href="{{ path('cart_add', {'id': equipement.id}) }}" class="equip-btn primary">
+              <i class="bi bi-cart-plus"></i>
+              Ajouter au panier
+            </a>
+            <a href="{{ path('front_equipements_index') }}" class="equip-btn secondary">
+              <i class="bi bi-arrow-left"></i>
+              Retour
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -368,6 +368,7 @@
                   <th>Statut</th>
                   <th>Total</th>
                   <th>Équipements</th>
+                  <th class="text-end">Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -386,11 +387,19 @@
                           <span class="text-muted">-</span>
                         {% endif %}
                       </td>
+                      <td class="text-end">
+                        <form method="post" action="{{ path('front_proprietaire_commandes_cycle_statut', {'id': commande.id}) }}">
+                          <input type="hidden" name="_token" value="{{ csrf_token('commande_cycle_statut' ~ commande.id) }}">
+                          <button type="submit" class="prop-btn-sm edit">
+                            Changer statut
+                          </button>
+                        </form>
+                      </td>
                     </tr>
                   {% endfor %}
                 {% else %}
                   <tr>
-                    <td colspan="5" class="text-center text-muted">Aucune commande trouvée.</td>
+                    <td colspan="6" class="text-center text-muted">Aucune commande trouvée.</td>
                   </tr>
                 {% endif %}
               </tbody>
@@ -430,7 +439,17 @@
             </div>
           </div>
         {% else %}
-          <form class="prop-form" method="post"
+          {% if form_errors is defined and form_errors|length > 0 %}
+            <div class="alert alert-danger mx-3 mt-3" role="alert">
+              <strong>Erreurs de validation</strong>
+              <ul class="mt-2 mb-0">
+                {% for error in form_errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+          <form class="prop-form" method="post" novalidate
                 action="{% if mode == 'edit' and selected %}{{ path('front_proprietaire_equipements_edit', {'id': selected.id}) }}{% else %}{{ path('front_proprietaire_equipements_new') }}{% endif %}"
                 enctype="multipart/form-data">
             <input type="hidden" name="_token"
@@ -438,7 +457,7 @@
 
             <div>
               <label>Nom</label>
-              <input class="prop-input" name="nom" type="text" value="{{ selected.nom ?? '' }}" required>
+              <input class="prop-input" name="nom" type="text" value="{{ selected.nom ?? '' }}">
             </div>
 
             <div>
@@ -448,12 +467,12 @@
 
             <div>
               <label>Prix (DT)</label>
-              <input class="prop-input" name="prix" type="number" step="0.01" value="{{ selected.prix ?? '' }}" required>
+              <input class="prop-input" name="prix" type="number" step="0.01" value="{{ selected.prix ?? '' }}">
             </div>
 
             <div>
               <label>Quantité</label>
-              <input class="prop-input" name="quantiteDisponible" type="number" min="0" value="{{ selected.quantiteDisponible ?? 0 }}" required>
+              <input class="prop-input" name="quantiteDisponible" type="number" value="{{ selected.quantiteDisponible ?? 0 }}">
             </div>
 
             <div>

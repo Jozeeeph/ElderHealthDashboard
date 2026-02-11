@@ -2,38 +2,217 @@
 
 {% block title %}Panier{% endblock %}
 
+{% block stylesheets %}
+  {{ parent() }}
+  <style>
+    :root {
+      --brand: #0e8aa7;
+      --brand-2: #2bbf9f;
+      --ink: #1e2a2f;
+      --muted: #6c7a80;
+      --bg: #f6fafb;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --shadow: 0 12px 28px rgba(14, 138, 167, 0.12);
+    }
+
+    .cart-page {
+      background: var(--bg);
+      min-height: 100vh;
+      padding: 28px 16px 80px;
+    }
+
+    .cart-shell {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .cart-hero {
+      background: linear-gradient(135deg, #e8f6f9 0%, #eef8f4 100%);
+      border: 1px solid #e2eef1;
+      border-radius: 18px;
+      padding: 20px 24px;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .cart-title {
+      margin: 0;
+      font-size: 1.7rem;
+      font-weight: 800;
+      color: var(--ink);
+    }
+
+    .cart-sub {
+      margin: 4px 0 0 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .cart-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .cart-head {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .cart-meta {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .cart-table {
+      width: 100%;
+      margin: 0;
+    }
+
+    .cart-table th {
+      font-size: 0.85rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: #f3f8f9;
+      border-bottom: 1px solid var(--border);
+      padding: 14px 16px;
+    }
+
+    .cart-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    .cart-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .cart-btn {
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-weight: 700;
+      border: 0;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cart-btn.primary {
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: #fff;
+      box-shadow: 0 10px 20px rgba(14, 138, 167, 0.25);
+    }
+
+    .cart-btn.secondary {
+      background: #fff;
+      color: var(--brand);
+      border: 2px solid var(--brand);
+    }
+
+    .cart-btn.danger {
+      background: #ffecec;
+      color: #b42318;
+      border: 1px solid #ffd2d2;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+
+    .cart-total {
+      padding: 14px 20px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .cart-empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+  </style>
+{% endblock %}
+
 {% block body %}
-    <h1>Votre panier</h1>
+  <div class="cart-page">
+    <div class="cart-shell">
+      <div class="cart-hero">
+        <div>
+          <h1 class="cart-title">Votre panier</h1>
+          <p class="cart-sub">Vérifiez vos équipements avant validation.</p>
+        </div>
+        <div class="cart-meta">
+          Articles : <strong>{{ equipements|length }}</strong>
+        </div>
+      </div>
 
-    {% if equipements is empty %}
-        <p>Le panier est vide.</p>
-    {% else %}
-        <table class="table">
-            <thead>
+      {% if equipements is empty %}
+        <div class="cart-card cart-empty">
+          <h3>Le panier est vide</h3>
+          <p>Ajoutez des équipements pour passer commande.</p>
+        </div>
+      {% else %}
+        <div class="cart-card">
+          <div class="cart-head">
+            <strong>Équipements sélectionnés</strong>
+            <span class="cart-meta">Total : {{ total }} DT</span>
+          </div>
+          <div class="table-responsive">
+            <table class="cart-table">
+              <thead>
                 <tr>
-                    <th>Nom</th>
-                    <th>Prix</th>
-                    <th></th>
+                  <th>Nom</th>
+                  <th>Prix</th>
+                  <th class="text-end">Action</th>
                 </tr>
-            </thead>
-            <tbody>
+              </thead>
+              <tbody>
                 {% for e in equipements %}
-                    <tr>
-                        <td>{{ e.nom ?? "-" }}</td>
-                        <td>{{ e.prix ?? '0.00' }} DT</td>
-                        <td>
-                            <a href="{{ path('cart_remove', {id: e.id}) }}" class="btn btn-sm btn-danger">Retirer</a>
-                        </td>
-                    </tr>
+                  <tr>
+                    <td><strong>{{ e.nom ?? "-" }}</strong></td>
+                    <td>{{ e.prix ?? '0.00' }} DT</td>
+                    <td class="text-end">
+                      <a href="{{ path('cart_remove', {id: e.id}) }}" class="cart-btn danger">Retirer</a>
+                    </td>
+                  </tr>
                 {% endfor %}
-            </tbody>
-        </table>
-
-        <p><strong>Total :</strong> {{ total }} DT</p>
-
-        <form action="{{ path('cart_checkout') }}" method="post">
-            <button type="submit" class="btn btn-primary">Valider la commande</button>
-        </form>
-    {% endif %}
+              </tbody>
+            </table>
+          </div>
+          <div class="cart-total">
+            <span>Total</span>
+            <span>{{ total }} DT</span>
+          </div>
+          <div class="cart-actions px-3 pb-3">
+            <a href="{{ path('front_equipements_index') }}" class="cart-btn secondary">
+              <i class="bi bi-arrow-left"></i>
+              Retour aux équipements
+            </a>
+            <form action="{{ path('cart_checkout') }}" method="post">
+              <button type="submit" class="cart-btn primary">Valider la commande</button>
+            </form>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
 
 {% endblock %}
