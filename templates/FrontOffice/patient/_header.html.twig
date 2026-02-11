@@ -1,64 +1,61 @@
 <header class="topbar">
-    <div class="topbar-inner">
+	<div
+		class="topbar-inner">
 
-        <!-- BRAND -->
-        <a href="{{ path('app_public_site') }}" class="brand">
-            <img src="{{ asset('img/logo.png') }}" alt="Elder HealthCare">
-            <span class="brand-text">
-                <span class="fw-bold text-primary">Elder</span>
-                <span class="fw-bold text-warning ms-1">HealthCare</span>
-            </span>
-        </a>
+		<!-- BRAND -->
+		<a href="{{ path('app_public_site') }}" class="brand">
+			<img src="{{ asset('img/logo.png') }}" alt="Elder HealthCare">
+			<span class="brand-text">
+				<span class="fw-bold text-primary">Elder</span>
+				<span class="fw-bold text-warning ms-1">HealthCare</span>
+			</span>
+		</a>
 
-        {% set currentRoute = app.request.attributes.get('_route') %}
+		{% set currentRoute = app.request.attributes.get('_route') %}
 
-        <!-- NAV -->
-        <nav class="top-nav">
-            <a class="{{ currentRoute == 'app_patient' ? 'active' }}">
-                Accueil
-            </a>
+		<!-- NAV -->
+		<nav class="top-nav">
+			<a class="{{ currentRoute == 'app_patient' ? 'active' }}">
+				Accueil
+			</a>
 
-            <a href="{{ path('patient_rendezvous_index') }}"
-               class="{{ currentRoute starts with 'patient_rendezvous' ? 'active' }}">
-                Rendez-vous
-            </a>
+			<a href="{{ path('patient_rendezvous_index') }}" class="{{ currentRoute starts with 'patient_rendezvous' ? 'active' }}">
+				Rendez-vous
+			</a>
 
-            <a href="{{ path('patient_consultations') }}"
-               class="{{ currentRoute == 'patient_consultations' ? 'active' }}">
-                Consultation
-            </a>
+			<a href="{{ path('patient_consultations') }}" class="{{ currentRoute == 'patient_consultations' ? 'active' }}">
+				Consultation
+			</a>
+			{% if not is_granted('ROLE_PERSONNEL_MEDICAL') %}
+				<a href="{{ path('equipment_list_index') }}" class="{{ currentRoute starts with 'equipment_' ? 'active' }}">
+					Equipement
+				</a>
+			{% endif %}
 
-            <a href="{{ path('equipment_list_index') }}"
-               class="{{ currentRoute starts with 'equipment_' ? 'active' }}">
-                Equipement
-            </a>
+			<a href="{{ path('forum_post_forum_index') }}" class="{{ currentRoute starts with 'forum_' ? 'active' }}">
+				Forum
+			</a>
 
-            <a href="{{ path('forum_post_forum_index') }}"
-               class="{{ currentRoute starts with 'forum_' ? 'active' }}">
-                Forum
-            </a>
+			<a href="{{ path('front_events_index') }}" class="{{ currentRoute starts with 'front_events' ? 'active' }}">
+				Evenements
+			</a>
 
-            <a href="{{ path('front_events_index') }}"
-               class="{{ currentRoute starts with 'front_events' ? 'active' }}">
-                Evenements
-            </a>
+			{# <a class="{{ currentRoute starts with 'messages_' ? 'active' }}">
+			                Messages
+			            </a>
+			
+			            <a class="{{ currentRoute starts with 'alerts_' ? 'active' }}">
+			                Alertes
+			            </a> #}
+		</nav>
 
-            <a class="{{ currentRoute starts with 'messages_' ? 'active' }}">
-                Messages
-            </a>
+		<!-- PROFILE -->
+		<a class="profile" href="{{ path('patient_profile') }}">
+			<div class="profile-emoji"></div>
+			<strong>
+				{{ app.user ? app.user.prenom ~ ' ' ~ app.user.nom : 'Patient' }}
+			</strong>
+		</a>
 
-            <a class="{{ currentRoute starts with 'alerts_' ? 'active' }}">
-                Alertes
-            </a>
-        </nav>
-
-        <!-- PROFILE -->
-        <a class="profile" href="{{ path('patient_profile') }}">
-            <div class="profile-emoji"></div>
-            <strong>
-                {{ app.user ? app.user.prenom ~ ' ' ~ app.user.nom : 'Patient' }}
-            </strong>
-        </a>
-
-    </div>
+	</div>
 </header>
