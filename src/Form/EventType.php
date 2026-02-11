@@ -30,7 +30,14 @@ class EventType extends AbstractType
             ->add('lieu')
             ->add('capaciteMax')
 
-            ->add('statut')
+            ->add('statut', ChoiceType::class, [
+                'choices' => [
+                    'Privée' => 'PRIVEE',
+                    'Publiée' => 'PUBLIE',
+                ],
+                'placeholder' => 'Choisir un statut',
+            ])
+
             ->add('image', FileType::class, [
                 'label' => 'Image (PNG, JPG)',
                 'mapped' => false,
