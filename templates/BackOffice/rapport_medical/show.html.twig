@@ -5,20 +5,24 @@
 {% block body %}
 <style>
 .rapport-shell {
-    --ink: #1e2a2f;
-    --muted: #6c7a80;
-    --brand: #0e8aa7;
-    --brand-2: #2bbf9f;
+    --ink: #1f2a33;
+    --muted: #6b7a83;
+    --brand: #6cc5a1;
+    --brand-2: #a7e7cf;
     --card: #ffffff;
-    --ring: rgba(14, 138, 167, 0.2);
-    --soft: #f5f7f9;
+    --ring: rgba(108, 197, 161, 0.2);
+    --soft: #f5f9f7;
+    background: linear-gradient(180deg, #f6fbf8 0%, #f2f7f4 100%);
+    border-radius: 18px;
+    padding: 16px;
 }
 
 .rapport-header {
-    background: linear-gradient(135deg, #e8f6f9 0%, #eef8f4 100%);
-    border-radius: 18px 28px 18px 28px;
+    background: #ffffff;
+    border-radius: 16px;
     padding: 16px 20px;
-    border: 1px solid #e2eef1;
+    border: 1px solid #e2efe8;
+    box-shadow: 0 10px 22px rgba(16, 24, 40, 0.06);
 }
 
 .rapport-title {
@@ -36,7 +40,7 @@
 }
 
 .rapport-label i {
-    color: #2f6f7f;
+    color: #3c8f6a;
 }
 
 .rapport-actions .btn {
@@ -45,8 +49,8 @@
 }
 
 .rapport-card {
-    border: 1px solid #e6edf0;
-    border-radius: 18px 28px 18px 28px;
+    border: 1px solid #e2efe8;
+    border-radius: 16px;
     background: var(--card);
 }
 
@@ -56,9 +60,9 @@
     gap: 6px;
     padding: 6px 12px;
     border-radius: 999px;
-    background: #eef6f8;
-    border: 1px solid #d6e7ec;
-    color: #1a5b6b;
+    background: #ecf8f1;
+    border: 1px solid #cfe9dc;
+    color: #1f5b43;
     font-size: 0.85rem;
     font-weight: 600;
     text-transform: uppercase;
@@ -70,7 +74,7 @@
 }
 
 .rapport-info-card {
-    border: 1px solid #e6edf0;
+    border: 1px solid #e2efe8;
     background: #ffffff;
     border-radius: 16px;
     padding: 14px 16px;
@@ -83,7 +87,7 @@
     gap: 10px;
     align-items: center;
     padding: 8px 0;
-    border-bottom: 1px dashed #e1e7ea;
+    border-bottom: 1px dashed #e1ece6;
 }
 
 .rapport-info-row:last-child {
@@ -91,7 +95,7 @@
 }
 
 .rapport-section {
-    border: 1px solid #e6edf0;
+    border: 1px solid #e2efe8;
     background: #ffffff;
     border-radius: 16px;
     padding: 16px;
@@ -120,8 +124,8 @@
 }
 
 .rapport-summary-card {
-    border: 1px solid #e6edf0;
-    background: linear-gradient(135deg, #f0f8fa 0%, #f5fbf8 100%);
+    border: 1px solid #e2efe8;
+    background: linear-gradient(135deg, #f1fbf6 0%, #f6fdf9 100%);
     border-radius: 14px;
     padding: 12px 14px;
 }
@@ -149,7 +153,7 @@
 
 .rapport-modal .modal-header {
     border: 0;
-    background: linear-gradient(135deg, #e8f6f9 0%, #eef8f4 100%);
+    background: linear-gradient(135deg, #eef8f3 0%, #f3fbf7 100%);
     border-radius: 20px 28px 0 0;
     padding: 16px 20px;
 }
@@ -214,7 +218,7 @@
             </div>
             <div class="rapport-summary-card">
                 <div class="summary-label"><i class="bi bi-person-badge me-1"></i>Consultation</div>
-                <div class="summary-value">#{{ rapport.consultation.id }}</div>
+                <div class="summary-value">{{ rapport.consultation.id }}</div>
             </div>
         </div>
 
@@ -235,7 +239,7 @@
                     </div>
                     {% if rapport.fichierPath %}
                         <div class="rapport-info-row">
-                            <div class="rapport-label"><i class="bi bi-paperclip"></i>PiÃ¨ce jointe</div>
+                            <div class="rapport-label"><i class="bi bi-paperclip"></i>Pièce jointe</div>
                             <a class="fw-semibold" href="{{ asset(rapport.fichierPath) }}" target="_blank" rel="noopener">
                                 <i class="bi bi-box-arrow-up-right me-1"></i>
                                 Voir le fichier

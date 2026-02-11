@@ -5,20 +5,24 @@
 {% block body %}
 <style>
 .consultation-page {
-    --ink: #1e2a2f;
-    --muted: #6c7a80;
-    --brand: #0e8aa7;
-    --brand-2: #2bbf9f;
-    --bg: #f4f7f8;
+    --ink: #1f2a33;
+    --muted: #6b7a83;
+    --brand: #5bb6d6;
+    --brand-2: #8fd4e3;
+    --bg: #f6f8fa;
     --card: #ffffff;
-    --ring: rgba(14, 138, 167, 0.2);
+    --ring: rgba(91, 182, 214, 0.2);
+    background: linear-gradient(180deg, #f7fafc 0%, #f3f6f9 100%);
+    border-radius: 18px;
+    padding: 16px;
 }
 
 .consultation-header {
-    background: linear-gradient(135deg, #fff4e6 0%, #eef6ff 55%, #f3fff6 100%);
-    border-radius: 18px 28px 18px 28px;
+    background: #ffffff;
+    border-radius: 16px;
     padding: 18px 20px;
-    border: 1px solid #f0e2d5;
+    border: 1px solid #e6edf2;
+    box-shadow: 0 10px 22px rgba(16, 24, 40, 0.06);
 }
 
 .consultation-title {
@@ -34,9 +38,10 @@
 }
 
 .consultation-btn {
-    background: linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 100%);
+    background: linear-gradient(135deg, #8fd4e3 0%, #b7e3ef 100%);
     border: none;
-    box-shadow: 0 8px 18px rgba(14, 138, 167, 0.25);
+    color: #0f172a;
+    box-shadow: 0 8px 16px rgba(91, 182, 214, 0.22);
 }
 
 .consultation-btn:hover {
@@ -44,11 +49,12 @@
 }
 
 .consultation-card {
-    border: 1px solid #e6edf0;
-    border-radius: 18px 28px 18px 28px;
+    border: 1px solid #e6edf2;
+    border-radius: 16px;
     background: var(--card);
     transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
     overflow: hidden;
+    position: relative;
 }
 
 .consultation-card:hover {
@@ -64,30 +70,30 @@
 
 .consultation-accent {
     height: 6px;
-    border-radius: 18px 28px 0 0;
+    border-radius: 16px 16px 0 0;
     margin: -1px -1px 12px -1px;
 }
 
 .consultation-card[data-status^="planif"] .consultation-accent {
-    background: linear-gradient(90deg, #2b9de2, #69c1f2);
+    background: #cfe9f2;
 }
 
 .consultation-card[data-status^="réal"] .consultation-accent,
 .consultation-card[data-status^="real"] .consultation-accent {
-    background: linear-gradient(90deg, #27b07f, #7bd6b1);
+    background: #d8f3e6;
 }
 
 .consultation-card[data-status^="en_cours"] .consultation-accent,
 .consultation-card[data-status^="en cours"] .consultation-accent {
-    background: linear-gradient(90deg, #f4b740, #f8d27a);
+    background: #fff1cc;
 }
 
 .consultation-card[data-status^="term"] .consultation-accent {
-    background: linear-gradient(90deg, #2bbf9f, #6edfbf);
+    background: #dff6f0;
 }
 
 .consultation-card[data-status^="annul"] .consultation-accent {
-    background: linear-gradient(90deg, #e05858, #f2a0a0);
+    background: #fde2e2;
 }
 
 .consultation-label {
@@ -104,9 +110,9 @@
 }
 
 .badge-soft {
-    background: #eef6f8;
-    color: #1a5b6b;
-    border: 1px solid #d6e7ec;
+    background: #f3f7fa;
+    color: #23303a;
+    border: 1px solid #e1e8ee;
 }
 
 .consultation-modal .modal-content {
@@ -163,9 +169,9 @@
     gap: 6px;
     padding: 6px 12px;
     border-radius: 999px;
-    background: #eef6f8;
-    border: 1px solid #d6e7ec;
-    color: #1a5b6b;
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
+    color: #1f2a33;
     font-size: 0.85rem;
     font-weight: 600;
 }
@@ -181,6 +187,49 @@
     border-radius: 999px;
     padding: 7px 12px;
     font-weight: 700;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    color: #0f172a;
+}
+
+.consultation-actions .btn.btn-warning,
+.consultation-actions .btn.btn-danger,
+.consultation-actions .btn.btn-success,
+.consultation-actions .btn.btn-outline-primary,
+.consultation-actions .btn.btn-outline-secondary {
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    color: #0f172a;
+}
+
+.consultation-actions .btn.btn-warning {
+    background: #fef3c7;
+    color: #92400e;
+    border-color: #fde68a;
+}
+
+.consultation-actions .btn.btn-danger {
+    background: #fee2e2;
+    color: #991b1b;
+    border-color: #fecaca;
+}
+
+.consultation-actions .btn.btn-success {
+    background: #dcfce7;
+    color: #166534;
+    border-color: #bbf7d0;
+}
+
+.consultation-actions .btn.btn-outline-primary {
+    background: #e0f2fe;
+    color: #075985;
+    border-color: #bae6fd;
+}
+
+.consultation-actions .btn.btn-outline-secondary {
+    background: #fff7ed;
+    color: #9a3412;
+    border-color: #fed7aa;
 }
 
 .consultation-toast {
