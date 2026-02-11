@@ -65,7 +65,7 @@ class ForumPostController extends AbstractController
             $em->persist($post);
             $em->flush();
 
-            return $this->redirectToRoute('forum_post_forum_index'); // ✅ front forum page (adjust if needed)
+            return $this->redirectToRoute('forum_post_index');
         }
 
         return $this->render('BackOffice/forum_post/new.html.twig', [

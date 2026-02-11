@@ -1,138 +1,145 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <title>Forum communautaire</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+	<head>
+		<meta charset="UTF-8">
+		<title>Forum communautaire</title>
+		<meta
+		name="viewport" content="width=device-width, initial-scale=1">
 
-  {# Bootstrap CSS #}
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+		{# Bootstrap CSS #}
+		<link
+		href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-  {# Bootstrap Icons #}
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+		{# Bootstrap Icons #}
+		<link
+		href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
-  {# Your CSS #}
-  <link rel="stylesheet" href="{{ asset('css/patient.css') }}">
-  <link rel="stylesheet" href="{{ asset('css/forum.css') }}">
-</head>
+		{# Your CSS #}
+		<link rel="stylesheet" href="{{ asset('css/patient.css') }}">
+		<link rel="stylesheet" href="{{ asset('css/forum.css') }}">
+	</head>
 
-<body>
+	<body>
 
-<div class="patient-app forum-page">
+		<div
+			class="patient-app forum-page">
 
-  {# HEADER #}
-  {% include 'FrontOffice/patient/_header.html.twig' %}
+			{# HEADER #}
+			{% include 'FrontOffice/patient/_header.html.twig' %}
 
-  <main class="patient-main">
+			<main
+				class="patient-main">
 
-    <!-- HERO -->
-    <section class="forum-hero">
-      <div class="forum-hero__inner">
-        <div>
-          <h1>Forum communautaire</h1>
-          <p>Échangez avec la communauté Elder HealthCare</p>
-        </div>
+				<!-- HERO -->
+				<section class="forum-hero container">
+					<div class="forum-hero-card">
 
-        {% if app.user %}
-          <button
-            class="btn btn-primary rounded-pill px-4"
-            data-bs-toggle="modal"
-            data-bs-target="#newPostModal">
-            <i class="bi bi-plus-circle"></i>
-            Nouvelle publication
-          </button>
-        {% endif %}
-      </div>
-    </section>
+						<div class="forum-hero-content">
+							<div>
+								<h1 class="forum-hero-title">
+									Forum communautaire 💬
+								</h1>
+								<p class="forum-hero-subtitle">
+									Échangez avec la communauté Elder HealthCare
+								</p>
+							</div>
 
-    <!-- POSTS -->
-    <div class="forum-wrap container">
+							{% if app.user %}
+								<button class="btn btn-hero rounded-pill" data-bs-toggle="modal" data-bs-target="#newPostModal">
+									<i class="bi bi-plus-circle"></i>
+									Nouvelle publication
+								</button>
+							{% endif %}
+						</div>
 
-      {% for post in posts %}
-        <article class="post-card">
+					</div>
+				</section>
 
-          <!-- TOP -->
-          <header class="post-card__top">
-            <div class="post-meta">
-              <h5>{{ post.title }}</h5>
-              <span class="small">
-                {{ post.utilisateur.prenom }}
-                {{ post.utilisateur.nom }}
-                ·
-                {{ post.dateDeCreation|date('d/m/Y H:i') }}
-              </span>
-            </div>
 
-            <span class="badge-soft badge-active">
-              <span class="badge-color bg-success"></span>
-              {{ post.status }}
-            </span>
-          </header>
+				<!-- POSTS -->
+				<div class="forum-wrap container">
 
-          <!-- BODY -->
-          <div class="post-card__body">
-            <p class="post-content">{{ post.content }}</p>
+					{% for post in posts %}
+						<article
+							class="post-card">
 
-            {% if post.imageName %}
-              <div class="post-image-wrapper mt-3">
-                <img
-                  src="{{ asset('uploads/posts/' ~ post.imageName) }}"
-                  class="post-image"
-                  alt="Image du post">
-              </div>
-            {% endif %}
-          </div>
+							<!-- TOP -->
+							<header class="post-card__top">
+								<div class="post-meta">
+									<h5>{{ post.title }}</h5>
+									<span class="small">
+										{{ post.utilisateur.prenom }}
+										{{ post.utilisateur.nom }}
+										·
+										{{ post.dateDeCreation|date('d/m/Y H:i') }}
+									</span>
+								</div>
 
-          <!-- ACTIONS -->
-          <div class="actions">
-            <button
-              class="btn btn-outline-primary btn-pill"
-              data-bs-toggle="modal"
-              data-bs-target="#commentModal-{{ post.id }}">
-              <i class="bi bi-chat"></i>
-              Ajouter un commentaire
-            </button>
+								<span class="badge-soft badge-active">
+									<span class="badge-color bg-success"></span>
+									{{ post.status }}
+								</span>
+							</header>
 
-            <span class="btn-pill text-muted">
-              {{ post.commentaires|length }} commentaires
-            </span>
-          </div>
+							<!-- BODY -->
+							<div class="post-card__body">
+								<p class="post-content">{{ post.content }}</p>
 
-          <!-- COMMENTS -->
-          <div class="comments">
-            {% if post.commentaires is empty %}
-              <div class="empty">Aucun commentaire</div>
-            {% else %}
-              {% for c in post.commentaires %}
-                <div class="comment-item">
-                  <div class="comment-top">
-                    <strong>{{ c.utilisateur.prenom }}</strong>
-                    <span>{{ c.date|date('d/m/Y H:i') }}</span>
-                  </div>
-                  <div>{{ c.content }}</div>
-                </div>
-              {% endfor %}
-            {% endif %}
-          </div>
+								{% if post.imageName %}
+									<div class="post-image-wrapper mt-3">
+										<img src="{{ asset('uploads/posts/' ~ post.imageName) }}" class="post-image" alt="Image du post">
+									</div>
+								{% endif %}
+							</div>
 
-        </article>
+							<!-- ACTIONS -->
+							<div class="actions">
+								<button class="btn btn-outline-primary btn-pill" data-bs-toggle="modal" data-bs-target="#commentModal-{{ post.id }}">
+									<i class="bi bi-chat"></i>
+									Ajouter un commentaire
+								</button>
 
-        {# COMMENT MODAL (per post) #}
-        {% include 'FrontOffice/forum/_modal_comment.html.twig' with { post: post } %}
-      {% else %}
-        <div class="empty mt-5">Aucune publication pour le moment 🙂</div>
-      {% endfor %}
+								<span class="btn-pill text-muted">
+									{{ post.commentaires|length }}
+									commentaires
+								</span>
+							</div>
 
-    </div>
+							<!-- COMMENTS -->
+							<div class="comments">
+								{% if post.commentaires is empty %}
+									<div class="empty">Aucun commentaire</div>
+								{% else %}
+									{% for c in post.commentaires %}
+										<div class="comment-item">
+											<div class="comment-top">
+												<strong>{{ c.utilisateur.prenom }}</strong>
+												<span>{{ c.date|date('d/m/Y H:i') }}</span>
+											</div>
+											<div>{{ c.content }}</div>
+										</div>
+									{% endfor %}
+								{% endif %}
+							</div>
 
-  </main>
-</div>
+						</article>
 
-{# NEW POST MODAL #}
-{% include 'FrontOffice/forum/_modal_post.html.twig' %}
+						{# COMMENT MODAL (per post) #}
+						{% include 'FrontOffice/forum/_modal_comment.html.twig' with { post: post } %}
+					{% else %}
+						<div class="empty mt-5">Aucune publication pour le moment 🙂</div>
+					{% endfor %}
 
-{# Bootstrap JS – REQUIRED FOR MODALS #}
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+				</div>
 
-</body>
+			</main>
+		</div>
+
+		{# NEW POST MODAL #}
+		{% include 'FrontOffice/forum/_modal_post.html.twig' %}
+
+	{# Bootstrap JS – REQUIRED FOR MODALS #}
+		 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+	</body>
 </html>
