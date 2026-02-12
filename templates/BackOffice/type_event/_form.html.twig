@@ -4,6 +4,7 @@
   <div class="col-md-6">
     {{ form_row(form.libelle) }}
   </div>
+
   <div class="col-md-6">
     {{ form_row(form.couleur) }}
   </div>
@@ -18,10 +19,12 @@
 </div>
 
 <div class="mt-4 d-flex gap-2">
-  <button class="btn btn-brand">
+  <button class="btn btn-brand" type="submit">
     <i class="bi bi-save"></i> {{ button_label|default('Enregistrer') }}
   </button>
-  <a class="btn btn-outline-secondary" href="{{ path('event_type_index') }}">
+
+  {# ✅ Retour corrigé #}
+  <a class="btn btn-outline-secondary" href="{{ path('admin_typeevent_index') }}">
     Retour
   </a>
 </div>

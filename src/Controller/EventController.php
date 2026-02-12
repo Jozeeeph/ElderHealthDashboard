@@ -33,7 +33,7 @@ class EventController extends AbstractController
         ]);
     }
 
- 
+
 
     #[Route('/new', name: 'new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
@@ -130,18 +130,25 @@ class EventController extends AbstractController
         ]);
     }
 
-
     #[Route('/{id}', name: 'delete', methods: ['POST'])]
     public function delete(Event $event, Request $request, EntityManagerInterface $em): Response
     {
         if ($this->isCsrfTokenValid('delete_event_' . $event->getId(), (string) $request->request->get('_token'))) {
+
+            // Supprimer toutes les participations liées
+            foreach ($event->getParticipations() as $p) {
+                $em->remove($p);
+            }
+
             $em->remove($event);
             $em->flush();
+
             $this->addFlash('success', 'Événement supprimé 🗑️');
         }
 
         return $this->redirectToRoute('event_index');
     }
+
 
 
     // TypeEvent

@@ -1,4 +1,4 @@
-{{ form_start(form) }}
+{{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
 
 <div class="row g-3">
   <div class="col-md-6">
@@ -35,10 +35,12 @@
 </div>
 
 <div class="mt-4 d-flex gap-2">
-  <button class="btn btn-brand">
+  <button class="btn btn-brand" type="submit">
     <i class="bi bi-save"></i> {{ button_label|default('Enregistrer') }}
   </button>
-  <a class="btn btn-outline-secondary" href="{{ path('event_index') }}">
+
+  {# ✅ Retour corrigé #}
+  <a class="btn btn-outline-secondary" href="{{ path('admin_event_index') }}">
     Retour
   </a>
 </div>
