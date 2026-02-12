@@ -16,7 +16,9 @@
         <h2 class="forum-title">Modifier : {{ type.libelle }}</h2>
         <div class="text-muted">BackOffice</div>
       </div>
-      <a class="btn btn-outline-secondary" href="{{ path('event_type_index') }}">
+
+      {# ✅ retour corrigé #}
+      <a class="btn btn-outline-secondary" href="{{ path('admin_typeevent_index') }}">
         <i class="bi bi-arrow-left"></i> Retour
       </a>
     </div>

@@ -16,7 +16,9 @@
         <h2 class="forum-title">Créer un événement</h2>
         <div class="text-muted">BackOffice</div>
       </div>
-      <a class="btn btn-outline-secondary" href="{{ path('event_index') }}">
+
+      {# ✅ Retour corrigé #}
+      <a class="btn btn-outline-secondary" href="{{ path('admin_event_index') }}">
         <i class="bi bi-arrow-left"></i> Retour
       </a>
     </div>
