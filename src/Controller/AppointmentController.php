@@ -20,10 +20,10 @@ class AppointmentController extends AbstractController
     #[Route('/', name: 'index')]
     public function index(EntityManagerInterface $em, RendezVousEtatService $etatService): Response
     {
-        // Mise à jour automatique des états
+       
         $etatService->updateEtats();
 
-        // Récupérer toutes les entités
+       
         $rendezVousList = $em->getRepository(RendezVous::class)->findAll();
         $typesRendezVous = $em->getRepository(TypeRendezVous::class)->findAll();
 
@@ -51,7 +51,7 @@ class AppointmentController extends AbstractController
             return $this->redirectToRoute('appointment_index');
         }
 
-        // Si formulaire invalide, on reste sur la page avec les modals
+        
         return $this->renderFormWithModal($form);
     }
 
@@ -67,7 +67,7 @@ class AppointmentController extends AbstractController
             return $this->redirectToRoute('appointment_index');
         }
 
-        // Si formulaire invalide, on reste sur la page avec les modals
+        
         return $this->renderFormWithModal($form);
     }
 
@@ -89,7 +89,7 @@ class AppointmentController extends AbstractController
             return $this->redirectToRoute('appointment_index');
         }
 
-        // Si formulaire invalide, on reste sur la page avec les modals
+        
         return $this->renderFormWithModal($form, 'type');
     }
 
@@ -105,7 +105,7 @@ class AppointmentController extends AbstractController
             return $this->redirectToRoute('appointment_index');
         }
 
-        // Si formulaire invalide, on reste sur la page avec les modals
+        
         return $this->renderFormWithModal($form, 'type');
     }
 
@@ -131,20 +131,18 @@ class AppointmentController extends AbstractController
         return $this->redirectToRoute('appointment_index');
     }
 
-    /**
-     * Méthode pour afficher le formulaire dans une modal
-     */
+    
     private function renderFormWithModal($form, string $type = 'rdv'): Response
     {
         $template = 'BackOffice/appointment/form_modal.html.twig';
         
-        // Pour un rendu en HTML seulement (sans le layout complet)
+      
         $response = $this->render($template, [
             'form' => $form->createView(),
             'form_type' => $type
         ]);
         
-        // Retirer le layout pour n'avoir que le contenu de la modal
+        
         $response->headers->set('X-Form-Render', 'true');
         return $response;
     }

@@ -44,7 +44,7 @@ class ForumPostController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            // ✅ Save author
+            // Save author
             $post->setUtilisateur($this->getUser());
 
             $imageFile = $form->get('image')->getData();
@@ -92,7 +92,7 @@ class ForumPostController extends AbstractController
                 try {
                     $imageFile->move($this->getParameter('post_images_dir'), $newFilename);
 
-                    // ✅ option: delete old file
+                    //  option: delete old file
                     $old = $post->getImageName();
                     if ($old) {
                         $oldPath = $this->getParameter('post_images_dir') . '/' . $old;

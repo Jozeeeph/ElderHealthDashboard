@@ -8,13 +8,19 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
+#[UniqueEntity(
+    fields: ['email'],
+    message: 'Cet email est déjà utilisé.'
+)]
 #[ORM\Entity(repositoryClass: UtilisateurRepository::class)]
 class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    public const STATUS_PENDING  = 'PENDING';
+    public const STATUS_PENDING = 'PENDING';
     public const STATUS_APPROVED = 'APPROVED';
-    public const STATUS_REFUSED  = 'REFUSED';
+    public const STATUS_REFUSED = 'REFUSED';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -22,71 +28,99 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
+    #[Assert\NotBlank(message: "L'email est obligatoire.")]
+    #[Assert\Email(message: "Format d'email invalide.")]
     private ?string $email = null;
 
     #[ORM\Column(length: 100)]
+    #[Assert\NotBlank(message: "Le nom est obligatoire.")]
+    #[Assert\Length(min: 2, max: 100)]
     private ?string $nom = null;
 
     #[ORM\Column(length: 100)]
+    #[Assert\NotBlank(message: "Le prénom est obligatoire.")]
+    #[Assert\Length(min: 2, max: 100)]
     private ?string $prenom = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "L'adresse est obligatoire.")]
     private ?string $adresse = null;
 
     #[ORM\Column]
+    #[Assert\NotNull(message: "L'âge est obligatoire.")]
+    #[Assert\Range(
+        min: 0,
+        max: 120,
+        notInRangeMessage: "L'âge doit être entre {{ min }} et {{ max }} ans."
+    )]
     private ?int $age = null;
 
     #[ORM\Column(type: 'date')]
+    #[Assert\NotNull(message: "La date de naissance est obligatoire.")]
+    #[Assert\LessThan("today", message: "La date de naissance doit être dans le passé.")]
     private ?\DateTimeInterface $dateNaissance = null;
 
     #[ORM\Column(length: 20)]
+    #[Assert\NotBlank(message: "Le numéro de téléphone est obligatoire.")]
+    #[Assert\Regex(
+        pattern: "/^[0-9]{8,15}$/",
+        message: "Le numéro de téléphone doit contenir uniquement des chiffres."
+    )]
     private ?string $numeroTelephone = null;
 
     #[ORM\Column(length: 20)]
+    #[Assert\NotBlank(message: "Le CIN est obligatoire.")]
+    #[Assert\Length(min: 6, max: 20)]
     private ?string $cin = null;
 
-    // Champ "status" (si tu l'utilises encore côté métier)
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $status = null;
 
-    // ✅ statut de la demande (validation admin)
     #[ORM\Column(name: 'account_status', length: 50)]
     private string $accountStatus = self::STATUS_PENDING;
 
-    // ✅ activation / désactivation
     #[ORM\Column(name: 'is_active', options: ['default' => false])]
     private bool $isActive = false;
 
-    /**
-     * ✅ Rôle métier stocké en STRING (ex: ADMIN, PATIENT, PERSONNEL_MEDICAL...)
-     * => ultra stable pour Doctrine (pas d'enumType)
-     */
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $role = null;
 
-    // ✅ Roles Symfony Security (tableau)
     #[ORM\Column]
     private array $roles = [];
 
     #[ORM\Column]
+    #[Assert\NotBlank(message: "Le mot de passe est obligatoire.")]
+    #[Assert\Length(
+        min: 6,
+        minMessage: "Le mot de passe doit contenir au moins {{ limit }} caractères."
+    )]
     private ?string $password = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\File(
+        maxSize: "5M",
+        mimeTypes: ["application/pdf"],
+        mimeTypesMessage: "Veuillez uploader un PDF valide."
+    )]
     private ?string $dossierMedicalPath = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\File(maxSize: "5M")]
     private ?string $cv = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\File(maxSize: "5M")]
     private ?string $certification = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\File(maxSize: "5M")]
     private ?string $attestation = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $hopitalAffectation = null;
 
     #[ORM\Column(nullable: true)]
+    #[Assert\PositiveOrZero(message: "L'expérience doit être positive.")]
     private ?int $nbAnneeExperience = null;
 
     #[ORM\Column(length: 100, nullable: true)]
@@ -104,41 +138,23 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $numeroFix = null;
 
-    /**
-     * @var Collection<int, Participation>
-     */
-    #[ORM\OneToMany(targetEntity: Participation::class, mappedBy: 'utilisateur')]
+    #[ORM\OneToMany(mappedBy: 'utilisateur', targetEntity: Participation::class)]
     private Collection $participations;
 
-    /**
-     * @var Collection<int, Equipement>
-     */
-    #[ORM\OneToMany(targetEntity: Equipement::class, mappedBy: 'utilisateur')]
+    #[ORM\OneToMany(mappedBy: 'utilisateur', targetEntity: Equipement::class)]
     private Collection $equipements;
 
-    /**
-     * @var Collection<int, Commande>
-     */
-    #[ORM\OneToMany(targetEntity: Commande::class, mappedBy: 'utilisateur', orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'utilisateur', targetEntity: Commande::class, orphanRemoval: true)]
     private Collection $commandes;
 
     public function __construct()
     {
         $this->participations = new ArrayCollection();
-
-        // Defaults
-        $this->accountStatus = self::STATUS_PENDING;
-        $this->isActive = false;
-
-        // rôle Symfony minimal
-        $this->roles = ['ROLE_USER'];
         $this->equipements = new ArrayCollection();
         $this->commandes = new ArrayCollection();
+        $this->roles = ['ROLE_USER'];
     }
 
-    // --------------------
-    // Security UserInterface
-    // --------------------
     public function getUserIdentifier(): string
     {
         return (string) $this->email;
@@ -147,16 +163,12 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
-
-        // garantit ROLE_USER
         $roles[] = 'ROLE_USER';
-
-        return array_values(array_unique($roles));
+        return array_unique($roles);
     }
 
     public function eraseCredentials(): void
     {
-        // rien
     }
 
     // --------------------
