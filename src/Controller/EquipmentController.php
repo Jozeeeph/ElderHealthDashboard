@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
-#[Route('/equipment', name: 'equipment_')]
+#[Route('/patient', name: 'equipment_')]
 class EquipmentController extends AbstractController
 {
     #[Route('/', name: 'index', methods: ['GET'])]
@@ -27,7 +27,7 @@ class EquipmentController extends AbstractController
         ]);
     }
 
-    #[Route('/forum', name: 'list_index')]
+    #[Route('/equipements', name: 'list_index')]
     public function index2(EquipementRepository $equipementRepository): Response
     {
         return $this->render('FrontOffice/equipement/index.html.twig', [

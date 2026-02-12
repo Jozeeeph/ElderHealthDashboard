@@ -14,7 +14,7 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/forum/posts', name: 'forum_post_forum_')]
+#[Route('/patient', name: 'forum_post_forum_')]
 #[IsGranted('ROLE_PATIENT')]
 class ForumController extends AbstractController
 {

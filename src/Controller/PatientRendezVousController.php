@@ -12,11 +12,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/patient/rendezvous', name: 'patient_rendezvous_')]
+#[Route('/patient', name: 'patient_rendezvous_')]
 class PatientRendezVousController extends AbstractController
 {
     #[IsGranted('ROLE_PATIENT')]
-    #[Route('/', name: 'index')]
+    #[Route('/rendezvous', name: 'index')]
     public function index(EntityManagerInterface $em): Response
     {
         $patient = $this->getUser();
