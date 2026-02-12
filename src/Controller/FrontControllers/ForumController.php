@@ -80,7 +80,7 @@ class ForumController extends AbstractController
     }
 
     /**
-     * 💬 Add comment to a post (modal submit)
+     *  Add comment to a post (modal submit)
      */
     #[Route('/post/{postId}/comment/new', name: 'comment_new', methods: ['POST'])]
     public function createComment(

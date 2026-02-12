@@ -4,7 +4,7 @@
 {% block stylesheets %}
     {{ parent() }}
     <link rel="stylesheet" href="{{ asset('css/appointments.css') }}">
-    <!-- Ajout d'icônes Bootstrap Icons -->
+    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     
   
@@ -14,7 +14,7 @@
 {% block body %}
 <div class="appointments-page">
     <div class="appointments-container">
-        <!-- Header avec titre à gauche -->
+        
         <div class="appointments-header">
             <h1>
                 <i class="bi bi-calendar-check"></i>
@@ -32,7 +32,7 @@
             </div>
         </div>
 
-        <!-- Onglets avec icônes -->
+       
         <div class="appointments-tabs">
             <ul class="nav nav-tabs" id="appointmentTabs" role="tablist">
                 <li class="nav-item" role="presentation">
@@ -52,7 +52,7 @@
             </ul>
 
             <div class="tab-content mt-3">
-                {# ---------------- RDV TAB ---------------- #}
+                
                 <div class="tab-pane fade show active" id="rdv" role="tabpanel">
                     <div class="card border-0 shadow-sm mb-3">
                         <div class="card-body">
@@ -179,7 +179,7 @@
                     </div>
                 </div>
 
-                {# ---------------- TYPES TAB ---------------- #}
+               
                 <div class="tab-pane fade" id="types" role="tabpanel">
                     <div class="card border-0 shadow-sm mb-3">
                         <div class="card-body">
@@ -262,20 +262,19 @@
     </div>
 </div>
 
-{# ---------------- MODALS CONTAINER ---------------- #}
+
 <div class="modal fade" id="rdvModal" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-centered">
-        <!-- Le contenu sera chargé dynamiquement -->
+       
     </div>
 </div>
 
 <div class="modal fade" id="typeModal" tabindex="-1">
     <div class="modal-dialog modal-md modal-dialog-centered">
-        <!-- Le contenu sera chargé dynamiquement -->
-    </div>
+        
 </div>
 
-{# ---------------- DELETE CONFIRM MODAL ---------------- #}
+
 <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content delete-modal">
@@ -327,7 +326,7 @@
                 url: url,
                 method: 'GET',
                 beforeSend: function() {
-                    // Afficher un loader
+                    
                     $('#' + modalId + ' .modal-dialog').html(`
                         <div class="modal-content">
                             <div class="modal-body text-center py-5">
@@ -344,10 +343,10 @@
                     var modal = new bootstrap.Modal(document.getElementById(modalId));
                     modal.show();
                     
-                    // Ajouter la classe personnalisée
+                    
                     $('#' + modalId + ' .modal-content').addClass('modal-appointment');
                     
-                    // Gestion de la soumission du formulaire via AJAX
+                   
                     $('#' + modalId + ' form').on('submit', function(e) {
                         e.preventDefault();
                         var form = $(this);
@@ -356,7 +355,7 @@
                         }
                         var submitBtn = form.find('button[type="submit"]');
                         
-                        // Désactiver le bouton pendant l'envoi
+                       
                         submitBtn.prop('disabled', true).html(`
                             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                             Enregistrement...
@@ -369,13 +368,13 @@
                             success: function(response) {
                                 if ($(response).find('.invalid-feedback').length === 0 && 
                                     $(response).find('.is-invalid').length === 0) {
-                                    // Si succès, recharger la page
+                                   
                                     window.location.reload();
                                 } else {
-                                    // Sinon, mettre à jour le contenu de la modal
+                                   
                                     $('#' + modalId + ' .modal-dialog').html(response);
                                     $('#' + modalId + ' .modal-content').addClass('modal-appointment');
-                                    // Réactiver la gestion du formulaire
+                                    
                                     submitBtn.prop('disabled', false).html('Enregistrer');
                                 }
                             },
@@ -407,7 +406,7 @@
         }
         
         $(document).ready(function() {
-            // Animation d'entrée des éléments
+           
             $('.fade-in').each(function(i) {
                 $(this).css('animation-delay', (i * 0.05) + 's');
             });
@@ -441,7 +440,7 @@
 
             $('#rdv-filter-date, #rdv-filter-etat').on('input change', applyRdvFilters);
             $('#type-filter-text').on('input', applyTypeFilters);
-            // Delete confirmation modal
+            
             $('.js-delete').on('click', function(e) {
                 e.preventDefault();
                 var url = $(this).data('delete-url');
