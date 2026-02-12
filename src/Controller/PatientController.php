@@ -19,7 +19,7 @@ use Symfony\Component\Routing\Attribute\Route;
 class PatientController extends AbstractController
 {
 
-    #[Route('/patient', name: 'app_patient_interfce')]
+    #[Route('/patient/home', name: 'app_patient_interfce')]
     public function patientDashboard(): Response
     {
         return $this->render('FrontOffice/patient/index.html.twig');

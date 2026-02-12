@@ -7,7 +7,7 @@
 		<nav class="top-nav">
 			<a class="{{ app.request.attributes.get('_route') == 'app_infermier_interface' ? 'active' : '' }}" href="{{ path('app_infermier_interface') }}">Tableau</a>
 			{# <a href="#">Patients</a> #}
-			<a class="active" href="{{ path('front_infermier_rendezvous_index') }}">Rendez-vous</a>
+			<a class="{{ app.request.attributes.get('_route') == 'front_infermier_rendezvous_index' ? 'active' : '' }}" href="{{ path('front_infermier_rendezvous_index') }}">Rendez-vous</a>
 			<a class="{{ app.request.attributes.get('_route') starts with 'front_infermier_consultation_' ? 'active' : '' }}" href="{{ path('front_infermier_consultation_index') }}">Consultations</a>
 			{# <a class="{{ app.request.attributes.get('_route') starts with 'front_equipements_' ? 'active' : '' }}" href="{{ path('front_equipements_index') }}">Equipement</a> #}
 			<a class="{{ app.request.attributes.get('_route') starts with 'forum_post_' ? 'active' : '' }}" href="{{ path('forum_post_forum_index') }}">Forum</a>
@@ -16,7 +16,7 @@
 			<a class="{{ app.request.attributes.get('_route') == 'front_infermier_profile' ? 'active' : '' }}" href="{{ path('front_infermier_profile') }}">Profil</a>
 		</nav>
 		<a class="profile profile-link" href="{{ path('front_infermier_profile') }}">
-			<div class="profile-emoji">🧑‍⚕️</div>
+			<div class="profile-emoji">🧑</div>
 			<div class="who">
 				<small>Infirmier</small>
 				<strong>
