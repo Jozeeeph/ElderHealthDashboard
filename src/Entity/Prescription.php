@@ -45,7 +45,7 @@ class Prescription
     private ?\DateTimeInterface $date_fin = null;
 
     #[ORM\OneToOne(targetEntity: Consultation::class)]
-    #[ORM\JoinColumn(name: "consultation_id", referencedColumnName: "id", nullable: false, unique: true)]
+    #[ORM\JoinColumn(name: "consultation_id", referencedColumnName: "id", nullable: false, unique: true, onDelete: "CASCADE")]
     #[Assert\NotNull(message: 'Ce champ est obligatoire.')]
     private ?Consultation $consultation = null;
 

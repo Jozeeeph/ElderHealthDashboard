@@ -36,7 +36,7 @@ class RapportMedical
     private ?string $fichier_path = null;
 
     #[ORM\OneToOne(targetEntity: Consultation::class)]
-    #[ORM\JoinColumn(name: "consultation_id", referencedColumnName: "id", nullable: false, unique: true)]
+    #[ORM\JoinColumn(name: "consultation_id", referencedColumnName: "id", nullable: false, unique: true, onDelete: "CASCADE")]
     #[Assert\NotNull(message: 'La consultation est obligatoire.')]
     private ?Consultation $consultation = null;
 

@@ -4,8 +4,10 @@ namespace App\Controller\FrontControllers;
 
 use App\Entity\RendezVous;
 use App\Entity\Utilisateur;
+use App\Repository\RendezVousRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -28,16 +30,17 @@ class RendezVousPersonnelController extends AbstractController
     }
 
     #[Route('/', name: 'index')]
-    public function index(EntityManagerInterface $em): Response
+    public function index(Request $request, RendezVousRepository $rendezVousRepository): Response
     {
         $user = $this->requirePersonnel();
-        $rendezVousList = $em->getRepository(RendezVous::class)->findBy(
-            ['personnelMedical' => $user],
-            ['date' => 'DESC', 'heure' => 'DESC']
-        );
+        $page = max(1, $request->query->getInt('page', 1));
+        $perPage = 2;
+        $pagination = $rendezVousRepository->findForPersonnelPaginated($user, $page, $perPage);
+        $rendezVousList = $pagination['items'];
 
         return $this->render('FrontOffice/infermier/rendezvous/index.html.twig', [
             'rendezVousList' => $rendezVousList,
+            'pagination' => $pagination,
             'nurseName' => $user->getPrenom(),
         ]);
     }

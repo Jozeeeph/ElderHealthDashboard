@@ -4,20 +4,24 @@
             <h5 class="modal-title">{{ form.vars.data.id ? 'Modifier' : 'Ajouter' }} un rendez-vous</h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
+        {{ form_start(form, {'attr': {'id': 'rdvForm', 'class': 'ajax-form', 'novalidate': 'novalidate'}}) }}
         <div class="modal-body">
-            {{ form_start(form, {'attr': {'id': 'rdvForm', 'class': 'ajax-form', 'novalidate': 'novalidate'}}) }}
             <div class="row g-3">
                 <div class="col-md-6">{{ form_row(form.date) }}</div>
                 <div class="col-md-6">{{ form_row(form.heure) }}</div>
                 <div class="col-md-6">{{ form_row(form.lieu) }}</div>
                 <div class="col-md-6">{{ form_row(form.typeRendezVous) }}</div>
+                <div class="col-md-6">{{ form_row(form.patient) }}</div>
+                <div class="col-md-6">{{ form_row(form.personnelMedical) }}</div>
             </div>
-            <div class="mt-3 text-end">
-                <button type="submit" class="btn btn-primary">Enregistrer</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-            </div>
-            {{ form_end(form) }}
         </div>
+        <div class="modal-footer justify-content-center">
+            <button type="submit" class="btn btn-primary" data-default-label="{{ form.vars.data.id ? 'Mettre a jour' : 'Ajouter' }}">
+                {{ form.vars.data.id ? 'Mettre a jour' : 'Ajouter' }}
+            </button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        </div>
+        {{ form_end(form) }}
     </div>
 {% else %}
     <div class="modal-content border-warning border-2 rounded-4">
@@ -25,18 +29,18 @@
             <h5 class="modal-title">{{ form.vars.data.id ? 'Modifier' : 'Ajouter' }} un type</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
+        {{ form_start(form, {'attr': {'id': 'typeForm', 'class': 'ajax-form', 'novalidate': 'novalidate'}}) }}
         <div class="modal-body">
-            {{ form_start(form, {'attr': {'id': 'typeForm', 'class': 'ajax-form', 'novalidate': 'novalidate'}}) }}
             <div class="row g-3">
                 <div class="col-md-12">{{ form_row(form.type) }}</div>
                 <div class="col-md-6">{{ form_row(form.tarif) }}</div> {# Notez le T majuscule #}
                 <div class="col-md-6">{{ form_row(form.duree) }}</div>
             </div>
-            <div class="mt-3 text-end">
-                <button type="submit" class="btn btn-warning">Enregistrer</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-            </div>
-            {{ form_end(form) }}
         </div>
+        <div class="modal-footer justify-content-center">
+            <button type="submit" class="btn btn-warning">Enregistrer</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        </div>
+        {{ form_end(form) }}
     </div>
 {% endif %}

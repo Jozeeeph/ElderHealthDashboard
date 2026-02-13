@@ -12,6 +12,7 @@
 {% endblock %}
 
 {% block body %}
+{% set activeTab = app.request.query.get('tab', 'rdv') %}
 <div class="appointments-page">
     <div class="appointments-container">
         
@@ -36,14 +37,14 @@
         <div class="appointments-tabs">
             <ul class="nav nav-tabs" id="appointmentTabs" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#rdv" role="tab">
+                    <button class="nav-link {{ activeTab != 'types' ? 'active' : '' }}" data-bs-toggle="tab" data-bs-target="#rdv" role="tab">
                         <i class="bi bi-calendar-event icon-md"></i>
                         Rendez-vous
                         <span class="badge bg-primary">{{ rendezVousList|length }}</span>
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#types" role="tab">
+                    <button class="nav-link {{ activeTab == 'types' ? 'active' : '' }}" data-bs-toggle="tab" data-bs-target="#types" role="tab">
                         <i class="bi bi-tags icon-md"></i>
                         Types de Rendez-vous
                         <span class="badge bg-warning">{{ typesRendezVous|length }}</span>
@@ -53,7 +54,7 @@
 
             <div class="tab-content mt-3">
                 
-                <div class="tab-pane fade show active" id="rdv" role="tabpanel">
+                <div class="tab-pane fade {{ activeTab != 'types' ? 'show active' : '' }}" id="rdv" role="tabpanel">
                     <div class="card border-0 shadow-sm mb-3">
                         <div class="card-body">
                             <div class="row g-3 align-items-end">
@@ -73,9 +74,13 @@
                                     </select>
                                 </div>
                                 <div class="col-12 col-md-auto ms-md-auto d-flex justify-content-end">
-                                    <button class="btn btn-primary" type="button" onclick="loadModal('{{ path('appointment_new') }}', 'rdvModal')">
-                                        <i class="bi bi-plus-lg"></i>
-                                        Ajouter un RDV
+                                    <button class="btn btn-outline-primary me-2" id="rdv-filter-apply" type="button">
+                                        <i class="bi bi-funnel"></i>
+                                        Filtrer
+                                    </button>
+                                    <button class="btn btn-outline-secondary me-2" id="rdv-filter-reset" type="button">
+                                        <i class="bi bi-arrow-counterclockwise"></i>
+                                        Reinitialiser
                                     </button>
                                 </div>
                             </div>
@@ -87,10 +92,6 @@
                                 <i class="bi bi-list-task"></i>
                                 Liste des Rendez-vous
                             </h5>
-                            <button class="btn btn-primary" onclick="loadModal('{{ path('appointment_new') }}', 'rdvModal')">
-                                <i class="bi bi-plus-lg"></i>
-                                Ajouter un RDV
-                            </button>
                         </div>
                         <div class="card-body p-0">
                             {% if rendezVousList is empty %}
@@ -165,6 +166,7 @@
                                                        href="{{ path('appointment_delete', {'id': rdv.id}) }}"
                                                        data-delete-url="{{ path('appointment_delete', {'id': rdv.id}) }}"
                                                        data-delete-name="{{ rdv.patient ? (rdv.patient.prenom ~ ' ' ~ rdv.patient.nom) : '' }}"
+                                                       data-delete-token="{{ csrf_token('delete_rdv_' ~ rdv.id) }}"
                                                        data-entity="rendez-vous"
                                                        title="Supprimer">
                                                         <i class="bi bi-trash"></i>
@@ -177,10 +179,32 @@
                             {% endif %}
                         </div>
                     </div>
+                    {% if rdvPagination.pages > 1 %}
+                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mt-3">
+                            <div class="text-muted small">
+                                Page {{ rdvPagination.page }} / {{ rdvPagination.pages }} - {{ rdvPagination.total }} rendez-vous
+                            </div>
+                            <nav aria-label="Pagination rendez-vous">
+                                <ul class="pagination mb-0">
+                                    <li class="page-item {{ rdvPagination.page <= 1 ? 'disabled' : '' }}">
+                                        <a class="page-link" href="{{ path('appointment_index', { page: rdvPagination.page - 1 }) }}">Precedent</a>
+                                    </li>
+                                    {% for p in 1..rdvPagination.pages %}
+                                        <li class="page-item {{ p == rdvPagination.page ? 'active' : '' }}">
+                                            <a class="page-link" href="{{ path('appointment_index', { page: p }) }}">{{ p }}</a>
+                                        </li>
+                                    {% endfor %}
+                                    <li class="page-item {{ rdvPagination.page >= rdvPagination.pages ? 'disabled' : '' }}">
+                                        <a class="page-link" href="{{ path('appointment_index', { page: rdvPagination.page + 1 }) }}">Suivant</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    {% endif %}
                 </div>
 
                
-                <div class="tab-pane fade" id="types" role="tabpanel">
+                <div class="tab-pane fade {{ activeTab == 'types' ? 'show active' : '' }}" id="types" role="tabpanel">
                     <div class="card border-0 shadow-sm mb-3">
                         <div class="card-body">
                             <div class="row g-3 align-items-end">
@@ -189,9 +213,17 @@
                                     <input id="type-filter-text" class="form-control" type="text" placeholder="Rechercher un type">
                                 </div>
                                 <div class="col-12 col-md-auto ms-md-auto d-flex justify-content-end">
-                                    <button class="btn btn-warning" type="button" onclick="loadModal('{{ path('appointment_type_new') }}', 'typeModal')">
-                                        <i class="bi bi-plus-lg"></i>
-                                        Ajouter un Type
+                                    <a class="btn btn-outline-primary me-2" href="{{ path('appointment_index', { tab: 'rdv' }) }}">
+                                        <i class="bi bi-arrow-left"></i>
+                                        Retour
+                                    </a>
+                                    <button class="btn btn-outline-warning me-2" id="type-filter-apply" type="button">
+                                        <i class="bi bi-funnel"></i>
+                                        Filtrer
+                                    </button>
+                                    <button class="btn btn-outline-secondary me-2" id="type-filter-reset" type="button">
+                                        <i class="bi bi-arrow-counterclockwise"></i>
+                                        Reinitialiser
                                     </button>
                                 </div>
                             </div>
@@ -203,10 +235,10 @@
                                 <i class="bi bi-tags"></i>
                                 Types de Rendez-vous
                             </h5>
-                            <button class="btn btn-warning" onclick="loadModal('{{ path('appointment_type_new') }}', 'typeModal')">
-                                <i class="bi bi-plus-lg"></i>
-                                Ajouter un Type
-                            </button>
+                            <a class="btn btn-outline-primary" href="{{ path('appointment_index', { tab: 'rdv' }) }}">
+                                <i class="bi bi-arrow-left"></i>
+                                Retour
+                            </a>
                         </div>
                         <div class="card-body p-0">
                             {% if typesRendezVous is empty %}
@@ -245,6 +277,7 @@
                                                    href="{{ path('appointment_type_delete', {'id': type.id}) }}"
                                                    data-delete-url="{{ path('appointment_type_delete', {'id': type.id}) }}"
                                                    data-delete-name="{{ type.type }}"
+                                                   data-delete-token="{{ csrf_token('delete_type_rdv_' ~ type.id) }}"
                                                    data-entity="type de rendez-vous"
                                                    title="Supprimer">
                                                     <i class="bi bi-trash"></i>
@@ -272,6 +305,7 @@
 <div class="modal fade" id="typeModal" tabindex="-1">
     <div class="modal-dialog modal-md modal-dialog-centered">
         
+    </div>
 </div>
 
 
@@ -295,6 +329,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
                 <form id="deleteConfirmForm" method="post" action="" class="m-0">
+                    <input type="hidden" name="_token" value="">
                     <button type="submit" class="btn btn-danger">
                         <i class="bi bi-trash"></i>
                         Supprimer
@@ -354,6 +389,7 @@
                             return;
                         }
                         var submitBtn = form.find('button[type="submit"]');
+                        var submitLabel = submitBtn.data('default-label') || $.trim(submitBtn.text()) || 'Ajouter';
                         
                        
                         submitBtn.prop('disabled', true).html(`
@@ -368,18 +404,22 @@
                             success: function(response) {
                                 if ($(response).find('.invalid-feedback').length === 0 && 
                                     $(response).find('.is-invalid').length === 0) {
-                                   
-                                    window.location.reload();
+                                    var redirectToTypes = form.attr('id') === 'typeForm';
+                                    if (redirectToTypes) {
+                                        window.location.href = "{{ path('appointment_index', { tab: 'types' }) }}";
+                                    } else {
+                                        window.location.href = "{{ path('appointment_index') }}";
+                                    }
                                 } else {
                                    
                                     $('#' + modalId + ' .modal-dialog').html(response);
                                     $('#' + modalId + ' .modal-content').addClass('modal-appointment');
                                     
-                                    submitBtn.prop('disabled', false).html('Enregistrer');
+                                    submitBtn.prop('disabled', false).html(submitLabel);
                                 }
                             },
                             error: function() {
-                                submitBtn.prop('disabled', false).html('Enregistrer');
+                                submitBtn.prop('disabled', false).html(submitLabel);
                                 alert('Une erreur est survenue. Veuillez réessayer.');
                             }
                         });
@@ -416,36 +456,61 @@
                 var dateVal = $('#rdv-filter-date').val() || '';
                 var etatVal = ($('#rdv-filter-etat').val() || '').toUpperCase();
 
-                $('#rdv tbody tr').each(function() {
-                    var row = $(this);
-                    var rowDate = (row.data('date') || '').toString();
-                    var rowEtat = (row.data('etat') || '').toString().toUpperCase();
+                $('#rdv .rdv-card').each(function() {
+                    var card = $(this);
+                    var rowDate = (card.data('date') || '').toString();
+                    var rowEtat = (card.data('etat') || '').toString().toUpperCase();
 
                     var matchDate = !dateVal || rowDate === dateVal;
                     var matchEtat = !etatVal || rowEtat === etatVal;
 
-                    row.toggle(matchDate && matchEtat);
+                    card.toggle(matchDate && matchEtat);
                 });
             }
 
             function applyTypeFilters() {
                 var typeVal = ($('#type-filter-text').val() || '').toLowerCase().trim();
-                $('#types tbody tr').each(function() {
-                    var row = $(this);
-                    var rowType = (row.data('type') || '').toString();
+                $('#types .type-card').each(function() {
+                    var card = $(this);
+                    var rowType = (card.data('type') || '').toString();
                     var matchType = !typeVal || rowType.indexOf(typeVal) !== -1;
-                    row.toggle(matchType);
+                    card.toggle(matchType);
                 });
             }
 
-            $('#rdv-filter-date, #rdv-filter-etat').on('input change', applyRdvFilters);
-            $('#type-filter-text').on('input', applyTypeFilters);
+            $('#rdv-filter-apply').on('click', applyRdvFilters);
+            $('#type-filter-apply').on('click', applyTypeFilters);
+
+            $('#rdv-filter-reset').on('click', function() {
+                $('#rdv-filter-date').val('');
+                $('#rdv-filter-etat').val('');
+                applyRdvFilters();
+            });
+
+            $('#type-filter-reset').on('click', function() {
+                $('#type-filter-text').val('');
+                applyTypeFilters();
+            });
+
+            $('#rdv-filter-date, #rdv-filter-etat').on('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    applyRdvFilters();
+                }
+            });
+            $('#type-filter-text').on('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    applyTypeFilters();
+                }
+            });
             
-            $('.js-delete').on('click', function(e) {
+            $(document).on('click', '.js-delete', function(e) {
                 e.preventDefault();
                 var url = $(this).data('delete-url');
                 var entity = $(this).data('entity') || 'élément';
                 var name = $(this).data('delete-name') || '';
+                var token = $(this).data('delete-token') || '';
 
                 $('#deleteConfirmMessage').text('Voulez-vous vraiment supprimer ce ' + entity + ' ?');
                 var nameEl = $('#deleteConfirmModal').find('[data-delete-name]');
@@ -455,6 +520,7 @@
                     nameEl.text('').hide();
                 }
                 $('#deleteConfirmForm').attr('action', url);
+                $('#deleteConfirmForm').find('input[name="_token"]').val(token);
 
                 var modal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
                 modal.show();
@@ -566,10 +632,6 @@
         }
     </script>
 {% endblock %}
-
-
-
-
 
 
 

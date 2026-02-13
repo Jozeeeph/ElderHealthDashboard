@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/prescriptions', name: 'prescription_')]
+#[Route('/admin/prescriptions', name: 'prescription_')]
 class PrescriptionController extends AbstractController
 {
     #[Route('/consultation/{id}/new', name: 'new', methods: ['GET', 'POST'])]

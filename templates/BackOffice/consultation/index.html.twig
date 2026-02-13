@@ -3,139 +3,110 @@
 {% block title %}Liste des Consultations{% endblock %}
 
 {% block body %}
+{% set consultation_index_route = consultation_index_route|default('consultation_index') %}
+{% set consultation_archives_route = consultation_archives_route|default('consultation_archives') %}
 <style>
 .consultation-page {
-    --ink: #1f2a33;
-    --muted: #6b7a83;
-    --brand: #5bb6d6;
-    --brand-2: #8fd4e3;
-    --bg: #f6f8fa;
-    --card: #ffffff;
-    --ring: rgba(91, 182, 214, 0.2);
-    background: linear-gradient(180deg, #f7fafc 0%, #f3f6f9 100%);
-    border-radius: 18px;
-    padding: 16px;
+    background: #f8fafc;
+    border-radius: 14px;
+    padding: 14px;
 }
 
 .consultation-header {
     background: #ffffff;
-    border-radius: 16px;
-    padding: 18px 20px;
-    border: 1px solid #e6edf2;
-    box-shadow: 0 10px 22px rgba(16, 24, 40, 0.06);
+    border-radius: 12px;
+    padding: 16px 18px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
 }
 
 .consultation-title {
-    color: var(--ink);
-    letter-spacing: 0.2px;
-    font-size: 1.65rem;
-    font-weight: 800;
+    color: #0f172a;
+    font-size: 1.4rem;
+    font-weight: 700;
 }
 
 .consultation-subtitle {
-    color: var(--muted);
-    font-size: 0.95rem;
+    color: #64748b;
+    font-size: 0.9rem;
 }
 
 .consultation-btn {
-    background: linear-gradient(135deg, #8fd4e3 0%, #b7e3ef 100%);
-    border: none;
-    color: #0f172a;
-    box-shadow: 0 8px 16px rgba(91, 182, 214, 0.22);
-}
-
-.consultation-btn:hover {
-    filter: brightness(0.98);
+    border-radius: 8px;
 }
 
 .consultation-card {
-    border: 1px solid #e6edf2;
-    border-radius: 16px;
-    background: var(--card);
-    transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #ffffff;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
     overflow: hidden;
     position: relative;
 }
 
 .consultation-card:hover {
-    transform: translateY(-2px);
-    border-color: #d6e4ea;
-    box-shadow: 0 10px 28px rgba(30, 42, 47, 0.12);
-}
-
-.consultation-card:focus-within {
-    outline: 2px solid var(--ring);
-    outline-offset: 2px;
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
 }
 
 .consultation-accent {
-    height: 6px;
-    border-radius: 16px 16px 0 0;
-    margin: -1px -1px 12px -1px;
-}
-
-.consultation-card[data-status^="planif"] .consultation-accent {
-    background: #cfe9f2;
-}
-
-.consultation-card[data-status^="réal"] .consultation-accent,
-.consultation-card[data-status^="real"] .consultation-accent {
-    background: #d8f3e6;
-}
-
-.consultation-card[data-status^="en_cours"] .consultation-accent,
-.consultation-card[data-status^="en cours"] .consultation-accent {
-    background: #fff1cc;
-}
-
-.consultation-card[data-status^="term"] .consultation-accent {
-    background: #dff6f0;
-}
-
-.consultation-card[data-status^="annul"] .consultation-accent {
-    background: #fde2e2;
+    height: 4px;
+    border-radius: 12px 12px 0 0;
+    margin: -1px -1px 10px -1px;
+    background: #cbd5e1;
 }
 
 .consultation-label {
-    color: var(--muted);
+    color: #64748b;
     font-size: 0.75rem;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.04em;
 }
 
 .consultation-name {
-    font-weight: 800;
-    font-size: 1.05rem;
-    color: var(--ink);
+    font-weight: 700;
+    font-size: 1rem;
+    color: #0f172a;
+}
+
+.consultation-person-name {
+    color: #1d4ed8;
+}
+
+.consultation-staff-name {
+    color: #0f766e;
 }
 
 .badge-soft {
-    background: #f3f7fa;
-    color: #23303a;
-    border: 1px solid #e1e8ee;
+    background: #f1f5f9;
+    color: #1e293b;
+    border: 1px solid #e2e8f0;
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-weight: 600;
 }
 
 .consultation-modal .modal-content {
-    border: none;
-    border-radius: 20px 28px 20px 28px;
-    box-shadow: 0 18px 48px rgba(30, 42, 47, 0.2);
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
     background: #ffffff;
 }
 
 .consultation-modal .modal-header {
-    border: 0;
-    background: linear-gradient(135deg, #e8f6f9 0%, #eef8f4 100%);
-    border-radius: 20px 28px 0 0;
-    padding: 16px 20px;
+    border-bottom: 1px solid #e2e8f0;
+    background: #f8fafc;
+    border-radius: 12px 12px 0 0;
+    padding: 14px 18px;
 }
 
 .consultation-modal .modal-title {
-    font-weight: 700;
-    color: #1e2a2f;
+    font-weight: 600;
+    color: #0f172a;
 }
 
 .consultation-modal .modal-body {
-    padding: 18px 20px 22px;
+    padding: 16px 18px 18px;
     background: #ffffff;
 }
 
@@ -152,8 +123,8 @@
 }
 
 .consultation-row .value {
-    color: var(--ink);
-    font-weight: 700;
+    color: #0f172a;
+    font-weight: 600;
 }
 
 .consultation-meta {
@@ -169,67 +140,37 @@
     gap: 6px;
     padding: 6px 12px;
     border-radius: 999px;
-    background: #f7fafc;
-    border: 1px solid #e2e8f0;
-    color: #1f2a33;
-    font-size: 0.85rem;
-    font-weight: 600;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    color: #334155;
+    font-size: 0.82rem;
+    font-weight: 500;
 }
 
 .consultation-actions {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
     gap: 8px;
     margin-top: 12px;
 }
 
 .consultation-actions .btn {
-    border-radius: 999px;
-    padding: 7px 12px;
-    font-weight: 700;
+    border-radius: 8px;
+    padding: 5px 8px;
+    font-weight: 500;
+    font-size: 0.82rem;
     border: 1px solid #e2e8f0;
+    background: #ffffff;
+    color: #1e293b;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    white-space: nowrap;
+}
+
+.consultation-actions .btn:hover {
     background: #f8fafc;
-    color: #0f172a;
-}
-
-.consultation-actions .btn.btn-warning,
-.consultation-actions .btn.btn-danger,
-.consultation-actions .btn.btn-success,
-.consultation-actions .btn.btn-outline-primary,
-.consultation-actions .btn.btn-outline-secondary {
-    border: 1px solid #e2e8f0;
-    background: #f8fafc;
-    color: #0f172a;
-}
-
-.consultation-actions .btn.btn-warning {
-    background: #fef3c7;
-    color: #92400e;
-    border-color: #fde68a;
-}
-
-.consultation-actions .btn.btn-danger {
-    background: #fee2e2;
-    color: #991b1b;
-    border-color: #fecaca;
-}
-
-.consultation-actions .btn.btn-success {
-    background: #dcfce7;
-    color: #166534;
-    border-color: #bbf7d0;
-}
-
-.consultation-actions .btn.btn-outline-primary {
-    background: #e0f2fe;
-    color: #075985;
-    border-color: #bae6fd;
-}
-
-.consultation-actions .btn.btn-outline-secondary {
-    background: #fff7ed;
-    color: #9a3412;
-    border-color: #fed7aa;
 }
 
 .consultation-toast {
@@ -243,11 +184,11 @@
 <div class="consultation-page">
 <div class="consultation-header d-flex align-items-center justify-content-between mb-3">
     <div>
-        <h1 class="consultation-title mb-1">🩺 Liste des Consultations</h1>
+        <h1 class="consultation-title mb-1">🩺 Liste des consultations</h1>
         <div class="consultation-subtitle">Vue rapide des rendez-vous et statuts</div>
     </div>
     <div class="d-flex gap-2">
-        <a class="btn btn-outline-primary" href="{{ path('consultation_archives') }}">
+        <a class="btn btn-outline-primary" href="{{ path(consultation_archives_route) }}">
             <i class="bi bi-archive me-1"></i>
             Archives
         </a>
@@ -256,35 +197,39 @@
                 data-bs-toggle="modal"
                 data-bs-target="#consultationNewModal"
                 data-new-url="{{ path('consultation_new') }}">
-            ➕ Nouvelle Consultation
+            ➕ Nouvelle consultation
         </button>
     </div>
 </div>
 
 <div class="card border-0 shadow-sm mb-3">
     <div class="card-body">
-        <form method="get" action="{{ path('consultation_index') }}">
+        <form method="get" action="{{ path(consultation_index_route) }}">
             <div class="row g-3 align-items-end">
                 <div class="col-12 col-md-4">
-                    <label class="form-label small text-uppercase text-muted" for="filter-patient">🧑‍🦳 Patient</label>
+                    <label class="form-label small text-uppercase text-muted" for="filter-patient">Patient</label>
                     <input id="filter-patient" name="patient" class="form-control" type="text"
                            value="{{ filters.patient ?? '' }}" placeholder="Nom ou prénom du patient">
                 </div>
                 <div class="col-12 col-md-4">
-                    <label class="form-label small text-uppercase text-muted" for="filter-personnel">👨‍⚕️ Personnel médical</label>
+                    <label class="form-label small text-uppercase text-muted" for="filter-personnel">Personnel medical</label>
                     <input id="filter-personnel" name="personnel" class="form-control" type="text"
                            value="{{ filters.personnel ?? '' }}" placeholder="Nom ou prénom du personnel">
                 </div>
                 <div class="col-12 col-md-2">
-                    <label class="form-label small text-uppercase text-muted" for="filter-date">📅 Date consultation</label>
+                    <label class="form-label small text-uppercase text-muted" for="filter-date">Date consultation</label>
                     <input id="filter-date" name="date" class="form-control" type="date"
                            value="{{ filters.date ?? '' }}">
                 </div>
-                <div class="col-12 col-md-auto ms-md-auto d-flex justify-content-end">
-                    <button class="btn btn-primary px-4" type="submit">
-                        <i class="bi bi-search"></i>
+                <div class="col-12 col-md-auto ms-md-auto d-flex justify-content-end gap-2">
+                    <button class="btn btn-outline-primary px-4" type="submit">
+                        <i class="bi bi-funnel"></i>
                         Filtrer
                     </button>
+                    <a class="btn btn-outline-secondary px-4" href="{{ path(consultation_index_route) }}">
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                        Retour
+                    </a>
                 </div>
             </div>
         </form>
@@ -307,66 +252,54 @@
                     <div class="consultation-accent"></div>
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <div>
-                            <div class="consultation-label">🧑‍🦳 Patient</div>
+                            <div class="consultation-label">Patient</div>
                             <div class="consultation-name">
-                                {{ consultation.patient.prenom }} {{ consultation.patient.nom }}
+                                <span class="consultation-person-name">{{ consultation.patient.prenom }} {{ consultation.patient.nom }}</span>
                             </div>
                         </div>
                         <span class="badge badge-soft">{{ status_label }}</span>
                     </div>
 
                     <div class="consultation-meta">
-                        <span class="consultation-chip">📅 {{ consultation.dateConsultation ? consultation.dateConsultation|date('d/m/Y') : '-' }}</span>
-                        <span class="consultation-chip">⏰ {{ consultation.heureConsultation ? consultation.heureConsultation|date('H:i') : '-' }}</span>
+                        <span class="consultation-chip">Date: {{ consultation.dateConsultation ? consultation.dateConsultation|date('d/m/Y') : '-' }}</span>
+                        <span class="consultation-chip">Heure: {{ consultation.heureConsultation ? consultation.heureConsultation|date('H:i') : '-' }}</span>
                         {% if consultation.lieu %}
-                            <span class="consultation-chip">📍 {{ consultation.lieu }}</span>
+                            <span class="consultation-chip">Lieu: {{ consultation.lieu }}</span>
                         {% endif %}
                     </div>
 
                     <div class="consultation-grid">
                         <div class="consultation-row">
-                            <div class="consultation-label">👨‍⚕️ Personnel</div>
+                            <div class="consultation-label">Personnel medical</div>
                             <div class="value">
-                                {{ consultation.personnelMedical.prenom }} {{ consultation.personnelMedical.nom }}
-                            </div>
-                        </div>
-                        <div class="consultation-row">
-                            <div class="consultation-label">🧾 Créée par</div>
-                            <div class="value">
-                                {% if consultation.createdBy %}
-                                    {{ consultation.createdBy.prenom }} {{ consultation.createdBy.nom }}
-                                    <span class="text-muted">•</span>
-                                    {{ consultation.createdRole ?? (consultation.createdBy.role ? consultation.createdBy.role.value : '-') }}
-                                {% else %}
-                                    -
-                                {% endif %}
+                                <span class="consultation-staff-name">{{ consultation.personnelMedical.prenom }} {{ consultation.personnelMedical.nom }}</span>
                             </div>
                         </div>
                     </div>
 
                     <div class="consultation-actions">
-                        <button type="button"
+                            <button type="button"
                                 class="btn btn-warning btn-sm js-edit-consultation"
                                 data-bs-toggle="modal"
                                 data-bs-target="#consultationEditModal"
                                 data-edit-url="{{ path('consultation_edit', {'id': consultation.id}) }}">
-                            ✏️ 
+                            ✏️ Modifier
                         </button>
                         <button type="button"
                                 class="btn btn-danger btn-sm js-delete-consultation"
                                 data-delete-url="{{ path('consultation_delete', {'id': consultation.id}) }}"
                                 data-delete-name="{{ consultation.patient.prenom }} {{ consultation.patient.nom }}"
                                 data-delete-token="{{ csrf_token('delete_consultation_' ~ consultation.id) }}">
-                            🗑️ 
+                            🗑️ Supprimer
                         </button>
                         {% if consultation.rapportMedical %}
                             <a class="btn btn-outline-primary btn-sm"
                                href="{{ path('rapport_medical_show', {'id': consultation.rapportMedical.idRapport}) }}">
-                                🧾 rapport
+                                📄 Rapport
                             </a>
                             <a class="btn btn-outline-secondary btn-sm"
                                href="{{ path('rapport_medical_pdf', {'id': consultation.rapportMedical.idRapport}) }}">
-                                📄 PDF rapport
+                                📎 PDF
                             </a>
                         {% else %}
                             <button type="button"
@@ -374,7 +307,7 @@
                                     data-bs-toggle="modal"
                                     data-bs-target="#rapportNewModal"
                                     data-new-url="{{ path('rapport_medical_new', {'id': consultation.id}) }}">
-                                ➕ Ajouter rapport
+                                ➕ Rapport
                             </button>
                         {% endif %}
 
@@ -385,7 +318,7 @@
                             </a>
                             <a class="btn btn-outline-secondary btn-sm"
                                href="{{ path('prescription_pdf', {'id': consultation.prescription.idPrescription}) }}">
-                                📄💊 PDF prescription
+                                📎 PDF
                             </a>
                         {% else %}
                             <button type="button"
@@ -393,7 +326,7 @@
                                     data-bs-toggle="modal"
                                     data-bs-target="#prescriptionNewModal"
                                     data-new-url="{{ path('prescription_new', {'id': consultation.id}) }}">
-                                ➕ Ajouter prescription
+                                ➕ Prescription
                             </button>
                         {% endif %}
                     </div>
@@ -406,6 +339,44 @@
         </div>
     {% endfor %}
 </div>
+
+{% if pagination.pages > 1 %}
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mt-4">
+        <div class="text-muted small">
+            Page {{ pagination.page }} / {{ pagination.pages }} - {{ pagination.total }} consultation(s)
+        </div>
+        <nav aria-label="Pagination consultations">
+            <ul class="pagination mb-0">
+                <li class="page-item {{ pagination.page <= 1 ? 'disabled' : '' }}">
+                    <a class="page-link" href="{{ path(consultation_index_route, {
+                        patient: filters.patient ?? '',
+                        personnel: filters.personnel ?? '',
+                        date: filters.date ?? '',
+                        page: pagination.page - 1
+                    }) }}">Precedent</a>
+                </li>
+                {% for p in 1..pagination.pages %}
+                    <li class="page-item {{ p == pagination.page ? 'active' : '' }}">
+                        <a class="page-link" href="{{ path(consultation_index_route, {
+                            patient: filters.patient ?? '',
+                            personnel: filters.personnel ?? '',
+                            date: filters.date ?? '',
+                            page: p
+                        }) }}">{{ p }}</a>
+                    </li>
+                {% endfor %}
+                <li class="page-item {{ pagination.page >= pagination.pages ? 'disabled' : '' }}">
+                    <a class="page-link" href="{{ path(consultation_index_route, {
+                        patient: filters.patient ?? '',
+                        personnel: filters.personnel ?? '',
+                        date: filters.date ?? '',
+                        page: pagination.page + 1
+                    }) }}">Suivant</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+{% endif %}
 </div>
 
 <div class="consultation-toast toast-container">
@@ -515,11 +486,55 @@ document.addEventListener('DOMContentLoaded', () => {
         errorToast.show();
     };
 
+    const isConsultationFieldValid = (field) => {
+        if (!field || field.disabled) return false;
+        const tag = (field.tagName || '').toLowerCase();
+        const type = (field.type || '').toLowerCase();
+        if (type === 'hidden' || type === 'submit' || type === 'button') return false;
+
+        const value = (field.value || '').trim();
+        if (value === '') return false;
+
+        // Apply same practical checks used in rendez-vous forms.
+        if (field.name && field.name.includes('[lieu]')) {
+            return value.length >= 2 && value.length <= 255;
+        }
+
+        if (tag === 'select' || type === 'date' || type === 'time') {
+            return value !== '';
+        }
+
+        return true;
+    };
+
+    const bindConsultationRealtimeValidation = (form) => {
+        if (!form || form.dataset.validationBound === '1') return;
+        form.dataset.validationBound = '1';
+
+        const fields = form.querySelectorAll('input, select, textarea');
+        fields.forEach((field) => {
+            const refresh = () => {
+                const valid = isConsultationFieldValid(field);
+                field.classList.toggle('is-valid', valid);
+                if (!valid) {
+                    field.classList.remove('is-invalid');
+                }
+            };
+
+            field.addEventListener('input', refresh);
+            field.addEventListener('change', refresh);
+            field.addEventListener('blur', refresh);
+            refresh();
+        });
+    };
+
     const bindFormSubmit = (modal) => {
         const modalBody = modal.querySelector('.modal-body');
         if (!modalBody) return;
         const form = modalBody.querySelector('form');
         if (!form) return;
+
+        bindConsultationRealtimeValidation(form);
 
         form.addEventListener('submit', async (event) => {
             event.preventDefault();

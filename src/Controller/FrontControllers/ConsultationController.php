@@ -34,6 +34,8 @@ class ConsultationController extends AbstractController
     {
         $user = $this->requirePersonnel();
         $patient = trim((string) $request->query->get('patient', ''));
+        $page = max(1, $request->query->getInt('page', 1));
+        $perPage = 2;
         $dateInput = $request->query->get('date');
         $date = null;
         if (is_string($dateInput) && $dateInput !== '') {
@@ -43,14 +45,17 @@ class ConsultationController extends AbstractController
             }
         }
 
-        $consultations = $repo->findForPersonnel(
+        $pagination = $repo->findForPersonnelPaginated(
             $user,
             $patient !== '' ? $patient : null,
-            $date
+            $date,
+            $page,
+            $perPage
         );
 
         return $this->render('FrontOffice/infermier/consultations/index.html.twig', [
-            'consultations' => $consultations,
+            'consultations' => $pagination['items'],
+            'pagination' => $pagination,
             'filters' => [
                 'patient' => $patient,
                 'date' => $dateInput,

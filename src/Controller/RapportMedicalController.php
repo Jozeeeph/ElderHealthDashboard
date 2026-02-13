@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/rapports', name: 'rapport_medical_')]
+#[Route('/admin/rapports', name: 'rapport_medical_')]
 class RapportMedicalController extends AbstractController
 {
     #[Route('/consultation/{id}/new', name: 'new', methods: ['GET', 'POST'])]

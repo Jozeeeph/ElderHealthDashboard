@@ -37,6 +37,7 @@ class RendezVous
     private ?Utilisateur $personnelMedical = null;
 
     #[ORM\ManyToOne]
+    #[ORM\JoinColumn(name: 'type_rendez_vous_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     #[Assert\NotNull(message: 'Le type de rendez-vous est obligatoire.')]
     private ?TypeRendezVous $typeRendezVous = null;
 

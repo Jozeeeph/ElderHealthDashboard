@@ -1,8 +1,8 @@
 <style>
 .consultation-form-wrapper {
-    background: #f8fafb;
-    border: 1px solid #e6edf0;
-    border-radius: 18px 28px 18px 28px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
     padding: 18px;
 }
 
@@ -28,7 +28,7 @@
 
 .consultation-form .form-control,
 .consultation-form .form-select {
-    border-radius: 14px;
+    border-radius: 8px;
     border: 1px solid #dbe6ea;
     padding: 10px 12px;
     background: #ffffff;
@@ -36,8 +36,38 @@
 
 .consultation-form .form-control:focus,
 .consultation-form .form-select:focus {
-    border-color: #7ec3d6;
-    box-shadow: 0 0 0 0.2rem rgba(14, 138, 167, 0.18);
+    border-color: #93c5fd;
+    box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.15);
+}
+
+.consultation-form .form-control.is-valid,
+.consultation-form .form-select.is-valid {
+    border-color: #198754 !important;
+    box-shadow: 0 0 0 0.15rem rgba(25, 135, 84, 0.2) !important;
+}
+
+.consultation-form .form-control.is-valid:focus,
+.consultation-form .form-select.is-valid:focus {
+    border-color: #198754 !important;
+    box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.2) !important;
+}
+
+.consultation-form .form-control.is-valid {
+    padding-right: 2.3rem !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%23198754' d='M12.736 3.97a.733.733 0 0 1 1.047.022.765.765 0 0 1-.022 1.06L7.857 11.21a.733.733 0 0 1-1.047 0L3.217 7.584a.765.765 0 0 1-.022-1.06.733.733 0 0 1 1.047-.022l3.093 3.13 5.4-5.662z'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 0.7rem center !important;
+    background-size: 1rem 1rem !important;
+}
+
+.consultation-form .form-select.is-valid {
+    padding-right: 4rem !important;
+    background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%23198754' d='M12.736 3.97a.733.733 0 0 1 1.047.022.765.765 0 0 1-.022 1.06L7.857 11.21a.733.733 0 0 1-1.047 0L3.217 7.584a.765.765 0 0 1-.022-1.06.733.733 0 0 1 1.047-.022l3.093 3.13 5.4-5.662z'/%3E%3C/svg%3E"),
+        var(--bs-form-select-bg-img) !important;
+    background-repeat: no-repeat, no-repeat !important;
+    background-position: right 1.9rem center, right 0.75rem center !important;
+    background-size: 1rem 1rem, 16px 12px !important;
 }
 
 .consultation-form-actions {
@@ -48,9 +78,14 @@
 }
 
 .consultation-form-actions .btn-success {
-    background: linear-gradient(135deg, #0e8aa7 0%, #2bbf9f 100%);
-    border: none;
-    box-shadow: 0 8px 18px rgba(14, 138, 167, 0.25);
+    background: #0d6efd;
+    border: 1px solid #0d6efd;
+}
+
+.consultation-form-actions .btn-secondary {
+    border: 1px solid #dbe6ea;
+    background: #f3f6f8;
+    color: #1e2a2f;
 }
 
 .consultation-form .invalid-feedback ul,
@@ -70,8 +105,8 @@
 
 {% form_theme form 'bootstrap_5_layout.html.twig' %}
 <div class="consultation-form-wrapper">
-    <div class="consultation-form-title">🩺 Détails de la consultation</div>
-    <div class="consultation-form-subtitle">📝 Renseignez les informations principales</div>
+    <div class="consultation-form-title">Details de la consultation</div>
+    <div class="consultation-form-subtitle">Renseignez les informations principales</div>
 
     {% if form_action is defined %}
         {{ form_start(form, {'attr': {'class': 'consultation-form', 'novalidate': 'novalidate'}, 'action': form_action}) }}
@@ -80,27 +115,32 @@
     {% endif %}
         <div class="row g-3">
             <div class="col-12 col-md-6">
-                {{ form_row(form.patient, { label: '🧑‍🦳 Patient' }) }}
+                {{ form_row(form.patient, { label: 'Patient' }) }}
             </div>
             <div class="col-12 col-md-6">
-                {{ form_row(form.personnelMedical, { label: '👨‍⚕️ Personnel médical' }) }}
+                {{ form_row(form.personnelMedical, { label: 'Personnel medical' }) }}
             </div>
             <div class="col-12">
-                {{ form_row(form.typeConsultation, { label: '🩺 Type de consultation' }) }}
+                {{ form_row(form.typeConsultation, { label: 'Type de consultation' }) }}
             </div>
             <div class="col-12 col-md-6">
-                {{ form_row(form.dateConsultation, { label: '📅 Date de consultation' }) }}
+                {{ form_row(form.dateConsultation, { label: 'Date de consultation' }) }}
             </div>
             <div class="col-12 col-md-6">
-                {{ form_row(form.heureConsultation, { label: '⏰ Heure de consultation' }) }}
+                {{ form_row(form.heureConsultation, { label: 'Heure de consultation' }) }}
             </div>
             <div class="col-12">
-                {{ form_row(form.lieu, { label: '📍 Lieu' }) }}
+                {{ form_row(form.lieu, { label: 'Lieu' }) }}
             </div>
         </div>
 
         <div class="consultation-form-actions">
             <button class="btn btn-success">{{ submit_label|default('Enregistrer') }}</button>
+            {% if app.request and app.request.xmlHttpRequest %}
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+            {% else %}
+                <a class="btn btn-secondary" href="{{ path('consultation_index') }}">Retour</a>
+            {% endif %}
         </div>
     {{ form_end(form) }}
 </div>
