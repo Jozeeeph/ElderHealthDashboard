@@ -179,9 +179,53 @@
     right: 1rem;
     z-index: 1080;
 }
+
+.consultation-empty-state {
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    min-height: 240px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 32px 16px;
+}
+
+.consultation-empty-state i {
+    font-size: 2.75rem;
+    color: #b8c4d4;
+    margin-bottom: 10px;
+}
+
+.consultation-empty-state h5 {
+    color: #0d3b6f;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.consultation-empty-state p {
+    color: #516784;
+    margin-bottom: 0;
+}
 </style>
 
 <div class="consultation-page">
+{% for message in app.flashes('success') %}
+    <div class="alert alert-success alert-dismissible fade show js-auto-dismiss-alert" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+    </div>
+{% endfor %}
+
+{% for message in app.flashes('error') %}
+    <div class="alert alert-danger alert-dismissible fade show js-auto-dismiss-alert" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+    </div>
+{% endfor %}
+
 <div class="consultation-header d-flex align-items-center justify-content-between mb-3">
     <div>
         <h1 class="consultation-title mb-1">🩺 Liste des consultations</h1>
@@ -335,7 +379,11 @@
         </div>
     {% else %}
         <div class="col-12">
-            <div class="alert alert-info mb-0">Aucune consultation.</div>
+            <div class="consultation-empty-state">
+                <i class="bi bi-calendar-x"></i>
+                <h5>Aucune consultation programmée</h5>
+                <p>Commencez par ajouter une nouvelle consultation</p>
+            </div>
         </div>
     {% endfor %}
 </div>
@@ -468,6 +516,13 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.js-auto-dismiss-alert').forEach((alertEl) => {
+        window.setTimeout(() => {
+            const alertInstance = bootstrap.Alert.getOrCreateInstance(alertEl);
+            alertInstance.close();
+        }, 1000);
+    });
+
     const editModal = document.getElementById('consultationEditModal');
     const newModal = document.getElementById('consultationNewModal');
     const rapportNewModal = document.getElementById('rapportNewModal');
