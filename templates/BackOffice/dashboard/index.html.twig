@@ -1,177 +1,478 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Dashboard{% endblock %}
+{% block title %}Dashboard Admin{% endblock %}
 
 {% block body %}
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">Dashboard</h1>
-        <div class="btn-toolbar mb-2 mb-md-0">
-            <div class="btn-group me-2">
-                <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
-                <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+<style>
+:root {
+    --dash-bg: #f1f5f9;
+    --dash-text: #0f172a;
+    --dash-muted: #5b6b81;
+    --dash-card: #ffffff;
+    --dash-border: #dbe4ef;
+    --dash-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+    --dash-blue: #2563eb;
+    --dash-teal: #0891b2;
+    --dash-green: #16a34a;
+    --dash-orange: #ea580c;
+}
+
+.adm-dash {
+    background: var(--dash-bg);
+    border-radius: 18px;
+    padding: 16px;
+}
+
+.adm-hero {
+    background:
+        radial-gradient(70% 120% at 0% 0%, rgba(37, 99, 235, 0.24), transparent 70%),
+        radial-gradient(55% 90% at 100% 0%, rgba(8, 145, 178, 0.18), transparent 72%),
+        linear-gradient(135deg, #0b2e6d 0%, #123f96 38%, #155e75 100%);
+    border-radius: 16px;
+    color: #f8fbff;
+    padding: 20px;
+    box-shadow: var(--dash-shadow);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.adm-hero h1 {
+    margin: 0;
+    font-size: 1.55rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+}
+
+.adm-hero p {
+    margin: 8px 0 0;
+    color: rgba(248, 251, 255, 0.92);
+}
+
+.adm-hero-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.adm-chip {
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    background: rgba(255, 255, 255, 0.14);
+    color: #f8fbff;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 6px 10px;
+}
+
+.adm-hero-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: start;
+    gap: 10px;
+}
+
+.adm-hero-actions .btn {
+    border-radius: 10px;
+    font-weight: 600;
+    padding: 8px 14px;
+}
+
+.adm-grid {
+    margin-top: 14px;
+}
+
+.kpi-card {
+    position: relative;
+    overflow: hidden;
+    background: var(--dash-card);
+    border: 1px solid var(--dash-border);
+    border-radius: 14px;
+    padding: 14px;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+    height: 100%;
+}
+
+.kpi-card:before {
+    content: "";
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, rgba(37, 99, 235, 0.95), rgba(8, 145, 178, 0.75));
+}
+
+.kpi-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+}
+
+.kpi-label {
+    color: var(--dash-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.kpi-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    color: #fff;
+}
+
+.kpi-icon.blue { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
+.kpi-icon.teal { background: linear-gradient(135deg, #0891b2, #0e7490); }
+.kpi-icon.green { background: linear-gradient(135deg, #16a34a, #15803d); }
+.kpi-icon.orange { background: linear-gradient(135deg, #ea580c, #c2410c); }
+
+.kpi-value {
+    margin-top: 8px;
+    font-size: 1.9rem;
+    font-weight: 800;
+    line-height: 1.05;
+    color: var(--dash-text);
+}
+
+.kpi-meta {
+    margin-top: 6px;
+    color: #334155;
+    font-size: 0.86rem;
+}
+
+.dash-panel {
+    background: var(--dash-card);
+    border: 1px solid var(--dash-border);
+    border-radius: 14px;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+    height: 100%;
+}
+
+.panel-head {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--dash-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.panel-title {
+    margin: 0;
+    color: var(--dash-text);
+    font-size: 0.98rem;
+    font-weight: 800;
+}
+
+.quick-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+}
+
+.quick-link {
+    border: 1px solid var(--dash-border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    text-decoration: none;
+    color: var(--dash-text);
+    font-weight: 700;
+    background: linear-gradient(180deg, #ffffff, #f8fbff);
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.quick-link:hover {
+    transform: translateY(-1px);
+    color: #1d4ed8;
+    border-color: #b9d0ff;
+    box-shadow: 0 8px 16px rgba(37, 99, 235, 0.12);
+}
+
+.mini-stat {
+    margin-top: 12px;
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    border-radius: 10px;
+    padding: 10px 12px;
+    color: #334155;
+    font-size: 0.86rem;
+}
+
+
+.stock-alert {
+    border-radius: 12px;
+    border: 1px solid #fecaca;
+    background: #fef2f2;
+    color: #7f1d1d;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+}
+
+.stock-alert.ok {
+    border-color: #bbf7d0;
+    background: #f0fdf4;
+    color: #14532d;
+}
+
+.stock-list {
+    display: grid;
+    gap: 8px;
+}
+
+.stock-item {
+    border: 1px solid var(--dash-border);
+    border-radius: 10px;
+    background: #f8fafc;
+    padding: 9px 11px;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    align-items: center;
+}
+
+.stock-item-name {
+    color: var(--dash-text);
+    font-weight: 700;
+}
+
+.stock-item-meta {
+    color: #64748b;
+    font-size: 0.82rem;
+}
+
+.stock-pill {
+    border-radius: 999px;
+    border: 1px solid #fecaca;
+    background: #fff;
+    color: #b91c1c;
+    font-weight: 700;
+    font-size: 0.76rem;
+    padding: 4px 10px;
+    white-space: nowrap;
+}
+
+.recent-wrap {
+    padding: 12px;
+}
+
+.recent-item {
+    border: 1px solid var(--dash-border);
+    border-radius: 10px;
+    background: #f8fafc;
+    padding: 10px 12px;
+}
+
+.recent-item + .recent-item {
+    margin-top: 8px;
+}
+
+.recent-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.recent-patient {
+    color: var(--dash-text);
+    font-weight: 800;
+}
+
+.recent-status {
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    border: 1px solid #dbe4ef;
+    background: #fff;
+    color: #334155;
+    white-space: nowrap;
+}
+
+.recent-meta {
+    margin-top: 5px;
+    color: #475569;
+    font-size: 0.84rem;
+}
+
+.dash-empty {
+    border: 1px dashed #cbd5e1;
+    border-radius: 10px;
+    padding: 22px 10px;
+    text-align: center;
+    color: #64748b;
+    background: #f8fafc;
+}
+
+@keyframes riseIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.adm-hero,
+.kpi-card,
+.dash-panel {
+    animation: riseIn 0.35s ease-out both;
+}
+
+@media (max-width: 767.98px) {
+    .adm-hero-actions {
+        justify-content: flex-start;
+        margin-top: 10px;
+    }
+}
+</style>
+
+<div class="adm-dash">
+    <div class="adm-hero">
+        <div class="row g-3 align-items-start">
+            <div class="col-12 col-lg-8">
+                <h1>Admin Command Center</h1>
+                <p>Vue globale du {{ today|date('d/m/Y') }} pour piloter consultations, rendez-vous, evenements et equipements.</p>
+                <div class="adm-hero-chips">
+                    <span class="adm-chip"><i class="bi bi-heart-pulse me-1"></i>{{ stats.consultations_today }} consultations aujourd hui</span>
+                    <span class="adm-chip"><i class="bi bi-calendar-check me-1"></i>{{ stats.rendezvous_today }} rendez-vous aujourd hui</span>
+                    <span class="adm-chip"><i class="bi bi-box-seam me-1"></i>{{ stats.equipements_disponibles }} equipements disponibles</span>
+                </div>
             </div>
-            <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
-                <i class="fas fa-calendar me-1"></i>
-                This week
-            </button>
+            <div class="col-12 col-lg-4">
+               
+            </div>
         </div>
     </div>
 
-    <!-- Cards -->
-    <div class="row">
-        <div class="col-md-3 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Earnings (Monthly)</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
-                        </div>
+    <div class="row g-3 adm-grid">
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="kpi-card">
+                <div class="kpi-top">
+                    <div class="kpi-label">Utilisateurs</div>
+                    <span class="kpi-icon blue"><i class="bi bi-people"></i></span>
+                </div>
+                <div class="kpi-value">{{ stats.users }}</div>
+                <div class="kpi-meta">Comptes enregistres</div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="kpi-card">
+                <div class="kpi-top">
+                    <div class="kpi-label">Consultations</div>
+                    <span class="kpi-icon teal"><i class="bi bi-heart-pulse"></i></span>
+                </div>
+                <div class="kpi-value">{{ stats.consultations }}</div>
+                <div class="kpi-meta">Aujourd hui: {{ stats.consultations_today }}</div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="kpi-card">
+                <div class="kpi-top">
+                    <div class="kpi-label">Rendez-vous</div>
+                    <span class="kpi-icon green"><i class="bi bi-calendar2-check"></i></span>
+                </div>
+                <div class="kpi-value">{{ stats.rendezvous }}</div>
+                <div class="kpi-meta">Aujourd hui: {{ stats.rendezvous_today }}</div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="kpi-card">
+                <div class="kpi-top">
+                    <div class="kpi-label">Evenements</div>
+                    <span class="kpi-icon orange"><i class="bi bi-megaphone"></i></span>
+                </div>
+                <div class="kpi-value">{{ stats.events }}</div>
+                <div class="kpi-meta">Prochains 7 jours: {{ stats.events_coming_soon }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mt-1">
+        <div class="col-12 col-lg-5">
+            <div class="dash-panel">
+                <div class="panel-head">
+                    <h2 class="panel-title">Operations rapides</h2>
+                </div>
+                <div class="p-3">
+                    <div class="quick-links">
+                        <a class="quick-link" href="{{ path('consultation_index') }}"><i class="bi bi-stethoscope me-1"></i>Consultations</a>
+                        <a class="quick-link" href="{{ path('appointment_index') }}"><i class="bi bi-calendar-check me-1"></i>Rendez-vous</a>
+                        <a class="quick-link" href="{{ path('event_index') }}"><i class="bi bi-calendar-event me-1"></i>Evenements</a>
+                        <a class="quick-link" href="{{ path('equipment_index') }}"><i class="bi bi-box-seam me-1"></i>Equipements</a>
+                        <a class="quick-link" href="{{ path('admin_users_index') }}"><i class="bi bi-person-lines-fill me-1"></i>Utilisateurs</a>
+                    </div>
+                    <div class="mini-stat">
+                        Equipements disponibles: <strong>{{ stats.equipements_disponibles }}</strong> / {{ stats.equipements }}
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-3 mb-4">
-            <div class="card border-left-success shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                Earnings (Annual)</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
+        <div class="col-12 col-lg-7">
+            <div class="dash-panel">
+                <div class="panel-head">
+                    <h2 class="panel-title">Alerte stock</h2>
+                    <a class="btn btn-sm btn-outline-danger" href="{{ path('equipment_index') }}">Voir equipements</a>
                 </div>
-            </div>
-        </div>
-
-        <div class="col-md-3 mb-4">
-            <div class="card border-left-info shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Tasks</div>
-                            <div class="row no-gutters align-items-center">
-                                <div class="col-auto">
-                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">50%</div>
-                                </div>
-                                <div class="col">
-                                    <div class="progress progress-sm mr-2">
-                                        <div class="progress-bar bg-info" role="progressbar" style="width: 50%"></div>
+                <div class="p-3">
+                    {% if stats.equipements_rupture > 0 %}
+                        <div class="stock-alert">
+                            <strong>{{ stats.equipements_rupture }} equipement(s)</strong> en rupture de stock.
+                        </div>
+                        <div class="stock-list">
+                            {% for item in out_of_stock_equipments %}
+                                <div class="stock-item">
+                                    <div>
+                                        <div class="stock-item-name">{{ item.nom }}</div>
+                                        <div class="stock-item-meta">
+                                            {{ item.categorie ?: 'Sans categorie' }} | Quantite: {{ item.quantiteDisponible }}
+                                        </div>
                                     </div>
+                                    <span class="stock-pill">RUPTURE</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="stock-alert ok">
+                            Aucun equipement en rupture de stock actuellement.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mt-1">
+        <div class="col-12">
+            <div class="dash-panel">
+                <div class="panel-head">
+                    <h2 class="panel-title">Dernieres consultations</h2>
+                    <a class="btn btn-sm btn-outline-primary" href="{{ path('consultation_index') }}">Voir tout</a>
+                </div>
+                <div class="recent-wrap">
+                    {% if recent_consultations is empty %}
+                        <div class="dash-empty">Aucune consultation disponible pour le moment.</div>
+                    {% else %}
+                        {% for consultation in recent_consultations %}
+                            <div class="recent-item">
+                                <div class="recent-top">
+                                    <div class="recent-patient">
+                                        {{ consultation.patient ? consultation.patient.prenom ~ ' ' ~ consultation.patient.nom : 'Patient inconnu' }}
+                                    </div>
+                                    <span class="recent-status">{{ consultation.etatConsultation ?? 'N/A' }}</span>
+                                </div>
+                                <div class="recent-meta">
+                                    {{ consultation.dateConsultation ? consultation.dateConsultation|date('d/m/Y') : '-' }}
+                                    {{ consultation.heureConsultation ? consultation.heureConsultation|date('H:i') : '' }}
+                                    | Personnel: {{ consultation.personnelMedical ? consultation.personnelMedical.prenom ~ ' ' ~ consultation.personnelMedical.nom : 'N/A' }}
+                                    {% if consultation.lieu %}| Lieu: {{ consultation.lieu }}{% endif %}
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3 mb-4">
-            <div class="card border-left-warning shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                Pending Requests</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-comments fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
+                        {% endfor %}
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Chart -->
-    <div class="row">
-        <div class="col-md-8">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Earnings Overview</h6>
-                </div>
-                <div class="card-body">
-                    <div class="chart-area">
-                        <canvas id="myAreaChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-4">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Revenue Sources</h6>
-                </div>
-                <div class="card-body">
-                    <div class="chart-pie pt-4 pb-2">
-                        <canvas id="myPieChart"></canvas>
-                    </div>
-                    <div class="mt-4 text-center small">
-                        <span class="mr-2">
-                            <i class="fas fa-circle text-primary"></i> Direct
-                        </span>
-                        <span class="mr-2">
-                            <i class="fas fa-circle text-success"></i> Social
-                        </span>
-                        <span class="mr-2">
-                            <i class="fas fa-circle text-info"></i> Referral
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-{% endblock %}
-
-{% block javascripts %}
-    {{ parent() }}
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        // Simple charts for demo
-        document.addEventListener('DOMContentLoaded', function() {
-            // Area Chart
-            const areaCtx = document.getElementById('myAreaChart').getContext('2d');
-            new Chart(areaCtx, {
-                type: 'line',
-                data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                    datasets: [{
-                        label: 'Earnings',
-                        data: [0, 10000, 5000, 15000, 10000, 20000],
-                        borderColor: '#4e73df',
-                        backgroundColor: 'rgba(78, 115, 223, 0.05)',
-                        fill: true
-                    }]
-                }
-            });
-
-            // Pie Chart
-            const pieCtx = document.getElementById('myPieChart').getContext('2d');
-            new Chart(pieCtx, {
-                type: 'pie',
-                data: {
-                    labels: ['Direct', 'Social', 'Referral'],
-                    datasets: [{
-                        data: [55, 30, 15],
-                        backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc']
-                    }]
-                }
-            });
-        });
-    </script>
+</div>
 {% endblock %}
