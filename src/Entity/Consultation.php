@@ -67,10 +67,10 @@ class Consultation
     private ?Utilisateur $personnelMedical = null;
 
     // ================= RELATIONS ONE TO ONE =================
-    #[ORM\OneToOne(mappedBy: "consultation", targetEntity: Prescription::class)]
+    #[ORM\OneToOne(mappedBy: "consultation", targetEntity: Prescription::class, cascade: ["remove"])]
     private ?Prescription $prescription = null;
 
-    #[ORM\OneToOne(mappedBy: "consultation", targetEntity: RapportMedical::class)]
+    #[ORM\OneToOne(mappedBy: "consultation", targetEntity: RapportMedical::class, cascade: ["remove"])]
     private ?RapportMedical $rapportMedical = null;
 
     // ================= GETTERS & SETTERS =================

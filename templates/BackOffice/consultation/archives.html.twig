@@ -3,21 +3,24 @@
 {% block title %}Archives des Consultations{% endblock %}
 
 {% block body %}
+{% set consultation_index_route = consultation_index_route|default('consultation_index') %}
+{% set consultation_archives_route = consultation_archives_route|default('consultation_archives') %}
 <style>
 .archive-page {
-    --ink: #1e2a2f;
-    --muted: #6c7a80;
-    --brand: #0e8aa7;
-    --brand-2: #2bbf9f;
+    --ink: #0f172a;
+    --muted: #64748b;
     --card: #ffffff;
-    --ring: rgba(14, 138, 167, 0.2);
+    background: #f8fafc;
+    border-radius: 14px;
+    padding: 14px;
 }
 
 .archive-header {
-    background: linear-gradient(135deg, #f1f7f9 0%, #f1f5f2 100%);
-    border-radius: 18px 28px 18px 28px;
-    padding: 18px 20px;
-    border: 1px solid #e2eef1;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 14px 16px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
 }
 
 .archive-title {
@@ -27,21 +30,21 @@
 
 .archive-subtitle {
     color: var(--muted);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
 }
 
 .archive-card {
-    border: 1px solid #e6edf0;
-    border-radius: 18px 28px 18px 28px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
     background: var(--card);
     overflow: hidden;
 }
 
 .archive-accent {
-    height: 6px;
-    border-radius: 18px 28px 0 0;
-    margin: -1px -1px 12px -1px;
-    background: linear-gradient(90deg, #2bbf9f, #6edfbf);
+    height: 4px;
+    border-radius: 12px 12px 0 0;
+    margin: -1px -1px 10px -1px;
+    background: #86efac;
 }
 
 .archive-form .form-label {
@@ -53,19 +56,19 @@
 }
 
 .archive-form .form-control {
-    border-radius: 14px;
+    border-radius: 8px;
     border: 1px solid #dbe6ea;
     padding: 10px 12px;
     background: #ffffff;
 }
 
 .archive-form .form-control:focus {
-    border-color: #7ec3d6;
-    box-shadow: 0 0 0 0.2rem rgba(14, 138, 167, 0.18);
+    border-color: #93c5fd;
+    box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.15);
 }
 
 .archive-actions .btn {
-    border-radius: 999px;
+    border-radius: 8px;
 }
 </style>
 
@@ -79,14 +82,14 @@
                 Consultations terminées depuis au moins 4 jours (avant le {{ limit_date|date('d/m/Y') }})
             </div>
         </div>
-        <a class="btn btn-outline-primary" href="{{ path('consultation_index') }}">
+        <a class="btn btn-outline-primary" href="{{ path(consultation_index_route) }}">
             <i class="bi bi-arrow-left"></i>
             Retour
         </a>
     </div>
 
     <div class="archive-card p-3 mb-3">
-        <form class="archive-form" method="get" action="{{ path('consultation_archives') }}">
+        <form class="archive-form" method="get" action="{{ path(consultation_archives_route) }}">
             <div class="row g-3">
                 <div class="col-12 col-md-4">
                     <label class="form-label" for="filter-patient">Patient</label>
@@ -103,10 +106,14 @@
                     <input id="filter-date" name="date" class="form-control" type="date"
                            value="{{ filters.date ?? '' }}">
                 </div>
-                <div class="col-12 col-md-1 d-flex align-items-end archive-actions">
-                    <button class="btn btn-primary w-100" type="submit">
-                        <i class="bi bi-search"></i>
+                <div class="col-12 col-md-2 d-flex align-items-end archive-actions gap-2">
+                    <button class="btn btn-outline-primary flex-fill" type="submit">
+                        <i class="bi bi-funnel"></i>
+                        Filtrer
                     </button>
+                    <a class="btn btn-outline-secondary flex-fill" href="{{ path(consultation_archives_route) }}">
+                        Retour
+                    </a>
                 </div>
             </div>
         </form>
@@ -136,5 +143,43 @@
             </div>
         {% endfor %}
     </div>
+
+    {% if pagination.pages > 1 %}
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mt-4">
+            <div class="text-muted small">
+                Page {{ pagination.page }} / {{ pagination.pages }} - {{ pagination.total }} consultation(s)
+            </div>
+            <nav aria-label="Pagination archives consultations">
+                <ul class="pagination mb-0">
+                    <li class="page-item {{ pagination.page <= 1 ? 'disabled' : '' }}">
+                        <a class="page-link" href="{{ path(consultation_archives_route, {
+                            patient: filters.patient ?? '',
+                            personnel: filters.personnel ?? '',
+                            date: filters.date ?? '',
+                            page: pagination.page - 1
+                        }) }}">Precedent</a>
+                    </li>
+                    {% for p in 1..pagination.pages %}
+                        <li class="page-item {{ p == pagination.page ? 'active' : '' }}">
+                            <a class="page-link" href="{{ path(consultation_archives_route, {
+                                patient: filters.patient ?? '',
+                                personnel: filters.personnel ?? '',
+                                date: filters.date ?? '',
+                                page: p
+                            }) }}">{{ p }}</a>
+                        </li>
+                    {% endfor %}
+                    <li class="page-item {{ pagination.page >= pagination.pages ? 'disabled' : '' }}">
+                        <a class="page-link" href="{{ path(consultation_archives_route, {
+                            patient: filters.patient ?? '',
+                            personnel: filters.personnel ?? '',
+                            date: filters.date ?? '',
+                            page: pagination.page + 1
+                        }) }}">Suivant</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    {% endif %}
 </div>
 {% endblock %}

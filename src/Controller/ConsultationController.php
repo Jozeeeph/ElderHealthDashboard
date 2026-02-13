@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/consultations', name: 'consultation_')]
+#[Route('/admin/consultations', name: 'consultation_')]
 class ConsultationController extends AbstractController
 {
     #[Route('/', name: 'index', methods: ['GET'])]
@@ -19,6 +19,8 @@ class ConsultationController extends AbstractController
     {
         $patient = trim((string) $request->query->get('patient', ''));
         $personnel = trim((string) $request->query->get('personnel', ''));
+        $page = max(1, $request->query->getInt('page', 1));
+        $perPage = 2;
         $dateInput = $request->query->get('date');
         $date = null;
         if (is_string($dateInput) && $dateInput !== '') {
@@ -28,14 +30,17 @@ class ConsultationController extends AbstractController
             }
         }
 
-        $consultations = $repo->findFiltered(
+        $pagination = $repo->findFilteredPaginated(
             $patient !== '' ? $patient : null,
             $personnel !== '' ? $personnel : null,
-            $date
+            $date,
+            $page,
+            $perPage
         );
 
         return $this->render('BackOffice/consultation/index.html.twig', [
-            'consultations' => $consultations,
+            'consultations' => $pagination['items'],
+            'pagination' => $pagination,
             'filters' => [
                 'patient' => $patient,
                 'personnel' => $personnel,
@@ -49,6 +54,8 @@ class ConsultationController extends AbstractController
     {
         $patient = trim((string) $request->query->get('patient', ''));
         $personnel = trim((string) $request->query->get('personnel', ''));
+        $page = max(1, $request->query->getInt('page', 1));
+        $perPage = 2;
         $dateInput = $request->query->get('date');
         $date = null;
         if (is_string($dateInput) && $dateInput !== '') {
@@ -59,15 +66,18 @@ class ConsultationController extends AbstractController
         }
 
         $limitDate = new \DateTimeImmutable('today -4 days');
-        $consultations = $repo->findArchived(
+        $pagination = $repo->findArchivedPaginated(
             $patient !== '' ? $patient : null,
             $personnel !== '' ? $personnel : null,
             $date,
-            $limitDate
+            $limitDate,
+            $page,
+            $perPage
         );
 
         return $this->render('BackOffice/consultation/archives.html.twig', [
-            'consultations' => $consultations,
+            'consultations' => $pagination['items'],
+            'pagination' => $pagination,
             'filters' => [
                 'patient' => $patient,
                 'personnel' => $personnel,
