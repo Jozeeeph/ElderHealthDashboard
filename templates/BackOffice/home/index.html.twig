@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+﻿{% extends 'base.html.twig' %}
 
 {% block title %}Accueil Admin{% endblock %}
 
@@ -113,22 +113,20 @@
 <div class="home-wrap">
   <h1 class="home-title">Accueil Admin</h1>
   <p class="home-subtitle">
-    Bienvenue {{ app.user ? app.user.userIdentifier : 'Admin' }} — aperçu rapide et raccourcis.
+    Bienvenue {{ app.user ? app.user.userIdentifier : 'Admin' }} - aperçu rapide et raccourcis.
   </p>
 
   <div class="home-grid">
-    {# Colonne gauche #}
     <div class="cardx">
-      <h4>À faire aujourd’hui</h4>
+      <h4>A faire aujourd'hui</h4>
       <div class="box">
         <div class="row-between">
           <div>
-            <strong style="display:block; font-size:15px;">Vérifier les inscriptions</strong>
+            <strong style="display:block; font-size:15px;">Verifier les inscriptions</strong>
             <small style="color:#7b8794; font-weight:700;">
-              Dernière connexion : {{ "now"|date("d/m/Y - H:i") }}
+              Derniere connexion : {{ "now"|date("d/m/Y - H:i") }}
             </small>
           </div>
-          {# pas de path => bouton neutre #}
           <a class="pill" href="#">Voir</a>
         </div>
       </div>
@@ -137,27 +135,26 @@
 
       <ul class="list">
         <li class="item"><span class="dot ok"></span> Valider les nouveaux utilisateurs</li>
-        <li class="item"><span class="dot warn"></span> Vérifier les événements à venir</li>
-        <li class="item"><span class="dot"></span> Contrôler les publications / forum</li>
+        <li class="item"><span class="dot warn"></span> Verifier les evenements a venir</li>
+        <li class="item"><span class="dot"></span> Controler les publications / forum</li>
       </ul>
     </div>
 
-    {# Colonne droite #}
     <div class="cardx">
-      <h4>Dernières activités</h4>
+      <h4>Dernieres activites</h4>
 
       <div class="box" style="margin-bottom:10px;">
-        <strong style="display:block;">Nouvel utilisateur ajouté</strong>
+        <strong style="display:block;">Nouvel utilisateur ajoute</strong>
         <small style="color:#7b8794; font-weight:700;">{{ "now"|date("d/m/Y") }}</small>
       </div>
 
       <div class="box" style="margin-bottom:10px;">
-        <strong style="display:block;">Événement mis à jour</strong>
+        <strong style="display:block;">Evenement mis a jour</strong>
         <small style="color:#7b8794; font-weight:700;">{{ "now"|date("d/m/Y") }}</small>
       </div>
 
       <div class="box">
-        <strong style="display:block;">Équipement médical ajouté</strong>
+        <strong style="display:block;">Equipement medical ajoute</strong>
         <small style="color:#7b8794; font-weight:700;">{{ "now"|date("d/m/Y") }}</small>
       </div>
     </div>
@@ -169,7 +166,7 @@
       <div class="row-between box">
         <div>
           <strong>Utilisateurs</strong><br>
-          <small style="color:#7b8794; font-weight:700;">Créer / modifier / désactiver</small>
+          <small style="color:#7b8794; font-weight:700;">Creer / modifier / desactiver</small>
         </div>
         <a class="pill" href="#">Ouvrir</a>
       </div>
@@ -179,7 +176,7 @@
       <h4>Raccourci</h4>
       <div class="row-between box">
         <div>
-          <strong>Événements</strong><br>
+          <strong>Evenements</strong><br>
           <small style="color:#7b8794; font-weight:700;">Liste + ajout</small>
         </div>
         <a class="pill" href="#">Ouvrir</a>
@@ -187,10 +184,10 @@
     </div>
 
     <div class="cardx">
-      <h4>État</h4>
+      <h4>Etat</h4>
       <div class="row-between box">
         <div>
-          <strong>Système</strong><br>
+          <strong>Systeme</strong><br>
           <small style="color:#7b8794; font-weight:700;">Tout fonctionne</small>
         </div>
         <span class="pill" style="background: rgba(16,185,129,.15); border-color: rgba(16,185,129,.35);">

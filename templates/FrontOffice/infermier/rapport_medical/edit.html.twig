@@ -1,4 +1,4 @@
-{% block stylesheets %}
+﻿{% block stylesheets %}
 	<link rel="stylesheet" href="{{ asset('css/infermier.css') }}">
 {% endblock %}
 {% block body %}
@@ -16,8 +16,8 @@
 					<a href="{{ path('front_infermier_consultation_index') }}">Consultations</a>
 					<a>Patients</a>
 					<a href="{{ path('front_infermier_rendezvous_index') }}">Rendez-vous</a>
-					<a href="{{ path('equipment_list_index') }}">Equipement</a>
-					<a href="{{ path('forum_post_forum_index') }}">Forum</a>
+					<a href="{{ path('front_equipements_index') }}">Equipement</a>
+					<a href="{{ path('front_infermier_forum_index') }}">Forum</a>
 					<a href="{{ path('front_events_index') }}">Evenements</a>
 					<a>Messages</a>
 				</nav>
@@ -37,8 +37,8 @@
 				<section class="popup-card">
 					<div class="popup-head">
 						<div>
-							<h2>🩺🧾 Modifier rapport medical</h2>
-							<p class="muted">🧾 Consultation {{ consultation.id }}</p>
+							<h2>ðŸ©ºðŸ§¾ Modifier rapport medical</h2>
+							<p class="muted">ðŸ§¾ Consultation {{ consultation.id }}</p>
 						</div>
 						<a class="btn-outline" href="{{ path('front_infermier_rapport_show', {'id': rapport.idRapport}) }}">Retour</a>
 					</div>
@@ -50,3 +50,5 @@
 		</main>
 	</div>
 {% endblock %}
+
+

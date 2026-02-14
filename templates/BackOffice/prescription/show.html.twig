@@ -1,188 +1,205 @@
-{% extends 'base.html.twig' %}
+﻿{% extends 'base.html.twig' %}
 
 {% block title %}Prescription{% endblock %}
 
 {% block body %}
 <style>
-.prescription-shell {
-    --ink: #1e2a2f;
-    --muted: #6c7a80;
-    --brand: #0e8aa7;
-    --brand-2: #2bbf9f;
-    --card: #ffffff;
-    --ring: rgba(14, 138, 167, 0.2);
-    --accent: #ffb347;
-    --accent-2: #ff6b6b;
-    --accent-3: #6a5af9;
-    --accent-4: #34c759;
+.prescription-page {
+    background: #f4f7fb;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 20px;
 }
 
-.prescription-header {
-    background: linear-gradient(135deg, #eef2ff 0%, #f1f7f4 100%);
-    border-radius: 18px 28px 18px 28px;
-    padding: 16px 20px;
-    border: 1px solid #e1e7f0;
+.prescription-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
 }
 
 .prescription-title {
-    color: var(--ink);
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #0f172a;
 }
 
-.prescription-actions .btn {
-    border-radius: 999px;
-    padding: 8px 16px;
-}
-
-.prescription-card {
-    border: 1px solid #e6edf0;
-    border-radius: 18px 28px 18px 28px;
-    background: var(--card);
-}
-
-.prescription-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    border-radius: 999px;
-    background: #eef6f8;
-    border: 1px solid #d6e7ec;
-    color: #1a5b6b;
-    font-size: 0.85rem;
-    font-weight: 600;
-}
-
-.prescription-hero {
-    border-radius: 22px 32px 22px 32px;
-    background: linear-gradient(135deg, #fff4e6 0%, #eef6ff 55%, #f3fff6 100%);
-    border: 1px solid #f0e2d5;
-    padding: 18px 20px;
-    box-shadow: 0 16px 40px rgba(30, 42, 47, 0.12);
-}
-
-.prescription-hero .hero-title {
-    font-weight: 800;
-    color: var(--ink);
-    letter-spacing: 0.2px;
-}
-
-.prescription-hero .hero-subtitle {
-    color: var(--muted);
+.prescription-subtitle {
+    margin-top: 4px;
+    color: #64748b;
     font-size: 0.95rem;
 }
 
-.prescription-stat {
-    background: #ffffff;
-    border: 1px solid #e6edf0;
-    border-radius: 16px 22px 16px 22px;
-    padding: 12px 14px;
+.prescription-actions {
     display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-.prescription-stat .emoji {
-    font-size: 1.2rem;
-}
-
-.prescription-stat .label {
-    color: var(--muted);
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-
-.prescription-stat .value {
-    font-weight: 700;
-    color: var(--ink);
-}
-
-.prescription-section {
-    border-radius: 20px 28px 20px 28px;
-    border: 1px solid #e6edf0;
-    background: #ffffff;
-    padding: 16px 18px;
-}
-
-.prescription-section h3 {
-    font-size: 1rem;
-    font-weight: 700;
-    margin-bottom: 10px;
-    color: var(--ink);
-}
-
-.prescription-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    border-radius: 999px;
-    border: 1px solid #e6edf0;
-    background: #f8fbfc;
-    color: #1a5b6b;
-    font-weight: 600;
-    font-size: 0.85rem;
-}
-
-.prescription-badge {
-    border-radius: 999px;
-    padding: 6px 12px;
-    font-weight: 600;
-    border: 1px solid #e6edf0;
-    background: #ffffff;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
 .prescription-actions .btn {
-    border-radius: 999px;
+    border-radius: 8px;
+}
+
+.prescription-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.prescription-kpi {
+    background: #ffffff;
+    border: 1px solid #dbeafe;
+    border-radius: 10px;
+    padding: 12px;
+}
+
+.prescription-kpi-label {
+    font-size: 0.76rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #64748b;
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.prescription-kpi-value {
+    color: #0f172a;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.prescription-layout {
+    display: grid;
+    grid-template-columns: minmax(220px, 320px) 1fr;
+    gap: 14px;
+}
+
+.prescription-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 14px;
+}
+
+.prescription-card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 10px;
+}
+
+.prescription-meta-item {
+    margin-bottom: 10px;
+}
+
+.prescription-meta-item:last-child {
+    margin-bottom: 0;
+}
+
+.prescription-meta-label {
+    color: #64748b;
+    font-size: 0.76rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 2px;
+}
+
+.prescription-meta-value {
+    color: #1e293b;
+    font-weight: 600;
+}
+
+.prescription-block {
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #ffffff;
+    padding: 14px;
+    margin-bottom: 12px;
+}
+
+.prescription-block:last-child {
+    margin-bottom: 0;
+}
+
+.prescription-block-title {
+    color: #0f172a;
+    font-size: 1.02rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.prescription-block-text {
+    color: #334155;
+    line-height: 1.65;
+    white-space: pre-line;
+}
+
+.prescription-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+}
+
+.prescription-chip {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.prescription-chip-label {
+    color: #64748b;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.prescription-chip-value {
+    color: #0f172a;
+    font-weight: 700;
+    margin-top: 3px;
+}
+
+.prescription-back {
+    margin-top: 14px;
 }
 
 .prescription-modal .modal-content {
-    border: none;
-    border-radius: 20px 28px 20px 28px;
-    box-shadow: 0 18px 48px rgba(30, 42, 47, 0.2);
-    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
 }
 
-.prescription-modal .modal-header {
-    border: 0;
-    background: linear-gradient(135deg, #eef2ff 0%, #f1f7f4 100%);
-    border-radius: 20px 28px 0 0;
-    padding: 16px 20px;
-}
-
-.prescription-modal .modal-title {
-    font-weight: 700;
-    color: #1e2a2f;
-}
-
-.prescription-modal .modal-body {
-    padding: 18px 20px 22px;
-    background: #ffffff;
+@media (max-width: 992px) {
+    .prescription-layout {
+        grid-template-columns: 1fr;
+    }
 }
 </style>
 
-<div class="prescription-shell container py-4">
-    <div class="prescription-hero mb-4">
-        <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+<div class="container py-4">
+    <div class="prescription-page">
+        <div class="prescription-top">
             <div>
-                <div class="d-flex align-items-center gap-2 mb-1">
-                    <span class="prescription-badge">💊 Prescription</span>
-                    <span class="prescription-badge">🧑‍⚕️ Santé</span>
-                </div>
-                <h1 class="hero-title mb-1">Fiche de prescription</h1>
-                <div class="hero-subtitle">
-                    Consultation {{ prescription.consultation.id }} •
-                    {{ prescription.consultation.patient.prenom }} {{ prescription.consultation.patient.nom }}
+                <h1 class="prescription-title"><i class="bi bi-capsule-pill me-2"></i>Prescription medicale</h1>
+                <div class="prescription-subtitle">
+                    Consultation {{ prescription.consultation.id }} - {{ prescription.consultation.patient.prenom }} {{ prescription.consultation.patient.nom }}
                 </div>
             </div>
-            <div class="prescription-actions d-flex flex-wrap gap-2">
-                <a class="btn btn-outline-secondary" href="{{ path('prescription_pdf', {'id': prescription.idPrescription}) }}">📄 Télécharger PDF</a>
+
+            <div class="prescription-actions">
+                <a class="btn btn-outline-secondary" href="{{ path('prescription_pdf', {'id': prescription.idPrescription}) }}">
+                    <i class="bi bi-file-earmark-pdf me-1"></i>PDF
+                </a>
                 <button type="button"
                         class="btn btn-outline-primary"
                         data-bs-toggle="modal"
                         data-bs-target="#prescriptionEditModal"
                         data-edit-url="{{ path('prescription_edit', {'id': prescription.idPrescription}) }}">
-                    ✏️ Modifier
+                    <i class="bi bi-pencil-square me-1"></i>Modifier
                 </button>
                 <button type="button"
                         class="btn btn-outline-danger"
@@ -190,82 +207,88 @@
                         data-bs-target="#prescriptionDeleteModal"
                         data-delete-url="{{ path('prescription_delete', {'id': prescription.idPrescription}) }}"
                         data-delete-token="{{ csrf_token('delete_prescription_' ~ prescription.idPrescription) }}">
-                    🗑️ Supprimer
+                    <i class="bi bi-trash me-1"></i>Supprimer
                 </button>
             </div>
         </div>
-    </div>
 
-    <div class="row g-3">
-        <div class="col-12 col-lg-4">
-            <div class="prescription-section h-100">
-                <h3>💊 Médicaments</h3>
-                <div class="fw-semibold">{{ prescription.medicaments }}</div>
-                <div class="mt-3">
-                    <h3>🧾 Consignes</h3>
-                    <div class="fw-semibold">{{ prescription.consignes ?: '-' }}</div>
-                </div>
-                <div class="mt-4 d-flex flex-wrap gap-2">
-                    <span class="prescription-chip">👤 {{ prescription.consultation.patient.prenom }} {{ prescription.consultation.patient.nom }}</span>
-                    <span class="prescription-chip">📍 Consultation {{ prescription.consultation.id }}</span>
-                </div>
+        <div class="prescription-summary">
+            <div class="prescription-kpi">
+                <div class="prescription-kpi-label">Debut traitement</div>
+                <div class="prescription-kpi-value">{{ prescription.dateDebut ? prescription.dateDebut|date('d/m/Y') : '-' }}</div>
+            </div>
+            <div class="prescription-kpi">
+                <div class="prescription-kpi-label">Fin traitement</div>
+                <div class="prescription-kpi-value">{{ prescription.dateFin ? prescription.dateFin|date('d/m/Y') : '-' }}</div>
+            </div>
+            <div class="prescription-kpi">
+                <div class="prescription-kpi-label">Consultation</div>
+                <div class="prescription-kpi-value">#{{ prescription.consultation.id }}</div>
             </div>
         </div>
-        <div class="col-12 col-lg-8">
-            <div class="prescription-section h-100">
-                <h3>✨ Paramètres du traitement</h3>
-                <div class="row g-3">
-                    <div class="col-12 col-md-6">
-                        <div class="prescription-stat">
-                            <div class="emoji">⏱️</div>
-                            <div>
-                                <div class="label">Fréquence</div>
-                                <div class="value">{{ prescription.frequence }}</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <div class="prescription-stat">
-                            <div class="emoji">🧪</div>
-                            <div>
-                                <div class="label">Dosage</div>
-                                <div class="value">{{ prescription.dosage }}</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <div class="prescription-stat">
-                            <div class="emoji">📆</div>
-                            <div>
-                                <div class="label">Durée</div>
-                                <div class="value">{{ prescription.dureeTraitement }}</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <div class="prescription-stat">
-                            <div class="emoji">🗓️</div>
-                            <div>
-                                <div class="label">Période</div>
-                                <div class="value">
-                                    {{ prescription.dateDebut ? prescription.dateDebut|date('d/m/Y') : '-' }}
-                                    →
-                                    {{ prescription.dateFin ? prescription.dateFin|date('d/m/Y') : '-' }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="mt-4 d-flex flex-wrap gap-2">
-                    <span class="prescription-badge">⭐ Suivi personnalisé</span>
-                    <span class="prescription-badge">✅ Données vérifiées</span>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <div class="mt-3">
-        <a class="btn btn-light" href="{{ path('consultation_index') }}">Retour</a>
+        <div class="prescription-layout">
+            <aside class="prescription-card">
+                <div class="prescription-card-title">Informations</div>
+
+                <div class="prescription-meta-item">
+                    <div class="prescription-meta-label">Patient</div>
+                    <div class="prescription-meta-value">{{ prescription.consultation.patient.prenom }} {{ prescription.consultation.patient.nom }}</div>
+                </div>
+
+                <div class="prescription-meta-item">
+                    <div class="prescription-meta-label">Frequence</div>
+                    <div class="prescription-meta-value">{{ prescription.frequence }}</div>
+                </div>
+
+                <div class="prescription-meta-item">
+                    <div class="prescription-meta-label">Dosage</div>
+                    <div class="prescription-meta-value">{{ prescription.dosage }}</div>
+                </div>
+
+                <div class="prescription-meta-item">
+                    <div class="prescription-meta-label">Duree traitement</div>
+                    <div class="prescription-meta-value">{{ prescription.dureeTraitement }}</div>
+                </div>
+            </aside>
+
+            <section>
+                <div class="prescription-block">
+                    <div class="prescription-block-title"><i class="bi bi-capsule me-1"></i>Medicaments</div>
+                    <div class="prescription-block-text">{{ prescription.medicaments }}</div>
+                </div>
+
+                <div class="prescription-block">
+                    <div class="prescription-block-title"><i class="bi bi-journal-text me-1"></i>Consignes</div>
+                    <div class="prescription-block-text">{{ prescription.consignes ?: '-' }}</div>
+                </div>
+
+                <div class="prescription-grid">
+                    <div class="prescription-chip">
+                        <div class="prescription-chip-label">Frequence</div>
+                        <div class="prescription-chip-value">{{ prescription.frequence }}</div>
+                    </div>
+                    <div class="prescription-chip">
+                        <div class="prescription-chip-label">Dosage</div>
+                        <div class="prescription-chip-value">{{ prescription.dosage }}</div>
+                    </div>
+                    <div class="prescription-chip">
+                        <div class="prescription-chip-label">Duree</div>
+                        <div class="prescription-chip-value">{{ prescription.dureeTraitement }}</div>
+                    </div>
+                    <div class="prescription-chip">
+                        <div class="prescription-chip-label">Periode</div>
+                        <div class="prescription-chip-value">
+                            {{ prescription.dateDebut ? prescription.dateDebut|date('d/m/Y') : '-' }} - {{ prescription.dateFin ? prescription.dateFin|date('d/m/Y') : '-' }}
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="prescription-back">
+            <a class="btn btn-light" href="{{ path('consultation_index') }}"><i class="bi bi-arrow-left me-1"></i>Retour</a>
+        </div>
     </div>
 </div>
 
@@ -321,8 +344,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) {
                 throw new Error('Erreur de chargement');
             }
-            const html = await response.text();
-            modalBody.innerHTML = html;
+            modalBody.innerHTML = await response.text();
         } catch (e) {
             modalBody.innerHTML = '<div class="alert alert-danger mb-0">Impossible de charger le formulaire.</div>';
         }

@@ -1,11 +1,11 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ consultation is defined ? 'Modifier Consultation' : 'Nouvelle Consultation' }}{% endblock %}
+{% block title %}Modifier Consultation{% endblock %}
 
 {% block body %}
-<h1>{{ consultation is defined ? 'Modifier Consultation' : 'Nouvelle Consultation' }}</h1>
+<h1>Modifier Consultation</h1>
 
-{{ include('BackOffice/consultation/_form.html.twig', { form: form, submit_label: 'Mettre à jour', form_action: path('consultation_edit', {'id': consultation.id}) }) }}
+{{ include('BackOffice/consultation/_form.html.twig', { form: form, submit_label: 'Mettre a jour', form_action: path('consultation_edit', {'id': consultation.id}) }) }}
 
-<a href="{{ path('consultation_index') }}" class="btn btn-secondary mt-3">← Retour</a>
+<a href="{{ path('consultation_index') }}" class="btn btn-secondary mt-3">Retour</a>
 {% endblock %}

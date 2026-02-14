@@ -1,4 +1,4 @@
-<header class="topbar">
+﻿<header class="topbar">
 	<div
 		class="topbar-inner">
 
@@ -12,27 +12,38 @@
 		</a>
 
 		{% set currentRoute = app.request.attributes.get('_route') %}
+		{% set isNurse = is_granted('ROLE_PERSONNEL_MEDICAL') %}
+		{% set homeRoute = isNurse ? 'app_infermier_interface' : 'app_patient_interfce' %}
+		{% set rendezVousRoute = isNurse ? 'front_infermier_rendezvous_index' : 'patient_rendezvous_index' %}
+		{% set consultationRoute = isNurse ? 'front_infermier_consultation_index' : 'patient_consultations' %}
+		{% set profileRoute = isNurse ? 'front_infermier_profile' : 'patient_profile' %}
+		{% set forumRoute = isNurse ? 'front_infermier_forum_index' : 'forum_post_forum_index' %}
+		{% set rendezVousActive = isNurse ? (currentRoute starts with 'front_infermier_rendezvous_') : (currentRoute starts with 'patient_rendezvous') %}
+		{% set consultationActive = isNurse
+            ? (currentRoute starts with 'front_infermier_consultation_' or currentRoute starts with 'front_infermier_prescription_' or currentRoute starts with 'front_infermier_rapport_')
+            : (currentRoute == 'patient_consultations' or currentRoute == 'patient_prescription_show' or currentRoute == 'patient_rapport_show') %}
+		{% set forumActive = isNurse ? (currentRoute starts with 'front_infermier_forum_') : (currentRoute starts with 'forum_post_forum_') %}
 
 		<!-- NAV -->
 		<nav class="top-nav">
-			<a href="{{ path('app_patient_interfce') }}" class="{{ currentRoute == 'app_patient_interfce' ? 'active' }}">
+			<a href="{{ path(homeRoute) }}" class="{{ currentRoute == homeRoute ? 'active' }}">
 				Accueil
 			</a>
 
-			<a href="{{ path('patient_rendezvous_index') }}" class="{{ currentRoute starts with 'patient_rendezvous' ? 'active' }}">
+			<a href="{{ path(rendezVousRoute) }}" class="{{ rendezVousActive ? 'active' }}">
 				Rendez-vous
 			</a>
 
-			<a href="{{ path('patient_consultations') }}" class="{{ currentRoute == 'patient_consultations' ? 'active' }}">
+			<a href="{{ path(consultationRoute) }}" class="{{ consultationActive ? 'active' }}">
 				Consultation
 			</a>
-			{% if not is_granted('ROLE_PERSONNEL_MEDICAL') %}
-				<a href="{{ path('equipment_list_index') }}" class="{{ currentRoute starts with 'equipment_' ? 'active' }}">
+			{% if not isNurse %}
+				<a href="{{ path('front_equipements_index') }}" class="{{ currentRoute starts with 'equipment_' ? 'active' }}">
 					Equipement
 				</a>
 			{% endif %}
 
-			<a href="{{ path('forum_post_forum_index') }}" class="{{ currentRoute starts with 'forum_' ? 'active' }}">
+			<a href="{{ path(forumRoute) }}" class="{{ forumActive ? 'active' }}">
 				Forum
 			</a>
 
@@ -50,7 +61,7 @@
 		</nav>
 
 		<!-- PROFILE -->
-		<a class="profile" href="{{ path('patient_profile') }}">
+		<a class="profile" href="{{ path(profileRoute) }}">
 			<div class="profile-emoji"></div>
 			<strong>
 				{{ app.user ? app.user.prenom ~ ' ' ~ app.user.nom : 'Patient' }}
@@ -59,3 +70,4 @@
 
 	</div>
 </header>
+

@@ -7,7 +7,7 @@
 				<button class="btn-close" data-bs-dismiss="modal"></button>
 			</div>
 
-			<form action="{{ path('forum_post_forum_comment_new', { postId: post.id }) }}" method="post">
+			<form action="{{ path(comment_create_route|default('forum_post_forum_comment_new'), { postId: post.id }) }}" method="post">
 				<div class="modal-body">
 					<textarea class="form-control" name="content" rows="4" placeholder="Votre commentaire..." required></textarea>
 				</div>

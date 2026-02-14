@@ -12,26 +12,12 @@ class AdminSecurityController extends AbstractController
     #[Route('/admin/login', name: 'admin_login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
-        // Si quelqu’un est déjà connecté
-        if ($this->getUser()) {
-            // ✅ Admin -> ok, on l'envoie au backoffice
-            if ($this->isGranted('ROLE_ADMIN')) {
-                return $this->redirectToRoute('admin_home'); // /admin/home ✅
-            }
-
-            // ❌ Patient / Infermier connecté -> il ne doit pas voir la page login admin
-            if ($this->isGranted('ROLE_PATIENT')) {
-                return $this->redirect('/patient');
-            }
-
-            if ($this->isGranted('ROLE_PERSONNEL_MEDICAL')) {
-                return $this->redirect('/infermier');
-            }
-
-            // fallback
-            return $this->redirect('/');
+        // If an admin is already connected, go directly to admin home.
+        if ($this->getUser() && $this->isGranted('ROLE_ADMIN')) {
+            return $this->redirectToRoute('admin_home');
         }
 
+        // For non-admin users, keep this page accessible so they can switch account.
         return $this->render('security/admin_login.html.twig', [
             'last_username' => $authenticationUtils->getLastUsername(),
             'error' => $authenticationUtils->getLastAuthenticationError(),
@@ -41,6 +27,6 @@ class AdminSecurityController extends AbstractController
     #[Route('/admin/logout', name: 'admin_logout')]
     public function logout(): void
     {
-        // Symfony gère ça automatiquement
+        // Handled by Symfony firewall logout.
     }
 }

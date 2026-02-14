@@ -122,6 +122,16 @@ class RapportMedicalController extends AbstractController
             return $this->redirectToRoute('rapport_medical_show', ['id' => $rapport->getIdRapport()]);
         }
 
+        $logoDataUri = null;
+        if (function_exists('imagecreatefrompng')) {
+            $projectDir = $this->getParameter('kernel.project_dir');
+            $logoPath = $projectDir . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'logo.png';
+            if (is_file($logoPath)) {
+                $data = base64_encode((string) file_get_contents($logoPath));
+                $logoDataUri = 'data:image/png;base64,' . $data;
+            }
+        }
+
         $attachment = null;
         if ($rapport->getFichierPath()) {
             $projectDir = $this->getParameter('kernel.project_dir');
@@ -156,6 +166,7 @@ class RapportMedicalController extends AbstractController
         $html = $this->renderView('BackOffice/rapport_medical/pdf.html.twig', [
             'rapport' => $rapport,
             'attachment' => $attachment,
+            'logo_data_uri' => $logoDataUri,
         ]);
 
         $dompdf = new Dompdf();

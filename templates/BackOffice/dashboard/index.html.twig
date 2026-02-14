@@ -1,117 +1,99 @@
-{% extends 'base.html.twig' %}
+﻿{% extends 'base.html.twig' %}
 
 {% block title %}Dashboard Admin{% endblock %}
 
 {% block body %}
 <style>
 :root {
-    --dash-bg: #f1f5f9;
-    --dash-text: #0f172a;
-    --dash-muted: #5b6b81;
-    --dash-card: #ffffff;
-    --dash-border: #dbe4ef;
-    --dash-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
-    --dash-blue: #2563eb;
-    --dash-teal: #0891b2;
-    --dash-green: #16a34a;
-    --dash-orange: #ea580c;
+    --bg: #f4f7fb;
+    --card: #ffffff;
+    --line: #dbe4ef;
+    --ink: #0f172a;
+    --muted: #5b6b81;
+    --blue: #2563eb;
+    --teal: #0891b2;
+    --green: #16a34a;
+    --orange: #ea580c;
 }
 
-.adm-dash {
-    background: var(--dash-bg);
+.dash-shell {
+    background: radial-gradient(circle at 10% 0%, #e8f0ff 0%, transparent 40%), radial-gradient(circle at 90% 0%, #def7ff 0%, transparent 36%), var(--bg);
+    border: 1px solid var(--line);
     border-radius: 18px;
     padding: 16px;
 }
 
-.adm-hero {
-    background:
-        radial-gradient(70% 120% at 0% 0%, rgba(37, 99, 235, 0.24), transparent 70%),
-        radial-gradient(55% 90% at 100% 0%, rgba(8, 145, 178, 0.18), transparent 72%),
-        linear-gradient(135deg, #0b2e6d 0%, #123f96 38%, #155e75 100%);
-    border-radius: 16px;
-    color: #f8fbff;
-    padding: 20px;
-    box-shadow: var(--dash-shadow);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-.adm-hero h1 {
-    margin: 0;
-    font-size: 1.55rem;
-    font-weight: 800;
-    letter-spacing: 0.02em;
-}
-
-.adm-hero p {
-    margin: 8px 0 0;
-    color: rgba(248, 251, 255, 0.92);
-}
-
-.adm-hero-chips {
+.command-bar {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px;
     display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
     flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 12px;
 }
 
-.adm-chip {
-    border: 1px solid rgba(255, 255, 255, 0.28);
-    background: rgba(255, 255, 255, 0.14);
-    color: #f8fbff;
+.command-title {
+    margin: 0;
+    color: var(--ink);
+    font-weight: 800;
+    font-size: 1.45rem;
+}
+
+.command-sub {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 0.92rem;
+}
+
+.command-pills {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.command-pill {
+    background: #fff;
+    border: 1px solid #cbd5e1;
     border-radius: 999px;
+    padding: 6px 10px;
+    color: #0f172a;
     font-size: 0.82rem;
     font-weight: 600;
-    padding: 6px 10px;
 }
 
-.adm-hero-actions {
-    display: flex;
-    justify-content: flex-end;
-    align-items: start;
-    gap: 10px;
-}
-
-.adm-hero-actions .btn {
+.command-actions .btn {
     border-radius: 10px;
-    font-weight: 600;
-    padding: 8px 14px;
 }
 
-.adm-grid {
+.kpi-grid {
     margin-top: 14px;
 }
 
 .kpi-card {
-    position: relative;
-    overflow: hidden;
-    background: var(--dash-card);
-    border: 1px solid var(--dash-border);
+    background: var(--card);
+    border: 1px solid var(--line);
     border-radius: 14px;
     padding: 14px;
-    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
     height: 100%;
-}
-
-.kpi-card:before {
-    content: "";
-    position: absolute;
-    inset: 0 auto auto 0;
-    width: 100%;
-    height: 3px;
-    background: linear-gradient(90deg, rgba(37, 99, 235, 0.95), rgba(8, 145, 178, 0.75));
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
 }
 
 .kpi-top {
     display: flex;
     justify-content: space-between;
-    align-items: start;
+    align-items: center;
+    gap: 8px;
 }
 
 .kpi-label {
-    color: var(--dash-muted);
+    color: var(--muted);
+    font-size: 0.74rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    font-size: 0.72rem;
     font-weight: 700;
 }
 
@@ -122,7 +104,6 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.95rem;
     color: #fff;
 }
 
@@ -133,10 +114,10 @@
 
 .kpi-value {
     margin-top: 8px;
+    color: var(--ink);
     font-size: 1.9rem;
     font-weight: 800;
-    line-height: 1.05;
-    color: var(--dash-text);
+    line-height: 1;
 }
 
 .kpi-meta {
@@ -145,9 +126,22 @@
     font-size: 0.86rem;
 }
 
-.dash-panel {
-    background: var(--dash-card);
-    border: 1px solid var(--dash-border);
+.kpi-track {
+    margin-top: 10px;
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.kpi-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #2563eb, #0891b2);
+}
+
+.panel {
+    background: var(--card);
+    border: 1px solid var(--line);
     border-radius: 14px;
     box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
     height: 100%;
@@ -155,7 +149,7 @@
 
 .panel-head {
     padding: 12px 14px;
-    border-bottom: 1px solid var(--dash-border);
+    border-bottom: 1px solid var(--line);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -163,110 +157,60 @@
 
 .panel-title {
     margin: 0;
-    color: var(--dash-text);
-    font-size: 0.98rem;
+    color: var(--ink);
     font-weight: 800;
+    font-size: 0.98rem;
 }
 
-.quick-links {
+.quick-grid {
+    padding: 12px;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
 }
 
-.quick-link {
-    border: 1px solid var(--dash-border);
-    border-radius: 10px;
-    padding: 10px 12px;
+.quick-card {
     text-decoration: none;
-    color: var(--dash-text);
-    font-weight: 700;
-    background: linear-gradient(180deg, #ffffff, #f8fbff);
-    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
-}
-
-.quick-link:hover {
-    transform: translateY(-1px);
-    color: #1d4ed8;
-    border-color: #b9d0ff;
-    box-shadow: 0 8px 16px rgba(37, 99, 235, 0.12);
-}
-
-.mini-stat {
-    margin-top: 12px;
-    background: #f8fafc;
-    border: 1px dashed #cbd5e1;
+    color: var(--ink);
+    border: 1px solid var(--line);
     border-radius: 10px;
-    padding: 10px 12px;
-    color: #334155;
-    font-size: 0.86rem;
-}
-
-
-.stock-alert {
-    border-radius: 12px;
-    border: 1px solid #fecaca;
-    background: #fef2f2;
-    color: #7f1d1d;
-    padding: 10px 12px;
-    margin-bottom: 10px;
-}
-
-.stock-alert.ok {
-    border-color: #bbf7d0;
-    background: #f0fdf4;
-    color: #14532d;
-}
-
-.stock-list {
-    display: grid;
-    gap: 8px;
-}
-
-.stock-item {
-    border: 1px solid var(--dash-border);
-    border-radius: 10px;
-    background: #f8fafc;
-    padding: 9px 11px;
-    display: flex;
-    justify-content: space-between;
-    gap: 8px;
-    align-items: center;
-}
-
-.stock-item-name {
-    color: var(--dash-text);
+    padding: 10px;
+    background: #f8fbff;
     font-weight: 700;
 }
 
-.stock-item-meta {
-    color: #64748b;
-    font-size: 0.82rem;
+.quick-card small {
+    display: block;
+    color: var(--muted);
+    font-weight: 600;
+    margin-top: 3px;
 }
 
-.stock-pill {
-    border-radius: 999px;
-    border: 1px solid #fecaca;
-    background: #fff;
-    color: #b91c1c;
-    font-weight: 700;
-    font-size: 0.76rem;
-    padding: 4px 10px;
-    white-space: nowrap;
-}
-
-.recent-wrap {
+.chart-wrap {
+    height: 320px;
     padding: 12px;
 }
 
-.recent-item {
-    border: 1px solid var(--dash-border);
+.gauge-wrap {
+    height: 250px;
+    padding: 12px;
+}
+
+.recent-wrap,
+.stock-wrap {
+    padding: 12px;
+}
+
+.recent-item,
+.stock-item {
+    border: 1px solid var(--line);
     border-radius: 10px;
     background: #f8fafc;
     padding: 10px 12px;
 }
 
-.recent-item + .recent-item {
+.recent-item + .recent-item,
+.stock-item + .stock-item {
     margin-top: 8px;
 }
 
@@ -276,179 +220,183 @@
     gap: 8px;
 }
 
-.recent-patient {
-    color: var(--dash-text);
-    font-weight: 800;
-}
+.recent-patient { color: var(--ink); font-weight: 800; }
 
 .recent-status {
     border-radius: 999px;
-    padding: 4px 10px;
-    font-size: 0.76rem;
-    font-weight: 700;
     border: 1px solid #dbe4ef;
     background: #fff;
     color: #334155;
-    white-space: nowrap;
+    padding: 3px 9px;
+    font-size: 0.75rem;
+    font-weight: 700;
 }
 
-.recent-meta {
-    margin-top: 5px;
-    color: #475569;
-    font-size: 0.84rem;
+.recent-meta { margin-top: 5px; color: #475569; font-size: 0.84rem; }
+
+.stock-alert {
+    border-radius: 10px;
+    border: 1px solid #fecaca;
+    background: #fef2f2;
+    color: #7f1d1d;
+    padding: 10px;
+    margin-bottom: 8px;
 }
+
+.stock-alert.ok {
+    border-color: #bbf7d0;
+    background: #f0fdf4;
+    color: #14532d;
+}
+
+.stock-name { color: var(--ink); font-weight: 800; }
+.stock-meta { margin-top: 4px; color: #64748b; font-size: 0.84rem; }
 
 .dash-empty {
     border: 1px dashed #cbd5e1;
     border-radius: 10px;
-    padding: 22px 10px;
+    padding: 20px;
     text-align: center;
     color: #64748b;
     background: #f8fafc;
 }
-
-@keyframes riseIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.adm-hero,
-.kpi-card,
-.dash-panel {
-    animation: riseIn 0.35s ease-out both;
-}
-
-@media (max-width: 767.98px) {
-    .adm-hero-actions {
-        justify-content: flex-start;
-        margin-top: 10px;
-    }
-}
 </style>
 
-<div class="adm-dash">
-    <div class="adm-hero">
-        <div class="row g-3 align-items-start">
-            <div class="col-12 col-lg-8">
-                <h1>Admin Command Center</h1>
-                <p>Vue globale du {{ today|date('d/m/Y') }} pour piloter consultations, rendez-vous, evenements et equipements.</p>
-                <div class="adm-hero-chips">
-                    <span class="adm-chip"><i class="bi bi-heart-pulse me-1"></i>{{ stats.consultations_today }} consultations aujourd hui</span>
-                    <span class="adm-chip"><i class="bi bi-calendar-check me-1"></i>{{ stats.rendezvous_today }} rendez-vous aujourd hui</span>
-                    <span class="adm-chip"><i class="bi bi-box-seam me-1"></i>{{ stats.equipements_disponibles }} equipements disponibles</span>
-                </div>
-            </div>
-            <div class="col-12 col-lg-4">
-               
+<div class="dash-shell">
+    <section class="command-bar">
+        <div>
+            <h1 class="command-title">Admin Command Center</h1>
+            <p class="command-sub">Vue globale du {{ today|date('d/m/Y') }} pour piloter consultations, rendez-vous, evenements et equipements.</p>
+            <div class="command-pills">
+                <span class="command-pill"><i class="bi bi-heart-pulse me-1"></i>{{ stats.consultations_today }} consultations aujourd hui</span>
+                <span class="command-pill"><i class="bi bi-calendar-check me-1"></i>{{ stats.rendezvous_today }} rendez-vous aujourd hui</span>
+                <span class="command-pill"><i class="bi bi-box-seam me-1"></i>{{ stats.equipements_disponibles }} equipements disponibles</span>
             </div>
         </div>
-    </div>
+        <div class="command-actions d-flex gap-2">
+            <a class="btn btn-outline-primary btn-sm" href="{{ path('consultation_index') }}">Consultations</a>
+            <a class="btn btn-outline-secondary btn-sm" href="{{ path('appointment_index') }}">Rendez-vous</a>
+        </div>
+    </section>
 
-    <div class="row g-3 adm-grid">
+    <section class="row g-3 kpi-grid">
         <div class="col-12 col-sm-6 col-xl-3">
-            <div class="kpi-card">
+            <article class="kpi-card">
                 <div class="kpi-top">
                     <div class="kpi-label">Utilisateurs</div>
                     <span class="kpi-icon blue"><i class="bi bi-people"></i></span>
                 </div>
                 <div class="kpi-value">{{ stats.users }}</div>
                 <div class="kpi-meta">Comptes enregistres</div>
-            </div>
+            </article>
         </div>
         <div class="col-12 col-sm-6 col-xl-3">
-            <div class="kpi-card">
+            <article class="kpi-card">
                 <div class="kpi-top">
                     <div class="kpi-label">Consultations</div>
                     <span class="kpi-icon teal"><i class="bi bi-heart-pulse"></i></span>
                 </div>
                 <div class="kpi-value">{{ stats.consultations }}</div>
                 <div class="kpi-meta">Aujourd hui: {{ stats.consultations_today }}</div>
-            </div>
+                <div class="kpi-track"><div class="kpi-fill" style="width: {{ progress.consultations }}%;"></div></div>
+            </article>
         </div>
         <div class="col-12 col-sm-6 col-xl-3">
-            <div class="kpi-card">
+            <article class="kpi-card">
                 <div class="kpi-top">
                     <div class="kpi-label">Rendez-vous</div>
                     <span class="kpi-icon green"><i class="bi bi-calendar2-check"></i></span>
                 </div>
                 <div class="kpi-value">{{ stats.rendezvous }}</div>
                 <div class="kpi-meta">Aujourd hui: {{ stats.rendezvous_today }}</div>
-            </div>
+                <div class="kpi-track"><div class="kpi-fill" style="width: {{ progress.rendezvous }}%;"></div></div>
+            </article>
         </div>
         <div class="col-12 col-sm-6 col-xl-3">
-            <div class="kpi-card">
+            <article class="kpi-card">
                 <div class="kpi-top">
                     <div class="kpi-label">Evenements</div>
                     <span class="kpi-icon orange"><i class="bi bi-megaphone"></i></span>
                 </div>
                 <div class="kpi-value">{{ stats.events }}</div>
                 <div class="kpi-meta">Prochains 7 jours: {{ stats.events_coming_soon }}</div>
-            </div>
+                <div class="kpi-track"><div class="kpi-fill" style="width: {{ progress.equipements }}%;"></div></div>
+            </article>
         </div>
-    </div>
+    </section>
 
-    <div class="row g-3 mt-1">
+    <section class="row g-3 mt-1">
+        <div class="col-12 col-lg-8">
+            <article class="panel">
+                <header class="panel-head">
+                    <h2 class="panel-title">Consultations & Rendez-vous (7 days)</h2>
+                    <i class="bi bi-three-dots-vertical"></i>
+                </header>
+                <div class="chart-wrap">
+                    <canvas id="barCompareChart"></canvas>
+                </div>
+            </article>
+        </div>
+
+        <div class="col-12 col-lg-4">
+            <article class="panel">
+                <header class="panel-head">
+                    <h2 class="panel-title">Rendez-vous Circle</h2>
+                </header>
+                <div class="gauge-wrap">
+                    <canvas id="gaugeChart"></canvas>
+                </div>
+                <div class="text-center pb-3" style="color:#334155; font-weight:700;">
+                    {{ progress.rendezvous }}% des rendez-vous aujourd hui
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <section class="row g-3 mt-1">
         <div class="col-12 col-lg-5">
-            <div class="dash-panel">
-                <div class="panel-head">
-                    <h2 class="panel-title">Operations rapides</h2>
+            <article class="panel">
+                <header class="panel-head"><h2 class="panel-title">Operations rapides</h2></header>
+                <div class="quick-grid">
+                    <a class="quick-card" href="{{ path('consultation_index') }}">Consultations<small>Gerer les dossiers</small></a>
+                    <a class="quick-card" href="{{ path('appointment_index') }}">Rendez-vous<small>Planning quotidien</small></a>
+                    <a class="quick-card" href="{{ path('event_index') }}">Evenements<small>Organisation activites</small></a>
+                    <a class="quick-card" href="{{ path('equipment_index') }}">Equipements<small>Stock et disponibilite</small></a>
+                    <a class="quick-card" href="{{ path('admin_users_index') }}">Utilisateurs<small>Gestion des comptes</small></a>
                 </div>
-                <div class="p-3">
-                    <div class="quick-links">
-                        <a class="quick-link" href="{{ path('consultation_index') }}"><i class="bi bi-stethoscope me-1"></i>Consultations</a>
-                        <a class="quick-link" href="{{ path('appointment_index') }}"><i class="bi bi-calendar-check me-1"></i>Rendez-vous</a>
-                        <a class="quick-link" href="{{ path('event_index') }}"><i class="bi bi-calendar-event me-1"></i>Evenements</a>
-                        <a class="quick-link" href="{{ path('equipment_index') }}"><i class="bi bi-box-seam me-1"></i>Equipements</a>
-                        <a class="quick-link" href="{{ path('admin_users_index') }}"><i class="bi bi-person-lines-fill me-1"></i>Utilisateurs</a>
-                    </div>
-                    <div class="mini-stat">
-                        Equipements disponibles: <strong>{{ stats.equipements_disponibles }}</strong> / {{ stats.equipements }}
-                    </div>
-                </div>
-            </div>
+            </article>
         </div>
 
         <div class="col-12 col-lg-7">
-            <div class="dash-panel">
-                <div class="panel-head">
+            <article class="panel">
+                <header class="panel-head">
                     <h2 class="panel-title">Alerte stock</h2>
                     <a class="btn btn-sm btn-outline-danger" href="{{ path('equipment_index') }}">Voir equipements</a>
-                </div>
-                <div class="p-3">
+                </header>
+                <div class="stock-wrap">
                     {% if stats.equipements_rupture > 0 %}
-                        <div class="stock-alert">
-                            <strong>{{ stats.equipements_rupture }} equipement(s)</strong> en rupture de stock.
-                        </div>
-                        <div class="stock-list">
-                            {% for item in out_of_stock_equipments %}
-                                <div class="stock-item">
-                                    <div>
-                                        <div class="stock-item-name">{{ item.nom }}</div>
-                                        <div class="stock-item-meta">
-                                            {{ item.categorie ?: 'Sans categorie' }} | Quantite: {{ item.quantiteDisponible }}
-                                        </div>
-                                    </div>
-                                    <span class="stock-pill">RUPTURE</span>
-                                </div>
-                            {% endfor %}
-                        </div>
+                        <div class="stock-alert"><strong>{{ stats.equipements_rupture }} equipement(s)</strong> en rupture de stock.</div>
+                        {% for item in out_of_stock_equipments %}
+                            <div class="stock-item">
+                                <div class="stock-name">{{ item.nom }}</div>
+                                <div class="stock-meta">{{ item.categorie ?: 'Sans categorie' }} | Quantite: {{ item.quantiteDisponible }}</div>
+                            </div>
+                        {% endfor %}
                     {% else %}
-                        <div class="stock-alert ok">
-                            Aucun equipement en rupture de stock actuellement.
-                        </div>
+                        <div class="stock-alert ok">Aucun equipement en rupture de stock actuellement.</div>
                     {% endif %}
                 </div>
-            </div>
+            </article>
         </div>
-    </div>
+    </section>
 
-    <div class="row g-3 mt-1">
+    <section class="row g-3 mt-1">
         <div class="col-12">
-            <div class="dash-panel">
-                <div class="panel-head">
+            <article class="panel">
+                <header class="panel-head">
                     <h2 class="panel-title">Dernieres consultations</h2>
                     <a class="btn btn-sm btn-outline-primary" href="{{ path('consultation_index') }}">Voir tout</a>
-                </div>
+                </header>
                 <div class="recent-wrap">
                     {% if recent_consultations is empty %}
                         <div class="dash-empty">Aucune consultation disponible pour le moment.</div>
@@ -456,9 +404,7 @@
                         {% for consultation in recent_consultations %}
                             <div class="recent-item">
                                 <div class="recent-top">
-                                    <div class="recent-patient">
-                                        {{ consultation.patient ? consultation.patient.prenom ~ ' ' ~ consultation.patient.nom : 'Patient inconnu' }}
-                                    </div>
+                                    <div class="recent-patient">{{ consultation.patient ? consultation.patient.prenom ~ ' ' ~ consultation.patient.nom : 'Patient inconnu' }}</div>
                                     <span class="recent-status">{{ consultation.etatConsultation ?? 'N/A' }}</span>
                                 </div>
                                 <div class="recent-meta">
@@ -471,8 +417,97 @@
                         {% endfor %}
                     {% endif %}
                 </div>
-            </div>
+            </article>
         </div>
-    </div>
+    </section>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    if (typeof Chart === 'undefined') {
+        return;
+    }
+
+    const labels = {{ chart.labels|json_encode|raw }};
+    const consultations = {{ chart.consultations|json_encode|raw }};
+    const rendezvous = {{ chart.rendezvous|json_encode|raw }};
+
+    const barEl = document.getElementById('barCompareChart');
+    if (barEl) {
+        new Chart(barEl, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [
+                    {
+                        label: 'Consultations',
+                        data: consultations,
+                        backgroundColor: '#2563eb',
+                        borderRadius: 6,
+                        maxBarThickness: 24
+                    },
+                    {
+                        label: 'Rendez-vous',
+                        data: rendezvous,
+                        backgroundColor: '#7c3aed',
+                        borderRadius: 6,
+                        maxBarThickness: 24
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom' } },
+                scales: {
+                    y: { beginAtZero: true, ticks: { precision: 0 } }
+                }
+            }
+        });
+    }
+
+    const gaugeEl = document.getElementById('gaugeChart');
+    if (gaugeEl) {
+        const pct = Math.max(0, Math.min(100, {{ progress.rendezvous }}));
+        new Chart(gaugeEl, {
+            type: 'doughnut',
+            data: {
+                labels: ['Today', 'Remaining'],
+                datasets: [{
+                    data: [pct, 100 - pct],
+                    backgroundColor: ['#2563eb', '#e5e7eb'],
+                    borderWidth: 0,
+                    cutout: '72%'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: false }
+                }
+            },
+            plugins: [{
+                id: 'centerText',
+                afterDraw(chart) {
+                    const { ctx } = chart;
+                    const meta = chart.getDatasetMeta(0);
+                    if (!meta || !meta.data || !meta.data[0]) return;
+                    const x = meta.data[0].x;
+                    const y = meta.data[0].y;
+                    ctx.save();
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillStyle = '#0f172a';
+                    ctx.font = '700 24px Arial';
+                    ctx.fillText(pct + '%', x, y);
+                    ctx.restore();
+                }
+            }]
+        });
+    }
+});
+</script>
 {% endblock %}

@@ -10,6 +10,13 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class LegacyBackofficeRedirectController extends AbstractController
 {
+    #[Route('/patient', name: 'legacy_equipment_index_noslash', methods: ['GET'])]
+    #[Route('/patient/', name: 'legacy_equipment_index', methods: ['GET'])]
+    public function legacyEquipmentIndex(): Response
+    {
+        return $this->redirectToRoute('equipment_index');
+    }
+
     #[Route('/consultations', name: 'legacy_consultation_index_noslash', methods: ['GET'])]
     #[Route('/consultations/', name: 'legacy_consultation_index', methods: ['GET'])]
     public function consultations(Request $request, ConsultationRepository $repo): Response
