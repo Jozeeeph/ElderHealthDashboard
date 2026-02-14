@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 
-#[Route('/forum/posts', name: 'forum_post_')]
+#[Route('admin/forum/posts', name: 'forum_post_')]
 class ForumPostController extends AbstractController
 {
     #[Route('/', name: 'index', methods: ['GET'])]
