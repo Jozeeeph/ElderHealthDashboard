@@ -1,362 +1,477 @@
 {% block stylesheets %}
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
-	<link rel="stylesheet" href="{{ asset('css/infermier.css') }}?v=20260214-6">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ asset('css/infermier.css') }}?v=20260214-8">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>`r`n        :root {`r`n            --c-bg: #f8fafc;`r`n            --c-card: #ffffff;`r`n            --c-line: #e2e8f0;`r`n            --c-ink: #0f172a;`r`n            --c-muted: #64748b;`r`n            --c-blue: #2563eb;`r`n        }`r`n
+        .consultation-page {
+            background: var(--c-bg);
+            border-radius: 14px;
+            padding: 14px;
+            border: 1px solid var(--c-line);
+        }
+
+        .consultation-header {
+            background: v
+        r(--c-card);
+            border-radius: 12px;
+            padding: 16px 18px;
+            border: 1px solid var(--c-line);
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+        }
+
+        .consultation-title {
+            color: var(--c-ink);
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .consultation-subtitle {
+            color: var(--c-muted);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .consultation-btn {
+            border-radius: 8px;
+        }
+
+        .consultation-card {
+            border: 1px solid var(--c-line);
+            border-radius: 12px;
+            background: var(--c-card);
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+            overflow: hidden;
+            position: relative;
+            height: 100%;
+        }
+
+        .consultation-card:hover {
+            border-color: #cbd5e1;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+        }
+
+        .consultation-accent {
+            height: 4px;
+            border-radius: 12px 12px 0 0;
+            margin: -1px -1px 10px -1px;
+            background: #cbd5e1;
+        }
+
+        .consultation-card[data-status='en_cours'] .consultation-accent { background: #0ea5e9; }
+        .consultation-card[data-status='planifiee'] .consultation-accent { background: #6366f1; }
+        .consultation-card[data-status='realisee'] .consultation-accent,
+        .consultation-card[data-status='terminee'] .consultation-accent { background: #22c55e; }
+        .consultation-card[data-status='annulee'] .consultation-accent { background: #ef4444; }
+
+        .consultation-label {
+            color: var(--c-muted);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .consultation-name {
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--c-ink);
+        }
+
+        .consultation-person-name { color: var(--c-blue); }
+        .consultation-staff-name { color: #0f766e; }
+
+        .badge-soft {
+            background: #f1f5f9;
+            color: #1e293b;
+            border: 1px solid var(--c-line);
+            border-radius: 999px;
+            padding: 6px 10px;
+            font-weight: 600;
+        }
+
+        .consultation-grid {
+            display: grid;
+            gap: 10px;
+        }
+
+        .consultation-row {
+            display: grid;
+            grid-template-columns: 110px 1fr;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .consultation-row .value {
+            color: var(--c-ink);
+            font-weight: 600;
+        }
+
+        .consultation-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .consultation-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: var(--c-card);
+            border: 1px solid #e5e7eb;
+            color: #334155;
+            font-size: 0.82rem;
+            font-weight: 600;
+        }
+
+        .consultation-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .consultation-actions .btn {
+            border-radius: 8px;
+            padding: 6px 8px;
+            font-weight: 600;
+            font-size: 0.82rem;
+            border: 1px solid var(--c-line);
+            background: var(--c-card);
+            color: #1e293b;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            white-space: nowrap;
+        }`r`n`r`n        .consultation-actions .btn:hover {`r`n            background: #f8fafc;`r`n        }
+
+        .consultation-empty-state {
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            min-height: 220px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 24px 16px;
+        }
+
+        .consultation-empty-state i {
+            font-size: 2rem;
+            color: #b8c4d4;
+            margin-bottom: 8px;
+        }
+
+        .consultation-empty-state h5 {
+            color: #0d3b6f;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .consultation-modal .modal-content {
+            border: 1px solid var(--c-line);
+            border-radius: 12px;
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+        }
+
+        .consultation-modal .modal-header {
+            border-bottom: 1px solid #e2e8f0;
+            background: var(--c-bg);
+        }
+
+        .consultation-page .row {
+            display: flex;
+            flex-wrap: wrap;
+            --bs-gutter-x: 1rem;
+            --bs-gutter-y: 0;
+            margin-top: calc(-1 * var(--bs-gutter-y));
+            margin-right: calc(-0.5 * var(--bs-gutter-x));
+            margin-left: calc(-0.5 * var(--bs-gutter-x));
+        }
+
+        .consultation-page .row > * {
+            width: 100%;
+            max-width: 100%;
+            padding-right: calc(var(--bs-gutter-x) * 0.5);
+            padding-left: calc(var(--bs-gutter-x) * 0.5);
+            margin-top: var(--bs-gutter-y);
+        }
+
+        .consultation-page .g-3 {
+            --bs-gutter-x: 1rem;
+            --bs-gutter-y: 1rem;
+        }
+    </style>
 {% endblock %}
+
 {% block body %}
-	<div class="nurse-app">
+    <div class="nurse-app">
+        {% include 'FrontOffice/infermier/_header.html.twig' %}
 
-		<style>
-			.consultation-page{
-				background:
-					radial-gradient(circle at 12% 10%, rgba(56, 189, 248, 0.18), transparent 40%),
-					radial-gradient(circle at 88% 18%, rgba(16, 185, 129, 0.14), transparent 42%),
-					linear-gradient(180deg, #f7fbff 0%, #f2fbf7 55%, #ffffff 100%);
-				border-radius: 22px;
-				padding: 18px;
-			}
-			.consultation-header{
-				background: linear-gradient(135deg, #e6f6ff 0%, #eafff3 60%, #ffffff 100%);
-				border-radius: 18px 26px 18px 26px;
-				padding: 18px 20px;
-				border: 1px solid #e3f0f5;
-				box-shadow: 0 12px 26px rgba(15, 23, 42, 0.08);
-			}
-			.consultation-title{
-				color:#153243;
-				font-weight:800;
-			}
-			.consultation-subtitle{
-				color:#5b6b74;
-				font-weight:700;
-			}
-			.consultation-card{
-				border:1px solid #e6edf0;
-				border-radius:20px;
-				background:
-					linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
-				box-shadow:0 16px 34px rgba(15,23,42,.08);
-				position:relative;
-				overflow:hidden;
-				padding:18px 18px 16px 18px;
-			}
-			.consultation-card::after{
-				content:"";
-				position:absolute;
-				inset:0;
-				border-radius:20px;
-				pointer-events:none;
-				background:
-					radial-gradient(circle at 88% 16%, rgba(56,189,248,.12), transparent 40%),
-					radial-gradient(circle at 10% 85%, rgba(16,185,129,.10), transparent 45%);
-			}
-			.consultation-accent{
-				display:none;
-			}
-			.consultation-card .card-head{
-				padding-bottom:10px;
-				border-bottom:1px dashed #e4edf4;
-				margin-bottom:12px;
-			}
-			.consultation-card h2{
-				font-size:1.05rem;
-				font-weight:800;
-				color:#0f172a;
-			}
-			.consultation-card .badge-soft{
-				border-radius:999px;
-				padding:6px 12px;
-				background:linear-gradient(135deg, #e0f2fe 0%, #dcfce7 100%);
-				border:1px solid #d6e7ec;
-				color:#0f172a;
-			}
-			.consultation-chip{
-				background:#f8fafc;
-				border:1px solid #e2e8f0;
-				color:#0f172a;
-				font-weight:700;
-				border-radius:12px;
-			}
-			.consultation-btn{
-				background: linear-gradient(135deg, #7dd3fc 0%, #34d399 100%);
-				border:none;
-				color:#083344;
-				box-shadow:0 10px 20px rgba(14, 116, 144, 0.2);
-			}
-			.consultation-btn:hover{
-				filter:brightness(0.98);
-			}
-			.btn-sm{
-				border-radius:999px;
-				border:1px solid #e2e8f0;
-				background:#f8fafc;
-				color:#0f172a;
-			}
-			.btn-sm.primary{
-				background:#e0f2fe;
-				color:#075985;
-				border-color:#bae6fd;
-			}
-			.btn-sm.danger{
-				background:#fee2e2;
-				color:#991b1b;
-				border-color:#fecaca;
-			}
-			.btn-outline{
-				background:#fff7ed;
-				color:#9a3412;
-				border:1px solid #fed7aa;
-			}
-		</style>
-		{% include 'FrontOffice/infermier/_header.html.twig' %}
+        <main class="nurse-main">
+            <div class="consultation-page">
+                {% for message in app.flashes('success') %}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+                    </div>
+                {% endfor %}
 
-		
+                {% for message in app.flashes('error') %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+                    </div>
+                {% endfor %}
 
-		<main class="nurse-main consultation-page">
-			<section class="consultation-header">
-				<div class="card-head">
-					<div>
-						<h2 class="consultation-title">Gestion des consultations</h2>
-						<p class="consultation-subtitle">Suivi des consultations creees pour vos patients.</p>
-					</div>
-					<button class="btn-sm consultation-btn"
-						type="button"
-						data-bs-toggle="modal"
-						data-bs-target="#consultationNewModal"
-						data-new-url="{{ path('front_infermier_consultation_new') }}">
-						Nouvelle consultation
-					</button>
-				</div>
-			</section>
+                <div class="consultation-header d-flex align-items-center justify-content-between mb-3">
+                    <div>
+                        <h1 class="consultation-title mb-1">Liste des consultations</h1>
+                        <div class="consultation-subtitle">Vue rapide des rendez-vous et statuts</div>
+                    </div>
+                    <button type="button"
+                            class="btn btn-primary consultation-btn"
+                            data-bs-toggle="modal"
+                            data-bs-target="#consultationNewModal"
+                            data-new-url="{{ path('front_infermier_consultation_new') }}">
+                        <i class="bi bi-plus-circle me-1"></i>Nouvelle consultation
+                    </button>
+                </div>
 
-			<section class="card consult-filters">
-				<div class="card-head">
-					<h2>Filtres</h2>
-				</div>
-				<form method="get" action="{{ path('front_infermier_consultation_index') }}">
-					<div class="form-grid">
-						<div class="full">
-							<label class="form-label" for="filter-patient">Patient</label>
-							<input id="filter-patient" name="patient" class="form-control" type="text"
-								value="{{ filters.patient ?? '' }}" placeholder="Nom ou prenom du patient">
-						</div>
-						<div class="full">
-							<label class="form-label" for="filter-date">Date consultation</label>
-							<input id="filter-date" name="date" class="form-control" type="date"
-								value="{{ filters.date ?? '' }}">
-						</div>
-					</div>
-					<div class="form-actions">
-						<button class="btn-solid" type="submit">Filtrer</button>
-						<a class="btn-outline" href="{{ path('front_infermier_consultation_index') }}">Reinitialiser</a>
-					</div>
-				</form>
-			</section>
+                <div class="card border-0 shadow-sm mb-3">
+                    <div class="card-body">
+                        <form method="get" action="{{ path('front_infermier_consultation_index') }}">
+                            <div class="row g-3 align-items-end">
+                                <div class="col-12 col-md-5">
+                                    <label class="form-label small text-uppercase text-muted" for="filter-patient">Patient</label>
+                                    <input id="filter-patient" name="patient" class="form-control" type="text"
+                                           value="{{ filters.patient ?? '' }}" placeholder="Nom ou prenom du patient">
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label small text-uppercase text-muted" for="filter-date">Date consultation</label>
+                                    <input id="filter-date" name="date" class="form-control" type="date"
+                                           value="{{ filters.date ?? '' }}">
+                                </div>
+                                <div class="col-12 col-md-auto ms-md-auto d-flex justify-content-end gap-2 consult-filter-actions">
+                                    <button class="btn btn-outline-primary px-4" type="submit">Filtrer</button>
+                                    <a class="btn btn-outline-secondary px-4" href="{{ path('front_infermier_consultation_index') }}">Reset</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
 
-			<section class="grid consult-grid">
-				{% for consultation in consultations %}
-					{% set status = consultation.etatConsultation ? consultation.etatConsultation|lower : '' %}
-					{% set status_label = status == 'en_cours' ? 'En cours'
-						: (status == 'terminee' or status == 'terminée' ? 'Terminee'
-						: (status == 'planifiee' or status == 'planifiée' ? 'Planifiee'
-						: (status == 'realisee' or status == 'réalisée' ? 'Realisee'
-						: (status == 'annulee' or status == 'annulée' ? 'Annulee' : (consultation.etatConsultation ?? ''))))) %}
-					<div class="card consultation-card" data-status="{{ status }}">
-						<div class="consultation-accent"></div>
-						<div class="card-head">
-							<h2>Consultation {{ consultation.id }}</h2>
-							<span class="badge-soft">{{ status_label }}</span>
-						</div>
-						<div class="consultation-meta">
-							<span class="consultation-chip">Patient: {{ consultation.patient.prenom }} {{ consultation.patient.nom }}</span>
-							<span class="consultation-chip">Type: {{ consultation.typeConsultation }}</span>
-						</div>
-						<div class="consultation-meta">
-							<span class="consultation-chip">Date: {{ consultation.dateConsultation ? consultation.dateConsultation|date('d/m/Y') : '-' }}</span>
-							<span class="consultation-chip">Heure: {{ consultation.heureConsultation ? consultation.heureConsultation|date('H:i') : '-' }}</span>
-							{% if consultation.lieu %}
-								<span class="consultation-chip">Lieu: {{ consultation.lieu }}</span>
-							{% endif %}
-						</div>
-						<div class="consultation-grid">
-							<div class="consultation-row">
-								<div class="consultation-label">Personnel medical</div>
-								<div class="value">
-									{% if consultation.personnelMedical %}
-										{{ consultation.personnelMedical.prenom }} {{ consultation.personnelMedical.nom }}
-									{% else %}
-										-
-									{% endif %}
-								</div>
-							</div>
-							<div class="consultation-row">
-								<div class="consultation-label">Cree par</div>
-								<div class="value">
-									{% if consultation.createdBy %}
-										{{ consultation.createdBy.prenom }} {{ consultation.createdBy.nom }}
-										{% if consultation.createdRole ?? false %}
-											<span class="muted">• {{ consultation.createdRole }}</span>
-										{% elseif consultation.createdBy.role %}
-											<span class="muted">• {{ consultation.createdBy.role.value }}</span>
-										{% endif %}
-									{% else %}
-										-
-									{% endif %}
-								</div>
-							</div>
-						</div>
-						<div class="consultation-actions">
-							<a class="btn-sm primary" href="{{ path('front_infermier_consultation_edit', {'id': consultation.id}) }}">Modifier</a>
-							{% if consultation.rapportMedical %}
-								<a class="btn-sm" href="{{ path('front_infermier_rapport_show', {'id': consultation.rapportMedical.idRapport}) }}">Rapport</a>
-								<a class="btn-sm" href="{{ path('front_infermier_rapport_pdf', {'id': consultation.rapportMedical.idRapport}) }}">PDF rapport</a>
-							{% else %}
-								<a class="btn-sm primary" href="{{ path('front_infermier_rapport_new', {'id': consultation.id}) }}">Ajouter rapport</a>
-							{% endif %}
+                <div class="row g-3">
+                    {% for consultation in consultations %}
+                        {% set status = consultation.etatConsultation ? consultation.etatConsultation|lower : '' %}
+                        {% set status_key = status|replace({'�':'e','�':'e','�':'e','�':'a','�':'u'}) %}
+                        {% set status_label = status_key == 'en_cours' ? 'En cours'
+                            : (status_key == 'terminee' ? 'Terminee'
+                            : (status_key == 'planifiee' ? 'Planifiee'
+                            : (status_key == 'realisee' ? 'Realisee'
+                            : (status_key == 'annulee' ? 'Annulee' : (consultation.etatConsultation ?? '-'))))) %}
 
-							{% if consultation.prescription %}
-								<a class="btn-sm" href="{{ path('front_infermier_prescription_show', {'id': consultation.prescription.idPrescription}) }}">Prescription</a>
-								<a class="btn-sm" href="{{ path('front_infermier_prescription_pdf', {'id': consultation.prescription.idPrescription}) }}">PDF prescription</a>
-							{% else %}
-								<a class="btn-sm primary" href="{{ path('front_infermier_prescription_new', {'id': consultation.id}) }}">Ajouter prescription</a>
-							{% endif %}
-							<form method="post" action="{{ path('front_infermier_consultation_delete', {'id': consultation.id}) }}"
-								onsubmit="return confirm('Supprimer cette consultation ?');">
-								<input type="hidden" name="_token" value="{{ csrf_token('delete_consultation_' ~ consultation.id) }}">
-								<button class="btn-sm danger" type="submit">Supprimer</button>
-							</form>
-						</div>
-					</div>
-				{% else %}
-					<div class="card consultation-card">
-						<div class="consultation-accent"></div>
-						<p class="muted">Aucune consultation pour le moment.</p>
-					</div>
-				{% endfor %}
-			</section>
+                        <div class="col-12 col-lg-6">
+                            <div class="card consultation-card" data-status="{{ status_key }}">
+                                <div class="card-body">
+                                    <div class="consultation-accent"></div>
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div>
+                                            <div class="consultation-label">Patient</div>
+                                            <div class="consultation-name">
+                                                <span class="consultation-person-name">{{ consultation.patient.prenom }} {{ consultation.patient.nom }}</span>
+                                            </div>
+                                        </div>
+                                        <span class="badge badge-soft">{{ status_label }}</span>
+                                    </div>
 
-			{% if pagination.pages > 1 %}
-				<section class="card mt-3">
-					<div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
-						<div class="muted">
-							Page {{ pagination.page }} / {{ pagination.pages }} - {{ pagination.total }} consultation(s)
-						</div>
-						<nav aria-label="Pagination consultations">
-							<ul class="pagination mb-0">
-								<li class="page-item {{ pagination.page <= 1 ? 'disabled' : '' }}">
-									<a class="page-link" href="{{ path('front_infermier_consultation_index', {
-										patient: filters.patient ?? '',
-										date: filters.date ?? '',
-										page: pagination.page - 1
-									}) }}">Precedent</a>
-								</li>
-								{% for p in 1..pagination.pages %}
-									<li class="page-item {{ p == pagination.page ? 'active' : '' }}">
-										<a class="page-link" href="{{ path('front_infermier_consultation_index', {
-											patient: filters.patient ?? '',
-											date: filters.date ?? '',
-											page: p
-										}) }}">{{ p }}</a>
-									</li>
-								{% endfor %}
-								<li class="page-item {{ pagination.page >= pagination.pages ? 'disabled' : '' }}">
-									<a class="page-link" href="{{ path('front_infermier_consultation_index', {
-										patient: filters.patient ?? '',
-										date: filters.date ?? '',
-										page: pagination.page + 1
-									}) }}">Suivant</a>
-								</li>
-							</ul>
-						</nav>
-					</div>
-				</section>
-			{% endif %}
-		</main>
-	</div>
+                                    <div class="consultation-meta">
+                                        <span class="consultation-chip">Date: {{ consultation.dateConsultation ? consultation.dateConsultation|date('d/m/Y') : '-' }}</span>
+                                        <span class="consultation-chip">Heure: {{ consultation.heureConsultation ? consultation.heureConsultation|date('H:i') : '-' }}</span>
+                                        {% if consultation.lieu %}
+                                            <span class="consultation-chip">Lieu: {{ consultation.lieu }}</span>
+                                        {% endif %}
+                                    </div>
 
-	<div class="modal fade" id="consultationNewModal" tabindex="-1" aria-labelledby="consultationNewModalLabel" aria-hidden="true">
-		<div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="consultationNewModalLabel">Nouvelle consultation</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-				</div>
-				<div class="modal-body">
-					<div class="text-muted small">Chargement...</div>
-				</div>
-			</div>
-		</div>
-	</div>
+                                    <div class="consultation-grid">
+                                        <div class="consultation-row">
+                                            <div class="consultation-label">Personnel medical</div>
+                                            <div class="value">
+                                                {% if consultation.personnelMedical %}
+                                                    <span class="consultation-staff-name">{{ consultation.personnelMedical.prenom }} {{ consultation.personnelMedical.nom }}</span>
+                                                {% else %}
+                                                    -
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="consultation-row">
+                                            <div class="consultation-label">Type</div>
+                                            <div class="value">{{ consultation.typeConsultation ?: '-' }}</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="consultation-actions">
+                                        <a class="btn btn-outline-primary btn-sm" href="{{ path('front_infermier_consultation_edit', {'id': consultation.id}) }}">Modifier</a>
+
+                                        {% if consultation.rapportMedical %}
+                                            <a class="btn btn-outline-primary btn-sm" href="{{ path('front_infermier_rapport_show', {'id': consultation.rapportMedical.idRapport}) }}">Rapport</a>
+                                            <a class="btn btn-outline-secondary btn-sm" href="{{ path('front_infermier_rapport_pdf', {'id': consultation.rapportMedical.idRapport}) }}">PDF rapport</a>
+                                        {% else %}
+                                            <a class="btn btn-success btn-sm" href="{{ path('front_infermier_rapport_new', {'id': consultation.id}) }}">Ajouter rapport</a>
+                                        {% endif %}
+
+                                        {% if consultation.prescription %}
+                                            <a class="btn btn-outline-primary btn-sm" href="{{ path('front_infermier_prescription_show', {'id': consultation.prescription.idPrescription}) }}">Prescription</a>
+                                            <a class="btn btn-outline-secondary btn-sm" href="{{ path('front_infermier_prescription_pdf', {'id': consultation.prescription.idPrescription}) }}">PDF prescription</a>
+                                        {% else %}
+                                            <a class="btn btn-success btn-sm" href="{{ path('front_infermier_prescription_new', {'id': consultation.id}) }}">Ajouter prescription</a>
+                                        {% endif %}
+
+                                        <form method="post" action="{{ path('front_infermier_consultation_delete', {'id': consultation.id}) }}" class="m-0" onsubmit="return confirm('Supprimer cette consultation ?');">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete_consultation_' ~ consultation.id) }}">
+                                            <button class="btn btn-outline-danger btn-sm" type="submit">Supprimer</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="col-12">
+                            <div class="consultation-empty-state">
+                                <i class="bi bi-calendar-x"></i>
+                                <h5>Aucune consultation</h5>
+                                <p>Commencez par ajouter une nouvelle consultation</p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                {% if pagination.pages > 1 %}
+                    <div class="consult-pagination d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mt-4">
+                        <div class="text-muted small ps-3 py-2">
+                            Page {{ pagination.page }} / {{ pagination.pages }} - {{ pagination.total }} consultation(s)
+                        </div>
+                        <nav aria-label="Pagination consultations" class="pe-3 pb-2 pb-md-0">
+                            <ul class="pagination mb-0">
+                                <li class="page-item {{ pagination.page <= 1 ? 'disabled' : '' }}">
+                                    <a class="page-link" href="{{ path('front_infermier_consultation_index', {
+                                        patient: filters.patient ?? '',
+                                        date: filters.date ?? '',
+                                        page: pagination.page - 1
+                                    }) }}">Precedent</a>
+                                </li>
+                                {% for p in 1..pagination.pages %}
+                                    <li class="page-item {{ p == pagination.page ? 'active' : '' }}">
+                                        <a class="page-link" href="{{ path('front_infermier_consultation_index', {
+                                            patient: filters.patient ?? '',
+                                            date: filters.date ?? '',
+                                            page: p
+                                        }) }}">{{ p }}</a>
+                                    </li>
+                                {% endfor %}
+                                <li class="page-item {{ pagination.page >= pagination.pages ? 'disabled' : '' }}">
+                                    <a class="page-link" href="{{ path('front_infermier_consultation_index', {
+                                        patient: filters.patient ?? '',
+                                        date: filters.date ?? '',
+                                        page: pagination.page + 1
+                                    }) }}">Suivant</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+
+    <div class="modal fade consultation-modal" id="consultationNewModal" tabindex="-1" aria-labelledby="consultationNewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="consultationNewModalLabel">Nouvelle consultation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-muted small">Chargement...</div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block javascripts %}
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-	<script>
-		document.addEventListener('DOMContentLoaded', () => {
-			const modalEl = document.getElementById('consultationNewModal');
-			if (!modalEl) return;
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const modalEl = document.getElementById('consultationNewModal');
+            if (!modalEl) return;
 
-			const modalBody = modalEl.querySelector('.modal-body');
-			if (!modalBody) return;
+            const modalBody = modalEl.querySelector('.modal-body');
+            if (!modalBody) return;
 
-			const bindForm = () => {
-				const form = modalBody.querySelector('form');
-				if (!form) return;
+            const bindForm = () => {
+                const form = modalBody.querySelector('form');
+                if (!form) return;
 
-				form.addEventListener('submit', async (event) => {
-					event.preventDefault();
-					const formData = new FormData(form);
+                form.addEventListener('submit', async (event) => {
+                    event.preventDefault();
+                    const formData = new FormData(form);
 
-					try {
-						const response = await fetch(form.action, {
-							method: form.method || 'POST',
-							body: formData,
-							headers: { 'X-Requested-With': 'XMLHttpRequest' }
-						});
+                    try {
+                        const response = await fetch(form.action, {
+                            method: form.method || 'POST',
+                            body: formData,
+                            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                        });
 
-						if (response.redirected) {
-							window.location.href = response.url;
-							return;
-						}
+                        if (response.redirected) {
+                            window.location.href = response.url;
+                            return;
+                        }
 
-						if (!response.ok) throw new Error('Envoi impossible.');
-						modalBody.innerHTML = await response.text();
-						bindForm();
-					} catch (e) {
-						modalBody.innerHTML = '<div class="alert alert-danger mb-0">Impossible d\'envoyer le formulaire.</div>';
-					}
-				});
-			};
+                        if (!response.ok) throw new Error('Envoi impossible.');
+                        modalBody.innerHTML = await response.text();
+                        bindForm();
+                    } catch (e) {
+                        modalBody.innerHTML = '<div class="alert alert-danger mb-0">Impossible d\'envoyer le formulaire.</div>';
+                    }
+                });
+            };
 
-			const loadNewForm = async (newUrl) => {
-				if (!newUrl) return;
-				modalBody.innerHTML = '<div class="text-muted small">Chargement...</div>';
-				try {
-					const response = await fetch(newUrl, {
-						headers: { 'X-Requested-With': 'XMLHttpRequest' }
-					});
-					if (!response.ok) throw new Error('Chargement impossible.');
-					modalBody.innerHTML = await response.text();
-					bindForm();
-				} catch (e) {
-					modalBody.innerHTML = '<div class="alert alert-danger mb-0">Impossible de charger le formulaire.</div>';
-				}
-			};
+            const loadNewForm = async (newUrl) => {
+                if (!newUrl) return;
+                modalBody.innerHTML = '<div class="text-muted small">Chargement...</div>';
+                try {
+                    const response = await fetch(newUrl, {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    });
+                    if (!response.ok) throw new Error('Chargement impossible.');
+                    modalBody.innerHTML = await response.text();
+                    bindForm();
+                } catch (e) {
+                    modalBody.innerHTML = '<div class="alert alert-danger mb-0">Impossible de charger le formulaire.</div>';
+                }
+            };
 
-			modalEl.addEventListener('show.bs.modal', async (event) => {
-				const trigger = event.relatedTarget;
-				if (!trigger) return;
-				const newUrl = trigger.getAttribute('data-new-url');
-				await loadNewForm(newUrl);
-			});
+            modalEl.addEventListener('show.bs.modal', async (event) => {
+                const trigger = event.relatedTarget;
+                if (!trigger) return;
+                const newUrl = trigger.getAttribute('data-new-url');
+                await loadNewForm(newUrl);
+            });
 
-			const triggerBtn = document.querySelector('[data-bs-target="#consultationNewModal"][data-new-url]');
-			if (triggerBtn) {
-				triggerBtn.addEventListener('click', async () => {
-					const newUrl = triggerBtn.getAttribute('data-new-url');
-					await loadNewForm(newUrl);
-				});
-			}
-		});
-	</script>
+            const triggerBtn = document.querySelector('[data-bs-target="#consultationNewModal"][data-new-url]');
+            if (triggerBtn) {
+                triggerBtn.addEventListener('click', async () => {
+                    const newUrl = triggerBtn.getAttribute('data-new-url');
+                    await loadNewForm(newUrl);
+                });
+            }
+        });
+    </script>
 {% endblock %}

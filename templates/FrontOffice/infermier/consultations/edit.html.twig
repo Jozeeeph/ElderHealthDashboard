@@ -1,15 +1,20 @@
 {% block stylesheets %}
 	<link rel="stylesheet" href="{{ asset('css/infermier.css') }}">
 {% endblock %}
+<style>
+    .consult-head-card { border:1px solid #e2e8f0; border-radius:12px; }
+    .btn-consult-ghost { border-radius:999px; border:1px solid #dbeafe; background:#fff; color:#1d4ed8; font-weight:700; padding:.45rem .95rem; text-decoration:none; }
+    .btn-consult-ghost:hover { background:#eff6ff; color:#1d4ed8; }
+</style>
 {% block body %}
 	<div class="nurse-app">
 		{% include 'FrontOffice/infermier/_header.html.twig' %}
 
 		<main class="nurse-main">
-			<section class="card">
+			<section class="card consult-head-card">
 				<div class="card-head">
 					<h2>Modifier consultation #{{ consultation.id }}</h2>
-					<a class="btn-outline" href="{{ path('front_infermier_consultation_index') }}">Retour</a>
+					<a class="btn-consult-ghost" href="{{ path('front_infermier_consultation_index') }}">Retour</a>
 				</div>
 			</section>
 

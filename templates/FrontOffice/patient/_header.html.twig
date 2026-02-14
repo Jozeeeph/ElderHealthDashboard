@@ -63,13 +63,15 @@
 
 		<!-- PROFILE -->
 		<div class="topbar-right">
-			<button type="button" class="notif-link {{ notif.hasNew ? 'has-new' : '' }}" title="Notifications" data-notif-toggle>
-				<i class="bi bi-bell"></i>
+			<button type="button" class="notif-link {{ notif.hasNew ? 'has-new' : '' }}" title="Notifications" data-notif-toggle aria-expanded="false">
+				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+					<path d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14.2V11a6 6 0 1 0-12 0v3.2a2 2 0 0 1-.6 1.4L4 17h5m6 0a3 3 0 0 1-6 0m6 0H9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+				</svg>
 				{% if notif.count > 0 %}
 					<span class="notif-badge">{{ notif.count > 9 ? '9+' : notif.count }}</span>
 				{% endif %}
 			</button>
-			<div class="notif-panel" data-notif-panel>
+			<div class="notif-panel" data-notif-panel hidden>
 				<div class="notif-panel-head">Notifications</div>
 				<div class="notif-panel-body">
 					{% if notif.items is not empty %}
@@ -104,7 +106,9 @@
 		toggle.addEventListener('click', function (event) {
 			event.preventDefault();
 			event.stopPropagation();
-			panel.classList.toggle('is-open');
+			const isOpen = panel.classList.toggle('is-open');
+			panel.hidden = !isOpen;
+			toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
 		});
 
 		document.addEventListener('click', function (event) {
@@ -115,7 +119,17 @@
 				return;
 			}
 			panel.classList.remove('is-open');
+			panel.hidden = true;
+			toggle.setAttribute('aria-expanded', 'false');
+		});
+
+		document.addEventListener('keydown', function (event) {
+			if (event.key !== 'Escape') {
+				return;
+			}
+			panel.classList.remove('is-open');
+			panel.hidden = true;
+			toggle.setAttribute('aria-expanded', 'false');
 		});
 	});
 </script>
-

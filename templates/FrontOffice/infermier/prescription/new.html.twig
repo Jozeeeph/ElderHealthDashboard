@@ -1,169 +1,126 @@
-﻿{% block stylesheets %}
-	<link rel="stylesheet" href="{{ asset('css/infermier.css') }}">
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/infermier.css') }}">
 {% endblock %}
-{% block body %}
-	<div class="nurse-app">
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-		<style>
-			.rx-page{
-				background:
-					radial-gradient(circle at 12% 12%, rgba(46, 186, 198, 0.18), transparent 40%),
-					radial-gradient(circle at 88% 20%, rgba(22, 163, 74, 0.14), transparent 42%),
-					linear-gradient(180deg, #f7fbff 0%, #f2fbf7 55%, #ffffff 100%);
-				border-radius: 22px;
-				padding: 18px;
-			}
-			.rx-hero{
-				display:flex;
-				align-items:center;
-				justify-content:space-between;
-				gap:16px;
-				padding:18px 20px;
-				border-radius:18px 26px 18px 26px;
-				background: linear-gradient(135deg, #e8f7ff 0%, #eafff3 60%, #ffffff 100%);
-				border:1px solid #e3f0f5;
-				box-shadow:0 12px 26px rgba(15, 23, 42, 0.08);
-			}
-			.rx-hero h2{
-				margin:0;
-				font-size:1.4rem;
-				font-weight:800;
-				color:#15323a;
-			}
-			.rx-hero .meta{
-				margin-top:6px;
-				font-weight:700;
-				color:#5b6b74;
-			}
-			.rx-card{
-				margin-top:16px;
-				display:flex;
-				gap:18px;
-				align-items:stretch;
-				background:#ffffff;
-				border:1px solid #e6edf0;
-				border-radius:22px 30px 22px 30px;
-				box-shadow:0 18px 40px rgba(15,23,42,.1);
-				overflow:hidden;
-			}
-			.rx-side{
-				flex:0 0 280px;
-				padding:22px;
-				background:
-					linear-gradient(160deg, #0ea5a4 0%, #22c55e 100%);
-				color:#fff;
-				display:flex;
-				flex-direction:column;
-				justify-content:space-between;
-			}
-			.rx-side h3{
-				margin:0 0 10px;
-				font-weight:800;
-				font-size:1.15rem;
-			}
-			.rx-side p{
-				margin:0;
-				opacity:.95;
-				font-weight:600;
-			}
-			.rx-side .chip{
-				margin-top:16px;
-				display:inline-flex;
-				align-items:center;
-				gap:8px;
-				padding:8px 12px;
-				border-radius:999px;
-				background:rgba(255,255,255,.18);
-				border:1px solid rgba(255,255,255,.35);
-				font-weight:800;
-				font-size:.85rem;
-			}
-			.rx-form{
-				flex:1 1 auto;
-				padding:22px 24px;
-			}
-			.rx-form .form-card{
-				box-shadow:none;
-				border:none;
-				background:transparent;
-				padding:0;
-			}
-			.rx-form .form-title{
-				font-weight:800;
-				color:#15323a;
-			}
-			.rx-form .form-subtitle{
-				color:#5f6b74;
-				font-weight:700;
-			}
-			@media (max-width: 980px){
-				.rx-card{
-					flex-direction:column;
-				}
-				.rx-side{
-					flex:1 1 auto;
-				}
-			}
-		</style>
->>>>>>> consultationnn
-		{% include 'FrontOffice/infermier/_header.html.twig' %}
-=======
-		<header class="topbar">
-			<div class="topbar-inner">
-				<a href="{{ path('app_public_site') }}" class="brand">
-					<img src="{{ asset('img/logo.png') }}" alt="Elder HealthCare">
-					<span>Elder<span>HealthCare</span></span>
-				</a>
-				<nav class="top-nav">
-					<a href="{{ path('front_infermier_consultation_index') }}">Consultations</a>
-					<a>Patients</a>
-					<a href="{{ path('front_infermier_rendezvous_index') }}">Rendez-vous</a>
-					<a href="{{ path('front_equipements_index') }}">Equipement</a>
-					<a href="{{ path('front_infermier_forum_index') }}">Forum</a>
-					<a href="{{ path('front_events_index') }}">Evenements</a>
-					<a>Messages</a>
-				</nav>
-				<div class="profile">
-					<img src="{{ asset('img/home.jpg') }}" alt="Profil">
-					<div class="who">
-						<small>Infirmier</small>
-						<strong>{{ nurseName|default('Infirmier') }}</strong>
-					</div>
-				</div>
-			</div>
-		</header>
->>>>>>> rendezvous_client
+    <style>
+        .rx-page {
+            background: #f7fbff;
+            border: 1px solid #e3edf5;
+            border-radius: 16px;
+            padding: 16px;
+        }
 
-		<main class="nurse-main rx-page">
-			<section class="rx-hero">
-				<div>
-					<h2>Nouvelle prescription</h2>
-					<div class="meta">Consultation {{ consultation.id }}</div>
-				</div>
-				<a class="btn-outline" href="{{ path('front_infermier_consultation_index') }}">Retour</a>
-			</section>
+        .rx-hero {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 16px;
+            border: 1px solid #e3edf5;
+            border-radius: 12px;
+            background: #ffffff;
+        }
 
-			<section class="rx-card">
-				<aside class="rx-side">
-					<div>
-						<h3>Plan de traitement</h3>
-						<p>Renseignez les informations mÃ©dicales essentielles pour une prise en charge claire et sÃ©curisÃ©e.</p>
-						<span class="chip">ðŸ©º Suivi patient</span>
-					</div>
-					<div>
-						<p>ðŸ’Š Posologie prÃ©cise</p>
-						<p>ðŸ“… PÃ©riode de traitement</p>
-						<p>ðŸ§¾ Consignes utiles</p>
-					</div>
-				</aside>
-				<div class="rx-form">
-					{{ include('FrontOffice/infermier/prescription/_form.html.twig', { form: form, submit_label: 'Ajouter' }) }}
-				</div>
-			</section>
-		</main>
-	</div>
+        .rx-hero h2 { margin: 0; font-size: 1.25rem; font-weight: 800; color: #12303b; }
+        .rx-hero .meta { margin-top: 4px; color: #5b6b74; font-weight: 600; }
+
+        .rx-card {
+            margin-top: 14px;
+            background: #ffffff;
+            border: 1px solid #e3edf5;
+            border-radius: 12px;
+            padding: 14px;
+        }
+
+        .rx-grid {
+            margin-top: 14px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .rx-chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: #f1f5f9;
+            border: 1px solid #dce6f0;
+            color: #1f3b4a;
+            font-size: .85rem;
+            font-weight: 700;
+            margin: 6px 6px 0 0;
+        }
+
+        .rx-side {
+            background: linear-gradient(160deg, #0ea5a4 0%, #22c55e 100%);
+            color: #fff;
+            border-radius: 12px;
+            padding: 16px;
+            min-width: 260px;
+        }
+
+        .rx-side .chip {
+            display: inline-flex;
+            margin-top: 10px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(255,255,255,.2);
+            border: 1px solid rgba(255,255,255,.35);
+            font-weight: 700;
+        }
+
+        .rx-form { flex: 1 1 auto; }
+
+        .rx-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+        .rx-section {
+            margin-top: 14px;
+            display: grid;
+            gap: 10px;
+        }
+
+        .rx-panel {
+            background: #ffffff;
+            border: 1px solid #e3edf5;
+            border-radius: 12px;
+            padding: 14px;
+        }
+
+        @media (max-width: 980px) {
+            .rx-grid { grid-template-columns: 1fr; }
+            .rx-card { display: block !important; }
+            .rx-side { min-width: 0; margin-bottom: 12px; }
+        }
+    </style>{% block body %}
+    <div class="nurse-app">
+        {% include 'FrontOffice/infermier/_header.html.twig' %}
+
+        <main class="nurse-main rx-page">
+            <section class="rx-hero">
+                <div>
+                    <h2>Nouvelle prescription</h2>
+                    <div class="meta">Consultation {{ consultation.id }}</div>
+                </div>
+                <a class="btn-outline" href="{{ path('front_infermier_consultation_index') }}">Retour</a>
+            </section>
+
+            <section class="rx-card">
+                <aside class="rx-side">
+                    <div>
+                        <h3>Plan de traitement</h3>
+                        <p>Renseignez les informations utiles pour un suivi clair et securise du patient.</p>
+                        <span class="chip">Suivi patient</span>
+                    </div>
+                    <div>
+                        <p>Dosage precise</p>
+                        <p>Duree de traitement</p>
+                        <p>Consignes claires</p>
+                    </div>
+                </aside>
+                <div class="rx-form">
+                    {{ include('FrontOffice/infermier/prescription/_form.html.twig', { form: form, submit_label: 'Ajouter' }) }}
+                </div>
+            </section>
+        </main>
+    </div>
 {% endblock %}
-
-
