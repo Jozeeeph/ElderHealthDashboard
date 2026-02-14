@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 
-#[Route('/events', name: 'event_')]
+#[Route('/admin/events', name: 'event_')]
 class EventController extends AbstractController
 {
 
