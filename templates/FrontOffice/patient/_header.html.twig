@@ -18,6 +18,7 @@
 		{% set consultationRoute = isNurse ? 'front_infermier_consultation_index' : 'patient_consultations' %}
 		{% set profileRoute = isNurse ? 'front_infermier_profile' : 'patient_profile' %}
 		{% set forumRoute = isNurse ? 'front_infermier_forum_index' : 'forum_post_forum_index' %}
+		{% set notif = header_notifications() %}
 		{% set rendezVousActive = isNurse ? (currentRoute starts with 'front_infermier_rendezvous_') : (currentRoute starts with 'patient_rendezvous') %}
 		{% set consultationActive = isNurse
             ? (currentRoute starts with 'front_infermier_consultation_' or currentRoute starts with 'front_infermier_prescription_' or currentRoute starts with 'front_infermier_rapport_')
@@ -61,13 +62,60 @@
 		</nav>
 
 		<!-- PROFILE -->
-		<a class="profile" href="{{ path(profileRoute) }}">
-			<div class="profile-emoji"></div>
-			<strong>
-				{{ app.user ? app.user.prenom ~ ' ' ~ app.user.nom : 'Patient' }}
-			</strong>
-		</a>
+		<div class="topbar-right">
+			<button type="button" class="notif-link {{ notif.hasNew ? 'has-new' : '' }}" title="Notifications" data-notif-toggle>
+				<i class="bi bi-bell"></i>
+				{% if notif.count > 0 %}
+					<span class="notif-badge">{{ notif.count > 9 ? '9+' : notif.count }}</span>
+				{% endif %}
+			</button>
+			<div class="notif-panel" data-notif-panel>
+				<div class="notif-panel-head">Notifications</div>
+				<div class="notif-panel-body">
+					{% if notif.items is not empty %}
+						{% for item in notif.items %}
+							<div class="notif-item">{{ item }}</div>
+						{% endfor %}
+					{% else %}
+						<div class="notif-empty">Aucune nouvelle notification</div>
+					{% endif %}
+				</div>
+			</div>
+
+			<a class="profile" href="{{ path(profileRoute) }}">
+				<div class="profile-emoji"></div>
+				<strong>
+					{{ app.user ? app.user.prenom ~ ' ' ~ app.user.nom : 'Patient' }}
+				</strong>
+			</a>
+		</div>
 
 	</div>
 </header>
+
+<script>
+	document.addEventListener('DOMContentLoaded', function () {
+		const toggle = document.querySelector('[data-notif-toggle]');
+		const panel = document.querySelector('[data-notif-panel]');
+		if (!toggle || !panel) {
+			return;
+		}
+
+		toggle.addEventListener('click', function (event) {
+			event.preventDefault();
+			event.stopPropagation();
+			panel.classList.toggle('is-open');
+		});
+
+		document.addEventListener('click', function (event) {
+			if (!panel.classList.contains('is-open')) {
+				return;
+			}
+			if (panel.contains(event.target) || toggle.contains(event.target)) {
+				return;
+			}
+			panel.classList.remove('is-open');
+		});
+	});
+</script>
 

@@ -41,6 +41,13 @@ class PatientRendezVousType extends AbstractType
                 'choice_label' => function (Utilisateur $u) {
                     return trim($u->getNom() . ' ' . $u->getPrenom());
                 },
+                'choice_attr' => function (Utilisateur $u): array {
+                    return [
+                        'data-specialite' => (string) ($u->getSpecialite() ?? ''),
+                        'data-fonction' => (string) ($u->getFonction() ?? ''),
+                        'data-role-metier' => (string) ($u->getRoleMetier() ?? ''),
+                    ];
+                },
                 'placeholder' => 'Choisir un personnel medical',
                 'label' => 'Personnel medical',
             ])

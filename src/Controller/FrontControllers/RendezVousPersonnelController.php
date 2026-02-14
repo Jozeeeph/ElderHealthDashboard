@@ -15,6 +15,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/infermier/rendezvous', name: 'front_infermier_rendezvous_')]
 class RendezVousPersonnelController extends AbstractController
 {
+    private const PER_PAGE = 6;
+
     private function requirePersonnel(): Utilisateur
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
@@ -34,15 +36,17 @@ class RendezVousPersonnelController extends AbstractController
     {
         $user = $this->requirePersonnel();
         $page = max(1, $request->query->getInt('page', 1));
-        $perPage = 2;
-        $pagination = $rendezVousRepository->findForPersonnelPaginated($user, $page, $perPage);
-        $rendezVousList = $pagination['items'];
 
-        return $this->render('FrontOffice/infermier/rendezvous/index.html.twig', [
-            'rendezVousList' => $rendezVousList,
-            'pagination' => $pagination,
-            'nurseName' => $user->getPrenom(),
-        ]);
+        return $this->renderList($rendezVousRepository, $user, $page, null, 'all');
+    }
+
+    #[Route('/planifies', name: 'planned')]
+    public function planned(Request $request, RendezVousRepository $rendezVousRepository): Response
+    {
+        $user = $this->requirePersonnel();
+        $page = max(1, $request->query->getInt('page', 1));
+
+        return $this->renderList($rendezVousRepository, $user, $page, ['PLANIFIE', 'PLANIFIEE'], 'planned');
     }
 
     #[Route('/accept/{id}', name: 'accept')]
@@ -73,5 +77,27 @@ class RendezVousPersonnelController extends AbstractController
 
         $this->addFlash('success', 'Rendez-vous refuse.');
         return $this->redirectToRoute('front_infermier_rendezvous_index');
+    }
+
+    private function renderList(
+        RendezVousRepository $rendezVousRepository,
+        Utilisateur $user,
+        int $page,
+        ?array $etats,
+        string $currentView
+    ): Response {
+        $pagination = $rendezVousRepository->findForPersonnelPaginated($user, $page, self::PER_PAGE, $etats);
+        $notifications = $rendezVousRepository->findPendingForPersonnel($user, 6);
+
+        return $this->render('FrontOffice/infermier/rendezvous/index.html.twig', [
+            'rendezVousList' => $pagination['items'],
+            'pagination' => $pagination,
+            'notifications' => $notifications,
+            'nurseName' => $user->getPrenom(),
+            'currentView' => $currentView,
+            'paginationRoute' => $currentView === 'planned'
+                ? 'front_infermier_rendezvous_planned'
+                : 'front_infermier_rendezvous_index',
+        ]);
     }
 }
