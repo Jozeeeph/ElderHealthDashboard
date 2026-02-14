@@ -4,8 +4,11 @@ namespace App\Security;
 
 use App\Entity\Utilisateur;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
@@ -21,7 +24,8 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
 
     public function __construct(
         private UrlGeneratorInterface $urlGenerator,
-        private EntityManagerInterface $em
+        private EntityManagerInterface $em,
+        private MailerInterface $mailer
     ) {}
 
     public function authenticate(Request $request): Passport
@@ -40,13 +44,6 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
                     throw new CustomUserMessageAuthenticationException('Email ou mot de passe invalide.');
                 }
 
-                // ✅ Bloquer ADMIN AVANT la connexion via /login
-                if (in_array('ROLE_ADMIN', $user->getRoles(), true)) {
-                    throw new CustomUserMessageAuthenticationException(
-                        "Compte n'est pas autorisé à se connecter ici. Veuillez utiliser la page de connexion admin."
-                    );
-                }
-
                 return $user;
             }),
             new PasswordCredentials($password),
@@ -61,8 +58,38 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
         TokenInterface $token,
         string $firewallName
     ): RedirectResponse {
-        $roles = $token->getUser()->getRoles();
+        /** @var Utilisateur $user */
+        $user = $token->getUser();
+        $roles = $user->getRoles();
 
+        // ✅ ADMIN => PIN session + email + redirect /admin/pin
+        if (in_array('ROLE_ADMIN', $roles, true)) {
+
+            $pin = (string) random_int(100000, 999999);
+
+            // Stockage en session (hash + expiry)
+            $session = $request->getSession();
+            $session->set('admin_pin_hash', password_hash($pin, PASSWORD_BCRYPT));
+            $session->set('admin_pin_expires', time() + 300); // 5 minutes
+            $session->set('admin_2fa_verified', false);
+
+            // Envoi email du PIN
+            $emailMsg = (new TemplatedEmail())
+                ->from(new Address('arijbejaoui1991@gmail.com', 'ElderHealthCare'))
+                ->to((string) $user->getEmail())
+                ->subject('Code PIN Admin')
+                ->htmlTemplate('security/admin_pin_email.html.twig')
+                ->context([
+                    'pin' => $pin,
+                    'expiresMinutes' => 5,
+                ]);
+
+            $this->mailer->send($emailMsg);
+
+            return new RedirectResponse($this->urlGenerator->generate('admin_pin'));
+        }
+
+        // ✅ autres rôles
         if (in_array('ROLE_PATIENT', $roles, true)) {
             return new RedirectResponse($this->urlGenerator->generate('app_patient_interfce'));
         }
@@ -71,12 +98,10 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
             return new RedirectResponse('/infermier');
         }
 
-        // 👩‍⚕️ INFIRMIER / PERSONNEL MEDICAL
         if (in_array('ROLE_PROPRIETAIRE_MEDICAUX', $roles, true)) {
             return new RedirectResponse('/proprietaire/equipements');
         }
 
-        // fallback
         return new RedirectResponse('/');
     }
 
