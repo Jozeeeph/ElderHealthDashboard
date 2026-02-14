@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+{% block title %}Vérification Admin{% endblock %}
+
+{% block body %}
+<div class="container" style="max-width:420px;margin-top:60px;">
+  <h3>Code PIN Admin</h3>
+
+  {% for m in app.flashes('error') %}
+    <div class="alert alert-danger">{{ m }}</div>
+  {% endfor %}
+  {% for m in app.flashes('success') %}
+    <div class="alert alert-success">{{ m }}</div>
+  {% endfor %}
+
+  <form method="post">
+    <label>PIN</label>
+    <input class="form-control" name="pin" maxlength="6" required>
+    <button class="btn btn-primary mt-3 w-100">Vérifier</button>
+  </form>
+
+  <form method="post" action="{{ path('admin_pin_resend') }}">
+    <button class="btn btn-link mt-3 w-100">Renvoyer un nouveau code</button>
+  </form>
+</div>
+{% endblock %}
