@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\RendezVous;
 use App\Entity\Utilisateur;
 use App\Form\PatientRendezVousType;
+use App\Repository\RendezVousRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,9 +16,11 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/patient', name: 'patient_rendezvous_')]
 class PatientRendezVousController extends AbstractController
 {
+    private const PER_PAGE = 6;
+
     #[IsGranted('ROLE_PATIENT')]
     #[Route('/rendezvous', name: 'index')]
-    public function index(EntityManagerInterface $em): Response
+    public function index(Request $request, EntityManagerInterface $em, RendezVousRepository $rendezVousRepository): Response
     {
         $patient = $this->getUser();
         if (!$patient instanceof Utilisateur) {
@@ -25,15 +28,37 @@ class PatientRendezVousController extends AbstractController
         }
         $rendezVousList = [];
         $patient = $em->getRepository(Utilisateur::class)->find($patient->getId());
+        $pagination = [
+            'items' => [],
+            'total' => 0,
+            'page' => 1,
+            'perPage' => self::PER_PAGE,
+            'pages' => 1,
+        ];
+        $notifications = [];
         if ($patient) {
-            $rendezVousList = $em->getRepository(RendezVous::class)->findBy(
-                ['patient' => $patient],
-                ['date' => 'DESC', 'heure' => 'DESC']
-            );
+            $page = max(1, $request->query->getInt('page', 1));
+            $pagination = $rendezVousRepository->findForPatientPaginated($patient, $page, self::PER_PAGE);
+            $rendezVousList = $pagination['items'];
+            $notifications = $rendezVousRepository->findStatusNotificationsForPatient($patient, 6);
+
+            // Auto-clear patient notifications when opening rendez-vous page
+            $session = $request->getSession();
+            if ($session !== null) {
+                $seen = $session->get('patient_rdv_seen_notification_ids', []);
+                if (!is_array($seen)) {
+                    $seen = [];
+                }
+                $currentNotifIds = $rendezVousRepository->findStatusNotificationIdsForPatient($patient);
+                $merged = array_values(array_unique(array_map('intval', array_merge($seen, $currentNotifIds))));
+                $session->set('patient_rdv_seen_notification_ids', $merged);
+            }
         }
 
         return $this->render('FrontOffice/patient/rendezvous/index.html.twig', [
             'rendezVousList' => $rendezVousList,
+            'pagination' => $pagination,
+            'notifications' => $notifications,
         ]);
     }
 
@@ -129,6 +154,28 @@ class PatientRendezVousController extends AbstractController
         $em->flush();
 
         $this->addFlash('success', 'Rendez-vous annule.');
+        return $this->redirectToRoute('patient_rendezvous_index');
+    }
+
+    #[IsGranted('ROLE_PATIENT')]
+    #[Route('/delete/{id}', name: 'delete')]
+    public function delete(RendezVous $rdv, EntityManagerInterface $em): Response
+    {
+        $patient = $this->getUser();
+        if (!$patient instanceof Utilisateur || $rdv->getPatient()?->getId() !== $patient->getId()) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $allowedStates = ['ANNULEE', 'TERMINE', 'TERMINEE', 'REFUSEE'];
+        if (!in_array((string) $rdv->getEtat(), $allowedStates, true)) {
+            $this->addFlash('success', 'Suppression non autorisee pour ce rendez-vous.');
+            return $this->redirectToRoute('patient_rendezvous_index');
+        }
+
+        $em->remove($rdv);
+        $em->flush();
+
+        $this->addFlash('success', 'Rendez-vous supprime.');
         return $this->redirectToRoute('patient_rendezvous_index');
     }
 
