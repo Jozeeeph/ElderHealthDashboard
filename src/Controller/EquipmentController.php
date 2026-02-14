@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
-#[Route('/patient', name: 'equipment_')]
+#[Route('/admin/equipment', name: 'equipment_')]
 class EquipmentController extends AbstractController
 {
     #[Route('/', name: 'index', methods: ['GET'])]
