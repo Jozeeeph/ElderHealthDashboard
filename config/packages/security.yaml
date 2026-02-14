@@ -17,7 +17,7 @@ security:
       pattern: ^/admin
       lazy: true
       provider: app_user_provider
-      context: shared            # ✅ AJOUT IMPORTANT
+      context: shared            # âœ… AJOUT IMPORTANT
       custom_authenticators:
         - App\Security\AdminLoginFormAuthenticator
       logout:
@@ -27,7 +27,7 @@ security:
     main:
       lazy: true
       provider: app_user_provider
-      context: shared            # ✅ AJOUT IMPORTANT
+      context: shared            # âœ… AJOUT IMPORTANT
       entry_point: App\Security\LoginFormAuthenticator
       custom_authenticators:
         - App\Security\LoginFormAuthenticator
@@ -38,10 +38,12 @@ security:
   access_control:
     - { path: ^/admin/login, roles: PUBLIC_ACCESS }
     - { path: ^/admin, roles: ROLE_ADMIN }
+    # Forum: autoriser patient et personnel medical (legacy + nouveaux liens)
+    - { path: ^/patient/forum, roles: [ROLE_PATIENT, ROLE_PERSONNEL_MEDICAL] }
+    - { path: ^/patient/post, roles: [ROLE_PATIENT, ROLE_PERSONNEL_MEDICAL] }
+    - { path: ^/infermier/forum, roles: ROLE_PERSONNEL_MEDICAL }
 
-    - { path: ^/login, roles: PUBLIC_ACCESS }
-
-    # ✅ ton front
+    # âœ… ton front
     - { path: ^/eventsFront/\d+/(participer|annuler)$, roles: IS_AUTHENTICATED_FULLY }
 
     - { path: ^/dashboard, roles: ROLE_ADMIN }

@@ -16,17 +16,17 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ConsultationType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('typeConsultation', ChoiceType::class, [
                 'choices' => [
-                    'Consultation générale' => 'consultation_generale',
+                    'Consultation generale' => 'consultation_generale',
                     'Suivi' => 'suivi',
                     'Urgence' => 'urgence',
-                    'Téléconsultation' => 'teleconsultation',
+                    'Teleconsultation' => 'teleconsultation',
                 ],
-                'placeholder' => 'Sélectionner un type',
+                'placeholder' => 'Selectionner un type',
             ])
             ->add('dateConsultation', DateType::class, [
                 'widget' => 'single_text',
@@ -59,7 +59,7 @@ class ConsultationType extends AbstractType
             ]);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => Consultation::class,

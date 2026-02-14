@@ -1,4 +1,46 @@
-<style>
+﻿<style>
+.prescription-form-wrapper {
+    background: #ffffff;
+    border: 1px solid #dbeafe;
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.prescription-form-title {
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 2px;
+}
+
+.prescription-form-subtitle {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin-bottom: 12px;
+}
+
+.prescription-form .form-label {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #64748b;
+    margin-bottom: 6px;
+}
+
+.prescription-form .form-control,
+.prescription-form .form-select,
+.prescription-form .form-textarea {
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+}
+
+.prescription-form .form-control:focus,
+.prescription-form .form-select:focus,
+.prescription-form .form-textarea:focus {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.14);
+}
+
 .prescription-form .invalid-feedback ul,
 .prescription-form .form-error ul,
 .prescription-form .form-errors ul {
@@ -7,54 +49,54 @@
     margin: 0;
 }
 
-.prescription-form .invalid-feedback li::marker,
-.prescription-form .form-error li::marker,
-.prescription-form .form-errors li::marker {
-    content: "";
+.prescription-form-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 8px;
 }
 </style>
 
 {% form_theme form 'bootstrap_5_layout.html.twig' %}
-{{ form_start(form, {
-    action: form_action|default(app.request.uri),
-    attr: { class: 'needs-validation prescription-form', novalidate: 'novalidate' }
-}) }}
-    <div class="card border-0 shadow-sm">
-        <div class="card-body p-4">
-            <div class="row g-4">
-                <div class="col-12">
-                    <div class="d-flex align-items-center gap-2 mb-2">
-                        <span class="badge text-bg-primary">Prescription</span>
-                        <span class="text-muted small">Renseignez les informations principales</span>
-                    </div>
-                </div>
+<div class="prescription-form-wrapper">
+    <div class="prescription-form-title">Prescription de sante</div>
+    <div class="prescription-form-subtitle">Renseignez les informations du traitement</div>
 
-                <div class="col-12">
-                    {{ form_row(form.medicaments, { label: '💊 Médicaments' }) }}
-                </div>
-                <div class="col-12 col-md-6">
-                    {{ form_row(form.frequence, { label: '⏱️ Fréquence' }) }}
-                </div>
-                <div class="col-12 col-md-6">
-                    {{ form_row(form.dosage, { label: '🧪 Dosage' }) }}
-                </div>
-                <div class="col-12 col-md-6">
-                    {{ form_row(form.dureeTraitement, { label: '📆 Durée du traitement' }) }}
-                </div>
-                <div class="col-12 col-md-6">
-                    {{ form_row(form.dateDebut, { label: '📅 Date de début' }) }}
-                </div>
-                <div class="col-12 col-md-6">
-                    {{ form_row(form.dateFin, { label: '📅 Date de fin' }) }}
-                </div>
-                <div class="col-12">
-                    {{ form_row(form.consignes, { label: '🧾 Consignes' }) }}
-                </div>
+    {{ form_start(form, {
+        action: form_action|default(app.request.uri),
+        attr: { class: 'prescription-form', novalidate: 'novalidate' }
+    }) }}
+        <div class="row g-3">
+            <div class="col-12">
+                {{ form_row(form.medicaments, { label: 'Medicaments' }) }}
+            </div>
+            <div class="col-12 col-md-6">
+                {{ form_row(form.frequence, { label: 'Frequence' }) }}
+            </div>
+            <div class="col-12 col-md-6">
+                {{ form_row(form.dosage, { label: 'Dosage' }) }}
+            </div>
+            <div class="col-12 col-md-6">
+                {{ form_row(form.dureeTraitement, { label: 'Duree du traitement' }) }}
+            </div>
+            <div class="col-12 col-md-6">
+                {{ form_row(form.dateDebut, { label: 'Date de debut' }) }}
+            </div>
+            <div class="col-12 col-md-6">
+                {{ form_row(form.dateFin, { label: 'Date de fin' }) }}
+            </div>
+            <div class="col-12">
+                {{ form_row(form.consignes, { label: 'Consignes' }) }}
             </div>
         </div>
-        <div class="card-footer bg-white border-0 d-flex flex-wrap gap-2 p-4 pt-0">
-            <button class="btn btn-primary px-4" type="submit">{{ submit_label|default('Enregistrer') }}</button>
-            <a class="btn btn-outline-secondary" href="{{ path('consultation_index') }}">Retour</a>
+
+        <div class="prescription-form-actions">
+            <button class="btn btn-primary" type="submit">{{ submit_label|default('Enregistrer') }}</button>
+            {% if app.request and app.request.xmlHttpRequest %}
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+            {% else %}
+                <a class="btn btn-secondary" href="{{ path('consultation_index') }}">Retour</a>
+            {% endif %}
         </div>
-    </div>
-{{ form_end(form) }}
+    {{ form_end(form) }}
+</div>

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\FrontOffice;
+namespace App\Controller\FrontControllers;
 
 use App\Entity\Commentaire;
 use App\Entity\Post;
@@ -14,9 +14,9 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
-#[Route('/patient', name: 'forum_post_forum_')]
-#[IsGranted('IS_AUTHENTICATED_FULLY')]
-class ForumController extends AbstractController
+#[Route('/infermier', name: 'front_infermier_forum_')]
+#[IsGranted('ROLE_PERSONNEL_MEDICAL')]
+class InfermierForumController extends AbstractController
 {
     #[Route('/forum', name: 'index', methods: ['GET'])]
     public function index(PostRepository $postRepository): Response
@@ -28,8 +28,8 @@ class ForumController extends AbstractController
 
         return $this->render('FrontOffice/forum/index.html.twig', [
             'posts' => $posts,
-            'post_create_route' => 'forum_post_forum_post_new',
-            'comment_create_route' => 'forum_post_forum_comment_new',
+            'post_create_route' => 'front_infermier_forum_post_new',
+            'comment_create_route' => 'front_infermier_forum_comment_new',
         ]);
     }
 
@@ -69,7 +69,7 @@ class ForumController extends AbstractController
 
         $this->addFlash('success', 'Publication ajoutee avec succes.');
 
-        return $this->redirectToRoute('forum_post_forum_index');
+        return $this->redirectToRoute('front_infermier_forum_index');
     }
 
     #[Route('/post/{postId}/comment/new', name: 'comment_new', methods: ['POST'])]
@@ -86,7 +86,7 @@ class ForumController extends AbstractController
         $content = trim((string) $request->request->get('content'));
         if ($content === '') {
             $this->addFlash('danger', 'Le commentaire ne peut pas etre vide.');
-            return $this->redirectToRoute('forum_post_forum_index');
+            return $this->redirectToRoute('front_infermier_forum_index');
         }
 
         $comment = new Commentaire();
@@ -99,6 +99,6 @@ class ForumController extends AbstractController
 
         $this->addFlash('success', 'Commentaire ajoute.');
 
-        return $this->redirectToRoute('forum_post_forum_index');
+        return $this->redirectToRoute('front_infermier_forum_index');
     }
 }

@@ -85,18 +85,95 @@ class DashboardController extends AbstractController
             ->getQuery()
             ->getResult();
 
+        $totalConsultations = (int) $consultationRepository->count([]);
+        $totalRendezVous = (int) $rendezVousRepository->count([]);
+        $totalEquipements = (int) $equipementRepository->count([]);
+
+        $consultationPercent = $totalConsultations > 0
+            ? (int) round(($consultationToday / $totalConsultations) * 100)
+            : 0;
+        $rendezVousPercent = $totalRendezVous > 0
+            ? (int) round(($rendezVousToday / $totalRendezVous) * 100)
+            : 0;
+        $equipementPercent = $totalEquipements > 0
+            ? (int) round(($equipmentAvailable / $totalEquipements) * 100)
+            : 0;
+
+        $startDate = $today->modify('-6 days');
+        $connection = $consultationRepository->getEntityManager()->getConnection();
+
+        $consultationRows = $connection->executeQuery(
+            'SELECT DATE(date_consultation) AS d, COUNT(*) AS c
+             FROM consultation
+             WHERE DATE(date_consultation) BETWEEN :start AND :end
+             GROUP BY DATE(date_consultation)',
+            [
+                'start' => $startDate->format('Y-m-d'),
+                'end' => $today->format('Y-m-d'),
+            ]
+        )->fetchAllAssociative();
+
+        $rendezVousRows = $connection->executeQuery(
+            'SELECT DATE(date) AS d, COUNT(*) AS c
+             FROM rendez_vous
+             WHERE DATE(date) BETWEEN :start AND :end
+             GROUP BY DATE(date)',
+            [
+                'start' => $startDate->format('Y-m-d'),
+                'end' => $today->format('Y-m-d'),
+            ]
+        )->fetchAllAssociative();
+
+        $consultationByDay = [];
+        foreach ($consultationRows as $row) {
+            $consultationByDay[$row['d']] = (int) $row['c'];
+        }
+
+        $rendezVousByDay = [];
+        foreach ($rendezVousRows as $row) {
+            $rendezVousByDay[$row['d']] = (int) $row['c'];
+        }
+
+        $chartLabels = [];
+        $consultationSeries = [];
+        $rendezVousSeries = [];
+        for ($i = 0; $i < 7; $i++) {
+            $day = $startDate->modify('+' . $i . ' days');
+            $key = $day->format('Y-m-d');
+            $chartLabels[] = $day->format('d/m');
+            $consultationSeries[] = $consultationByDay[$key] ?? 0;
+            $rendezVousSeries[] = $rendezVousByDay[$key] ?? 0;
+        }
+
+        $otherEquipements = max(0, $totalEquipements - $equipmentAvailable - $equipmentOutOfStock);
+
         return $this->render('BackOffice/dashboard/index.html.twig', [
             'stats' => [
                 'users' => $utilisateurRepository->count([]),
-                'consultations' => $consultationRepository->count([]),
-                'rendezvous' => $rendezVousRepository->count([]),
+                'consultations' => $totalConsultations,
+                'rendezvous' => $totalRendezVous,
                 'events' => $eventRepository->count([]),
-                'equipements' => $equipementRepository->count([]),
+                'equipements' => $totalEquipements,
                 'consultations_today' => $consultationToday,
                 'rendezvous_today' => $rendezVousToday,
                 'events_coming_soon' => $eventsComingSoon,
                 'equipements_disponibles' => $equipmentAvailable,
                 'equipements_rupture' => $equipmentOutOfStock,
+            ],
+            'progress' => [
+                'consultations' => $consultationPercent,
+                'rendezvous' => $rendezVousPercent,
+                'equipements' => $equipementPercent,
+            ],
+            'chart' => [
+                'labels' => $chartLabels,
+                'consultations' => $consultationSeries,
+                'rendezvous' => $rendezVousSeries,
+                'equipements' => [
+                    'disponible' => $equipmentAvailable,
+                    'rupture' => $equipmentOutOfStock,
+                    'autres' => $otherEquipements,
+                ],
             ],
             'recent_consultations' => $recentConsultations,
             'out_of_stock_equipments' => $outOfStockEquipments,

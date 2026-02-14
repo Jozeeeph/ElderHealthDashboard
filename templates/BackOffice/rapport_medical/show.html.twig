@@ -1,277 +1,253 @@
-{% extends 'base.html.twig' %}
+ï»¿{% extends 'base.html.twig' %}
 
 {% block title %}Rapport medical{% endblock %}
 
 {% block body %}
 <style>
-.rapport-shell {
-    --ink: #1f2a33;
-    --muted: #6b7a83;
-    --brand: #6cc5a1;
-    --brand-2: #a7e7cf;
-    --card: #ffffff;
-    --ring: rgba(108, 197, 161, 0.2);
-    --soft: #f5f9f7;
-    background: linear-gradient(180deg, #f6fbf8 0%, #f2f7f4 100%);
-    border-radius: 18px;
-    padding: 16px;
+.rapport-page {
+    background: #f4f6f9;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 20px;
 }
 
-.rapport-header {
-    background: #ffffff;
-    border-radius: 16px;
-    padding: 16px 20px;
-    border: 1px solid #e2efe8;
-    box-shadow: 0 10px 22px rgba(16, 24, 40, 0.06);
+.rapport-top {
+    display: flex;
+    gap: 12px;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
 }
 
 .rapport-title {
-    color: var(--ink);
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #0f172a;
 }
 
-.rapport-label {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    color: var(--muted);
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
+.rapport-subtitle {
+    margin-top: 4px;
+    color: #64748b;
+    font-size: 0.95rem;
 }
 
-.rapport-label i {
-    color: #3c8f6a;
+.rapport-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
 .rapport-actions .btn {
-    border-radius: 999px;
-    padding: 8px 16px;
-}
-
-.rapport-card {
-    border: 1px solid #e2efe8;
-    border-radius: 16px;
-    background: var(--card);
-}
-
-.rapport-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    border-radius: 999px;
-    background: #ecf8f1;
-    border: 1px solid #cfe9dc;
-    color: #1f5b43;
-    font-size: 0.85rem;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-.rapport-grid {
-    display: grid;
-    gap: 16px;
-}
-
-.rapport-info-card {
-    border: 1px solid #e2efe8;
-    background: #ffffff;
-    border-radius: 16px;
-    padding: 14px 16px;
-    box-shadow: 0 10px 24px rgba(30, 42, 47, 0.08);
-}
-
-.rapport-info-row {
-    display: grid;
-    grid-template-columns: 160px 1fr;
-    gap: 10px;
-    align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px dashed #e1ece6;
-}
-
-.rapport-info-row:last-child {
-    border-bottom: none;
-}
-
-.rapport-section {
-    border: 1px solid #e2efe8;
-    background: #ffffff;
-    border-radius: 16px;
-    padding: 16px;
-    box-shadow: 0 10px 24px rgba(30, 42, 47, 0.08);
-}
-
-.rapport-section-title {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 700;
-    color: var(--ink);
-    margin-bottom: 8px;
-}
-
-.rapport-section-body {
-    font-weight: 600;
-    color: #2b3d46;
-    line-height: 1.6;
+    border-radius: 8px;
 }
 
 .rapport-summary {
     display: grid;
-    gap: 10px;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin-bottom: 14px;
 }
 
-.rapport-summary-card {
-    border: 1px solid #e2efe8;
-    background: linear-gradient(135deg, #f1fbf6 0%, #f6fdf9 100%);
-    border-radius: 14px;
-    padding: 12px 14px;
+.rapport-kpi {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 12px;
 }
 
-.summary-label {
-    color: var(--muted);
-    font-size: 0.75rem;
+.rapport-kpi-label {
+    font-size: 0.76rem;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.04em;
+    color: #64748b;
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.rapport-kpi-value {
+    color: #0f172a;
+    font-size: 1rem;
     font-weight: 700;
 }
 
-.summary-value {
+.rapport-layout {
+    display: grid;
+    grid-template-columns: minmax(220px, 320px) 1fr;
+    gap: 14px;
+}
+
+.rapport-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 14px;
+}
+
+.rapport-card-title {
+    font-size: 1rem;
     font-weight: 700;
-    color: #1e2a2f;
-    margin-top: 4px;
+    color: #0f172a;
+    margin-bottom: 10px;
+}
+
+.rapport-meta-item {
+    margin-bottom: 10px;
+}
+
+.rapport-meta-item:last-child {
+    margin-bottom: 0;
+}
+
+.rapport-meta-label {
+    color: #64748b;
+    font-size: 0.76rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 2px;
+}
+
+.rapport-meta-value {
+    color: #1e293b;
+    font-weight: 600;
+}
+
+.rapport-block {
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #ffffff;
+    padding: 14px;
+    margin-bottom: 12px;
+}
+
+.rapport-block:last-child {
+    margin-bottom: 0;
+}
+
+.rapport-block-title {
+    color: #0f172a;
+    font-size: 1.02rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.rapport-block-text {
+    color: #334155;
+    line-height: 1.65;
+    white-space: pre-line;
+}
+
+.rapport-back {
+    margin-top: 14px;
 }
 
 .rapport-modal .modal-content {
-    border: none;
-    border-radius: 20px 28px 20px 28px;
-    box-shadow: 0 18px 48px rgba(30, 42, 47, 0.2);
-    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
 }
 
-.rapport-modal .modal-header {
-    border: 0;
-    background: linear-gradient(135deg, #eef8f3 0%, #f3fbf7 100%);
-    border-radius: 20px 28px 0 0;
-    padding: 16px 20px;
-}
-
-.rapport-modal .modal-title {
-    font-weight: 700;
-    color: #1e2a2f;
-}
-
-.rapport-modal .modal-body {
-    padding: 18px 20px 22px;
-    background: #ffffff;
+@media (max-width: 992px) {
+    .rapport-layout {
+        grid-template-columns: 1fr;
+    }
 }
 </style>
 
-<div class="rapport-shell container py-4">
-    <div class="rapport-header d-flex flex-wrap justify-content-between align-items-start mb-3 gap-2">
-        <div>
-            <h1 class="rapport-title mb-1">
-                <i class="bi bi-file-medical me-2"></i>
-                Rapport medical
-            </h1>
-            <div class="text-muted">
-                <i class="bi bi-person-badge me-1"></i>
-                Consultation {{ rapport.consultation.id }} - {{ rapport.consultation.patient.prenom }} {{ rapport.consultation.patient.nom }}
+<div class="container py-4">
+    <div class="rapport-page">
+        <div class="rapport-top">
+            <div>
+                <h1 class="rapport-title"><i class="bi bi-file-medical me-2"></i>Rapport medical</h1>
+                <div class="rapport-subtitle">
+                    Consultation {{ rapport.consultation.id }} - {{ rapport.consultation.patient.prenom }} {{ rapport.consultation.patient.nom }}
+                </div>
+            </div>
+
+            <div class="rapport-actions">
+                <a class="btn btn-outline-secondary" href="{{ path('rapport_medical_pdf', {'id': rapport.idRapport}) }}">
+                    <i class="bi bi-file-earmark-pdf me-1"></i>PDF
+                </a>
+                <button type="button"
+                        class="btn btn-outline-primary"
+                        data-bs-toggle="modal"
+                        data-bs-target="#rapportEditModal"
+                        data-edit-url="{{ path('rapport_medical_edit', {'id': rapport.idRapport}) }}">
+                    <i class="bi bi-pencil-square me-1"></i>Modifier
+                </button>
+                <button type="button"
+                        class="btn btn-outline-danger"
+                        data-bs-toggle="modal"
+                        data-bs-target="#rapportDeleteModal"
+                        data-delete-url="{{ path('rapport_medical_delete', {'id': rapport.idRapport}) }}"
+                        data-delete-token="{{ csrf_token('delete_rapport_' ~ rapport.idRapport) }}">
+                    <i class="bi bi-trash me-1"></i>Supprimer
+                </button>
             </div>
         </div>
-        <div class="rapport-actions d-flex gap-2">
-            <a class="btn btn-outline-secondary" href="{{ path('rapport_medical_pdf', {'id': rapport.idRapport}) }}">
-                <i class="bi bi-file-earmark-pdf me-1"></i>
-                Telecharger PDF
-            </a>
-            <button type="button"
-                    class="btn btn-outline-primary"
-                    data-bs-toggle="modal"
-                    data-bs-target="#rapportEditModal"
-                    data-edit-url="{{ path('rapport_medical_edit', {'id': rapport.idRapport}) }}">
-                <i class="bi bi-pencil-square me-1"></i>
-                Modifier
-            </button>
-            <button type="button"
-                    class="btn btn-outline-danger"
-                    data-bs-toggle="modal"
-                    data-bs-target="#rapportDeleteModal"
-                    data-delete-url="{{ path('rapport_medical_delete', {'id': rapport.idRapport}) }}"
-                    data-delete-token="{{ csrf_token('delete_rapport_' ~ rapport.idRapport) }}">
-                <i class="bi bi-trash me-1"></i>
-                Supprimer
-            </button>
-        </div>
-    </div>
 
-    <div class="rapport-grid">
         <div class="rapport-summary">
-            <div class="rapport-summary-card">
-                <div class="summary-label"><i class="bi bi-exclamation-triangle me-1"></i>Niveau de gravite</div>
-                <div class="summary-value">{{ rapport.niveauGravite }}</div>
+            <div class="rapport-kpi">
+                <div class="rapport-kpi-label">Niveau de gravite</div>
+                <div class="rapport-kpi-value">{{ rapport.niveauGravite }}</div>
             </div>
-            <div class="rapport-summary-card">
-                <div class="summary-label"><i class="bi bi-calendar-event me-1"></i>Date du rapport</div>
-                <div class="summary-value">{{ rapport.dateRapport ? rapport.dateRapport|date('d/m/Y H:i') : '-' }}</div>
+            <div class="rapport-kpi">
+                <div class="rapport-kpi-label">Date du rapport</div>
+                <div class="rapport-kpi-value">{{ rapport.dateRapport ? rapport.dateRapport|date('d/m/Y H:i') : '-' }}</div>
             </div>
-            <div class="rapport-summary-card">
-                <div class="summary-label"><i class="bi bi-person-badge me-1"></i>Consultation</div>
-                <div class="summary-value">{{ rapport.consultation.id }}</div>
+            <div class="rapport-kpi">
+                <div class="rapport-kpi-label">Consultation</div>
+                <div class="rapport-kpi-value">#{{ rapport.consultation.id }}</div>
             </div>
         </div>
 
-        <div class="row g-3">
-            <div class="col-12 col-lg-4">
-                <div class="rapport-info-card">
-                    <div class="rapport-info-row">
-                        <div class="rapport-label"><i class="bi bi-exclamation-triangle"></i>Gravite</div>
-                        <div class="rapport-pill">{{ rapport.niveauGravite }}</div>
-                    </div>
-                    <div class="rapport-info-row">
-                        <div class="rapport-label"><i class="bi bi-calendar-event"></i>Date</div>
-                        <div class="fw-semibold">{{ rapport.dateRapport ? rapport.dateRapport|date('d/m/Y H:i') : '-' }}</div>
-                    </div>
-                    <div class="rapport-info-row">
-                        <div class="rapport-label"><i class="bi bi-person"></i>Patient</div>
-                        <div class="fw-semibold">{{ rapport.consultation.patient.prenom }} {{ rapport.consultation.patient.nom }}</div>
-                    </div>
-                    {% if rapport.fichierPath %}
-                        <div class="rapport-info-row">
-                            <div class="rapport-label"><i class="bi bi-paperclip"></i>Pièce jointe</div>
-                            <a class="fw-semibold" href="{{ asset(rapport.fichierPath) }}" target="_blank" rel="noopener">
-                                <i class="bi bi-box-arrow-up-right me-1"></i>
-                                Voir le fichier
-                            </a>
+        <div class="rapport-layout">
+            <aside class="rapport-card">
+                <div class="rapport-card-title">Informations</div>
+
+                <div class="rapport-meta-item">
+                    <div class="rapport-meta-label">Patient</div>
+                    <div class="rapport-meta-value">{{ rapport.consultation.patient.prenom }} {{ rapport.consultation.patient.nom }}</div>
+                </div>
+
+                <div class="rapport-meta-item">
+                    <div class="rapport-meta-label">Gravite</div>
+                    <div class="rapport-meta-value">{{ rapport.niveauGravite }}</div>
+                </div>
+
+                <div class="rapport-meta-item">
+                    <div class="rapport-meta-label">Date</div>
+                    <div class="rapport-meta-value">{{ rapport.dateRapport ? rapport.dateRapport|date('d/m/Y H:i') : '-' }}</div>
+                </div>
+
+                {% if rapport.fichierPath %}
+                    <div class="rapport-meta-item">
+                        <div class="rapport-meta-label">Fichier joint</div>
+                        <div class="rapport-meta-value">
+                            <a href="{{ asset(rapport.fichierPath) }}" target="_blank" rel="noopener">Voir le fichier</a>
                         </div>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="col-12 col-lg-8">
-                <div class="rapport-section mb-3">
-                    <div class="rapport-section-title">
-                        <i class="bi bi-clipboard2-pulse"></i>
-                        Diagnostic
                     </div>
-                    <div class="rapport-section-body">{{ rapport.diagnostic }}</div>
-                </div>
-                <div class="rapport-section">
-                    <div class="rapport-section-title">
-                        <i class="bi bi-lightbulb"></i>
-                        Recommandations
-                    </div>
-                    <div class="rapport-section-body">{{ rapport.recommandations }}</div>
-                </div>
-            </div>
-        </div>
-    </div>
+                {% endif %}
+            </aside>
 
-    <div class="mt-3">
-        <a class="btn btn-light" href="{{ path('consultation_index') }}">
-            <i class="bi bi-arrow-left me-1"></i>
-            Retour
-        </a>
+            <section>
+                <div class="rapport-block">
+                    <div class="rapport-block-title"><i class="bi bi-clipboard2-pulse me-1"></i>Diagnostic</div>
+                    <div class="rapport-block-text">{{ rapport.diagnostic }}</div>
+                </div>
+
+                <div class="rapport-block">
+                    <div class="rapport-block-title"><i class="bi bi-lightbulb me-1"></i>Recommandations</div>
+                    <div class="rapport-block-text">{{ rapport.recommandations }}</div>
+                </div>
+            </section>
+        </div>
+
+        <div class="rapport-back">
+            <a class="btn btn-light" href="{{ path('consultation_index') }}">
+                <i class="bi bi-arrow-left me-1"></i>Retour
+            </a>
+        </div>
     </div>
 </div>
 
@@ -279,10 +255,7 @@
     <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="rapportEditModalLabel">
-                    <i class="bi bi-pencil-square me-1"></i>
-                    Modifier rapport medical
-                </h5>
+                <h5 class="modal-title" id="rapportEditModalLabel"><i class="bi bi-pencil-square me-1"></i>Modifier rapport medical</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
             </div>
             <div class="modal-body">
@@ -296,10 +269,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="rapportDeleteModalLabel">
-                    <i class="bi bi-trash me-1"></i>
-                    Confirmer la suppression
-                </h5>
+                <h5 class="modal-title" id="rapportDeleteModalLabel"><i class="bi bi-trash me-1"></i>Confirmer la suppression</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
             </div>
             <div class="modal-body">
@@ -326,6 +296,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const modalBody = modal.querySelector('.modal-body');
         if (!modalBody) return;
         modalBody.innerHTML = '<div class="text-muted small">Chargement...</div>';
+
         try {
             const response = await fetch(url, {
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
@@ -333,8 +304,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) {
                 throw new Error('Erreur de chargement');
             }
-            const html = await response.text();
-            modalBody.innerHTML = html;
+            modalBody.innerHTML = await response.text();
         } catch (e) {
             modalBody.innerHTML = '<div class="alert alert-danger mb-0">Impossible de charger le formulaire.</div>';
         }
@@ -351,10 +321,12 @@ document.addEventListener('DOMContentLoaded', () => {
     deleteModal.addEventListener('show.bs.modal', (event) => {
         const trigger = event.relatedTarget;
         if (!trigger) return;
+
         const deleteUrl = trigger.getAttribute('data-delete-url');
         const deleteToken = trigger.getAttribute('data-delete-token');
         const form = deleteModal.querySelector('form');
         const tokenInput = deleteModal.querySelector('input[name="_token"]');
+
         if (form && deleteUrl) {
             form.setAttribute('action', deleteUrl);
         }

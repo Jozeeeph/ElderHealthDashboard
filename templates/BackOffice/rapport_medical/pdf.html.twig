@@ -4,62 +4,109 @@
     <meta charset="utf-8">
     <title>Rapport medical</title>
     <style>
-        body { font-family: DejaVu Sans, Arial, sans-serif; color: #1e2a2f; font-size: 12px; }
-        .header { padding: 8px 0 12px; border-bottom: 1px solid #e0e6ea; }
-        .title { font-size: 20px; font-weight: 700; }
-        .sub { color: #5b6b73; font-size: 12px; }
-        .section { margin-top: 14px; }
-        .label { color: #5b6b73; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
-        .value { font-weight: 600; margin-top: 4px; }
-        .box { border: 1px solid #e0e6ea; border-radius: 6px; padding: 10px; }
+        @page { margin: 16mm 14mm; }
+        body { font-family: DejaVu Sans, Arial, sans-serif; color: #1f2a32; font-size: 12px; }
+        .sheet { border: 1px solid #dde6ec; border-radius: 12px; padding: 12px 14px; }
+        .header { border-bottom: 1px solid #e6edf0; padding-bottom: 10px; }
+        .header-table { width: 100%; border-spacing: 0; }
+        .logo-cell { width: 90px; vertical-align: top; }
+        .logo { width: 70px; height: auto; }
+        .title { font-size: 21px; font-weight: 800; letter-spacing: 0.3px; }
+        .sub { color: #5b6b73; font-size: 11px; margin-top: 2px; }
+        .tagline { color: #2f5b68; font-size: 11px; margin-top: 5px; }
+        .meta { text-align: right; color: #5b6b73; font-size: 10px; }
+        .grid { margin-top: 10px; }
+        .label { color: #5b6b73; font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.08em; }
+        .value { font-weight: 600; margin-top: 3px; }
+        .box { border: 1px solid #e0e6ea; border-radius: 10px; padding: 10px 12px; background: #ffffff; }
+        .row { width: 100%; border-spacing: 10px; }
+        .cell { width: 50%; vertical-align: top; }
+        .pill { display: inline-block; padding: 3px 10px; border-radius: 999px; border: 1px solid #d6e7ec; background: #eef6f8; color: #1a5b6b; font-weight: 700; }
+        .divider { height: 1px; background: #e6edf0; margin: 10px 0; }
+        .footer { margin-top: 12px; color: #6b7a80; font-size: 9.5px; text-align: right; }
+        .accent { height: 4px; border-radius: 999px; background: #0e8aa7; margin-top: 8px; }
+        .subtle { color: #7a8a93; font-size: 10px; }
+        .attachment-img { margin-top: 8px; max-width: 100%; height: auto; border: 1px solid #e0e6ea; border-radius: 6px; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="title">Rapport medical</div>
-        <div class="sub">
-            Consultation {{ rapport.consultation.id }} -
-            {{ rapport.consultation.patient.prenom }} {{ rapport.consultation.patient.nom }}
+    <div class="sheet">
+        <div class="header">
+            <table class="header-table">
+                <tr>
+                    <td class="logo-cell">
+                        {% if logo_data_uri %}
+                            <img class="logo" src="{{ logo_data_uri }}" alt="Elder Healthcare">
+                        {% else %}
+                            <div class="value" style="font-size: 14px; font-weight: 800;">Elder</div>
+                            <div class="label" style="font-size: 10px;">Healthcare</div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="title">Rapport medical clinique</div>
+                        <div class="sub">
+                            Consultation {{ rapport.consultation.id }} -
+                            {{ rapport.consultation.patient.prenom }} {{ rapport.consultation.patient.nom }}
+                        </div>
+                        <div class="tagline">
+                            Compte rendu medical professionnel pour le suivi du patient.
+                        </div>
+                    </td>
+                    <td class="meta">
+                        Ref: RP-{{ rapport.idRapport }}<br>
+                        {{ "now"|date("d/m/Y") }}
+                    </td>
+                </tr>
+            </table>
+            <div class="accent"></div>
+        </div>
+
+        <div class="grid">
+            <table class="row">
+                <tr>
+                    <td class="cell">
+                        <div class="box">
+                            <div class="label">Niveau de gravite</div>
+                            <div class="value"><span class="pill">{{ rapport.niveauGravite }}</span></div>
+                            <div class="divider"></div>
+                            <div class="label">Date du rapport</div>
+                            <div class="value">{{ rapport.dateRapport ? rapport.dateRapport|date('d/m/Y H:i') : '-' }}</div>
+                            <div class="divider"></div>
+                            <div class="label">Patient</div>
+                            <div class="value">{{ rapport.consultation.patient.prenom }} {{ rapport.consultation.patient.nom }}</div>
+                        </div>
+                    </td>
+                    <td class="cell">
+                        <div class="box">
+                            <div class="label">Diagnostic</div>
+                            <div class="value">{{ rapport.diagnostic }}</div>
+                            <div class="divider"></div>
+                            <div class="label">Recommandations</div>
+                            <div class="value">{{ rapport.recommandations }}</div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        {% if attachment %}
+            <div class="grid" style="margin-top: 6px;">
+                <div class="box">
+                    <div class="label">Piece jointe</div>
+                    {% if attachment.missing is defined and attachment.missing %}
+                        <div class="value">Piece jointe indisponible</div>
+                    {% elseif attachment.is_image and attachment.data_uri is defined %}
+                        <img class="attachment-img" src="{{ attachment.data_uri }}" alt="Piece jointe">
+                    {% else %}
+                        <div class="value">Fichier joint: {{ attachment.name }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="footer">
+            Document genere le {{ "now"|date("d/m/Y H:i") }}
         </div>
     </div>
-
-    <div class="section box">
-        <div class="label">Niveau de gravite</div>
-        <div class="value">{{ rapport.niveauGravite }}</div>
-    </div>
-
-    <div class="section box">
-        <div class="label">Date du rapport</div>
-        <div class="value">{{ rapport.dateRapport ? rapport.dateRapport|date('d/m/Y H:i') : '-' }}</div>
-    </div>
-
-    <div class="section box">
-        <div class="label">Diagnostic</div>
-        <div class="value">{{ rapport.diagnostic }}</div>
-    </div>
-
-    <div class="section box">
-        <div class="label">Recommandations</div>
-        <div class="value">{{ rapport.recommandations }}</div>
-    </div>
-
-    {% if attachment %}
-        <div class="section box">
-            <div class="label">Piece jointe</div>
-            {% if attachment.missing is defined and attachment.missing %}
-                <div class="value">Piece jointe indisponible</div>
-            {% elseif attachment.is_image %}
-                {% if attachment.data_uri is defined %}
-                    <div style="margin-top:8px;">
-                        <img src="{{ attachment.data_uri }}" alt="Piece jointe" style="max-width: 100%; height: auto;">
-                    </div>
-                {% else %}
-                    <div class="value">Image jointe indisponible</div>
-                {% endif %}
-            {% else %}
-                <div class="value">Fichier joint</div>
-            {% endif %}
-        </div>
-    {% endif %}
 </body>
 </html>

@@ -1,4 +1,4 @@
-{% block stylesheets %}
+﻿{% block stylesheets %}
 	<link rel="stylesheet" href="{{ asset('css/infermier.css') }}">
 {% endblock %}
 {% block body %}
@@ -16,8 +16,8 @@
 					<a href="{{ path('front_infermier_consultation_index') }}">Consultations</a>
 					<a>Patients</a>
 					<a href="{{ path('front_infermier_rendezvous_index') }}">Rendez-vous</a>
-					<a href="{{ path('equipment_list_index') }}">Equipement</a>
-					<a href="{{ path('forum_post_forum_index') }}">Forum</a>
+					<a href="{{ path('front_equipements_index') }}">Equipement</a>
+					<a href="{{ path('front_infermier_forum_index') }}">Forum</a>
 					<a href="{{ path('front_events_index') }}">Evenements</a>
 					<a>Messages</a>
 				</nav>
@@ -156,41 +156,41 @@
 			<div class="rx-page">
 				<section class="rx-hero">
 					<div>
-						<h2>💊 Prescription</h2>
-						<div class="meta">Consultation {{ consultation.id }} • Dossier patient</div>
+						<h2>ðŸ’Š Prescription</h2>
+						<div class="meta">Consultation {{ consultation.id }} â€¢ Dossier patient</div>
 					</div>
 					<div class="rx-actions">
-						<a class="btn-sm primary" href="{{ path('front_infermier_prescription_edit', {'id': prescription.idPrescription}) }}">✏️ Modifier</a>
-						<a class="btn-sm" href="{{ path('front_infermier_prescription_pdf', {'id': prescription.idPrescription}) }}">📄 PDF</a>
-						<a class="btn-sm" href="{{ path('front_infermier_consultation_index') }}">⬅️ Retour</a>
+						<a class="btn-sm primary" href="{{ path('front_infermier_prescription_edit', {'id': prescription.idPrescription}) }}">âœï¸ Modifier</a>
+						<a class="btn-sm" href="{{ path('front_infermier_prescription_pdf', {'id': prescription.idPrescription}) }}">ðŸ“„ PDF</a>
+						<a class="btn-sm" href="{{ path('front_infermier_consultation_index') }}">â¬…ï¸ Retour</a>
 					</div>
 				</section>
 
 				<section class="rx-grid">
 					<div class="rx-card">
-						<h3>🩺 Consultation</h3>
-						<span class="rx-chip">🧑‍🦳 Patient: {{ consultation.patient.prenom }} {{ consultation.patient.nom }}</span>
-						<span class="rx-chip">🩺 Type: {{ consultation.typeConsultation }}</span>
-						<span class="rx-chip">📅 Date: {{ consultation.dateConsultation ? consultation.dateConsultation|date('d/m/Y') : '-' }}</span>
-						<span class="rx-chip">⏰ Heure: {{ consultation.heureConsultation ? consultation.heureConsultation|date('H:i') : '-' }}</span>
+						<h3>ðŸ©º Consultation</h3>
+						<span class="rx-chip">ðŸ§‘â€ðŸ¦³ Patient: {{ consultation.patient.prenom }} {{ consultation.patient.nom }}</span>
+						<span class="rx-chip">ðŸ©º Type: {{ consultation.typeConsultation }}</span>
+						<span class="rx-chip">ðŸ“… Date: {{ consultation.dateConsultation ? consultation.dateConsultation|date('d/m/Y') : '-' }}</span>
+						<span class="rx-chip">â° Heure: {{ consultation.heureConsultation ? consultation.heureConsultation|date('H:i') : '-' }}</span>
 					</div>
 
 					<div class="rx-card">
-						<h3>🧪 Détails prescription</h3>
-						<span class="rx-chip">🔁 Fréquence: {{ prescription.frequence }}</span>
-						<span class="rx-chip">💧 Dosage: {{ prescription.dosage }}</span>
-						<span class="rx-chip">⏳ Durée: {{ prescription.dureeTraitement }}</span>
-						<span class="rx-chip">🗓️ Période: {{ prescription.dateDebut ? prescription.dateDebut|date('d/m/Y') : '-' }} - {{ prescription.dateFin ? prescription.dateFin|date('d/m/Y') : '-' }}</span>
+						<h3>ðŸ§ª DÃ©tails prescription</h3>
+						<span class="rx-chip">ðŸ” FrÃ©quence: {{ prescription.frequence }}</span>
+						<span class="rx-chip">ðŸ’§ Dosage: {{ prescription.dosage }}</span>
+						<span class="rx-chip">â³ DurÃ©e: {{ prescription.dureeTraitement }}</span>
+						<span class="rx-chip">ðŸ—“ï¸ PÃ©riode: {{ prescription.dateDebut ? prescription.dateDebut|date('d/m/Y') : '-' }} - {{ prescription.dateFin ? prescription.dateFin|date('d/m/Y') : '-' }}</span>
 					</div>
 				</section>
 
 				<section class="rx-section">
 					<div class="rx-panel">
-						<strong>💊 Médicaments</strong>
+						<strong>ðŸ’Š MÃ©dicaments</strong>
 						<p>{{ prescription.medicaments }}</p>
 					</div>
 					<div class="rx-panel">
-						<strong>🧾 Consignes</strong>
+						<strong>ðŸ§¾ Consignes</strong>
 						<p>{{ prescription.consignes ?: '-' }}</p>
 					</div>
 				</section>
@@ -199,10 +199,12 @@
 					<form method="post" action="{{ path('front_infermier_prescription_delete', {'id': prescription.idPrescription}) }}"
 						onsubmit="return confirm('Supprimer cette prescription ?');">
 						<input type="hidden" name="_token" value="{{ csrf_token('delete_prescription_' ~ prescription.idPrescription) }}">
-						<button class="btn-sm danger" type="submit">🗑️ Supprimer</button>
+						<button class="btn-sm danger" type="submit">ðŸ—‘ï¸ Supprimer</button>
 					</form>
 				</section>
 			</div>
 		</main>
 	</div>
 {% endblock %}
+
+

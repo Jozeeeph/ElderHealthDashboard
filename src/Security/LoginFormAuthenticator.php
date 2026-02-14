@@ -64,7 +64,7 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
         $roles = $token->getUser()->getRoles();
 
         if (in_array('ROLE_PATIENT', $roles, true)) {
-            return new RedirectResponse('/patient');
+            return new RedirectResponse($this->urlGenerator->generate('app_patient_interfce'));
         }
 
         if (in_array('ROLE_PERSONNEL_MEDICAL', $roles, true)) {
