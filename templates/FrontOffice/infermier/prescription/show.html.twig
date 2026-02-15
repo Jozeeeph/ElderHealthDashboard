@@ -1,4 +1,4 @@
-﻿{% block stylesheets %}
+{% block stylesheets %}
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="{{ asset('css/infermier.css') }}">
 {% endblock %}
@@ -131,41 +131,41 @@
         <div class="rx-page">
             <section class="rx-hero">
                 <div>
-                    <h2>💊 Prescription</h2>
-                    <div class="meta">Consultation {{ consultation.id }} • Dossier patient</div>
+                    <h2>Prescription</h2>
+                    <div class="meta">Consultation {{ consultation.id }} - Dossier patient</div>
                 </div>
                 <div class="rx-actions">
-                    <a class="btn-sm btn-primary" href="{{ path('front_infermier_prescription_edit', {'id': prescription.idPrescription}) }}">✏️ Modifier</a>
-                    <a class="btn-sm btn-secondary" href="{{ path('front_infermier_prescription_pdf', {'id': prescription.idPrescription}) }}">📄 PDF</a>
-                    <a class="btn-sm btn-secondary" href="{{ path('front_infermier_consultation_index') }}">⬅️ Retour</a>
+                    <a class="btn-sm btn-primary" href="{{ path('front_infermier_prescription_edit', {'id': prescription.idPrescription}) }}">Modifier</a>
+                    <a class="btn-sm btn-secondary" href="{{ path('front_infermier_prescription_pdf', {'id': prescription.idPrescription}) }}">PDF</a>
+                    <a class="btn-sm btn-secondary" href="{{ path('front_infermier_consultation_index') }}">Retour</a>
                 </div>
             </section>
 
             <section class="rx-grid">
                 <div class="rx-card">
-                    <h3>🩺 Consultation</h3>
-                    <span class="rx-chip">👤 Patient: {{ consultation.patient.prenom }} {{ consultation.patient.nom }}</span>
-                    <span class="rx-chip">🩹 Type: {{ consultation.typeConsultation }}</span>
-                    <span class="rx-chip">📅 Date: {{ consultation.dateConsultation ? consultation.dateConsultation|date('d/m/Y') : '-' }}</span>
-                    <span class="rx-chip">⏰ Heure: {{ consultation.heureConsultation ? consultation.heureConsultation|date('H:i') : '-' }}</span>
+                    <h3>Consultation</h3>
+                    <span class="rx-chip">Patient: {{ consultation.patient.prenom }} {{ consultation.patient.nom }}</span>
+                    <span class="rx-chip">Type: {{ consultation.typeConsultation }}</span>
+                    <span class="rx-chip">Date: {{ consultation.dateConsultation ? consultation.dateConsultation|date('d/m/Y') : '-' }}</span>
+                    <span class="rx-chip">Heure: {{ consultation.heureConsultation ? consultation.heureConsultation|date('H:i') : '-' }}</span>
                 </div>
 
                 <div class="rx-card">
-                    <h3>📝 Détails prescription</h3>
-                    <span class="rx-chip">🔁 Fréquence: {{ prescription.frequence }}</span>
-                    <span class="rx-chip">💊 Dosage: {{ prescription.dosage }}</span>
-                    <span class="rx-chip">⏳ Durée: {{ prescription.dureeTraitement }}</span>
-                    <span class="rx-chip">📆 Période: {{ prescription.dateDebut ? prescription.dateDebut|date('d/m/Y') : '-' }} - {{ prescription.dateFin ? prescription.dateFin|date('d/m/Y') : '-' }}</span>
+                    <h3>Details prescription</h3>
+                    <span class="rx-chip">Frequence: {{ prescription.frequence }}</span>
+                    <span class="rx-chip">Dosage: {{ prescription.dosage }}</span>
+                    <span class="rx-chip">Duree: {{ prescription.dureeTraitement }}</span>
+                    <span class="rx-chip">Periode: {{ prescription.dateDebut ? prescription.dateDebut|date('d/m/Y') : '-' }} - {{ prescription.dateFin ? prescription.dateFin|date('d/m/Y') : '-' }}</span>
                 </div>
             </section>
 
             <section class="rx-section">
                 <div class="rx-panel">
-                    <strong>💊 Médicaments</strong>
+                    <strong>Medicaments</strong>
                     <p>{{ prescription.medicaments }}</p>
                 </div>
                 <div class="rx-panel">
-                    <strong>📝 Consignes</strong>
+                    <strong>Consignes</strong>
                     <p>{{ prescription.consignes ?: '-' }}</p>
                 </div>
             </section>
@@ -173,7 +173,7 @@
             <section class="consultation-actions mt-3">
                 <form method="post" action="{{ path('front_infermier_prescription_delete', {'id': prescription.idPrescription}) }}" onsubmit="return confirm('Supprimer cette prescription ?');">
                     <input type="hidden" name="_token" value="{{ csrf_token('delete_prescription_' ~ prescription.idPrescription) }}">
-                    <button class="btn btn-danger btn-sm" type="submit">❌ Supprimer</button>
+                    <button class="btn btn-danger btn-sm" type="submit">Supprimer</button>
                 </form>
             </section>
         </div>
