@@ -1,27 +1,28 @@
 ﻿{% block stylesheets %}
-	<link rel="stylesheet" href="{{ asset('css/infermier.css') }}">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{{ asset('css/infermier.css') }}">
 {% endblock %}
+
 {% block body %}
-	<div class="nurse-app">
-		{% include 'FrontOffice/infermier/_header.html.twig' %}
+<div class="nurse-app">
+    {% include 'FrontOffice/infermier/_header.html.twig' %}
 
-		<main class="nurse-main">
-			<div class="popup-backdrop">
-				<section class="popup-card">
-					<div class="popup-head">
-						<div>
-							<h2>ðŸ©ºðŸ§¾ Modifier rapport medical</h2>
-							<p class="muted">ðŸ§¾ Consultation {{ consultation.id }}</p>
-						</div>
-						<a class="btn-outline" href="{{ path('front_infermier_rapport_show', {'id': rapport.idRapport}) }}">Retour</a>
-					</div>
-					<div class="popup-body">
-						{{ include('FrontOffice/infermier/rapport_medical/_form.html.twig', { form: form, submit_label: 'Mettre a jour' }) }}
-					</div>
-				</section>
-			</div>
-		</main>
-	</div>
+    <main class="nurse-main">
+        <div class="popup-backdrop">
+            <section class="popup-card">
+                <div class="popup-head d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2>🩺 ✏️ Modifier rapport médical</h2>
+                        <p class="muted">🩹 Consultation {{ consultation.id }}</p>
+                    </div>
+                    <a class="btn btn-outline-secondary" href="{{ path('front_infermier_rapport_show', {'id': rapport.idRapport}) }}">⬅️ Retour</a>
+                </div>
+
+                <div class="popup-body mt-3">
+                    {{ include('FrontOffice/infermier/rapport_medical/_form.html.twig', { form: form, submit_label: 'Mettre à jour' }) }}
+                </div>
+            </section>
+        </div>
+    </main>
+</div>
 {% endblock %}
-
-
