@@ -154,25 +154,39 @@
 {% block body %}
   <div class="cart-page">
     <div class="cart-shell">
+      {% for message in app.flashes('success') %}
+        <div class="alert alert-success mb-3" role="alert">{{ message }}</div>
+      {% endfor %}
+      {% for message in app.flashes('warning') %}
+        <div class="alert alert-warning mb-3" role="alert">{{ message }}</div>
+      {% endfor %}
+      {% for message in app.flashes('error') %}
+        <div class="alert alert-danger mb-3" role="alert">{{ message }}</div>
+      {% endfor %}
+
       <div class="cart-hero">
         <div>
           <h1 class="cart-title">Votre panier</h1>
-          <p class="cart-sub">Vérifiez vos équipements avant validation.</p>
+          <p class="cart-sub">Verifiez vos equipements avant validation.</p>
         </div>
         <div class="cart-meta">
-          Articles : <strong>{{ equipements|length }}</strong>
+          Articles : <strong>{{ items_count|default(0) }}</strong>
         </div>
       </div>
 
-      {% if equipements is empty %}
+      {% if lines is empty %}
         <div class="cart-card cart-empty">
           <h3>Le panier est vide</h3>
-          <p>Ajoutez des équipements pour passer commande.</p>
+          <p>Ajoutez des equipements pour passer commande.</p>
+          <a href="{{ path('front_equipements_index') }}" class="cart-btn secondary mt-3">
+            <i class="bi bi-bag-plus"></i>
+            Acheter plus d'equipements
+          </a>
         </div>
       {% else %}
         <div class="cart-card">
           <div class="cart-head">
-            <strong>Équipements sélectionnés</strong>
+            <strong>Equipements selectionnes</strong>
             <span class="cart-meta">Total : {{ total }} DT</span>
           </div>
           <div class="table-responsive">
@@ -180,15 +194,34 @@
               <thead>
                 <tr>
                   <th>Nom</th>
+                  <th>Quantite</th>
                   <th>Prix</th>
+                  <th>Sous-total</th>
                   <th class="text-end">Action</th>
                 </tr>
               </thead>
               <tbody>
-                {% for e in equipements %}
+                {% for line in lines %}
+                  {% set e = line.equipement %}
                   <tr>
-                    <td><strong>{{ e.nom ?? "-" }}</strong></td>
+                    <td><strong>{{ e.nom ?? '-' }}</strong></td>
+                    <td>
+                      <form action="{{ path('cart_update', {id: e.id}) }}" method="post" class="d-inline-flex align-items-center gap-2">
+                        <input
+                          type="number"
+                          name="quantity"
+                          min="1"
+                          max="{{ e.quantiteDisponible ?? 9999 }}"
+                          value="{{ line.quantity }}"
+                          class="form-control form-control-sm"
+                          style="width: 90px;"
+                          onchange="this.form.submit()"
+                        >
+                        <button type="submit" class="cart-btn secondary py-1 px-2">Mettre a jour</button>
+                      </form>
+                    </td>
                     <td>{{ e.prix ?? '0.00' }} DT</td>
+                    <td>{{ line.line_total }} DT</td>
                     <td class="text-end">
                       <a href="{{ path('cart_remove', {id: e.id}) }}" class="cart-btn danger">Retirer</a>
                     </td>
@@ -204,7 +237,7 @@
           <div class="cart-actions px-3 pb-3">
             <a href="{{ path('front_equipements_index') }}" class="cart-btn secondary">
               <i class="bi bi-arrow-left"></i>
-              Retour aux équipements
+              Retour aux equipements
             </a>
             <form action="{{ path('cart_checkout') }}" method="post">
               <button type="submit" class="cart-btn primary">Valider la commande</button>

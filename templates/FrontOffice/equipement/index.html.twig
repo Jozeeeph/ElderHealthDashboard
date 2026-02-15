@@ -31,14 +31,6 @@
 			<section class="hero-section">
 				<h1 class="hero-title">Equipements Medicaux</h1>
 				<p class="hero-subtitle">Decouvrez notre selection d'equipements medicaux de qualite pour professionnels et particuliers</p>
-				<div class="d-flex justify-content-end mb-3">
-					<a href="{{ path('cart_view') }}" class="btn btn-outline-secondary position-relative">
-						<i class="bi bi-cart"></i>
-						Panier
-						<span id="cart-count" class="badge bg-danger rounded-pill ms-2">{{ (app.session.get('cart')|default([]))|length }}</span>
-					</a>
-				</div>
-
 				<!-- Search Bar -->
 				<div class="search-container">
 					<div class="search-box">
