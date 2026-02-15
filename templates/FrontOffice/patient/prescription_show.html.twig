@@ -78,30 +78,7 @@
 				margin-top: 4px;
 			}
 		</style>
-		<header class="topbar">
-			<div class="topbar-inner">
-				<a href="{{ path('app_public_site') }}" class="brand">
-					<img src="{{ asset('img/logo.png') }}" alt="Elder HealthCare">
-					<span class="brand-text">
-						<span class="fw-bold text-primary">Elder</span>
-						<span class="fw-bold text-warning ms-1">HealthCare</span>
-					</span>
-				</a>
-
-				<nav class="top-nav">
-					<a href="{{ path('app_patient_interfce') }}">Accueil</a>
-					<a href="{{ path('patient_consultations') }}">Consultations</a>
-					<a href="{{ path('front_equipements_index') }}">Equipement</a>
-					<a href="{{ path('forum_post_forum_index') }}">Forum</a>
-					<a href="{{ path('front_events_index') }}">Evenements</a>
-				</nav>
-
-				<div class="profile">
-					<img src="{{ asset('img/home.jpg') }}" alt="Profil">
-					<strong>{{ patient.prenom ?? 'Patient' }}</strong>
-				</div>
-			</div>
-		</header>
+		{% include 'FrontOffice/patient/_header.html.twig' %}
 
 		<main class="patient-main">
 			<section class="cute-header">

@@ -129,82 +129,64 @@
 					<p>Voici la liste de vos consultations.</p>
 				</section>
 
-				<section class="content-grid" style="grid-template-columns: 1fr;">
+				{% for message in app.flashes('medication_success') %}
+					<div class="alert alert-success" role="alert" style="margin-top: 12px;">{{ message }}</div>
+				{% endfor %}
+				{% for message in app.flashes('medication_error') %}
+					<div class="alert alert-danger" role="alert" style="margin-top: 12px;">{{ message }}</div>
+				{% endfor %}
+
+								<section class="content-grid" style="grid-template-columns: 1fr;">
 					{% for consultation in consultations %}
 						<div class="card consult-card">
 							<div>
-								<h2>🩺 Consultation #{{ consultation.id }}</h2>
+								<h2>Consultation #{{ consultation.id }}</h2>
 								<div class="consult-meta">
 									<div class="consult-row">
-										<div class="consult-label">📅 Date</div>
+										<div class="consult-label">Date</div>
 										<div class="consult-value">{{ consultation.dateConsultation ? consultation.dateConsultation|date('d/m/Y') : '-' }}</div>
 									</div>
 									<div class="consult-row">
-										<div class="consult-label">⏰ Heure</div>
+										<div class="consult-label">Heure</div>
 										<div class="consult-value">{{ consultation.heureConsultation ? consultation.heureConsultation|date('H:i') : '-' }}</div>
 									</div>
 									<div class="consult-row">
-										<div class="consult-label">🧾 Type</div>
+										<div class="consult-label">Type</div>
 										<div class="consult-value">{{ consultation.typeConsultation }}</div>
 									</div>
 									<div class="consult-row">
-										<div class="consult-label">📍 Lieu</div>
+										<div class="consult-label">Lieu</div>
 										<div class="consult-value">{{ consultation.lieu }}</div>
 									</div>
 									<div class="consult-row">
-										<div class="consult-label">👨‍⚕️ Personnel</div>
-										<div class="consult-value">{{ consultation.personnelMedical.prenom }}
-											{{ consultation.personnelMedical.nom }}</div>
+										<div class="consult-label">Personnel</div>
+										<div class="consult-value">{{ consultation.personnelMedical.prenom }} {{ consultation.personnelMedical.nom }}</div>
 									</div>
 								</div>
 							</div>
 							<div class="consult-docs">
 								<div class="item">
-									<strong>🧾 Rapport médical</strong>
+									<strong>Rapport medical</strong>
 									{% if consultation.rapportMedical %}
 										<p>
 											<a class="btn ghost" href="{{ path('patient_rapport_show', {'id': consultation.rapportMedical.idRapport}) }}">Voir rapport</a>
-											<a class="btn ghost" href="{{ path('rapport_medical_pdf', {'id': consultation.rapportMedical.idRapport}) }}">Télécharger PDF</a>
+											<a class="btn ghost" href="{{ path('patient_rapport_pdf', {'id': consultation.rapportMedical.idRapport}) }}">Telecharger PDF</a>
 										</p>
 									{% else %}
 										<p>Aucun rapport disponible.</p>
 									{% endif %}
 								</div>
 								<div class="item">
-									<strong>💊 Prescription</strong>
+									<strong>Prescription</strong>
 									{% if consultation.prescription %}
 										<p>
 											<a class="btn primary" href="{{ path('patient_prescription_show', {'id': consultation.prescription.idPrescription}) }}">Voir prescription</a>
-											<a class="btn ghost" href="{{ path('prescription_pdf', {'id': consultation.prescription.idPrescription}) }}">Télécharger PDF</a>
+											<a class="btn ghost" href="{{ path('patient_prescription_pdf', {'id': consultation.prescription.idPrescription}) }}">Telecharger PDF</a>
 										</p>
 									{% else %}
 										<p>Aucune prescription disponible.</p>
 									{% endif %}
 								</div>
-							</div>
-						</div>
-						<div class="consult-docs">
-							<div class="item">
-								<strong>🧾 Rapport médical</strong>
-								{% if consultation.rapportMedical %}
-									<p>
-										<a class="btn ghost" href="{{ path('patient_rapport_show', {'id': consultation.rapportMedical.idRapport}) }}">Voir rapport</a>
-										<a class="btn ghost" href="{{ path('patient_rapport_pdf', {'id': consultation.rapportMedical.idRapport}) }}">Télécharger PDF</a>
-									</p>
-								{% else %}
-									<p>Aucun rapport disponible.</p>
-								{% endif %}
-							</div>
-							<div class="item">
-								<strong>💊 Prescription</strong>
-								{% if consultation.prescription %}
-									<p>
-										<a class="btn primary" href="{{ path('patient_prescription_show', {'id': consultation.prescription.idPrescription}) }}">Voir prescription</a>
-										<a class="btn ghost" href="{{ path('patient_prescription_pdf', {'id': consultation.prescription.idPrescription}) }}">Télécharger PDF</a>
-									</p>
-								{% else %}
-									<p>Aucune prescription disponible.</p>
-								{% endif %}
 							</div>
 						</div>
 					{% endfor %}
@@ -213,3 +195,5 @@
 		</div>
 	{% endblock %}
 </html>
+
+

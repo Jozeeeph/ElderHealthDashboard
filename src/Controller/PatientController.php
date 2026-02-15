@@ -8,7 +8,10 @@ use App\Entity\RapportMedical;
 use App\Enum\Role;
 use App\Form\PatientProfileType;
 use App\Repository\ConsultationRepository;
+use App\Repository\PrescriptionDoseAckRepository;
+use App\Repository\PrescriptionRepository;
 use App\Repository\UtilisateurRepository;
+use App\Service\PrescriptionReminderScheduler;
 use Doctrine\ORM\EntityManagerInterface;
 use Dompdf\Dompdf;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -31,7 +34,7 @@ class PatientController extends AbstractController
     {
         $patient = $this->resolveCurrentPatient($utilisateurRepository);
         if (!$patient) {
-            $this->addFlash('danger', 'Patient introuvable.');
+            $this->addFlash('medication_error', 'Patient introuvable.');
             return $this->redirectToRoute('app_patient_interfce');
         }
 
@@ -237,6 +240,74 @@ class PatientController extends AbstractController
         );
 
         return $response;
+    }
+
+    #[Route('/patient/prescription/reminder/done', name: 'patient_prescription_reminder_done', methods: ['POST'])]
+    public function markPrescriptionReminderDone(
+        Request $request,
+        UtilisateurRepository $utilisateurRepository,
+        PrescriptionRepository $prescriptionRepository,
+        PrescriptionDoseAckRepository $prescriptionDoseAckRepository,
+        PrescriptionReminderScheduler $prescriptionReminderScheduler,
+        EntityManagerInterface $em
+    ): Response {
+        $patient = $this->resolveCurrentPatient($utilisateurRepository);
+        if (!$patient) {
+            $this->addFlash('danger', 'Patient introuvable.');
+            return $this->redirectToRoute('app_patient_interfce');
+        }
+
+        $prescriptionId = (int) $request->request->get('prescription_id');
+        $scheduledAtRaw = trim((string) $request->request->get('scheduled_at'));
+        $tokenId = 'patient_med_reminder_' . $prescriptionId . '_' . $scheduledAtRaw;
+        if (!$this->isCsrfTokenValid($tokenId, (string) $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }
+
+        $prescription = $prescriptionRepository->find($prescriptionId);
+        if (!$prescription instanceof Prescription) {
+            throw $this->createNotFoundException('Prescription introuvable.');
+        }
+
+        $consultation = $prescription->getConsultation();
+        if (!$consultation || $consultation->getPatient()?->getId() !== $patient->getId()) {
+            throw $this->createNotFoundException('Prescription introuvable.');
+        }
+
+        $scheduledAt = \DateTimeImmutable::createFromFormat('Y-m-d H:i', $scheduledAtRaw);
+        if (!$scheduledAt) {
+            $this->addFlash('medication_error', 'Horaire de rappel invalide.');
+            return $this->redirectToRoute('patient_consultations');
+        }
+
+        $slots = $prescriptionReminderScheduler->buildSlotsForDate($prescription, $scheduledAt->setTime(0, 0));
+        $validSlot = false;
+        foreach ($slots as $slot) {
+            if ($slot->format('Y-m-d H:i') === $scheduledAt->format('Y-m-d H:i')) {
+                $validSlot = true;
+                break;
+            }
+        }
+
+        if (!$validSlot) {
+            $this->addFlash('medication_error', 'Ce rappel ne correspond pas a votre prescription.');
+            return $this->redirectToRoute('patient_consultations');
+        }
+
+        $prescriptionDoseAckRepository->markDone($prescription, $scheduledAt);
+        try {
+            $em->flush();
+        } catch (\Throwable $e) {
+            if (str_contains((string) $e->getMessage(), 'prescription_dose_ack')) {
+                $this->addFlash('medication_error', 'Les rappels ne sont pas initialises en base. Lancez les migrations Doctrine.');
+                return $this->redirectToRoute('patient_consultations');
+            }
+            throw $e;
+        }
+
+        $this->addFlash('medication_success', 'Dose confirmee. Le rappel est masque.');
+
+        return $this->redirectToRoute('patient_consultations');
     }
 
 
