@@ -30,3 +30,12 @@ services:
         public: true
         tags: ['controller.service_arguments']
 
+    App\EventListener\CommentNotificationListener:
+        tags:
+            - { name: kernel.event_listener, event: App\Event\CommentCreatedEvent, method: __invoke }
+
+    App\EventListener\AiMedicalAgentListener:
+        tags:
+            - { name: kernel.event_listener, event: App\Event\PostCreatedEvent }
+
+

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+	</head>
+
+	<body style="margin:0;padding:0;background:#f4f6f9;font-family:Arial,Helvetica,sans-serif;">
+
+		<table width="100%" cellspacing="0" cellpadding="0" style="background:#f4f6f9;padding:30px 0;">
+			<tr>
+				<td
+					align="center">
+
+					<!-- CARD -->
+					<table
+						width="600" style="background:white;border-radius:12px;padding:30px;box-shadow:0 4px 15px rgba(0,0,0,0.08);">
+
+						<!-- HEADER -->
+						<tr>
+							<td style="text-align:center;padding-bottom:20px;">
+								<h2 style="margin:0;color:#0d6efd;">ElderHealthCare</h2>
+								<span style="color:#888;font-size:14px;">Notification Forum</span>
+							</td>
+						</tr>
+
+						<!-- GREETING -->
+						<tr>
+							<td style="font-size:16px;color:#333;padding-bottom:15px;">
+								Bonjour
+								<b>{{ toName }}</b>,
+							</td>
+						</tr>
+
+						<!-- MESSAGE -->
+						<tr>
+							<td style="font-size:15px;color:#555;padding-bottom:20px;">
+								Quelqu’un a commenté votre publication :
+							</td>
+						</tr>
+
+						<!-- POST TITLE BOX -->
+						<tr>
+							<td style="background:#f1f7ff;border-left:4px solid #0d6efd;padding:15px;border-radius:6px;font-weight:bold;color:#222;">
+								{{ postTitle }}
+							</td>
+						</tr>
+
+						<!-- SUMMARY -->
+						<tr>
+							<td style="padding-top:25px;font-size:15px;color:#444;">
+								<b>Résumé du commentaire :</b>
+							</td>
+						</tr>
+
+						<tr>
+							<td style="background:#f9fafc;padding:15px;border-radius:8px;margin-top:10px;color:#333;">
+								{{ commentSummary }}
+							</td>
+						</tr>
+
+						<!-- BUTTON -->
+						<tr>
+							<td align="center" style="padding-top:30px;">
+								<a href="{{ url('forum_post_forum_index') }} " style="
+																				background:#0d6efd;
+																				color:white;
+																				padding:12px 22px;
+																				text-decoration:none;
+																				border-radius:25px;
+																				font-weight:bold;
+																				display:inline-block;
+																				">
+									Voir la discussion
+								</a>
+							</td>
+						</tr>
+
+						<!-- FOOTER -->
+						<tr>
+							<td style="padding-top:35px;font-size:12px;color:#999;text-align:center;">
+								©
+								{{ "now"|date("Y") }}
+								ElderHealthCare — Plateforme médicale intelligente
+							</td>
+						</tr>
+
+					</table>
+					<!-- END CARD -->
+
+				</td>
+			</tr>
+		</table>
+
+	</body>
+</html>
