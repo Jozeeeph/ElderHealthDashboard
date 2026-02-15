@@ -131,7 +131,7 @@
 						<p>{{ prescription.consignes ?: '-' }}</p>
 					</div>
 					<div class="actions">
-						<a class="btn primary" href="{{ path('prescription_pdf', {'id': prescription.idPrescription}) }}">ðŸ“„ TÃ©lÃ©charger PDF</a>
+						<a class="btn primary" href="{{ path('patient_prescription_pdf', {'id': prescription.idPrescription}) }}">ðŸ“„ TÃ©lÃ©charger PDF</a>
 						<a class="btn ghost" href="{{ path('patient_consultations') }}">â¬…ï¸ Retour</a>
 					</div>
 				</div>
