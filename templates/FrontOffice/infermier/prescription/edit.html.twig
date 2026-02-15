@@ -1,11 +1,8 @@
-﻿{% block stylesheets %}
+{% block stylesheets %}
 	<link rel="stylesheet" href="{{ asset('css/infermier.css') }}">
 {% endblock %}
 {% block body %}
 	<div class="nurse-app">
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 		<style>
 			.rx-page{
 				background:
@@ -106,40 +103,13 @@
 				}
 			}
 		</style>
->>>>>>> consultationnn
 		{% include 'FrontOffice/infermier/_header.html.twig' %}
-=======
-		<header class="topbar">
-			<div class="topbar-inner">
-				<a href="{{ path('app_public_site') }}" class="brand">
-					<img src="{{ asset('img/logo.png') }}" alt="Elder HealthCare">
-					<span>Elder<span>HealthCare</span></span>
-				</a>
-				<nav class="top-nav">
-					<a href="{{ path('front_infermier_consultation_index') }}">Consultations</a>
-					<a>Patients</a>
-					<a href="{{ path('front_infermier_rendezvous_index') }}">Rendez-vous</a>
-					<a href="{{ path('front_equipements_index') }}">Equipement</a>
-					<a href="{{ path('front_infermier_forum_index') }}">Forum</a>
-					<a href="{{ path('front_events_index') }}">Evenements</a>
-					<a>Messages</a>
-				</nav>
-				<div class="profile">
-					<img src="{{ asset('img/home.jpg') }}" alt="Profil">
-					<div class="who">
-						<small>Infirmier</small>
-						<strong>{{ nurseName|default('Infirmier') }}</strong>
-					</div>
-				</div>
-			</div>
-		</header>
->>>>>>> rendezvous_client
 
 		<main class="nurse-main rx-page">
 			<section class="rx-hero">
 				<div>
-					<h2>ðŸ’Š Mise Ã  jour de prescription</h2>
-					<div class="meta">Consultation {{ consultation.id }} â€¢ Suivi thÃ©rapeutique</div>
+					<h2>Mise a jour de prescription</h2>
+					<div class="meta">Consultation {{ consultation.id }} - Suivi therapeutique</div>
 				</div>
 				<a class="btn-outline" href="{{ path('front_infermier_prescription_show', {'id': prescription.idPrescription}) }}">Retour</a>
 			</section>
@@ -147,22 +117,20 @@
 			<section class="rx-card">
 				<aside class="rx-side">
 					<div>
-						<h3>ðŸ©º Soins et sÃ©curitÃ©</h3>
-						<p>VÃ©rifiez la posologie, la frÃ©quence et la durÃ©e pour un traitement optimal.</p>
-						<span class="chip">âœ… Suivi mÃ©dical</span>
+						<h3>Soins et securite</h3>
+						<p>Verifiez la posologie, la frequence et la duree pour un traitement optimal.</p>
+						<span class="chip">Suivi medical</span>
 					</div>
 					<div>
-						<p>ðŸ’Š MÃ©dicaments adaptÃ©s</p>
-						<p>ðŸ“† PÃ©riode contrÃ´lÃ©e</p>
-						<p>ðŸ§¾ Consignes claires</p>
+						<p>Medicaments adaptes</p>
+						<p>Periode controlee</p>
+						<p>Consignes claires</p>
 					</div>
 				</aside>
 				<div class="rx-form">
-					{{ include('FrontOffice/infermier/prescription/_form.html.twig', { form: form, submit_label: 'Mettre Ã  jour' }) }}
+					{{ include('FrontOffice/infermier/prescription/_form.html.twig', { form: form, submit_label: 'Mettre a jour' }) }}
 				</div>
 			</section>
 		</main>
 	</div>
 {% endblock %}
-
-
