@@ -53,8 +53,10 @@ class TypeEvent
     /**
      * @var Collection<int, Event>
      */
-    #[ORM\OneToMany(targetEntity: Event::class, mappedBy: 'type')]
+    // TypeEvent.php
+    #[ORM\OneToMany(mappedBy: 'type', targetEntity: Event::class, cascade: ['remove'], orphanRemoval: true)]
     private Collection $events;
+
 
     public function __construct()
     {
@@ -62,24 +64,58 @@ class TypeEvent
         $this->isActive = true; // (optionnel) valeur par défaut
     }
 
-    public function getId(): ?int { return $this->id; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function getLibelle(): ?string { return $this->libelle; }
-    public function setLibelle(string $libelle): static { $this->libelle = $libelle; return $this; }
+    public function getLibelle(): ?string
+    {
+        return $this->libelle;
+    }
+    public function setLibelle(string $libelle): static
+    {
+        $this->libelle = $libelle;
+        return $this;
+    }
 
-    public function getDescription(): ?string { return $this->description; }
-    public function setDescription(?string $description): static { $this->description = $description; return $this; }
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
+        return $this;
+    }
 
-    public function getCouleur(): ?string { return $this->couleur; }
-    public function setCouleur(?string $couleur): static { $this->couleur = $couleur; return $this; }
+    public function getCouleur(): ?string
+    {
+        return $this->couleur;
+    }
+    public function setCouleur(?string $couleur): static
+    {
+        $this->couleur = $couleur;
+        return $this;
+    }
 
-    public function isActive(): ?bool { return $this->isActive; }
-    public function setIsActive(bool $isActive): static { $this->isActive = $isActive; return $this; }
+    public function isActive(): ?bool
+    {
+        return $this->isActive;
+    }
+    public function setIsActive(bool $isActive): static
+    {
+        $this->isActive = $isActive;
+        return $this;
+    }
 
     /**
      * @return Collection<int, Event>
      */
-    public function getEvents(): Collection { return $this->events; }
+    public function getEvents(): Collection
+    {
+        return $this->events;
+    }
 
     public function addEvent(Event $event): static
     {

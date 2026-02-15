@@ -268,4 +268,42 @@
     margin-left: auto;
   }
 }
+/* === INLINE CHIPS (Capacité / Statut / Vous participez) === */
+.ev-inline{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.ev-chip{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #f6f7fb;
+  border: 1px solid rgba(0,0,0,.08);
+  color: #1f2a37;
+  font-size: 13px;
+  line-height: 1;
+}
+
+.ev-chip i{
+  font-size: 14px;
+  opacity: .85;
+}
+
+.ev-chip strong{
+  font-weight: 700;
+}
+
+/* badge "Vous participez" */
+.ev-chip--ok{
+  background: rgba(25,135,84,.10);
+  border-color: rgba(25,135,84,.35);
+  color: #198754;
+  font-weight: 600;
+}
 

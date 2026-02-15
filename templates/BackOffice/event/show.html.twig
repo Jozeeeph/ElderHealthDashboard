@@ -1,0 +1,184 @@
+{% extends 'base.html.twig' %}
+{% block title %}Détails Événement{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {# ✅ on garde ton style "index joli" #}
+    <link rel="stylesheet" href="{{ asset('css/forum.css') }}">
+
+    {# ✅ si tu veux absolument sb-admin aussi, tu peux le garder (optionnel) #}
+    <link rel="stylesheet" href="{{ asset('css/sb-admin-2.min.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="forum-wrap">
+    <div class="container">
+
+        {# ✅ header comme index #}
+        <div class="forum-header">
+            <div>
+                <h2 class="forum-title">Détails de l’événement</h2>
+                <div class="text-muted">
+                    BackOffice Elder<span style="color:var(--brand-orange);font-weight:900;">Health</span>Care
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <a class="btn btn-outline-secondary" href="{{ path('admin_event_index') }}">
+                    <i class="bi bi-arrow-left"></i> Retour
+                </a>
+
+                <a class="btn btn-brand" href="{{ path('admin_event_edit', {id: event.id}) }}">
+                    <i class="bi bi-pencil-square"></i> Modifier
+                </a>
+            </div>
+        </div>
+
+        {# flash #}
+        {% for label, messages in app.flashes %}
+            {% for msg in messages %}
+                <div class="alert alert-{{ label }} mb-3">{{ msg }}</div>
+            {% endfor %}
+        {% endfor %}
+
+        {% set typeColor = event.type and event.type.couleur ? event.type.couleur : '#6c757d' %}
+
+        <div class="row g-4">
+
+            {# ✅ bloc event (même carte que index) #}
+            <div class="col-lg-8">
+                <div class="post-card" style="border-left: 8px solid {{ typeColor }};">
+                    <div class="post-card__top">
+                        <div class="post-meta">
+                            <h5 class="mb-1">{{ event.titre }}</h5>
+
+                            <div class="small">
+                                <i class="bi bi-calendar-event"></i>
+                                {{ event.dateDebut ? event.dateDebut|date('d/m/Y H:i') : '—' }}
+                                {% if event.dateFin %}
+                                    → {{ event.dateFin|date('d/m/Y H:i') }}
+                                {% endif %}
+
+                                <span class="ms-2">
+                                    <i class="bi bi-tag"></i>
+                                    {{ event.type ? event.type.libelle : 'Sans type' }}
+                                    {% if event.type and event.type.couleur %}
+                                        <span class="ms-2 badge-color" style="background: {{ event.type.couleur }};"></span>
+                                    {% endif %}
+                                </span>
+                            </div>
+
+                            {% if event.lieu %}
+                                <div class="small text-muted mt-1">
+                                    <i class="bi bi-geo-alt"></i>
+                                    {{ event.lieu }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <span class="badge-soft {{ event.statut == 'PUBLIE' ? 'badge-active' : 'badge-inactive' }}">
+                            {{ event.statut|default('BROUILLON') }}
+                        </span>
+                    </div>
+
+                    <div class="post-card__body">
+                        <p class="post-content">{{ event.description|default('') }}</p>
+
+                        <div class="d-flex flex-wrap gap-3 mt-2 small">
+                            {% if event.capaciteMax %}
+                                <span><i class="bi bi-people"></i> Capacité : {{ event.capaciteMax }}</span>
+                            {% endif %}
+
+                            <span><i class="bi bi-person-check"></i> Participants : {{ event.participations|length }}</span>
+                        </div>
+
+                        {% if event.image %}
+                            <div class="mt-3">
+                                <img
+                                    src="{{ asset('uploads/events/' ~ event.image) }}"
+                                    alt="Image event"
+                                    style="width:100%; max-height:420px; object-fit:cover; border-radius:12px;"
+                                >
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    {# ✅ actions icons comme index (en bas à droite) #}
+                    <div class="actions">
+                        <a class="icon-btn" title="Retour liste" href="{{ path('admin_event_index') }}">
+                            <i class="bi bi-arrow-left"></i>
+                        </a>
+
+                        <a class="icon-btn" title="Modifier" href="{{ path('admin_event_edit', {id: event.id}) }}">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+
+                        {# ✅ suppression claire: ça supprime l'événement + ses participations #}
+                        <form method="post"
+                              action="{{ path('admin_event_delete', {id: event.id}) }}"
+                              onsubmit="return confirm('⚠️ Supprimer cet événement ?\nCela supprimera aussi tous les participants inscrits.');"
+                              style="display:inline;">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete_event_' ~ event.id) }}">
+                            <button class="icon-btn" title="Supprimer l’événement" style="border:none;background:transparent;">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+
+            {# ✅ bloc participants (style propre, sans gros bouton rouge moche) #}
+            <div class="col-lg-4">
+                <div class="post-card" style="border-left: 8px solid #0d6efd;">
+                    <div class="post-card__top">
+                        <div class="post-meta">
+                            <h5 class="mb-1">Participants ({{ event.participations|length }})</h5>
+                            <div class="small text-muted">
+                                Liste des inscriptions à cet événement
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="post-card__body">
+                        {% if event.participations is empty %}
+                            <div class="empty">Aucun participant pour le moment 🙂</div>
+                        {% else %}
+                            <div class="table-responsive">
+                                <table class="table table-borderless align-middle mb-0">
+                                    <thead>
+                                        <tr class="small text-muted">
+                                            <th>Participant</th>
+                                            <th>Email</th>
+                                            {# <th>Inscrit le</th> #}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for p in event.participations %}
+                                            {# 🔁 adapte si ton champ ne s'appelle pas utilisateur #}
+                                            {% set u = p.utilisateur %}
+                                            <tr>
+                                                <td>
+                                                    {{ u ? (u.nom ~ ' ' ~ u.prenom) : '—' }}
+                                                </td>
+                                                <td>
+                                                    {{ u ? u.email : '—' }}
+                                                </td>
+                                                {# <td>
+                                                    {{ p.createdAt is defined and p.createdAt ? p.createdAt|date('d/m/Y H:i') : '—' }}
+                                                </td> #}
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+{% endblock %}
