@@ -60,11 +60,20 @@ class NotificationExtension extends AbstractExtension
         if ($this->security->isGranted('ROLE_PATIENT')) {
             $request = $this->requestStack->getCurrentRequest();
             $session = $request?->getSession();
+            $route = (string) ($request?->attributes->get('_route') ?? '');
+            $isPatientRendezVousRoute = str_starts_with($route, 'patient_rendezvous_');
+
             $seenIds = $session?->get('patient_rdv_seen_notification_ids', []);
             if (!is_array($seenIds)) {
                 $seenIds = [];
             }
             $seenIds = array_map('intval', $seenIds);
+
+            if ($isPatientRendezVousRoute && $session !== null) {
+                $currentNotifIds = $this->rendezVousRepository->findStatusNotificationIdsForPatient($user);
+                $seenIds = array_values(array_unique(array_map('intval', array_merge($seenIds, $currentNotifIds))));
+                $session->set('patient_rdv_seen_notification_ids', $seenIds);
+            }
 
             $all = $this->rendezVousRepository->findStatusNotificationsForPatient($user, 20);
             $unseen = array_values(array_filter($all, static function ($rdv) use ($seenIds): bool {
