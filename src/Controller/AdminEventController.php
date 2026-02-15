@@ -26,6 +26,21 @@ class AdminEventController extends AbstractController
         ]);
     }
 
+    // ✅ NOUVEAU : page détails + participants
+    #[Route('/{id}', name: 'show', methods: ['GET'], requirements: ['id' => '\d+'])]
+    public function show(int $id, EventRepository $eventRepository): Response
+    {
+        $event = $eventRepository->findOneWithParticipations($id);
+
+        if (!$event) {
+            throw $this->createNotFoundException("Événement introuvable.");
+        }
+
+        return $this->render('BackOffice/event/show.html.twig', [
+            'event' => $event,
+        ]);
+    }
+
     #[Route('/new', name: 'new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
     {
@@ -121,7 +136,7 @@ class AdminEventController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'delete', methods: ['POST'])]
+    #[Route('/{id}', name: 'delete', methods: ['POST'], requirements: ['id' => '\d+'])]
     public function delete(Event $event, Request $request, EntityManagerInterface $em): Response
     {
         if ($this->isCsrfTokenValid('delete_event_' . $event->getId(), (string) $request->request->get('_token'))) {

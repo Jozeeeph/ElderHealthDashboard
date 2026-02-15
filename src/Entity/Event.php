@@ -76,6 +76,9 @@ class Event
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
+    #[ORM\Column(type: 'boolean')]
+    private bool $reminderSent = false;
+
     #[ORM\ManyToOne(inversedBy: 'events')]
     #[Assert\NotNull(message: "Le type d'événement est obligatoire.")]
     private ?TypeEvent $type = null;
@@ -83,7 +86,7 @@ class Event
     /**
      * @var Collection<int, Participation>
      */
-    #[ORM\OneToMany(targetEntity: Participation::class, mappedBy: 'event')]
+    #[ORM\OneToMany(mappedBy: 'event', targetEntity: Participation::class, cascade: ['remove'], orphanRemoval: true)]
     private Collection $participations;
 
     public function __construct()
@@ -91,45 +94,128 @@ class Event
         $this->participations = new ArrayCollection();
     }
 
-    public function getId(): ?int { return $this->id; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function getTitre(): ?string { return $this->titre; }
-    public function setTitre(string $titre): static { $this->titre = $titre; return $this; }
+    public function getTitre(): ?string
+    {
+        return $this->titre;
+    }
+    public function setTitre(string $titre): static
+    {
+        $this->titre = $titre;
+        return $this;
+    }
 
-    public function getDescription(): ?string { return $this->description; }
-    public function setDescription(string $description): static { $this->description = $description; return $this; }
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+    public function setDescription(string $description): static
+    {
+        $this->description = $description;
+        return $this;
+    }
 
-    public function getDateDebut(): ?\DateTimeImmutable { return $this->dateDebut; }
-    public function setDateDebut(\DateTimeImmutable $dateDebut): static { $this->dateDebut = $dateDebut; return $this; }
+    public function getDateDebut(): ?\DateTimeImmutable
+    {
+        return $this->dateDebut;
+    }
+    public function setDateDebut(\DateTimeImmutable $dateDebut): static
+    {
+        $this->dateDebut = $dateDebut;
+        return $this;
+    }
 
-    public function getDateFin(): ?\DateTimeImmutable { return $this->dateFin; }
-    public function setDateFin(?\DateTimeImmutable $dateFin): static { $this->dateFin = $dateFin; return $this; }
+    public function getDateFin(): ?\DateTimeImmutable
+    {
+        return $this->dateFin;
+    }
+    public function setDateFin(?\DateTimeImmutable $dateFin): static
+    {
+        $this->dateFin = $dateFin;
+        return $this;
+    }
 
-    public function getLieu(): ?string { return $this->lieu; }
-    public function setLieu(?string $lieu): static { $this->lieu = $lieu; return $this; }
+    public function getLieu(): ?string
+    {
+        return $this->lieu;
+    }
+    public function setLieu(?string $lieu): static
+    {
+        $this->lieu = $lieu;
+        return $this;
+    }
 
-    public function getCapaciteMax(): ?int { return $this->capaciteMax; }
-    public function setCapaciteMax(?int $capaciteMax): static { $this->capaciteMax = $capaciteMax; return $this; }
+    public function getCapaciteMax(): ?int
+    {
+        return $this->capaciteMax;
+    }
+    public function setCapaciteMax(?int $capaciteMax): static
+    {
+        $this->capaciteMax = $capaciteMax;
+        return $this;
+    }
 
-    public function getImage(): ?string { return $this->image; }
-    public function setImage(?string $image): static { $this->image = $image; return $this; }
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+    public function setImage(?string $image): static
+    {
+        $this->image = $image;
+        return $this;
+    }
 
-    public function getStatut(): ?string { return $this->statut; }
-    public function setStatut(?string $statut): static { $this->statut = $statut; return $this; }
+    public function getStatut(): ?string
+    {
+        return $this->statut;
+    }
+    public function setStatut(?string $statut): static
+    {
+        $this->statut = $statut;
+        return $this;
+    }
 
-    public function getCreatedAt(): ?\DateTimeImmutable { return $this->createdAt; }
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static { $this->createdAt = $createdAt; return $this; }
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
 
-    public function getUpdatedAt(): ?\DateTimeImmutable { return $this->updatedAt; }
-    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static { $this->updatedAt = $updatedAt; return $this; }
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
+        return $this;
+    }
 
-    public function getType(): ?TypeEvent { return $this->type; }
-    public function setType(?TypeEvent $type): static { $this->type = $type; return $this; }
+    public function getType(): ?TypeEvent
+    {
+        return $this->type;
+    }
+    public function setType(?TypeEvent $type): static
+    {
+        $this->type = $type;
+        return $this;
+    }
 
     /**
      * @return Collection<int, Participation>
      */
-    public function getParticipations(): Collection { return $this->participations; }
+    public function getParticipations(): Collection
+    {
+        return $this->participations;
+    }
 
     public function addParticipation(Participation $participation): static
     {
@@ -147,6 +233,15 @@ class Event
                 $participation->setEvent(null);
             }
         }
+        return $this;
+    }
+    public function isReminderSent(): bool
+    {
+        return $this->reminderSent;
+    }
+    public function setReminderSent(bool $reminderSent): self
+    {
+        $this->reminderSent = $reminderSent;
         return $this;
     }
 }
