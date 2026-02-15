@@ -6,6 +6,8 @@ use App\Entity\Consultation;
 use App\Entity\Utilisateur;
 use App\Form\ConsultationType;
 use App\Repository\ConsultationRepository;
+use App\Repository\UtilisateurRepository;
+use App\Service\PreBilanAnalytiqueService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -143,5 +145,36 @@ class ConsultationController extends AbstractController
         }
 
         return $this->redirectToRoute('front_infermier_consultation_index');
+    }
+
+    #[Route('/pre-bilan/{patientId}', name: 'pre_bilan', methods: ['GET'])]
+    public function preBilan(
+        int $patientId,
+        UtilisateurRepository $utilisateurRepository,
+        ConsultationRepository $consultationRepository,
+        PreBilanAnalytiqueService $preBilanService
+    ): Response {
+        $user = $this->requirePersonnel();
+        $patient = $utilisateurRepository->find($patientId);
+
+        if (!$patient instanceof Utilisateur) {
+            throw $this->createNotFoundException('Patient introuvable.');
+        }
+
+        $consultations = array_values(array_filter(
+            $consultationRepository->findByPatient($patient),
+            static fn (Consultation $c): bool => $c->getPersonnelMedical()?->getId() === $user->getId()
+        ));
+
+        $result = $preBilanService->generate($patient, $consultations);
+
+        return $this->render('FrontOffice/infermier/consultations/pre_bilan.html.twig', [
+            'patient' => $patient,
+            'consultations' => $consultations,
+            'preBilan' => $result['content'],
+            'preBilanSource' => $result['source'],
+            'preBilanDebugReason' => $result['debugReason'] ?? null,
+            'nurseName' => $user->getPrenom(),
+        ]);
     }
 }

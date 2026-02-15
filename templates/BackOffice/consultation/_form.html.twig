@@ -132,6 +132,15 @@
             <div class="col-12">
                 {{ form_row(form.lieu, { label: '📍 Lieu' }) }}
             </div>
+            <div class="col-12 col-md-4">
+                {{ form_row(form.poidsKg, { label: 'Poids (kg)' }) }}
+            </div>
+            <div class="col-12 col-md-4">
+                {{ form_row(form.tensionSystolique, { label: 'TA systolique (mmHg)' }) }}
+            </div>
+            <div class="col-12 col-md-4">
+                {{ form_row(form.tensionDiastolique, { label: 'TA diastolique (mmHg)' }) }}
+            </div>
         </div>
 
         <div class="consultation-form-actions">

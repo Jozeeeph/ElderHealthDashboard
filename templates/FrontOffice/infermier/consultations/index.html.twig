@@ -299,6 +299,12 @@
                                         {% if consultation.lieu %}
                                             <span class="consultation-chip">Lieu: {{ consultation.lieu }}</span>
                                         {% endif %}
+                                        {% if consultation.poidsKg %}
+                                            <span class="consultation-chip">Poids: {{ consultation.poidsKg }} kg</span>
+                                        {% endif %}
+                                        {% if consultation.tensionSystolique and consultation.tensionDiastolique %}
+                                            <span class="consultation-chip">TA: {{ consultation.tensionSystolique }}/{{ consultation.tensionDiastolique }} mmHg</span>
+                                        {% endif %}
                                     </div>
 
                                     <div class="consultation-grid">
@@ -320,6 +326,7 @@
 
                                     <div class="consultation-actions">
                                         <a class="btn btn-outline-primary btn-sm" href="{{ path('front_infermier_consultation_edit', {'id': consultation.id}) }}">Modifier</a>
+                                        <a class="btn btn-outline-info btn-sm" href="{{ path('front_infermier_consultation_pre_bilan', {'patientId': consultation.patient.id}) }}">Pre-bilan IA</a>
 
                                         {% if consultation.rapportMedical %}
                                             <a class="btn btn-outline-primary btn-sm" href="{{ path('front_infermier_rapport_show', {'id': consultation.rapportMedical.idRapport}) }}">Rapport</a>

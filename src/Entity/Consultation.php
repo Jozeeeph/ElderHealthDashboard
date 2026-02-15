@@ -55,6 +55,30 @@ class Consultation
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTimeInterface $createdAt = null;
 
+    #[ORM\Column(name: 'poids_kg', type: 'decimal', precision: 5, scale: 2, nullable: true)]
+    #[Assert\Range(
+        min: 20,
+        max: 300,
+        notInRangeMessage: 'Le poids doit etre entre {{ min }} et {{ max }} kg.'
+    )]
+    private ?string $poidsKg = null;
+
+    #[ORM\Column(name: 'tension_systolique', type: 'smallint', nullable: true)]
+    #[Assert\Range(
+        min: 60,
+        max: 250,
+        notInRangeMessage: 'La tension systolique doit etre entre {{ min }} et {{ max }} mmHg.'
+    )]
+    private ?int $tensionSystolique = null;
+
+    #[ORM\Column(name: 'tension_diastolique', type: 'smallint', nullable: true)]
+    #[Assert\Range(
+        min: 30,
+        max: 150,
+        notInRangeMessage: 'La tension diastolique doit etre entre {{ min }} et {{ max }} mmHg.'
+    )]
+    private ?int $tensionDiastolique = null;
+
     // ================= RELATIONS =================
     #[ORM\ManyToOne(targetEntity: Utilisateur::class)]
     #[ORM\JoinColumn(name: "patient_id", referencedColumnName: "id", nullable: false, onDelete: "CASCADE")]
@@ -100,6 +124,15 @@ class Consultation
 
     public function getCreatedAt(): ?\DateTimeInterface { return $this->createdAt; }
     public function setCreatedAt(?\DateTimeInterface $createdAt): self { $this->createdAt = $createdAt; return $this; }
+
+    public function getPoidsKg(): ?string { return $this->poidsKg; }
+    public function setPoidsKg(?string $poidsKg): self { $this->poidsKg = $poidsKg; return $this; }
+
+    public function getTensionSystolique(): ?int { return $this->tensionSystolique; }
+    public function setTensionSystolique(?int $tensionSystolique): self { $this->tensionSystolique = $tensionSystolique; return $this; }
+
+    public function getTensionDiastolique(): ?int { return $this->tensionDiastolique; }
+    public function setTensionDiastolique(?int $tensionDiastolique): self { $this->tensionDiastolique = $tensionDiastolique; return $this; }
 
     public function getPatient(): ?Utilisateur { return $this->patient; }
     public function setPatient(Utilisateur $patient): self { $this->patient = $patient; return $this; }
