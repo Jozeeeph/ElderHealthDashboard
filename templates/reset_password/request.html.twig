@@ -1,22 +1,42 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_public.html.twig' %}
 
 {% block title %}Reset your password{% endblock %}
 
-{% block body %}
-    {% for flash_error in app.flashes('reset_password_error') %}
-        <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
-    {% endfor %}
-    <h1>Reset your password</h1>
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/reset_request.css') }}">
+{% endblock %}
 
-    {{ form_start(requestForm) }}
-        {{ form_row(requestForm.email) }}
-        <div>
-            <small>
-                Enter your email address, and we will send you a
-                link to reset your password.
-            </small>
+{% block body %}
+<div class="reset-wrapper">
+
+    <div class="reset-box">
+
+        <div class="reset-logo">
+            <img src="{{ asset('img/logo.png') }}" alt="Elder HealthCare Logo">
         </div>
 
-        <button class="btn btn-primary">Send password reset email</button>
-    {{ form_end(requestForm) }}
+        <h1 class="reset-title">Reset your password</h1>
+        <p class="reset-subtitle">
+            Secure access to your ElderHealthCare account
+        </p>
+
+        {% for flash_error in app.flashes('reset_password_error') %}
+            <div class="reset-alert">{{ flash_error }}</div>
+        {% endfor %}
+
+        {{ form_start(requestForm) }}
+            {{ form_row(requestForm.email) }}
+
+            <p class="reset-help">
+                Enter your email and we’ll send you a secure reset link.
+            </p>
+
+            <button class="reset-btn" type="submit">
+                Send reset link
+            </button>
+        {{ form_end(requestForm) }}
+
+    </div>
+
+</div>
 {% endblock %}

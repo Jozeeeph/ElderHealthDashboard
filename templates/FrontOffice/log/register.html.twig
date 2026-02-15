@@ -1,6 +1,10 @@
 {% extends 'base.html.twig' %}
 {% block title %}Inscription{% endblock %}
 
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/register.css') }}">
+{% endblock %}
+
 {% block body %}
 <div class="container mt-5" style="max-width: 900px;">
     <h2 class="mb-4">Inscription</h2>
