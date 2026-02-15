@@ -1,161 +1,185 @@
 {% block stylesheets %}
-	<link rel="stylesheet" href="{{ asset('css/infermier.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/infermier.css') }}">
 {% endblock %}
+
 {% block body %}
-	<div class="nurse-app">
-		{% include 'FrontOffice/infermier/_header.html.twig' %}
+    <div class="nurse-app">
+        {% include 'FrontOffice/infermier/_header.html.twig' %}
 
-		<main class="nurse-main">
-			<style>
-				.report-page{
-					background:
-						radial-gradient(circle at 12% 10%, rgba(14, 165, 164, 0.18), transparent 40%),
-						radial-gradient(circle at 88% 18%, rgba(34, 197, 94, 0.16), transparent 42%),
-						linear-gradient(180deg, #f7fbff 0%, #f3fbf6 55%, #ffffff 100%);
-					border-radius: 22px;
-					padding: 18px;
-				}
-				.report-hero{
-					display:flex;
-					align-items:center;
-					justify-content:space-between;
-					gap:16px;
-					padding:18px 20px;
-					border-radius:18px 26px 18px 26px;
-					background: linear-gradient(135deg, #e8f7ff 0%, #eafff3 60%, #ffffff 100%);
-					border:1px solid #e3f0f5;
-					box-shadow:0 12px 26px rgba(15, 23, 42, 0.08);
-				}
-				.report-hero h2{
-					margin:0;
-					font-size:1.5rem;
-					font-weight:800;
-					color:#14323a;
-				}
-				.report-hero .meta{
-					margin-top:6px;
-					font-weight:700;
-					color:#5b6b74;
-				}
-				.report-grid{
-					margin-top:16px;
-					display:grid;
-					grid-template-columns: 1.1fr .9fr;
-					gap:16px;
-				}
-				.report-card{
-					background:#ffffff;
-					border:1px solid #e6edf0;
-					border-radius:20px 28px 20px 28px;
-					box-shadow:0 16px 36px rgba(15,23,42,.1);
-					padding:18px;
-				}
-				.report-card h3{
-					margin:0 0 12px;
-					font-weight:800;
-					color:#14323a;
-				}
-				.report-chip{
-					display:inline-flex;
-					align-items:center;
-					gap:8px;
-					padding:8px 12px;
-					border-radius:999px;
-					background:#eef6f7;
-					border:1px solid #d6e7ec;
-					color:#1a5b6b;
-					font-weight:700;
-					font-size:.85rem;
-					margin:4px 6px 0 0;
-				}
-				.report-section{
-					margin-top:16px;
-					display:grid;
-					gap:12px;
-				}
-				.report-panel{
-					background:#ffffff;
-					border:1px solid #e7edf6;
-					border-radius:16px;
-					padding:16px;
-					box-shadow:0 10px 20px rgba(15,23,42,.08);
-				}
-				.report-panel strong{
-					display:block;
-					margin-bottom:6px;
-					color:#16343c;
-				}
-				.report-actions{
-					display:flex;
-					flex-wrap:wrap;
-					gap:8px;
-				}
-				.report-actions .btn-sm{
-					border-radius:999px;
-				}
-				@media (max-width: 980px){
-					.report-grid{
-						grid-template-columns: 1fr;
-					}
-				}
-			</style>
+        <main class="nurse-main">
+            <style>
+                .report-page {
+                    background:
+                        radial-gradient(circle at 12% 10%, rgba(14, 165, 164, 0.18), transparent 40%),
+                        radial-gradient(circle at 88% 18%, rgba(34, 197, 94, 0.16), transparent 42%),
+                        linear-gradient(180deg, #f7fbff 0%, #f3fbf6 55%, #ffffff 100%);
+                    border-radius: 22px;
+                    padding: 18px;
+                }
 
-			<div class="report-page">
-				<section class="report-hero">
-					<div>
-						<h2>🧾 Rapport médical</h2>
-						<div class="meta">Consultation {{ consultation.id }} • Dossier patient</div>
-					</div>
-					<div class="report-actions">
-						<a class="btn-sm primary" href="{{ path('front_infermier_rapport_edit', {'id': rapport.idRapport}) }}">✏️ Modifier</a>
-						<a class="btn-sm" href="{{ path('front_infermier_rapport_pdf', {'id': rapport.idRapport}) }}">📄 PDF</a>
-						<a class="btn-sm" href="{{ path('front_infermier_consultation_index') }}">⬅️ Retour</a>
-					</div>
-				</section>
+                .report-hero {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 16px;
+                    padding: 18px 20px;
+                    border-radius: 18px 26px 18px 26px;
+                    background: linear-gradient(135deg, #e8f7ff 0%, #eafff3 60%, #ffffff 100%);
+                    border: 1px solid #e3f0f5;
+                    box-shadow: 0 12px 26px rgba(15, 23, 42, 0.08);
+                }
 
-				<section class="report-grid">
-					<div class="report-card">
-						<h3>🩺 Consultation</h3>
-						<span class="report-chip">🧑‍🦳 Patient: {{ consultation.patient.prenom }} {{ consultation.patient.nom }}</span>
-						<span class="report-chip">🩺 Type: {{ consultation.typeConsultation }}</span>
-						<span class="report-chip">📅 Date: {{ consultation.dateConsultation ? consultation.dateConsultation|date('d/m/Y') : '-' }}</span>
-						<span class="report-chip">⏰ Heure: {{ consultation.heureConsultation ? consultation.heureConsultation|date('H:i') : '-' }}</span>
-					</div>
+                .report-hero h2 {
+                    margin: 0;
+                    font-size: 1.5rem;
+                    font-weight: 800;
+                    color: #14323a;
+                }
 
-					<div class="report-card">
-						<h3>🧪 Résumé médical</h3>
-						<span class="report-chip">⚠️ Gravité: {{ rapport.niveauGravite }}</span>
-						<span class="report-chip">🗓️ Rapport du: {{ rapport.dateRapport ? rapport.dateRapport|date('d/m/Y H:i') : '-' }}</span>
-					</div>
-				</section>
+                .report-hero .meta {
+                    margin-top: 6px;
+                    font-weight: 700;
+                    color: #5b6b74;
+                }
 
-				<section class="report-section">
-					<div class="report-panel">
-						<strong>🔎 Diagnostic clinique</strong>
-						<p>{{ rapport.diagnostic }}</p>
-					</div>
-					<div class="report-panel">
-						<strong>💡 Recommandations de santé</strong>
-						<p>{{ rapport.recommandations }}</p>
-					</div>
-					{% if rapport.fichierPath %}
-						<div class="report-panel">
-							<strong>📎 Pièce jointe médicale</strong>
-							<p>
-								<a class="btn-sm" href="{{ asset(rapport.fichierPath) }}" target="_blank" rel="noopener">Ouvrir le fichier</a>
-							</p>
-						</div>
-					{% endif %}
-				</section>
+                .report-grid {
+                    margin-top: 16px;
+                    display: grid;
+                    grid-template-columns: 1.1fr .9fr;
+                    gap: 16px;
+                }
 
-				<section class="consultation-actions" style="margin-top:14px;">
-					<form method="post" action="{{ path('front_infermier_rapport_delete', {'id': rapport.idRapport}) }}"
-						onsubmit="return confirm('Supprimer ce rapport ?');">
-						<input type="hidden" name="_token" value="{{ csrf_token('delete_rapport_' ~ rapport.idRapport) }}">
-						<button class="btn-sm danger" type="submit">🗑️ Supprimer</button>
-					</form>
-				</section>
-			</div>
-		</main>
-	</div>
+                .report-card {
+                    background: #ffffff;
+                    border: 1px solid #e6edf0;
+                    border-radius: 20px 28px 20px 28px;
+                    box-shadow: 0 16px 36px rgba(15, 23, 42, .1);
+                    padding: 18px;
+                }
+
+                .report-card h3 {
+                    margin: 0 0 12px;
+                    font-weight: 800;
+                    color: #14323a;
+                }
+
+                .report-chip {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 8px;
+                    padding: 8px 12px;
+                    border-radius: 999px;
+                    background: #eef6f7;
+                    border: 1px solid #d6e7ec;
+                    color: #1a5b6b;
+                    font-weight: 700;
+                    font-size: .85rem;
+                    margin: 4px 6px 0 0;
+                }
+
+                .report-section {
+                    margin-top: 16px;
+                    display: grid;
+                    gap: 12px;
+                }
+
+                .report-panel {
+                    background: #ffffff;
+                    border: 1px solid #e7edf6;
+                    border-radius: 16px;
+                    padding: 16px;
+                    box-shadow: 0 10px 20px rgba(15, 23, 42, .08);
+                }
+
+                .report-panel strong {
+                    display: block;
+                    margin-bottom: 6px;
+                    color: #16343c;
+                }
+
+                .report-panel p {
+                    margin: 0;
+                    color: #334155;
+                    line-height: 1.6;
+                    white-space: pre-line;
+                }
+
+                .report-actions {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 8px;
+                }
+
+                .report-actions .btn-sm {
+                    border-radius: 999px;
+                }
+
+                @media (max-width: 980px) {
+                    .report-grid {
+                        grid-template-columns: 1fr;
+                    }
+                }
+            </style>
+
+            <div class="report-page">
+                <section class="report-hero">
+                    <div>
+                        <h2>🧾 Rapport medical</h2>
+                        <div class="meta">Consultation {{ consultation.id }} - Dossier patient</div>
+                    </div>
+                    <div class="report-actions">
+                        <a class="btn-sm primary" href="{{ path('front_infermier_rapport_edit', {'id': rapport.idRapport}) }}">✏️ Modifier</a>
+                        <a class="btn-sm" href="{{ path('front_infermier_rapport_pdf', {'id': rapport.idRapport}) }}">📄 PDF</a>
+                        <a class="btn-sm" href="{{ path('front_infermier_consultation_index') }}">⬅️ Retour</a>
+                    </div>
+                </section>
+
+                <section class="report-grid">
+                    <div class="report-card">
+                        <h3>🩺 Consultation</h3>
+                        <span class="report-chip">Patient: {{ consultation.patient.prenom }} {{ consultation.patient.nom }}</span>
+                        <span class="report-chip">Type: {{ consultation.typeConsultation }}</span>
+                        <span class="report-chip">Date: {{ consultation.dateConsultation ? consultation.dateConsultation|date('d/m/Y') : '-' }}</span>
+                        <span class="report-chip">Heure: {{ consultation.heureConsultation ? consultation.heureConsultation|date('H:i') : '-' }}</span>
+                    </div>
+
+                    <div class="report-card">
+                        <h3>🧪 Resume medical</h3>
+                        <span class="report-chip">Gravite: {{ rapport.niveauGravite }}</span>
+                        <span class="report-chip">Rapport du: {{ rapport.dateRapport ? rapport.dateRapport|date('d/m/Y H:i') : '-' }}</span>
+                    </div>
+                </section>
+
+                <section class="report-section">
+                    <div class="report-panel">
+                        <strong>🔎 Diagnostic clinique</strong>
+                        <p>{{ rapport.diagnostic }}</p>
+                    </div>
+
+                    <div class="report-panel">
+                        <strong>💡 Recommandations de sante</strong>
+                        <p>{{ rapport.recommandations }}</p>
+                    </div>
+
+                    {% if rapport.fichierPath %}
+                        <div class="report-panel">
+                            <strong>📎 Piece jointe medicale</strong>
+                            <p>
+                                <a class="btn-sm" href="{{ asset(rapport.fichierPath) }}" target="_blank" rel="noopener">Ouvrir le fichier</a>
+                            </p>
+                        </div>
+                    {% endif %}
+                </section>
+
+                <section class="consultation-actions" style="margin-top:14px;">
+                    <form method="post"
+                          action="{{ path('front_infermier_rapport_delete', {'id': rapport.idRapport}) }}"
+                          onsubmit="return confirm('Supprimer ce rapport ?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete_rapport_' ~ rapport.idRapport) }}">
+                        <button class="btn-sm danger" type="submit">🗑️ Supprimer</button>
+                    </form>
+                </section>
+            </div>
+        </main>
+    </div>
 {% endblock %}
