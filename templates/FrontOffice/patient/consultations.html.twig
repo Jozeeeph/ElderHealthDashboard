@@ -183,10 +183,29 @@
 								</div>
 							</div>
 						</div>
-					{% else %}
-						<div class="card">
-							<h2>Aucune consultation</h2>
-							<p>Vous n'avez pas encore de consultation enregistrée.</p>
+						<div class="consult-docs">
+							<div class="item">
+								<strong>🧾 Rapport médical</strong>
+								{% if consultation.rapportMedical %}
+									<p>
+										<a class="btn ghost" href="{{ path('patient_rapport_show', {'id': consultation.rapportMedical.idRapport}) }}">Voir rapport</a>
+										<a class="btn ghost" href="{{ path('patient_rapport_pdf', {'id': consultation.rapportMedical.idRapport}) }}">Télécharger PDF</a>
+									</p>
+								{% else %}
+									<p>Aucun rapport disponible.</p>
+								{% endif %}
+							</div>
+							<div class="item">
+								<strong>💊 Prescription</strong>
+								{% if consultation.prescription %}
+									<p>
+										<a class="btn primary" href="{{ path('patient_prescription_show', {'id': consultation.prescription.idPrescription}) }}">Voir prescription</a>
+										<a class="btn ghost" href="{{ path('patient_prescription_pdf', {'id': consultation.prescription.idPrescription}) }}">Télécharger PDF</a>
+									</p>
+								{% else %}
+									<p>Aucune prescription disponible.</p>
+								{% endif %}
+							</div>
 						</div>
 					{% endfor %}
 				</section>

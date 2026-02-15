@@ -18,148 +18,141 @@
 
 <body>
 {% block body %}
-<div class="patient-app">
-    <style>
-        .cute-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            padding: 18px 20px;
-            border-radius: 18px;
-            background: linear-gradient(135deg, #ffeef6 0%, #e8f7ff 100%);
-            border: 1px solid #f4d9e7;
-        }
+	<div class="patient-app">
+		<style>
+			.cute-header {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 12px;
+				padding: 18px 20px;
+				border-radius: 18px;
+				background: linear-gradient(135deg, #ffeef6 0%, #e8f7ff 100%);
+				border: 1px solid #f4d9e7;
+			}
 
-        .cute-title {
-            font-size: 1.35rem;
-            font-weight: 800;
-            color: #7a2c4c;
-        }
+			.cute-title {
+				font-size: 1.35rem;
+				font-weight: 800;
+				color: #7a2c4c;
+			}
 
-        .cute-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 10px;
-            border-radius: 999px;
-            background: #fff5fb;
-            border: 1px solid #f4d9e7;
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: #7a2c4c;
-        }
+			.cute-chip {
+				display: inline-flex;
+				align-items: center;
+				gap: 6px;
+				padding: 6px 10px;
+				border-radius: 999px;
+				background: #fff5fb;
+				border: 1px solid #f4d9e7;
+				font-size: 0.8rem;
+				font-weight: 700;
+				color: #7a2c4c;
+			}
 
-        .cute-grid {
-            display: grid;
-            gap: 12px;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        }
+			.cute-grid {
+				display: grid;
+				gap: 12px;
+				grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+			}
 
-        .cute-card {
-            background: #ffffff;
-            border: 1px solid #f0ddea;
-            border-radius: 16px;
-            padding: 14px;
-            box-shadow: 0 10px 24px rgba(122, 44, 76, 0.08);
-        }
+			.cute-card {
+				background: #ffffff;
+				border: 1px solid #f0ddea;
+				border-radius: 16px;
+				padding: 14px;
+				box-shadow: 0 10px 24px rgba(122, 44, 76, 0.08);
+			}
 
-        .cute-label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #a0627b;
-            font-weight: 700;
-        }
+			.cute-label {
+				font-size: 0.7rem;
+				text-transform: uppercase;
+				letter-spacing: 0.05em;
+				color: #a0627b;
+				font-weight: 700;
+			}
 
-        .cute-value {
-            font-weight: 800;
-            color: #3b1c2a;
-            margin-top: 4px;
-        }
-    </style>
+			.cute-value {
+				font-weight: 800;
+				color: #3b1c2a;
+				margin-top: 4px;
+			}
+		</style>
+		<header class="topbar">
+			<div class="topbar-inner">
+				<a href="{{ path('app_public_site') }}" class="brand">
+					<img src="{{ asset('img/logo.png') }}" alt="Elder HealthCare">
+					<span class="brand-text">
+						<span class="fw-bold text-primary">Elder</span>
+						<span class="fw-bold text-warning ms-1">HealthCare</span>
+					</span>
+				</a>
 
-    <header class="topbar">
-        <div class="topbar-inner d-flex justify-content-between align-items-center">
-            <a href="{{ path('app_public_site') }}" class="brand d-flex align-items-center gap-2">
-                <img src="{{ asset('img/logo.png') }}" alt="Elder HealthCare" height="40">
-                <span class="brand-text">
-                    <span class="fw-bold text-primary">Elder</span>
-                    <span class="fw-bold text-warning ms-1">HealthCare</span>
-                </span>
-            </a>
+				<nav class="top-nav">
+					<a href="{{ path('app_patient_interfce') }}">Accueil</a>
+					<a href="{{ path('patient_consultations') }}">Consultations</a>
+					<a href="{{ path('front_equipements_index') }}">Equipement</a>
+					<a href="{{ path('forum_post_forum_index') }}">Forum</a>
+					<a href="{{ path('front_events_index') }}">Evenements</a>
+				</nav>
 
-            <nav class="top-nav d-flex gap-3">
-                <a href="{{ path('app_patient_interfce') }}">Accueil</a>
-                <a href="{{ path('patient_consultations') }}">Consultations</a>
-                <a href="{{ path('front_equipements_index') }}">Équipement</a>
-                <a href="{{ path('forum_post_forum_index') }}">Forum</a>
-                <a href="{{ path('front_events_index') }}">Événements</a>
-            </nav>
+				<div class="profile">
+					<img src="{{ asset('img/home.jpg') }}" alt="Profil">
+					<strong>{{ patient.prenom ?? 'Patient' }}</strong>
+				</div>
+			</div>
+		</header>
 
-            <div class="profile d-flex align-items-center gap-2">
-                <img src="{{ asset('img/home.jpg') }}" alt="Profil" class="rounded-circle" width="40">
-                <strong>{{ patient.prenom ?? 'Patient' }}</strong>
-            </div>
-        </div>
-    </header>
+		<main class="patient-main">
+			<section class="cute-header">
+				<div>
+					<div class="cute-title">Prescription</div>
+					<div class="cute-chip">Consultation {{ prescription.consultation.id }}</div>
+				</div>
+				<div class="cute-chip">Prenez soin de vous</div>
+			</section>
 
-    <main class="patient-main p-3">
-        <section class="cute-header mb-4">
-            <div>
-                <div class="cute-title">💊 Prescription douce</div>
-                <div class="cute-chip">🩺 Consultation {{ prescription.consultation.id }}</div>
-            </div>
-            <div class="cute-chip">🧡 Prenez soin de vous</div>
-        </section>
-
-        <section class="content-grid" style="grid-template-columns: 1fr;">
-            <div class="card p-3">
-                <h2>✨ Détails bien-être</h2>
-                <div class="cute-grid mb-3">
-                    <div class="cute-card">
-                        <div class="cute-label">🔁 Fréquence</div>
-                        <div class="cute-value">{{ prescription.frequence }}</div>
-                    </div>
-                    <div class="cute-card">
-                        <div class="cute-label">📏 Dosage</div>
-                        <div class="cute-value">{{ prescription.dosage }}</div>
-                    </div>
-                    <div class="cute-card">
-                        <div class="cute-label">📅 Durée</div>
-                        <div class="cute-value">{{ prescription.dureeTraitement }}</div>
-                    </div>
-                    <div class="cute-card">
-                        <div class="cute-label">🗓️ Période</div>
-                        <div class="cute-value">
-                            {{ prescription.dateDebut ? prescription.dateDebut|date('d/m/Y') : '-' }}
-                            →
-                            {{ prescription.dateFin ? prescription.dateFin|date('d/m/Y') : '-' }}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="item mb-2">
-                    <strong>💊 Médicaments</strong>
-                    <p>{{ prescription.medicaments }}</p>
-                </div>
-                <div class="item mb-3">
-                    <strong>📝 Consignes</strong>
-                    <p>{{ prescription.consignes ?: '-' }}</p>
-                </div>
-
-                <div class="actions d-flex gap-2">
-                    <a class="btn btn-primary" href="{{ path('prescription_pdf', {'id': prescription.idPrescription}) }}">
-                        📄 Télécharger PDF
-                    </a>
-                    <a class="btn btn-outline-secondary" href="{{ path('patient_consultations') }}">
-                        ⬅️ Retour
-                    </a>
-                </div>
-            </div>
-        </section>
-    </main>
-</div>
+			<section class="content-grid" style="grid-template-columns: 1fr;">
+				<div class="card">
+					<h2>Details bien-etre</h2>
+					<div class="cute-grid">
+						<div class="cute-card">
+							<div class="cute-label">Frequence</div>
+							<div class="cute-value">{{ prescription.frequence }}</div>
+						</div>
+						<div class="cute-card">
+							<div class="cute-label">Dosage</div>
+							<div class="cute-value">{{ prescription.dosage }}</div>
+						</div>
+						<div class="cute-card">
+							<div class="cute-label">Duree</div>
+							<div class="cute-value">{{ prescription.dureeTraitement }}</div>
+						</div>
+						<div class="cute-card">
+							<div class="cute-label">Periode</div>
+							<div class="cute-value">
+								{{ prescription.dateDebut ? prescription.dateDebut|date('d/m/Y') : '-' }}
+								->
+								{{ prescription.dateFin ? prescription.dateFin|date('d/m/Y') : '-' }}
+							</div>
+						</div>
+					</div>
+					<div class="item">
+						<strong>Medicaments</strong>
+						<p>{{ prescription.medicaments }}</p>
+					</div>
+					<div class="item">
+						<strong>Consignes</strong>
+						<p>{{ prescription.consignes ?: '-' }}</p>
+					</div>
+					<div class="actions">
+						<a class="btn primary" href="{{ path('patient_prescription_pdf', {'id': prescription.idPrescription}) }}">Telecharger PDF</a>
+						<a class="btn ghost" href="{{ path('patient_consultations') }}">Retour</a>
+					</div>
+				</div>
+			</section>
+		</main>
+	</div>
 {% endblock %}
 </body>
 </html>
