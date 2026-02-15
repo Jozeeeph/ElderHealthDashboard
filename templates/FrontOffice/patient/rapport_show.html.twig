@@ -1,167 +1,150 @@
-﻿<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rapport Médical Patient</title>
-
-    {# Bootstrap CSS #}
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    {# Bootstrap Icons #}
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-
-    {# CSS personnalisés #}
-    <link rel="stylesheet" href="{{ asset('css/patient.css') }}?v=20260214-notif1">
-    <link rel="stylesheet" href="{{ asset('css/patient-rendezvous.css') }}?v=20260214-7">
-</head>
+﻿{% block stylesheets %}
+	<link rel="stylesheet" href="{{ asset('css/patient.css') }}?v=20260214-notif1">
+{% endblock %}
 
 {% block body %}
-<div class="patient-app">
-    <style>
-        .cute-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            padding: 18px 20px;
-            border-radius: 18px;
-            background: linear-gradient(135deg, #fff3e6 0%, #e9f7ff 100%);
-            border: 1px solid #f3ddc8;
-        }
+	<div class="patient-app">
+		<style>
+			.cute-header {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 12px;
+				padding: 18px 20px;
+				border-radius: 18px;
+				background: linear-gradient(135deg, #fff3e6 0%, #e9f7ff 100%);
+				border: 1px solid #f3ddc8;
+			}
 
-        .cute-title {
-            font-size: 1.35rem;
-            font-weight: 800;
-            color: #7b3f1e;
-        }
+			.cute-title {
+				font-size: 1.35rem;
+				font-weight: 800;
+				color: #7b3f1e;
+			}
 
-        .cute-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 10px;
-            border-radius: 999px;
-            background: #fff7ee;
-            border: 1px solid #f3ddc8;
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: #7b3f1e;
-        }
+			.cute-chip {
+				display: inline-flex;
+				align-items: center;
+				gap: 6px;
+				padding: 6px 10px;
+				border-radius: 999px;
+				background: #fff7ee;
+				border: 1px solid #f3ddc8;
+				font-size: 0.8rem;
+				font-weight: 700;
+				color: #7b3f1e;
+			}
 
-        .cute-grid {
-            display: grid;
-            gap: 12px;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        }
+			.cute-grid {
+				display: grid;
+				gap: 12px;
+				grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+			}
 
-        .cute-card {
-            background: #ffffff;
-            border: 1px solid #f0e1d2;
-            border-radius: 16px;
-            padding: 14px;
-            box-shadow: 0 10px 24px rgba(123, 63, 30, 0.08);
-        }
+			.cute-card {
+				background: #ffffff;
+				border: 1px solid #f0e1d2;
+				border-radius: 16px;
+				padding: 14px;
+				box-shadow: 0 10px 24px rgba(123, 63, 30, 0.08);
+			}
 
-        .cute-label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #a06a4b;
-            font-weight: 700;
-        }
+			.cute-label {
+				font-size: 0.7rem;
+				text-transform: uppercase;
+				letter-spacing: 0.05em;
+				color: #a06a4b;
+				font-weight: 700;
+			}
 
-        .cute-value {
-            font-weight: 800;
-            color: #3b2214;
-            margin-top: 4px;
-        }
+			.cute-value {
+				font-weight: 800;
+				color: #3b2214;
+				margin-top: 4px;
+			}
 
-        .actions .btn.primary {
-            background: linear-gradient(135deg, #a5d8ff 0%, #c3f5d4 100%);
-            color: #0b3042;
-            border: none;
-            box-shadow: 0 8px 16px rgba(30, 136, 229, 0.15);
-        }
+			.actions .btn.primary {
+				background: linear-gradient(135deg, #a5d8ff 0%, #c3f5d4 100%);
+				color: #0b3042;
+				border: none;
+				box-shadow: 0 8px 16px rgba(30, 136, 229, 0.15);
+			}
 
-        .actions .btn.ghost {
-            background: #fff3e6;
-            color: #7b3f1e;
-            border: 1px solid #f3ddc8;
-        }
-    </style>
+			.actions .btn.ghost {
+				background: #fff3e6;
+				color: #7b3f1e;
+				border: 1px solid #f3ddc8;
+			}
+		</style>
+		<header class="topbar">
+			<div class="topbar-inner">
+				<a href="{{ path('app_public_site') }}" class="brand">
+					<img src="{{ asset('img/logo.png') }}" alt="Elder HealthCare">
+					<span class="brand-text">
+						<span class="fw-bold text-primary">Elder</span>
+						<span class="fw-bold text-warning ms-1">HealthCare</span>
+					</span>
+				</a>
 
-    <header class="topbar">
-        <div class="topbar-inner d-flex justify-content-between align-items-center">
-            <a href="{{ path('app_public_site') }}" class="brand d-flex align-items-center gap-2">
-                <img src="{{ asset('img/logo.png') }}" alt="Elder HealthCare" height="40">
-                <span class="brand-text">
-                    <span class="fw-bold text-primary">Elder</span>
-                    <span class="fw-bold text-warning ms-1">HealthCare</span>
-                </span>
-            </a>
+				<nav class="top-nav">
+					<a href="{{ path('app_patient_interfce') }}">Accueil</a>
+					<a href="{{ path('patient_consultations') }}">Consultations</a>
+					<a href="{{ path('front_equipements_index') }}">Equipement</a>
+					<a href="{{ path('forum_post_forum_index') }}">Forum</a>
+					<a href="{{ path('front_events_index') }}">Evenements</a>
+				</nav>
 
-            <nav class="top-nav d-flex gap-3">
-                <a href="{{ path('app_patient_interfce') }}">Accueil</a>
-                <a href="{{ path('patient_consultations') }}">Consultations</a>
-                <a href="{{ path('front_equipements_index') }}">Équipement</a>
-                <a href="{{ path('forum_post_forum_index') }}">Forum</a>
-                <a href="{{ path('front_events_index') }}">Événements</a>
-            </nav>
+				<div class="profile">
+					<img src="{{ asset('img/home.jpg') }}" alt="Profil">
+					<strong>{{ patient.prenom ?? 'Patient' }}</strong>
+				</div>
+			</div>
+		</header>
 
-            <div class="profile d-flex align-items-center gap-2">
-                <img src="{{ asset('img/home.jpg') }}" alt="Profil" class="rounded-circle" width="40">
-                <strong>{{ patient.prenom ?? 'Patient' }}</strong>
-            </div>
-        </div>
-    </header>
+		<main class="patient-main">
+			<section class="cute-header">
+				<div>
+					<div class="cute-title">Rapport medical</div>
+					<div class="cute-chip">Consultation {{ rapport.consultation.id }}</div>
+				</div>
+				<div class="cute-chip">Bon retablissement</div>
+			</section>
 
-    <main class="patient-main p-3">
-        <section class="cute-header mb-4">
-            <div>
-                <div class="cute-title">🩺 Rapport médical doux</div>
-                <div class="cute-chip">🩹 Consultation {{ rapport.consultation.id }}</div>
-            </div>
-            <div class="cute-chip">✨ Bon rétablissement</div>
-        </section>
-
-        <section class="content-grid" style="grid-template-columns: 1fr;">
-            <div class="card p-3">
-                <h2>✨ Détails santé</h2>
-                <div class="cute-grid mb-3">
-                    <div class="cute-card">
-                        <div class="cute-label">⚠️ Gravité</div>
-                        <div class="cute-value">{{ rapport.niveauGravite }}</div>
-                    </div>
-                    <div class="cute-card">
-                        <div class="cute-label">📅 Date</div>
-                        <div class="cute-value">{{ rapport.dateRapport ? rapport.dateRapport|date('d/m/Y H:i') : '-' }}</div>
-                    </div>
-                </div>
-
-                <div class="item mb-2">
-                    <strong>🩺 Diagnostic</strong>
-                    <p>{{ rapport.diagnostic }}</p>
-                </div>
-
-                <div class="item mb-3">
-                    <strong>💡 Recommandations</strong>
-                    <p>{{ rapport.recommandations }}</p>
-                </div>
-
-                {% if rapport.fichierPath %}
-                    <div class="item mb-3">
-                        <strong>📎 Pièce jointe</strong>
-                        <p>
-                            <a class="btn ghost" href="{{ asset(rapport.fichierPath) }}" target="_blank" rel="noopener">Ouvrir le fichier</a>
-                        </p>
-                    </div>
-                {% endif %}
-
-                <div class="actions d-flex gap-2">
-                    <a class="btn primary" href="{{ path('rapport_medical_pdf', {'id': rapport.idRapport}) }}">📄 Télécharger PDF</a>
-                    <a class="btn ghost" href="{{ path('patient_consultations') }}">⬅️ Retour</a>
-                </div>
-            </div>
-        </section>
-    </main>
-</div>
+			<section class="content-grid" style="grid-template-columns: 1fr;">
+				<div class="card">
+					<h2>Details sante</h2>
+					<div class="cute-grid">
+						<div class="cute-card">
+							<div class="cute-label">Gravite</div>
+							<div class="cute-value">{{ rapport.niveauGravite }}</div>
+						</div>
+						<div class="cute-card">
+							<div class="cute-label">Date</div>
+							<div class="cute-value">{{ rapport.dateRapport ? rapport.dateRapport|date('d/m/Y H:i') : '-' }}</div>
+						</div>
+					</div>
+					<div class="item">
+						<strong>Diagnostic</strong>
+						<p>{{ rapport.diagnostic }}</p>
+					</div>
+					<div class="item">
+						<strong>Recommandations</strong>
+						<p>{{ rapport.recommandations }}</p>
+					</div>
+					{% if rapport.fichierPath %}
+						<div class="item">
+							<strong>Piece jointe</strong>
+							<p>
+								<a class="btn ghost" href="{{ asset(rapport.fichierPath) }}" target="_blank" rel="noopener">Ouvrir le fichier</a>
+							</p>
+						</div>
+					{% endif %}
+					<div class="actions">
+						<a class="btn primary" href="{{ path('patient_rapport_pdf', {'id': rapport.idRapport}) }}">Telecharger PDF</a>
+						<a class="btn ghost" href="{{ path('patient_consultations') }}">Retour</a>
+					</div>
+				</div>
+			</section>
+		</main>
+	</div>
 {% endblock %}
