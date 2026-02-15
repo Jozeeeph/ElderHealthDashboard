@@ -29,6 +29,9 @@ class Commentaire
     #[ORM\JoinColumn(nullable: false)]
     private ?Post $post = null;
 
+    #[ORM\Column(type: 'boolean')]
+    private bool $isAi = false;
+
     #[ORM\ManyToOne(targetEntity: Utilisateur::class)]
     #[ORM\JoinColumn(nullable: false)]
     private ?Utilisateur $utilisateur = null;
@@ -65,6 +68,17 @@ class Commentaire
     {
         $this->content = $content;
 
+        return $this;
+    }
+
+    public function isAi(): bool
+    {
+        return $this->isAi;
+    }
+
+    public function setIsAi(bool $isAi): self
+    {
+        $this->isAi = $isAi;
         return $this;
     }
 

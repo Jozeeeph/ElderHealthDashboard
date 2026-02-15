@@ -13,6 +13,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
+use App\Event\CommentCreatedEvent;
+use App\Event\PostCreatedEvent;
+
 
 #[Route('/patient', name: 'forum_post_forum_')]
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
@@ -37,19 +41,28 @@ class ForumController extends AbstractController
     public function createPost(
         Request $request,
         EntityManagerInterface $em,
-        SluggerInterface $slugger
+        SluggerInterface $slugger,
+        EventDispatcherInterface $dispatcher
     ): Response {
+
+        $user = $this->getUser();
+        if (!$user) {
+            throw $this->createAccessDeniedException('Utilisateur non connecté.');
+        }
+
         $post = new Post();
-        $post->setUtilisateur($this->getUser());
+        $post->setUtilisateur($user);
         $post->setTitle(trim((string) $request->request->get('title')));
         $post->setContent(trim((string) $request->request->get('content')));
 
         $imageFile = $request->files->get('image');
+
         if ($imageFile) {
             $originalName = pathinfo(
                 $imageFile->getClientOriginalName(),
                 PATHINFO_FILENAME
             );
+
             $safeName = $slugger->slug($originalName);
             $newFilename = $safeName . '-' . uniqid() . '.' . $imageFile->guessExtension();
 
@@ -60,23 +73,28 @@ class ForumController extends AbstractController
                 );
                 $post->setImageName($newFilename);
             } catch (FileException $e) {
-                $this->addFlash('danger', 'Erreur lors du telechargement de l image.');
+                $this->addFlash('danger', 'Erreur upload image.');
             }
         }
 
         $em->persist($post);
         $em->flush();
 
-        $this->addFlash('success', 'Publication ajoutee avec succes.');
+        // déclenche AI agent
+        $dispatcher->dispatch(new PostCreatedEvent($post));
+
+        $this->addFlash('success', 'Publication ajoutée avec succès.');
 
         return $this->redirectToRoute('forum_post_forum_index');
     }
+
 
     #[Route('/post/{postId}/comment/new', name: 'comment_new', methods: ['POST'])]
     public function createComment(
         int $postId,
         Request $request,
-        EntityManagerInterface $em
+        EntityManagerInterface $em,
+        EventDispatcherInterface $dispatcher
     ): Response {
         $post = $em->getRepository(Post::class)->find($postId);
         if (!$post) {
@@ -96,6 +114,9 @@ class ForumController extends AbstractController
 
         $em->persist($comment);
         $em->flush();
+
+        $dispatcher->dispatch(new CommentCreatedEvent($comment));
+
 
         $this->addFlash('success', 'Commentaire ajoute.');
 

@@ -72,7 +72,15 @@
 				{% endif %}
 			</button>
 			<div class="notif-panel" data-notif-panel hidden>
-				<div class="notif-panel-head">Notifications</div>
+				<div class="notif-panel-head">
+					<span>Notifications</span>
+					{% if not isNurse and notif.count > 0 %}
+						<form method="post" action="{{ path('patient_rendezvous_notifications_clear') }}" class="notif-clear-form">
+							<input type="hidden" name="_token" value="{{ csrf_token('patient_clear_notifications') }}">
+							<button type="submit" class="notif-clear-btn">Supprimer</button>
+						</form>
+					{% endif %}
+				</div>
 				<div class="notif-panel-body">
 					{% if notif.items is not empty %}
 						{% for item in notif.items %}

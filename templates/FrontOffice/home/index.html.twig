@@ -1,291 +1,268 @@
 ﻿{% extends 'FrontOffice/base.html.twig' %}
 
-{% block title %}Elder HealthCare
-{% endblock %}
+{% block title %}Elder HealthCare{% endblock %}
 
 {% block stylesheets %}
-	<link rel="stylesheet" href="{{ asset('css/public-site.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/public-site.css') }}">
 {% endblock %}
 
 {% block body %}
 
-	<!-- HERO SECTION -->
-	<section class="hero">
-		<div class="hero-overlay"></div>
+<!-- HERO SECTION -->
+<section class="hero">
+    <div class="hero-overlay"></div>
 
-		<div class="container h-100">
-			<div class="row h-100 align-items-center">
-				<div class="col-lg-6 text-white">
+    <div class="container h-100">
+        <div class="row h-100 align-items-center">
+            <div class="col-lg-6 text-white">
 
-					<span class="hero-badge">
-						Bienvenue sur ElderHealthCare
-					</span>
+                <span class="hero-badge">
+                    Bienvenue sur ElderHealthCare
+                </span>
 
-					<h1 class="hero-title">
-						La meilleure solution<br>
-						de santÃ© pour nos aÃ®nÃ©s
-					</h1>
+                <h1 class="hero-title">
+                    La meilleure solution<br>
+                    de santé pour nos aînés
+                </h1>
 
-					<p class="hero-text">
-						Une plateforme moderne pour le suivi mÃ©dical,
-																								          la communication et le bien-Ãªtre des personnes Ã¢gÃ©es.
-					</p>
+                <p class="hero-text">
+                    Une plateforme moderne pour le suivi médical,
+                    la communication et le bien-être des personnes âgées.
+                </p>
 
-					<div class="hero-actions">
-						<a href="{{ path('app_patient_interfce') }}" class="btn btn-outline-light btn-lg">
-							<i class="bi bi-heart-pulse me-2"></i>
-							Je cherche une aide
-						</a>
+                <div class="hero-actions">
+                    <a href="{{ path('app_patient_interfce') }}" class="btn btn-outline-light btn-lg">
+                        <i class="bi bi-heart-pulse me-2"></i>
+                        Je cherche une aide
+                    </a>
 
+                    <a href="{{ path('app_infermier_interface') }}" class="btn btn-outline-light btn-lg">
+                        <i class="bi bi-briefcase me-2"></i>
+                        Je cherche un emploi
+                    </a>
+                </div>
 
-						<a href="{{ path('app_infermier_interface') }}" class="btn btn-outline-light btn-lg">
-							<i class="bi bi-briefcase me-2"></i>
-							Je cherche un emploi
-						</a>
-					</div>
+                <div class="hero-highlights">
+                    <div class="hero-highlight">
+                        <span class="metric">24/7</span>
+                        <span class="label">Accompagnement</span>
+                    </div>
+                    <div class="hero-highlight">
+                        <span class="metric">+120</span>
+                        <span class="label">Professionnels</span>
+                    </div>
+                    <div class="hero-highlight">
+                        <span class="metric">4,9/5</span>
+                        <span class="label">Satisfaction</span>
+                    </div>
+                </div>
 
-					<div class="hero-highlights">
-						<div class="hero-highlight">
-							<span class="metric">24/7</span>
-							<span class="label">Accompagnement</span>
-						</div>
-						<div class="hero-highlight">
-							<span class="metric">+120</span>
-							<span class="label">Professionnels</span>
-						</div>
-						<div class="hero-highlight">
-							<span class="metric">4,9/5</span>
-							<span class="label">Satisfaction</span>
-						</div>
-					</div>
+            </div>
+        </div>
+    </div>
+</section>
 
-				</div>
-			</div>
-		</div>
-	</section>
+<!-- ABOUT SECTION -->
+<section class="about-section py-5">
+    <div class="container">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-6">
+                <span class="section-kicker">À PROPOS</span>
+                <h2 class="section-title">Un accompagnement santé humain, moderne et connecté.</h2>
+                <p class="section-text">
+                    Elder HealthCare facilite la prise en charge des seniors avec une coordination médicale simple,
+                    des informations centralisées et un suivi bienveillant. Notre objectif : vous aider à garder la forme
+                    tout en rassurant les proches.
+                </p>
+                <ul class="about-list">
+                    <li>Suivi médical et historique clair en un seul endroit.</li>
+                    <li>Coordination rapide avec les infirmiers et le personnel médical.</li>
+                    <li>Prévention et bien-être au quotidien.</li>
+                </ul>
+                <div class="about-actions">
+                    <a href="{{ path('app_patient_interfce') }}" class="btn btn-primary btn-lg">
+                        Commencer mon suivi
+                    </a>
+                    <a href="{{ path('front_events_index') }}" class="btn btn-outline-primary btn-lg">
+                        Nos événements
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="about-card-grid">
+                    <div class="about-card">
+                        <i class="bi bi-activity"></i>
+                        <h5>Suivi intelligent</h5>
+                        <p>Des rappels et un historique clair pour rester serein.</p>
+                    </div>
+                    <div class="about-card">
+                        <i class="bi bi-heart-pulse"></i>
+                        <h5>Soins personnalisés</h5>
+                        <p>Des consultations adaptées à chaque besoin.</p>
+                    </div>
+                    <div class="about-card">
+                        <i class="bi bi-people"></i>
+                        <h5>Équipe disponible</h5>
+                        <p>Un personnel médical attentif et proche.</p>
+                    </div>
+                    <div class="about-card">
+                        <i class="bi bi-shield-check"></i>
+                        <h5>Données sécurisées</h5>
+                        <p>Vos informations médicales restent protégées.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-	<section class="about-section py-5">
-		<div class="container">
-			<div class="row align-items-center g-4">
-				<div class="col-lg-6">
-					<span class="section-kicker">A PROPOS</span>
-					<h2 class="section-title">Un accompagnement sante humain, moderne et connecte.</h2>
-					<p class="section-text">
-						Elder HealthCare facilite la prise en charge des seniors avec une coordination medicale simple,
-						des informations centralisees et un suivi bienveillant. Notre objectif: vous aider a garder la forme
-						tout en rassurant les proches.
-					</p>
-					<ul class="about-list">
-						<li>Suivi medical et historique clair en un seul endroit.</li>
-						<li>Coordination rapide avec les infirmiers et le personnel medical.</li>
-						<li>Prevention et bien-etre au quotidien.</li>
-					</ul>
-					<div class="about-actions">
-						<a href="{{ path('app_patient_interfce') }}" class="btn btn-primary btn-lg">
-							Commencer mon suivi
-						</a>
-						<a href="{{ path('front_events_index') }}" class="btn btn-outline-primary btn-lg">
-							Nos evenements
-						</a>
-					</div>
-				</div>
-				<div class="col-lg-6">
-					<div class="about-card-grid">
-						<div class="about-card">
-							<i class="bi bi-activity"></i>
-							<h5>Suivi intelligent</h5>
-							<p>Des rappels et un historique clair pour rester serein.</p>
-						</div>
-						<div class="about-card">
-							<i class="bi bi-heart-pulse"></i>
-							<h5>Soins personnalises</h5>
-							<p>Des consultations adaptees a chaque besoin.</p>
-						</div>
-						<div class="about-card">
-							<i class="bi bi-people"></i>
-							<h5>Equipe disponible</h5>
-							<p>Un personnel medical attentif et proche.</p>
-						</div>
-						<div class="about-card">
-							<i class="bi bi-shield-check"></i>
-							<h5>Donnees securisees</h5>
-							<p>Vos informations medicales restent protegees.</p>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
+<!-- CARE SECTION -->
+<section class="care-section py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="section-kicker">SANTÉ & CONFORT</span>
+            <h2 class="section-title">Des services concrets pour le quotidien.</h2>
+            <p class="section-text care-lead">
+                Des solutions simples pour accompagner les seniors et rassurer les proches.
+            </p>
+        </div>
 
-	<section class="care-section py-5">
-		<div class="container">
-			<div class="text-center mb-5">
-				<span class="section-kicker">SANTE & CONFORT</span>
-				<h2 class="section-title">Des services concrets pour le quotidien.</h2>
-				<p class="section-text care-lead">
-					Des solutions simples pour accompagner les seniors et rassurer les proches.
-				</p>
-			</div>
+        <div class="row g-4">
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="care-card h-100">
+                    <div class="care-icon">
+                        <i class="bi bi-house-heart"></i>
+                    </div>
+                    <h5>Visites à domicile</h5>
+                    <p>Planifiez des visites infirmières avec suivi du compte rendu.</p>
+                </div>
+            </div>
 
-			<div class="row g-4">
-				<div class="col-12 col-md-6 col-lg-3">
-					<div class="care-card h-100">
-						<div class="care-icon">
-							<i class="bi bi-house-heart"></i>
-						</div>
-						<h5>Visites a domicile</h5>
-						<p>Planifiez des visites infirmieres avec suivi du compte rendu.</p>
-					</div>
-				</div>
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="care-card h-100">
+                    <div class="care-icon">
+                        <i class="bi bi-folder-check"></i>
+                    </div>
+                    <h5>Dossier médical partagé</h5>
+                    <p>Accès sécurisé pour la famille et les soignants.</p>
+                </div>
+            </div>
 
-				<div class="col-12 col-md-6 col-lg-3">
-					<div class="care-card h-100">
-						<div class="care-icon">
-							<i class="bi bi-folder-check"></i>
-						</div>
-						<h5>Dossier medical partage</h5>
-						<p>Acces securise pour la famille et les soignants.</p>
-					</div>
-				</div>
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="care-card h-100">
+                    <div class="care-icon">
+                        <i class="bi bi-clipboard2-pulse"></i>
+                    </div>
+                    <h5>Évaluation de santé</h5>
+                    <p>Questionnaire rapide pour adapter la prise en charge.</p>
+                </div>
+            </div>
 
-				<div class="col-12 col-md-6 col-lg-3">
-					<div class="care-card h-100">
-						<div class="care-icon">
-							<i class="bi bi-clipboard2-pulse"></i>
-						</div>
-						<h5>Evaluation de sante</h5>
-						<p>Questionnaire rapide pour adapter la prise en charge.</p>
-					</div>
-				</div>
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="care-card h-100">
+                    <div class="care-icon">
+                        <i class="bi bi-capsule"></i>
+                    </div>
+                    <h5>Suivi des médicaments</h5>
+                    <p>Rappels automatiques et historique des prises.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-				<div class="col-12 col-md-6 col-lg-3">
-					<div class="care-card h-100">
-						<div class="care-icon">
-							<i class="bi bi-capsule"></i>
-						</div>
-						<h5>Suivi des medicaments</h5>
-						<p>Rappels automatiques et historique des prises.</p>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
+<!-- SERVICES SECTION -->
+<section class="services-section py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="services-title">SERVICES DISPONIBLES</h2>
+            <p class="services-subtitle">Des services essentiels pour le confort et la santé de nos aînés.</p>
+        </div>
 
-	<section class="services-section py-5">
-		<div class="container">
+        <div class="row g-4 row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-5">
 
-			<div class="text-center mb-5">
-				<h2 class="services-title">SERVICES DISPONIBLES</h2>
-				<p class="services-subtitle">Des services essentiels pour le confort et la sante de nos aines.</p>
-			</div>
+            <div class="col">
+                <div class="service-card h-100">
+                    <div class="service-icon">
+                        <i class="bi bi-heart-pulse"></i>
+                    </div>
+                    <h5 class="service-name">CONSULTATIONS</h5>
+                    <p class="service-text">
+                        Trouvez des consultations et un suivi médical adapté aux besoins de nos aînés.
+                    </p>
+                    <a href="#" class="service-link">
+                        <i class="bi bi-arrow-right"></i>
+                        Voir les services
+                    </a>
+                </div>
+            </div>
 
-			<div
-				class="row g-4 row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-5">
+            <div class="col">
+                <div class="service-card h-100">
+                    <div class="service-icon">
+                        <i class="bi bi-calendar-event"></i>
+                    </div>
+                    <h5 class="service-name">ÉVÉNEMENTS</h5>
+                    <p class="service-text">
+                        Découvrez des événements bien-être, activités et rencontres pour seniors.
+                    </p>
+                    <a href="{{ path('front_events_index') }}" class="service-link">
+                        <i class="bi bi-arrow-right"></i>
+                        Voir les événements
+                    </a>
+                </div>
+            </div>
 
-				{# 1 #}
-				<div class="col">
-					<div class="service-card h-100">
-						<div class="service-icon">
-							<i class="bi bi-heart-pulse"></i>
-						</div>
+            <div class="col">
+                <div class="service-card h-100">
+                    <div class="service-icon">
+                        <i class="bi bi-clock"></i>
+                    </div>
+                    <h5 class="service-name">RENDEZ-VOUS</h5>
+                    <p class="service-text">
+                        Prenez rendez-vous facilement et suivez les créneaux disponibles en ligne.
+                    </p>
+                    <a href="#" class="service-link">
+                        <i class="bi bi-arrow-right"></i>
+                        Prendre RDV
+                    </a>
+                </div>
+            </div>
 
-						<h5 class="service-name">CONSULTATIONS</h5>
+            <div class="col">
+                <div class="service-card h-100">
+                    <div class="service-icon">
+                        <i class="bi bi-chat-dots"></i>
+                    </div>
+                    <h5 class="service-name">FORUM</h5>
+                    <p class="service-text">
+                        Posez vos questions, échangez avec la communauté et partagez des conseils.
+                    </p>
+                    <a href="{{ path('forum_post_forum_index') }}" class="service-link">
+                        <i class="bi bi-arrow-right"></i>
+                        Aller au forum
+                    </a>
+                </div>
+            </div>
 
-						<p class="service-text">
-							Trouvez des consultations et un suivi mÃ©dical adaptÃ© aux besoins de nos aÃ®nÃ©s.
-						</p>
+            <div class="col">
+                <div class="service-card h-100">
+                    <div class="service-icon">
+                        <i class="bi bi-hospital"></i>
+                    </div>
+                    <h5 class="service-name">ÉQUIPEMENTS</h5>
+                    <p class="service-text">
+                        Consultez les équipements médicaux disponibles et les informations utiles.
+                    </p>
+                    <a href="{{ path('front_equipements_index') }}" class="service-link">
+                        <i class="bi bi-arrow-right"></i>
+                        Voir les équipements
+                    </a>
+                </div>
+            </div>
 
-						<a href="#" class="service-link">
-							<i class="bi bi-arrow-right"></i>
-							Voir les services
-						</a>
-					</div>
-				</div>
-
-				{# 2 #}
-				<div class="col">
-					<div class="service-card h-100">
-						<div class="service-icon">
-							<i class="bi bi-calendar-event"></i>
-						</div>
-
-						<h5 class="service-name">Ã‰VÃ‰NEMENTS</h5>
-
-						<p class="service-text">
-							DÃ©couvrez des Ã©vÃ©nements bien-Ãªtre, activitÃ©s et rencontres pour seniors.
-						</p>
-
-						<a href="{{ path('front_events_index') }}" class="service-link">
-							<i class="bi bi-arrow-right"></i>
-							Voir les Ã©vÃ©nements
-						</a>
-					</div>
-				</div>
-
-				{# 3 #}
-				<div class="col">
-					<div class="service-card h-100">
-						<div class="service-icon">
-							<i class="bi bi-clock"></i>
-						</div>
-
-						<h5 class="service-name">RENDEZ-VOUS</h5>
-
-						<p class="service-text">
-							Prenez rendez-vous facilement et suivez les crÃ©neaux disponibles en ligne.
-						</p>
-
-						<a href="#" class="service-link">
-							<i class="bi bi-arrow-right"></i>
-							Prendre RDV
-						</a>
-					</div>
-				</div>
-
-				{# 4 #}
-				<div class="col">
-					<div class="service-card h-100">
-						<div class="service-icon">
-							<i class="bi bi-chat-dots"></i>
-						</div>
-
-						<h5 class="service-name">FORUM</h5>
-
-						<p class="service-text">
-							Posez vos questions, Ã©changez avec la communautÃ© et partagez des conseils.
-						</p>
-
-						<a href="{{ path('forum_post_forum_index') }}" class="service-link">
-							<i class="bi bi-arrow-right"></i>
-							Aller au forum
-						</a>
-					</div>
-				</div>
-
-				{# 5 #}
-				<div class="col">
-					<div class="service-card h-100">
-						<div class="service-icon">
-							<i class="bi bi-hospital"></i>
-						</div>
-
-						<h5 class="service-name">Ã‰QUIPEMENTS</h5>
-
-						<p class="service-text">
-							Consultez les Ã©quipements mÃ©dicaux disponibles et les informations utiles.
-						</p>
-
-						<a href="{{ path('front_equipements_index') }}" class="service-link">
-							<i class="bi bi-arrow-right"></i>
-							Voir les Ã©quipements
-						</a>
-					</div>
-				</div>
-
-			</div>
-		</div>
-	</section>
-
+        </div>
+    </div>
+</section>
 
 {% endblock %}
-

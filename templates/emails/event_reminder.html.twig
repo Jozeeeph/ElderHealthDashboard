@@ -1,0 +1,20 @@
+<h2>Rappel : {{ event.titre }}</h2>
+
+<p>
+  Bonjour {{ user.prenom|default(user.nom|default('')) }},
+</p>
+
+<p>
+  Petit rappel : votre événement commence dans 24h.
+</p>
+
+<ul>
+  <li><strong>Date :</strong> {{ event.dateDebut ? event.dateDebut|date('d/m/Y H:i') : '—' }}</li>
+  <li><strong>Lieu :</strong> {{ event.lieu|default('—') }}</li>
+</ul>
+
+{% if imageUrl %}
+  <p><img src="{{ imageUrl }}" alt="Image" style="max-width:600px;border-radius:10px;"></p>
+{% endif %}
+
+<p>À bientôt 😊</p>

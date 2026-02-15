@@ -1,118 +1,190 @@
-{% block stylesheets %}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<!DOCTYPE html>
+<html lang="fr">
+	<head>
+		<meta charset="UTF-8">
+		<title>Événements disponibles</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="stylesheet" href="{{ asset('css/patient.css') }}?v=20260214-notif1">
-    <link rel="stylesheet" href="{{ asset('css/eventFront.css') }}?v=1">
-{% endblock %}
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-{% block body %}
-<div class="patient-app">
+		<link rel="stylesheet" href="{{ asset('css/patient.css') }}?v=20260214-notif1">
+		<link rel="stylesheet" href="{{ asset('css/eventFront.css') }}?v=1">
+	</head>
 
-    <!-- TOPBAR (exact style patient.css) -->
-    {% include 'FrontOffice/patient/_header.html.twig' %}
+	{% block body %}
+		<div
+			class="patient-app">
 
-    <!-- MAIN -->
-    <main class="patient-main events-main">
+			<!-- TOPBAR -->
+			{% include 'FrontOffice/patient/_header.html.twig' %}
 
-        <!-- HERO (même vibe que welcome-card) -->
-        <section class="welcome-card events-hero">
-            <div class="welcome-content">
-                <h1>
-                    Événements disponibles <span class="wave">🎉</span>
-                </h1>
-                <p>
-                    Découvrez les événements publiés et choisissez celui qui vous intéresse.
-                </p>
-            </div>
-        </section>
+			<!-- MAIN -->
+			<main
+				class="patient-main events-main">
 
-        {% if events is empty %}
-            <section class="card events-empty-card">
-                <h2>Aucun événement</h2>
-                <p>Aucun événement disponible pour le moment 🙂</p>
-            </section>
-        {% else %}
-            <!-- GRID -->
-            <section class="events-grid">
-                {% for e in events %}
-                    {% set typeColor = e.type and e.type.couleur ? e.type.couleur : '#2d6cdf' %}
+				<!-- HERO -->
+				<section class="welcome-card events-hero">
+					<div class="welcome-content">
+						<h1>
+							Événements disponibles
+							<span class="wave">🎉</span>
+						</h1>
+						<p>Découvrez les événements publiés et choisissez celui qui vous intéresse.</p>
+					</div>
+				</section>
 
-                    <article class="event-card">
-                        <div class="event-card-head">
-                            <div class="event-icon" style="border-color: {{ typeColor }};">
-                                <i class="bi bi-calendar-event" style="color: {{ typeColor }};"></i>
-                            </div>
+				{# Flash messages #}
+				{% for label, messages in app.flashes %}
+					{% for msg in messages %}
+						<div class="alert alert-{{ label }} mb-3">{{ msg }}</div>
+					{% endfor %}
+				{% endfor %}
 
-                            {% if e.type %}
-                                <span class="event-pill" style="--c: {{ typeColor }};">
-                                    <i class="bi bi-tag"></i>
-                                    {{ e.type.libelle }}
-                                </span>
-                            {% endif %}
-                        </div>
+				{% if events is empty %}
+					<section class="card events-empty-card">
+						<h2>Aucun événement</h2>
+						<p>Aucun événement disponible pour le moment 🙂</p>
+					</section>
+				{% else %}
 
-                        <h3 class="event-title">{{ e.titre }}</h3>
+					<section class="events-grid">
+						{% for e in events %}
+							{% set typeColor = e.type and e.type.couleur ? e.type.couleur : '#2d6cdf' %}
 
-                        <p class="event-desc">
-                            {{ e.description|default('')|length > 0 ? e.description|slice(0,120) ~ '…' : 'Aucune description.' }}
-                        </p>
+							{# ====== Participation calculs (par event) ====== #}
+							{% set participantsCount = e.participations is defined ? e.participations|length : 0 %}
+							{% set isFull = e.capaciteMax and participantsCount >= e.capaciteMax %}
 
-                   <div class="event-meta">
+							{% set isParticipating = false %}
+							{% if app.user and e.participations is defined %}
+								{% for p in e.participations %}
+									{# ⚠️ si chez toi ce n'est pas p.utilisateur, change ici #}
+									{% if p.utilisateur is defined and p.utilisateur and p.utilisateur.id == app.user.id %}
+										{% set isParticipating = true %}
+									{% endif %}
+								{% endfor %}
+							{% endif %}
 
-  {# TYPE (optionnel) #}
-  <div class="event-meta-row">
-    <i class="bi bi-tag"></i>
-    <span class="meta-label">Type :</span>
-    <span class="meta-value">{{ e.type ? e.type.libelle : 'Non défini' }}</span>
-  </div>
+							<article class="event-card">
 
-  {# DATE #}
-  <div class="event-meta-row">
-    <i class="bi bi-clock"></i>
-    <span class="meta-label">Date :</span>
-    <span class="meta-value">
-      {{ e.dateDebut ? e.dateDebut|date('d/m/Y H:i') : 'Non définie' }}
-    </span>
-  </div>
+								<div class="event-card-head">
+									<div class="event-icon" style="border-color: {{ typeColor }};">
+										<i class="bi bi-calendar-event" style="color: {{ typeColor }};"></i>
+									</div>
 
-  {# LIEU #}
-  <div class="event-meta-row">
-    <i class="bi bi-geo-alt"></i>
-    <span class="meta-label">Lieu :</span>
-    <span class="meta-value">{{ e.lieu ? e.lieu : 'Non défini' }}</span>
-  </div>
+									{% if e.type %}
+										<span class="event-pill" style="--c: {{ typeColor }};">
+											<i class="bi bi-tag"></i>
+											{{ e.type.libelle }}
+										</span>
+									{% endif %}
+								</div>
 
-  {# CAPACITÉ #}
-  <div class="event-meta-row">
-    <i class="bi bi-people"></i>
-    <span class="meta-label">Capacité :</span>
-    <span class="meta-value">{{ e.capaciteMax ? e.capaciteMax : '—' }}</span>
-  </div>
+								<h3 class="event-title">{{ e.titre }}</h3>
 
-</div>
+								<p class="event-desc">
+									{{ e.description|default('')|length > 0 ? e.description|slice(0,120) ~ '…' : 'Aucune description.' }}
+								</p>
+
+								<div class="event-meta">
+									<div class="event-meta-row">
+										<i class="bi bi-clock"></i>
+										<span class="meta-label">Date :</span>
+										<span class="meta-value">{{ e.dateDebut ? e.dateDebut|date('d/m/Y H:i') : 'Non définie' }}</span>
+									</div>
+
+									<div class="event-meta-row">
+										<i class="bi bi-geo-alt"></i>
+										<span class="meta-label">Lieu :</span>
+										<span class="meta-value">{{ e.lieu ? e.lieu : 'Non défini' }}</span>
+									</div>
+
+									<div class="event-meta-row">
+										<i class="bi bi-people"></i>
+										<span class="meta-label">Capacité :</span>
+										<span class="meta-value">{{ e.capaciteMax ? e.capaciteMax : '—' }}</span>
+									</div>
+								</div>
+
+								{# ✅ le bloc chips (comme ta page show) #}
+								<div class="mt-2 small">
+
+									<div class="mb-1">
+										<i class="bi bi-people"></i>
+										<strong>Capacité :</strong>
+										{{ participantsCount }}/{{ e.capaciteMax }}
+									</div>
+
+									<div class="mb-1">
+										<i class="bi bi-megaphone"></i>
+										<strong>Statut :</strong>
+										{{ e.statut|default('BROUILLON') }}
+									</div>
+
+									{% if isParticipating %}
+										<div class="text-success">
+											<i class="bi bi-check-circle"></i>
+											Vous participez
+										</div>
+									{% endif %}
+
+								</div>
 
 
-                        {% if e.image %}
-                            <div class="event-image">
-                                <img src="{{ asset('uploads/events/' ~ e.image) }}" alt="Image event" loading="lazy">
-                            </div>
-                        {% endif %}
+								{% if e.image %}
+									<div class="event-image">
+										<img src="{{ asset('uploads/events/' ~ e.image) }}" alt="Image event" loading="lazy">
+									</div>
+								{% endif %}
 
-                        <a class="event-btn" href="{{ path('front_events_show', {id: e.id}) }}">
-                            Voir détails <i class="bi bi-arrow-right"></i>
-                        </a>
-                    </article>
-                {% endfor %}
-            </section>
-        {% endif %}
+								{# ✅ Boutons participer / annuler (TES ROUTES) #}
+								<div class="d-flex gap-2 mt-3">
+									{% if app.user is null %}
+										<a class="btn btn-outline-primary w-100" href="{{ path('app_login') }}">
+											<i class="bi bi-box-arrow-in-right"></i>
+											Se connecter pour participer
+										</a>
+									{% else %}
+										<form method="post" action="{{ path('front_events_participer', {id: e.id}) }}" style="flex:1;">
+											<input type="hidden" name="_token" value="{{ csrf_token('front_participer_' ~ e.id) }}">
+											<button type="submit" class="btn btn-success w-100" {% if isParticipating or isFull %} disabled {% endif %}>
+												<i class="bi bi-check2-circle"></i>
+												Participer
+											</button>
+										</form>
 
-    </main>
-</div>
+										{% if isParticipating %}
+											<form method="post" action="{{ path('front_events_annuler', {id: e.id}) }}" style="flex:1;">
+												<input type="hidden" name="_token" value="{{ csrf_token('front_annuler_' ~ e.id) }}">
+												<button type="submit" class="btn btn-outline-danger w-100">
+													<i class="bi bi-x-circle"></i>
+													Annuler
+												</button>
+											</form>
+										{% endif %}
+									{% endif %}
+								</div>
 
-<script>
-  window.addEventListener('scroll', () => {
-    document.querySelector('.topbar')
-      ?.classList.toggle('is-scrolled', window.scrollY > 10);
-  });
-</script>
-{% endblock %}
+								<a class="event-btn mt-3" href="{{ path('front_events_show', {id: e.id}) }}">
+									Voir détails
+									<i class="bi bi-arrow-right"></i>
+								</a>
+
+							</article>
+						{% endfor %}
+					</section>
+
+				{% endif %}
+
+			</main>
+		</div>
+
+		<script>
+			window.addEventListener('scroll', () => {
+document.querySelector('.topbar') ?. classList.toggle('is-scrolled', window.scrollY > 10);
+});
+		</script>
+	{% endblock %}
+</html>
