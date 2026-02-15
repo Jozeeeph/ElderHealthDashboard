@@ -91,7 +91,7 @@
 					<a href="{{ path('patient_consultations') }}">Consultations</a>
 					<a href="{{ path('front_equipements_index') }}">Equipement</a>
 					<a href="{{ path('forum_post_forum_index') }}">Forum</a>
-					<a href="{{ path('front_events_index') }}">Ã‰vÃ©nements</a>
+					<a href="{{ path('front_events_index') }}">Evenements</a>
 				</nav>
 
 				<div class="profile">
@@ -104,44 +104,44 @@
 		<main class="patient-main">
 			<section class="cute-header">
 				<div>
-					<div class="cute-title">ðŸ§¾ Rapport mÃ©dical doux</div>
-					<div class="cute-chip">ðŸ©º Consultation {{ rapport.consultation.id }}</div>
+					<div class="cute-title">Rapport medical</div>
+					<div class="cute-chip">Consultation {{ rapport.consultation.id }}</div>
 				</div>
-				<div class="cute-chip">âœ¨ Bon rÃ©tablissement</div>
+				<div class="cute-chip">Bon retablissement</div>
 			</section>
 
 			<section class="content-grid" style="grid-template-columns: 1fr;">
 				<div class="card">
-					<h2>âœ¨ DÃ©tails santÃ©</h2>
+					<h2>Details sante</h2>
 					<div class="cute-grid">
 						<div class="cute-card">
-							<div class="cute-label">âš ï¸ GravitÃ©</div>
+							<div class="cute-label">Gravite</div>
 							<div class="cute-value">{{ rapport.niveauGravite }}</div>
 						</div>
 						<div class="cute-card">
-							<div class="cute-label">ðŸ“… Date</div>
+							<div class="cute-label">Date</div>
 							<div class="cute-value">{{ rapport.dateRapport ? rapport.dateRapport|date('d/m/Y H:i') : '-' }}</div>
 						</div>
 					</div>
 					<div class="item">
-						<strong>ðŸ”Ž Diagnostic</strong>
+						<strong>Diagnostic</strong>
 						<p>{{ rapport.diagnostic }}</p>
 					</div>
 					<div class="item">
-						<strong>ðŸ’¡ Recommandations</strong>
+						<strong>Recommandations</strong>
 						<p>{{ rapport.recommandations }}</p>
 					</div>
 					{% if rapport.fichierPath %}
 						<div class="item">
-							<strong>ðŸ“Ž PiÃ¨ce jointe</strong>
+							<strong>Piece jointe</strong>
 							<p>
 								<a class="btn ghost" href="{{ asset(rapport.fichierPath) }}" target="_blank" rel="noopener">Ouvrir le fichier</a>
 							</p>
 						</div>
 					{% endif %}
 					<div class="actions">
-						<a class="btn primary" href="{{ path('patient_rapport_pdf', {'id': rapport.idRapport}) }}">ðŸ“„ TÃ©lÃ©charger PDF</a>
-						<a class="btn ghost" href="{{ path('patient_consultations') }}">â¬…ï¸ Retour</a>
+						<a class="btn primary" href="{{ path('patient_rapport_pdf', {'id': rapport.idRapport}) }}">Telecharger PDF</a>
+						<a class="btn ghost" href="{{ path('patient_consultations') }}">Retour</a>
 					</div>
 				</div>
 			</section>

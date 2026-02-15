@@ -78,7 +78,7 @@
 					<a href="{{ path('patient_consultations') }}">Consultations</a>
 					<a href="{{ path('front_equipements_index') }}">Equipement</a>
 					<a href="{{ path('forum_post_forum_index') }}">Forum</a>
-					<a href="{{ path('front_events_index') }}">Ã‰vÃ©nements</a>
+					<a href="{{ path('front_events_index') }}">Evenements</a>
 				</nav>
 
 				<div class="profile">
@@ -91,48 +91,48 @@
 		<main class="patient-main">
 			<section class="cute-header">
 				<div>
-					<div class="cute-title">ðŸ’Š Prescription douce</div>
-					<div class="cute-chip">ðŸ©º Consultation {{ prescription.consultation.id }}</div>
+					<div class="cute-title">Prescription</div>
+					<div class="cute-chip">Consultation {{ prescription.consultation.id }}</div>
 				</div>
-				<div class="cute-chip">ðŸ§¡ Prenez soin de vous</div>
+				<div class="cute-chip">Prenez soin de vous</div>
 			</section>
 
 			<section class="content-grid" style="grid-template-columns: 1fr;">
 				<div class="card">
-					<h2>âœ¨ DÃ©tails bien-Ãªtre</h2>
+					<h2>Details bien-etre</h2>
 					<div class="cute-grid">
 						<div class="cute-card">
-							<div class="cute-label">ðŸ” FrÃ©quence</div>
+							<div class="cute-label">Frequence</div>
 							<div class="cute-value">{{ prescription.frequence }}</div>
 						</div>
 						<div class="cute-card">
-							<div class="cute-label">ðŸ“ Dosage</div>
+							<div class="cute-label">Dosage</div>
 							<div class="cute-value">{{ prescription.dosage }}</div>
 						</div>
 						<div class="cute-card">
-							<div class="cute-label">ðŸ“† DurÃ©e</div>
+							<div class="cute-label">Duree</div>
 							<div class="cute-value">{{ prescription.dureeTraitement }}</div>
 						</div>
 						<div class="cute-card">
-							<div class="cute-label">ðŸ—“ï¸ PÃ©riode</div>
+							<div class="cute-label">Periode</div>
 							<div class="cute-value">
 								{{ prescription.dateDebut ? prescription.dateDebut|date('d/m/Y') : '-' }}
-								â†’
+								->
 								{{ prescription.dateFin ? prescription.dateFin|date('d/m/Y') : '-' }}
 							</div>
 						</div>
 					</div>
 					<div class="item">
-						<strong>ðŸ’Š MÃ©dicaments</strong>
+						<strong>Medicaments</strong>
 						<p>{{ prescription.medicaments }}</p>
 					</div>
 					<div class="item">
-						<strong>ðŸ“ Consignes</strong>
+						<strong>Consignes</strong>
 						<p>{{ prescription.consignes ?: '-' }}</p>
 					</div>
 					<div class="actions">
-						<a class="btn primary" href="{{ path('patient_prescription_pdf', {'id': prescription.idPrescription}) }}">ðŸ“„ TÃ©lÃ©charger PDF</a>
-						<a class="btn ghost" href="{{ path('patient_consultations') }}">â¬…ï¸ Retour</a>
+						<a class="btn primary" href="{{ path('patient_prescription_pdf', {'id': prescription.idPrescription}) }}">Telecharger PDF</a>
+						<a class="btn ghost" href="{{ path('patient_consultations') }}">Retour</a>
 					</div>
 				</div>
 			</section>
