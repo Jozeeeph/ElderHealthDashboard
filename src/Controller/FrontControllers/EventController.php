@@ -11,13 +11,17 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Event;
 use App\Entity\Participation;
+use App\Service\EventReminderService;
+
 
 #[Route('/eventsFront', name: 'front_events_')]
 class EventController extends AbstractController
 {
     #[Route('/', name: 'index', methods: ['GET'])]
-    public function index(EventRepository $eventRepository): Response
+    public function index(EventRepository $eventRepository, EventReminderService $reminderService): Response
     {
+        $reminderService->checkAndSendReminders();
+
         $events = $eventRepository->findBy(
             ['statut' => 'PUBLIE'],
             ['dateDebut' => 'DESC']

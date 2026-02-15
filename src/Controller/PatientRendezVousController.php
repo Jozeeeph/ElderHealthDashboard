@@ -179,4 +179,39 @@ class PatientRendezVousController extends AbstractController
         return $this->redirectToRoute('patient_rendezvous_index');
     }
 
+    #[IsGranted('ROLE_PATIENT')]
+    #[Route('/notifications/clear', name: 'notifications_clear', methods: ['POST'])]
+    public function clearNotifications(Request $request, RendezVousRepository $rendezVousRepository): Response
+    {
+        $patient = $this->getUser();
+        if (!$patient instanceof Utilisateur) {
+            throw $this->createAccessDeniedException();
+        }
+
+        if (!$this->isCsrfTokenValid('patient_clear_notifications', (string) $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }
+
+        $session = $request->getSession();
+        if ($session !== null) {
+            $seen = $session->get('patient_rdv_seen_notification_ids', []);
+            if (!is_array($seen)) {
+                $seen = [];
+            }
+
+            $currentNotifIds = $rendezVousRepository->findStatusNotificationIdsForPatient($patient);
+            $merged = array_values(array_unique(array_map('intval', array_merge($seen, $currentNotifIds))));
+            $session->set('patient_rdv_seen_notification_ids', $merged);
+        }
+
+        $this->addFlash('success', 'Notifications supprimees.');
+
+        $referer = $request->headers->get('referer');
+        if (is_string($referer) && $referer !== '') {
+            return $this->redirect($referer);
+        }
+
+        return $this->redirectToRoute('patient_rendezvous_index');
+    }
+
 }
