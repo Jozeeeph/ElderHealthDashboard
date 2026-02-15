@@ -33,13 +33,13 @@ class NotificationExtension extends AbstractExtension
     }
 
     /**
-     * @return array{count:int,hasNew:bool,items:array<int,mixed>,canClearRdv:bool}
+     * @return array{count:int,hasNew:bool,items:array<int,mixed>,toast_items:array<int,mixed>,canClearRdv:bool}
      */
     public function getHeaderNotifications(): array
     {
         $user = $this->security->getUser();
         if (!$user instanceof Utilisateur) {
-            return ['count' => 0, 'hasNew' => false, 'items' => [], 'canClearRdv' => false];
+            return ['count' => 0, 'hasNew' => false, 'items' => [], 'toast_items' => [], 'canClearRdv' => false];
         }
 
         if ($this->security->isGranted('ROLE_PERSONNEL_MEDICAL')) {
@@ -103,6 +103,7 @@ class NotificationExtension extends AbstractExtension
 
             $liveItems = array_merge($endingItems, $doneItems, $items);
             $displayItems = $liveItems;
+            $toastItems = [];
 
             // Save nurse notifications in session stock to keep them after refresh.
             if ($session !== null) {
@@ -110,18 +111,44 @@ class NotificationExtension extends AbstractExtension
                 if (!is_array($stock)) {
                     $stock = [];
                 }
+                $dismissed = $session->get('personnel_notification_dismissed_keys', []);
+                if (!is_array($dismissed)) {
+                    $dismissed = [];
+                }
+                $dismissedMap = array_fill_keys(array_map('strval', $dismissed), true);
+                $shown = $session->get('personnel_notification_toast_seen_keys', []);
+                if (!is_array($shown)) {
+                    $shown = [];
+                }
+                $shownMap = array_fill_keys(array_map('strval', $shown), true);
 
                 $knownKeys = [];
-                foreach ($stock as $entry) {
-                    if (is_array($entry) && isset($entry['_key'])) {
-                        $knownKeys[(string) $entry['_key']] = true;
+                foreach ($stock as $idx => $entry) {
+                    if (!is_array($entry)) {
+                        $entry = $this->normalizeNotificationItem($entry);
                     }
+                    if (!isset($entry['_key'])) {
+                        $entry['_key'] = $this->buildNotificationKey($this->normalizeNotificationItem($entry));
+                    }
+                    if (isset($dismissedMap[(string) $entry['_key']])) {
+                        continue;
+                    }
+                    $stock[$idx] = $entry;
+                    $knownKeys[(string) $entry['_key']] = true;
                 }
+                $stock = array_values(array_filter($stock, static fn ($x) => is_array($x)));
 
                 $nowIso = (new \DateTimeImmutable())->format(\DateTimeInterface::ATOM);
                 foreach ($liveItems as $entry) {
                     $payload = $this->normalizeNotificationItem($entry);
                     $key = $this->buildNotificationKey($payload);
+                    if (isset($dismissedMap[$key])) {
+                        continue;
+                    }
+                    if (!isset($dismissedMap[$key]) && !isset($shownMap[$key])) {
+                        $toastItems[] = $payload;
+                        $shownMap[$key] = true;
+                    }
                     if (isset($knownKeys[$key])) {
                         continue;
                     }
@@ -134,6 +161,7 @@ class NotificationExtension extends AbstractExtension
 
                 $stock = array_slice($stock, 0, 80);
                 $session->set('personnel_notification_stock', $stock);
+                $session->set('personnel_notification_toast_seen_keys', array_slice(array_keys($shownMap), 0, 300));
                 $displayItems = $stock;
             }
 
@@ -143,6 +171,7 @@ class NotificationExtension extends AbstractExtension
                 'count' => $allCount,
                 'hasNew' => count($liveItems) > 0,
                 'items' => $displayItems,
+                'toast_items' => $toastItems,
                 'canClearRdv' => false,
             ];
         }
@@ -204,6 +233,7 @@ class NotificationExtension extends AbstractExtension
 
             $allItems = array_merge($endingItems, $medicationReminders, $items);
             $displayItems = $allItems;
+            $toastItems = [];
 
             // Save patient notifications in a session stock (history in bell icon).
             if ($session !== null) {
@@ -211,18 +241,44 @@ class NotificationExtension extends AbstractExtension
                 if (!is_array($stock)) {
                     $stock = [];
                 }
+                $dismissed = $session->get('patient_notification_dismissed_keys', []);
+                if (!is_array($dismissed)) {
+                    $dismissed = [];
+                }
+                $dismissedMap = array_fill_keys(array_map('strval', $dismissed), true);
+                $shown = $session->get('patient_notification_toast_seen_keys', []);
+                if (!is_array($shown)) {
+                    $shown = [];
+                }
+                $shownMap = array_fill_keys(array_map('strval', $shown), true);
 
                 $knownKeys = [];
-                foreach ($stock as $entry) {
-                    if (is_array($entry) && isset($entry['_key'])) {
-                        $knownKeys[(string) $entry['_key']] = true;
+                foreach ($stock as $idx => $entry) {
+                    if (!is_array($entry)) {
+                        $entry = $this->normalizeNotificationItem($entry);
                     }
+                    if (!isset($entry['_key'])) {
+                        $entry['_key'] = $this->buildNotificationKey($this->normalizeNotificationItem($entry));
+                    }
+                    if (isset($dismissedMap[(string) $entry['_key']])) {
+                        continue;
+                    }
+                    $stock[$idx] = $entry;
+                    $knownKeys[(string) $entry['_key']] = true;
                 }
+                $stock = array_values(array_filter($stock, static fn ($x) => is_array($x)));
 
                 $nowIso = (new \DateTimeImmutable())->format(\DateTimeInterface::ATOM);
                 foreach ($allItems as $entry) {
                     $payload = $this->normalizeNotificationItem($entry);
                     $key = $this->buildNotificationKey($payload);
+                    if (isset($dismissedMap[$key])) {
+                        continue;
+                    }
+                    if (!isset($dismissedMap[$key]) && !isset($shownMap[$key])) {
+                        $toastItems[] = $payload;
+                        $shownMap[$key] = true;
+                    }
                     if (isset($knownKeys[$key])) {
                         continue;
                     }
@@ -235,6 +291,7 @@ class NotificationExtension extends AbstractExtension
 
                 $stock = array_slice($stock, 0, 80);
                 $session->set('patient_notification_stock', $stock);
+                $session->set('patient_notification_toast_seen_keys', array_slice(array_keys($shownMap), 0, 300));
                 $displayItems = $stock;
             }
 
@@ -244,11 +301,12 @@ class NotificationExtension extends AbstractExtension
                 'count' => $count,
                 'hasNew' => count($allItems) > 0,
                 'items' => $displayItems,
+                'toast_items' => $toastItems,
                 'canClearRdv' => false,
             ];
         }
 
-        return ['count' => 0, 'hasNew' => false, 'items' => [], 'canClearRdv' => false];
+        return ['count' => 0, 'hasNew' => false, 'items' => [], 'toast_items' => [], 'canClearRdv' => false];
     }
 
     /**

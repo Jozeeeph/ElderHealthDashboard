@@ -354,6 +354,97 @@ class PatientController extends AbstractController
         return $this->json(['message' => 'Dossier médical uploadé', 'path' => $patient->getDossierMedicalPath()]);
     }
 
+    #[Route('/notifications/clear-all', name: 'app_notifications_clear_all', methods: ['POST'])]
+    public function clearAllNotifications(Request $request): Response
+    {
+        if (!$this->isCsrfTokenValid('clear_all_notifications', (string) $request->request->get('_token'))) {
+            return $this->redirect($request->headers->get('referer') ?: $this->generateUrl('app_public_site'));
+        }
+
+        $session = $request->getSession();
+        if ($session) {
+            if ($this->isGranted('ROLE_PERSONNEL_MEDICAL')) {
+                $stock = $session->get('personnel_notification_stock', []);
+                $dismissed = $session->get('personnel_notification_dismissed_keys', []);
+                $seen = $session->get('personnel_notification_toast_seen_keys', []);
+                if (!is_array($stock)) {
+                    $stock = [];
+                }
+                if (!is_array($dismissed)) {
+                    $dismissed = [];
+                }
+                if (!is_array($seen)) {
+                    $seen = [];
+                }
+
+                foreach ($stock as $entry) {
+                    $key = $this->extractNotificationKey($entry);
+                    if ($key === null) {
+                        continue;
+                    }
+                    $dismissed[] = $key;
+                    $seen[] = $key;
+                }
+
+                $session->set('personnel_notification_dismissed_keys', array_values(array_unique($dismissed)));
+                $session->set('personnel_notification_toast_seen_keys', array_values(array_unique($seen)));
+                $session->remove('personnel_notification_stock');
+                $session->remove('personnel_med_ack_seen_ids');
+            } elseif ($this->isGranted('ROLE_PATIENT')) {
+                $stock = $session->get('patient_notification_stock', []);
+                $dismissed = $session->get('patient_notification_dismissed_keys', []);
+                $seen = $session->get('patient_notification_toast_seen_keys', []);
+                if (!is_array($stock)) {
+                    $stock = [];
+                }
+                if (!is_array($dismissed)) {
+                    $dismissed = [];
+                }
+                if (!is_array($seen)) {
+                    $seen = [];
+                }
+
+                foreach ($stock as $entry) {
+                    $key = $this->extractNotificationKey($entry);
+                    if ($key === null) {
+                        continue;
+                    }
+                    $dismissed[] = $key;
+                    $seen[] = $key;
+                }
+
+                $session->set('patient_notification_dismissed_keys', array_values(array_unique($dismissed)));
+                $session->set('patient_notification_toast_seen_keys', array_values(array_unique($seen)));
+                $session->remove('patient_notification_stock');
+                $session->remove('patient_rdv_seen_notification_ids');
+            }
+        }
+
+        return $this->redirect($request->headers->get('referer') ?: $this->generateUrl('app_public_site'));
+    }
+
+    private function extractNotificationKey(mixed $entry): ?string
+    {
+        if (is_array($entry)) {
+            if (isset($entry['_key']) && is_string($entry['_key']) && $entry['_key'] !== '') {
+                return $entry['_key'];
+            }
+
+            $type = (string) ($entry['type'] ?? 'info');
+            $message = (string) ($entry['message'] ?? '');
+            $prescriptionId = (string) ($entry['prescription_id'] ?? '');
+            $scheduledAt = (string) ($entry['scheduled_at'] ?? '');
+
+            return hash('sha256', $type . '|' . $message . '|' . $prescriptionId . '|' . $scheduledAt);
+        }
+
+        if (is_string($entry) && $entry !== '') {
+            return hash('sha256', 'info|' . $entry . '||');
+        }
+
+        return null;
+    }
+
     private function resolveCurrentPatient(UtilisateurRepository $utilisateurRepository): ?Utilisateur
     {
         $user = $this->getUser();

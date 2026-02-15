@@ -134,6 +134,12 @@
 			<div class="notif-panel" data-notif-panel hidden>
 				<div class="notif-panel-head">
 					<span>Stock notifications</span>
+					{% if notif.count > 0 %}
+						<form method="post" action="{{ path('app_notifications_clear_all') }}" class="notif-clear-form">
+							<input type="hidden" name="_token" value="{{ csrf_token('clear_all_notifications') }}">
+							<button type="submit" class="notif-clear-btn">Clean all</button>
+						</form>
+					{% endif %}
 				</div>
 				<div class="notif-panel-body">
 					{% if notif.items is not empty %}
@@ -163,9 +169,9 @@
 	</div>
 </header>
 
-{% if notif.items is not empty %}
+{% if notif.toast_items is not empty %}
 	<div class="notif-toast-stack" data-notif-toast-stack>
-		{% for item in notif.items %}
+		{% for item in notif.toast_items %}
 			{% if item is iterable %}
 				<div class="notif-toast {{ item.overdue is defined and item.overdue ? 'is-overdue' : '' }}" data-notif-toast>
 					<div class="notif-text">{{ item.message }}</div>
