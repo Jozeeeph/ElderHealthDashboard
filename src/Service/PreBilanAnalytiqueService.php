@@ -26,14 +26,42 @@ class PreBilanAnalytiqueService
 
         $patientName = trim(($patient->getPrenom() ?? '') . ' ' . ($patient->getNom() ?? ''));
         $prompt = $this->buildPrompt($patientName !== '' ? $patientName : 'Patient', $timeline, $quality['warnings']);
+        $backend = strtolower(trim((string) (
+            $_ENV['IA_BACKEND']
+            ?? $_SERVER['IA_BACKEND']
+            ?? 'huggingface'
+        )));
 
-        $apiKey = trim((string) ($_ENV['OPENAI_API_KEY'] ?? $_SERVER['OPENAI_API_KEY'] ?? ''));
-        $model = trim((string) ($_ENV['OPENAI_MEDICAL_MODEL'] ?? $_SERVER['OPENAI_MEDICAL_MODEL'] ?? 'gpt-4o-mini'));
+        $apiKey = trim((string) (
+            $_ENV['HF_TOKEN']
+            ?? $_SERVER['HF_TOKEN']
+            ?? $_ENV['HUGGINGFACE_API_KEY']
+            ?? $_SERVER['HUGGINGFACE_API_KEY']
+            ?? ''
+        ));
+        $model = trim((string) (
+            $_ENV['HF_MEDICAL_MODEL']
+            ?? $_SERVER['HF_MEDICAL_MODEL']
+            ?? 'meta-llama/Llama-3.1-8B-Instruct'
+        ));
+
+        if ($backend === 'fastapi') {
+            $aiResult = $this->callFastApi($prompt);
+            if ($aiResult['content'] !== null) {
+                return ['content' => $aiResult['content'], 'source' => 'fastapi', 'debugReason' => null];
+            }
+
+            return [
+                'content' => $this->buildFallbackReport($timeline, $quality),
+                'source' => 'fallback',
+                'debugReason' => $aiResult['error'],
+            ];
+        }
 
         if ($apiKey !== '') {
-            $aiResult = $this->callOpenAi($prompt, $apiKey, $model);
+            $aiResult = $this->callHuggingFaceRouter($prompt, $apiKey, $model);
             if ($aiResult['content'] !== null) {
-                return ['content' => $aiResult['content'], 'source' => 'openai', 'debugReason' => null];
+                return ['content' => $aiResult['content'], 'source' => 'huggingface_router', 'debugReason' => null];
             }
 
             return [
@@ -46,7 +74,7 @@ class PreBilanAnalytiqueService
         return [
             'content' => $this->buildFallbackReport($timeline, $quality),
             'source' => 'fallback',
-            'debugReason' => 'OPENAI_API_KEY manquante.',
+            'debugReason' => 'IA indisponible: definir IA_BACKEND=fastapi ou configurer HF_TOKEN.',
         ];
     }
 
@@ -112,6 +140,10 @@ Instructions :
 - Ne fais pas de diagnostic definitif.
 - Sois structure et synthetique.
 - Si la serie contient moins de 3 consultations, garde une interpretation prudente.
+- Reponds en texte brut (sans markdown, sans **, sans listes a puces).
+- Respecte strictement 5 sections numerotees: 1., 2., 3., 4., 5.
+- Limite chaque section a 2 phrases courtes maximum.
+- Termine la reponse par une phrase de conclusion complete.
 
 Donnees patient :
 
@@ -146,45 +178,157 @@ PROMPT;
     /**
      * @return array{content: ?string, error: ?string}
      */
-    private function callOpenAi(string $prompt, string $apiKey, string $model): array
+    private function callHuggingFaceRouter(string $prompt, string $apiKey, string $model): array
     {
+        $endpoint = trim((string) (
+            $_ENV['HF_CHAT_ENDPOINT']
+            ?? $_SERVER['HF_CHAT_ENDPOINT']
+            ?? 'https://router.huggingface.co/v1/chat/completions'
+        ));
+        $provider = trim((string) (
+            $_ENV['HF_PROVIDER']
+            ?? $_SERVER['HF_PROVIDER']
+            ?? ''
+        ));
+
+        $maxAttempts = 5;
+
         try {
-            $response = $this->httpClient->request('POST', 'https://api.openai.com/v1/chat/completions', [
+            for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
+                $response = $this->httpClient->request('POST', $endpoint, [
+                    'headers' => [
+                        'Authorization' => 'Bearer ' . $apiKey,
+                        'Content-Type' => 'application/json',
+                    ],
+                    'json' => [
+                        'model' => $model,
+                        'messages' => [
+                            ['role' => 'system', 'content' => 'Tu rediges des pre-bilans medicaux synthetiques sans poser de diagnostic definitif.'],
+                            ['role' => 'user', 'content' => $prompt],
+                        ],
+                        'max_tokens' => 700,
+                        'temperature' => 0.2,
+                        'provider' => $provider !== '' ? $provider : 'auto',
+                    ],
+                    'timeout' => 60,
+                ]);
+
+                $status = $response->getStatusCode();
+                $data = $response->toArray(false);
+
+                if ($status >= 400) {
+                    $apiError = (string) ($data['error'] ?? $data['message'] ?? ('HTTP ' . $status));
+
+                    if (in_array($status, [429, 500, 502, 503, 504], true) && $attempt < $maxAttempts) {
+                        sleep(2 * $attempt);
+                        continue;
+                    }
+
+                    return ['content' => null, 'error' => $apiError];
+                }
+
+                if (is_array($data) && isset($data['choices'][0]['message']['content']) && is_string($data['choices'][0]['message']['content'])) {
+                    $content = trim($data['choices'][0]['message']['content']);
+                    if ($content !== '') {
+                        $validationError = $this->validateAiContent($content);
+                        if ($validationError !== null) {
+                            return ['content' => null, 'error' => $validationError];
+                        }
+                        return ['content' => $content, 'error' => null];
+                    }
+                }
+
+                return ['content' => null, 'error' => 'Reponse IA vide ou format inattendu.'];
+            }
+
+            return ['content' => null, 'error' => 'Aucune reponse IA apres plusieurs tentatives.'];
+        } catch (\Throwable $e) {
+            $this->logger->warning('Pre-bilan IA Hugging Face Router indisponible, fallback actif.', [
+                'error' => $e->getMessage(),
+                'model' => $model,
+                'endpoint' => $endpoint,
+                'provider' => $provider,
+            ]);
+
+            return ['content' => null, 'error' => $e->getMessage()];
+        }
+    }
+
+    /**
+     * @return array{content: ?string, error: ?string}
+     */
+    private function callFastApi(string $prompt): array
+    {
+        $endpoint = trim((string) (
+            $_ENV['FASTAPI_ANALYZE_URL']
+            ?? $_SERVER['FASTAPI_ANALYZE_URL']
+            ?? 'http://127.0.0.1:5002/analyze'
+        ));
+
+        try {
+            $response = $this->httpClient->request('POST', $endpoint, [
                 'headers' => [
-                    'Authorization' => 'Bearer ' . $apiKey,
                     'Content-Type' => 'application/json',
                 ],
                 'json' => [
-                    'model' => $model,
-                    'temperature' => 0.2,
-                    'messages' => [
-                        ['role' => 'system', 'content' => 'Tu rediges des pre-bilans medicaux synthetiques sans poser de diagnostic definitif.'],
-                        ['role' => 'user', 'content' => $prompt],
-                    ],
+                    'text' => $prompt,
                 ],
-                'timeout' => 30,
+                'timeout' => 65,
             ]);
 
             $status = $response->getStatusCode();
             $data = $response->toArray(false);
             if ($status >= 400) {
-                $apiError = (string) ($data['error']['message'] ?? ('HTTP ' . $status));
-                return ['content' => null, 'error' => $apiError];
+                $error = is_array($data)
+                    ? (string) ($data['detail'] ?? $data['error'] ?? ('HTTP ' . $status))
+                    : ('HTTP ' . $status);
+                return ['content' => null, 'error' => $error];
             }
 
-            $content = $data['choices'][0]['message']['content'] ?? null;
-            if (!is_string($content) || trim($content) === '') {
-                return ['content' => null, 'error' => 'Reponse IA vide ou format inattendu.'];
+            if (is_array($data) && isset($data['generated_text']) && is_string($data['generated_text'])) {
+                $content = trim($data['generated_text']);
+                if ($content !== '') {
+                    $validationError = $this->validateAiContent($content);
+                    if ($validationError !== null) {
+                        return ['content' => null, 'error' => $validationError];
+                    }
+                    return ['content' => $content, 'error' => null];
+                }
             }
 
-            return ['content' => trim($content), 'error' => null];
+            if (is_array($data) && isset($data['generated_text']) && is_array($data['generated_text'])) {
+                $first = $data['generated_text'][0]['generated_text'] ?? null;
+                if (is_string($first) && trim($first) !== '') {
+                    $content = trim($first);
+                    $validationError = $this->validateAiContent($content);
+                    if ($validationError !== null) {
+                        return ['content' => null, 'error' => $validationError];
+                    }
+                    return ['content' => $content, 'error' => null];
+                }
+            }
+
+            return ['content' => null, 'error' => 'Reponse FastAPI vide ou format inattendu.'];
         } catch (\Throwable $e) {
-            $this->logger->warning('Pre-bilan IA indisponible, fallback actif.', [
+            $this->logger->warning('Pre-bilan IA FastAPI indisponible, fallback actif.', [
                 'error' => $e->getMessage(),
+                'endpoint' => $endpoint,
             ]);
 
             return ['content' => null, 'error' => $e->getMessage()];
         }
+    }
+
+    private function validateAiContent(string $content): ?string
+    {
+        $requiredSections = ['1.', '2.', '3.', '4.', '5.'];
+        foreach ($requiredSections as $section) {
+            if (!str_contains($content, $section)) {
+                return 'Reponse IA incomplete: sections attendues 1..5 absentes.';
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -325,4 +469,3 @@ PROMPT;
         ];
     }
 }
-
