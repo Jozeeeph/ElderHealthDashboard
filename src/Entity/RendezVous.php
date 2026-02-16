@@ -45,10 +45,16 @@ class RendezVous
     private ?Utilisateur $admin = null;
    
 
-        #[ORM\Column(length: 20)]
-        #[Assert\NotBlank(message: 'L etat est obligatoire.')]
-        #[Assert\Choice(choices: ['EN_ATTENTE', 'PLANIFIE', 'PLANIFIEE', 'EN_COURS', 'TERMINE', 'TERMINEE', 'ANNULEE', 'REFUSEE'], message: 'Etat invalide.')]
-private ?string $etat = 'PLANIFIEE';
+    #[ORM\Column(length: 20)]
+    #[Assert\NotBlank(message: 'L etat est obligatoire.')]
+    #[Assert\Choice(choices: ['EN_ATTENTE', 'PLANIFIE', 'PLANIFIEE', 'EN_COURS', 'TERMINE', 'TERMINEE', 'ANNULEE', 'REFUSEE'], message: 'Etat invalide.')]
+    private ?string $etat = 'PLANIFIEE';
+
+    #[ORM\Column(options: ['default' => false])]
+    private bool $isPaid = false;
+
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $paidAt = null;
 
 public function getEtat(): ?string
 {
@@ -58,6 +64,28 @@ public function getEtat(): ?string
 public function setEtat(string $etat): self
 {
     $this->etat = $etat;
+    return $this;
+}
+
+public function isPaid(): bool
+{
+    return $this->isPaid;
+}
+
+public function setIsPaid(bool $isPaid): self
+{
+    $this->isPaid = $isPaid;
+    return $this;
+}
+
+public function getPaidAt(): ?\DateTimeImmutable
+{
+    return $this->paidAt;
+}
+
+public function setPaidAt(?\DateTimeImmutable $paidAt): self
+{
+    $this->paidAt = $paidAt;
     return $this;
 }
     public function getId(): ?int

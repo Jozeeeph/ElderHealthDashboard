@@ -39,7 +39,6 @@ class PatientRendezVousController extends AbstractController
             'pages' => 1,
         ];
         $notifications = [];
-        $paidRdvIds = [];
         if ($patient) {
             $page = max(1, $request->query->getInt('page', 1));
             $pagination = $rendezVousRepository->findForPatientPaginated($patient, $page, self::PER_PAGE);
@@ -56,11 +55,6 @@ class PatientRendezVousController extends AbstractController
                 $currentNotifIds = $rendezVousRepository->findStatusNotificationIdsForPatient($patient);
                 $merged = array_values(array_unique(array_map('intval', array_merge($seen, $currentNotifIds))));
                 $session->set('patient_rdv_seen_notification_ids', $merged);
-
-                $paid = $session->get('patient_paid_rdv_ids', []);
-                if (is_array($paid)) {
-                    $paidRdvIds = array_map('intval', $paid);
-                }
             }
         }
 
@@ -68,7 +62,6 @@ class PatientRendezVousController extends AbstractController
             'rendezVousList' => $rendezVousList,
             'pagination' => $pagination,
             'notifications' => $notifications,
-            'paidRdvIds' => $paidRdvIds,
         ]);
     }
 
@@ -228,24 +221,26 @@ class PatientRendezVousController extends AbstractController
 
     #[IsGranted('ROLE_PATIENT')]
     #[Route('/rendezvous/{id}/payment-success', name: 'payment_success', methods: ['GET'])]
-    public function paymentSuccess(RendezVous $rdv, Request $request): Response
+    public function paymentSuccess(RendezVous $rdv, EntityManagerInterface $em): Response
     {
         $patient = $this->getUser();
         if (!$patient instanceof Utilisateur || $rdv->getPatient()?->getId() !== $patient->getId()) {
             throw $this->createAccessDeniedException();
         }
 
-        $session = $request->getSession();
-        if ($session !== null) {
-            $paid = $session->get('patient_paid_rdv_ids', []);
-            if (!is_array($paid)) {
-                $paid = [];
-            }
-            $paid[] = (int) $rdv->getId();
-            $session->set('patient_paid_rdv_ids', array_values(array_unique(array_map('intval', $paid))));
-        }
+        $paidAt = new \DateTimeImmutable();
+        $rdv->setIsPaid(true);
+        $rdv->setPaidAt($paidAt);
+        $em->flush();
 
-        $this->addFlash('success', 'Paiement confirme pour le rendez-vous #' . $rdv->getId() . '.');
+        $this->addFlash(
+            'success',
+            sprintf(
+                'Paiement confirme le %s pour le rendez-vous #%d.',
+                $paidAt->format('d/m/Y a H:i'),
+                (int) $rdv->getId(),
+            )
+        );
         return $this->redirectToRoute('patient_rendezvous_index');
     }
 
@@ -295,6 +290,43 @@ class PatientRendezVousController extends AbstractController
         return new Response($dompdf->output(), 200, [
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'attachment; filename="facture-rendez-vous-' . $rdv->getId() . '.pdf"',
+        ]);
+    }
+
+    #[IsGranted('ROLE_PATIENT')]
+    #[Route('/rendezvous/{id}/receipt', name: 'receipt', methods: ['GET'])]
+    public function receipt(RendezVous $rdv): Response
+    {
+        $patient = $this->getUser();
+        if (!$patient instanceof Utilisateur || $rdv->getPatient()?->getId() !== $patient->getId()) {
+            throw $this->createAccessDeniedException();
+        }
+
+        if (!$rdv->isPaid()) {
+            $this->addFlash('warning', 'Recu disponible uniquement apres paiement en ligne confirme.');
+            return $this->redirectToRoute('patient_rendezvous_index');
+        }
+
+        if (!class_exists(Dompdf::class)) {
+            $this->addFlash('danger', 'Generation PDF indisponible. Installez dompdf/dompdf.');
+            return $this->redirectToRoute('patient_rendezvous_index');
+        }
+
+        $html = $this->renderView('FrontOffice/patient/rendezvous/receipt.html.twig', [
+            'rdv' => $rdv,
+            'patient' => $patient,
+            'generatedAt' => new \DateTimeImmutable(),
+            'paidAt' => $rdv->getPaidAt(),
+        ]);
+
+        $dompdf = new Dompdf();
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        return new Response($dompdf->output(), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="recu-paiement-rendez-vous-' . $rdv->getId() . '.pdf"',
         ]);
     }
 
