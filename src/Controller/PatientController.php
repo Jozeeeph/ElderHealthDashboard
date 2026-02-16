@@ -423,6 +423,69 @@ class PatientController extends AbstractController
         return $this->redirect($request->headers->get('referer') ?: $this->generateUrl('app_public_site'));
     }
 
+    #[Route('/notifications/clear-one', name: 'app_notifications_clear_one', methods: ['POST'])]
+    public function clearOneNotification(Request $request): Response
+    {
+        $key = trim((string) $request->request->get('key'));
+        $tokenId = 'clear_one_notification_' . $key;
+        if ($key === '' || !$this->isCsrfTokenValid($tokenId, (string) $request->request->get('_token'))) {
+            return $this->redirect($request->headers->get('referer') ?: $this->generateUrl('app_public_site'));
+        }
+
+        $session = $request->getSession();
+        if ($session) {
+            if ($this->isGranted('ROLE_PERSONNEL_MEDICAL')) {
+                $stock = $session->get('personnel_notification_stock', []);
+                $dismissed = $session->get('personnel_notification_dismissed_keys', []);
+                $seen = $session->get('personnel_notification_toast_seen_keys', []);
+                if (!is_array($stock)) {
+                    $stock = [];
+                }
+                if (!is_array($dismissed)) {
+                    $dismissed = [];
+                }
+                if (!is_array($seen)) {
+                    $seen = [];
+                }
+
+                $stock = array_values(array_filter($stock, static function ($entry) use ($key): bool {
+                    return !(is_array($entry) && (($entry['_key'] ?? null) === $key));
+                }));
+                $dismissed[] = $key;
+                $seen[] = $key;
+
+                $session->set('personnel_notification_stock', $stock);
+                $session->set('personnel_notification_dismissed_keys', array_values(array_unique($dismissed)));
+                $session->set('personnel_notification_toast_seen_keys', array_values(array_unique($seen)));
+            } elseif ($this->isGranted('ROLE_PATIENT')) {
+                $stock = $session->get('patient_notification_stock', []);
+                $dismissed = $session->get('patient_notification_dismissed_keys', []);
+                $seen = $session->get('patient_notification_toast_seen_keys', []);
+                if (!is_array($stock)) {
+                    $stock = [];
+                }
+                if (!is_array($dismissed)) {
+                    $dismissed = [];
+                }
+                if (!is_array($seen)) {
+                    $seen = [];
+                }
+
+                $stock = array_values(array_filter($stock, static function ($entry) use ($key): bool {
+                    return !(is_array($entry) && (($entry['_key'] ?? null) === $key));
+                }));
+                $dismissed[] = $key;
+                $seen[] = $key;
+
+                $session->set('patient_notification_stock', $stock);
+                $session->set('patient_notification_dismissed_keys', array_values(array_unique($dismissed)));
+                $session->set('patient_notification_toast_seen_keys', array_values(array_unique($seen)));
+            }
+        }
+
+        return $this->redirect($request->headers->get('referer') ?: $this->generateUrl('app_public_site'));
+    }
+
     private function extractNotificationKey(mixed $entry): ?string
     {
         if (is_array($entry)) {

@@ -147,6 +147,13 @@
 							{% if item is iterable %}
 								<div class="notif-item {{ item.overdue is defined and item.overdue ? 'is-overdue' : '' }}">
 									<div class="notif-text">{{ item.message }}</div>
+									{% if not isNurse and item._key is defined %}
+										<form method="post" action="{{ path('app_notifications_clear_one') }}" class="notif-action-form">
+											<input type="hidden" name="_token" value="{{ csrf_token('clear_one_notification_' ~ item._key) }}">
+											<input type="hidden" name="key" value="{{ item._key }}">
+											<button type="submit" class="notif-done-btn">C'est bon</button>
+										</form>
+									{% endif %}
 								</div>
 							{% else %}
 								<div class="notif-item">{{ item }}</div>
