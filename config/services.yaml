@@ -35,3 +35,9 @@ services:
     App\Service\EventReminderService:
         arguments:
             $fromEmail: '%app.mail_from%'
+
+    App\Service\StripeCheckoutService:
+        arguments:
+            $stripeSecretKey: '%env(string:STRIPE_SECRET_KEY)%'
+            $stripeCurrency: '%env(string:STRIPE_CURRENCY)%'
+            $stripeApiBaseUrl: '%env(string:STRIPE_API_BASE_URL)%'

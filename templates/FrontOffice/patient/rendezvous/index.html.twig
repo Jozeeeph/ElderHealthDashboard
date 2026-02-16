@@ -42,6 +42,18 @@
 						<button type="button" class="rdv-flash-close" aria-label="Fermer">x</button>
 					</div>
 				{% endfor %}
+				{% for message in app.flashes('warning') %}
+					<div class="rdv-flash rdv-flash-warning" role="alert">
+						<div class="rdv-flash-text">{{ message }}</div>
+						<button type="button" class="rdv-flash-close" aria-label="Fermer">x</button>
+					</div>
+				{% endfor %}
+				{% for message in app.flashes('danger') %}
+					<div class="rdv-flash rdv-flash-danger" role="alert">
+						<div class="rdv-flash-text">{{ message }}</div>
+						<button type="button" class="rdv-flash-close" aria-label="Fermer">x</button>
+					</div>
+				{% endfor %}
 
 				<section class="content-grid">
 					<div class="card" style="grid-column: 1 / -1;">
@@ -139,8 +151,24 @@
 												<span class="status-badge {{ etatClass[rdv.etat] ?? 'status-planifiee' }}">
 													{{ rdv.etat|replace({'_': ' '})|lower|title }}
 												</span>
+												{% if paidRdvIds is defined and rdv.id in paidRdvIds %}
+													<span class="status-badge status-paye">Paye</span>
+												{% endif %}
 											</div>
 											<div class="rdv-actions">
+												{% if rdv.etat in ['PLANIFIE', 'PLANIFIEE'] %}
+													{% if not (paidRdvIds is defined and rdv.id in paidRdvIds) %}
+														<form method="post" action="{{ path('patient_rendezvous_pay_online', {'id': rdv.id}) }}" class="m-0">
+															<input type="hidden" name="_token" value="{{ csrf_token('patient_pay_online_' ~ rdv.id) }}">
+															<button type="submit" class="btn-action pay" title="Payer en ligne">
+																<i class="bi bi-credit-card"></i>
+															</button>
+														</form>
+													{% endif %}
+													<a class="btn-action invoice" href="{{ path('patient_rendezvous_invoice', {'id': rdv.id}) }}" title="Telecharger facture">
+														<i class="bi bi-file-earmark-arrow-down"></i>
+													</a>
+												{% endif %}
 												{% if rdv.etat != 'REFUSEE' %}
 													<a class="btn-action edit" href="{{ path('patient_rendezvous_edit', {'id': rdv.id}) }}" title="Modifier">
 														<i class="bi bi-pencil"></i>
