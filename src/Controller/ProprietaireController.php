@@ -2,13 +2,13 @@
 
 namespace App\Controller;
 
-use App\Entity\Equipement;
 use App\Entity\Commande;
-use App\Repository\EquipementRepository;
+use App\Entity\Equipement;
 use App\Repository\CommandeRepository;
+use App\Repository\EquipementRepository;
+use App\Service\ImageProcessor;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -29,8 +29,7 @@ final class ProprietaireController extends AbstractController
     public function index(
         EquipementRepository $equipementRepository,
         CommandeRepository $commandeRepository
-    ): Response
-    {
+    ): Response {
         $user = $this->getUser();
 
         $equipements = $equipementRepository->findBy(
@@ -63,7 +62,8 @@ final class ProprietaireController extends AbstractController
         EquipementRepository $equipementRepository,
         CommandeRepository $commandeRepository,
         SluggerInterface $slugger,
-        ValidatorInterface $validator
+        ValidatorInterface $validator,
+        ImageProcessor $imageProcessor
     ): Response {
         if (!$this->isCsrfTokenValid('equipement_create', $request->request->get('_token'))) {
             $this->addFlash('error', 'Token CSRF invalide');
@@ -84,17 +84,13 @@ final class ProprietaireController extends AbstractController
         $imageFile = $request->files->get('image');
         if ($imageFile) {
             $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
-            $safeFilename = $slugger->slug($originalFilename);
-            $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
+            $safeFilename = (string) $slugger->slug($originalFilename ?: 'equipment');
 
             try {
-                $imageFile->move(
-                    $this->getParameter('images_directory'),
-                    $newFilename
-                );
-                $equipement->setImage($newFilename);
-            } catch (FileException $e) {
-                $this->addFlash('error', 'Erreur lors du téléchargement de l\'image');
+                $processedFilename = $imageProcessor->processAndStore($imageFile, $safeFilename);
+                $equipement->setImage($processedFilename);
+            } catch (\Throwable $e) {
+                $this->addFlash('error', 'Erreur lors du traitement AI de l\'image');
             }
         }
 
@@ -132,7 +128,7 @@ final class ProprietaireController extends AbstractController
         $entityManager->persist($equipement);
         $entityManager->flush();
 
-        $this->addFlash('success', 'Équipement ajouté avec succès !');
+        $this->addFlash('success', 'Equipement ajoute avec succes !');
         return $this->redirectToRoute('front_proprietaire_equipements');
     }
 
@@ -141,13 +137,12 @@ final class ProprietaireController extends AbstractController
         int $id,
         EquipementRepository $equipementRepository,
         CommandeRepository $commandeRepository
-    ): Response
-    {
+    ): Response {
         $user = $this->getUser();
         $selected = $equipementRepository->findOneBy(['id' => $id, 'utilisateur' => $user]);
 
         if (!$selected) {
-            throw $this->createNotFoundException('Équipement introuvable');
+            throw $this->createNotFoundException('Equipement introuvable');
         }
 
         $equipements = $equipementRepository->findBy(
@@ -181,17 +176,18 @@ final class ProprietaireController extends AbstractController
         EquipementRepository $equipementRepository,
         CommandeRepository $commandeRepository,
         SluggerInterface $slugger,
-        ValidatorInterface $validator
+        ValidatorInterface $validator,
+        ImageProcessor $imageProcessor
     ): Response {
         $user = $this->getUser();
         $equipement = $equipementRepository->findOneBy(['id' => $id, 'utilisateur' => $user]);
 
         if (!$equipement) {
-            throw $this->createNotFoundException('Équipement introuvable');
+            throw $this->createNotFoundException('Equipement introuvable');
         }
 
         if ($request->isMethod('POST')) {
-            if (!$this->isCsrfTokenValid('equipement_edit'.$equipement->getId(), $request->request->get('_token'))) {
+            if (!$this->isCsrfTokenValid('equipement_edit' . $equipement->getId(), $request->request->get('_token'))) {
                 $this->addFlash('error', 'Token CSRF invalide');
                 return $this->redirectToRoute('front_proprietaire_equipements_edit', ['id' => $id]);
             }
@@ -206,25 +202,16 @@ final class ProprietaireController extends AbstractController
 
             $imageFile = $request->files->get('image');
             if ($imageFile) {
-                if ($equipement->getImage()) {
-                    $oldImage = $this->getParameter('images_directory').'/'.$equipement->getImage();
-                    if (file_exists($oldImage)) {
-                        unlink($oldImage);
-                    }
-                }
-
                 $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
-                $safeFilename = $slugger->slug($originalFilename);
-                $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
+                $safeFilename = (string) $slugger->slug($originalFilename ?: 'equipment');
 
                 try {
-                    $imageFile->move(
-                        $this->getParameter('images_directory'),
-                        $newFilename
-                    );
-                    $equipement->setImage($newFilename);
-                } catch (FileException $e) {
-                    $this->addFlash('error', 'Erreur lors du téléchargement de l\'image');
+                    $processedFilename = $imageProcessor->processAndStore($imageFile, $safeFilename);
+                    $oldImage = $equipement->getImage();
+                    $equipement->setImage($processedFilename);
+                    $imageProcessor->deleteIfExists($oldImage);
+                } catch (\Throwable $e) {
+                    $this->addFlash('error', 'Erreur lors du traitement AI de l\'image');
                 }
             }
 
@@ -260,7 +247,7 @@ final class ProprietaireController extends AbstractController
             }
 
             $entityManager->flush();
-            $this->addFlash('success', 'Équipement modifié avec succès !');
+            $this->addFlash('success', 'Equipement modifie avec succes !');
             return $this->redirectToRoute('front_proprietaire_equipements');
         }
 
@@ -292,25 +279,21 @@ final class ProprietaireController extends AbstractController
         int $id,
         Request $request,
         EntityManagerInterface $entityManager,
-        EquipementRepository $equipementRepository
+        EquipementRepository $equipementRepository,
+        ImageProcessor $imageProcessor
     ): Response {
         $user = $this->getUser();
         $equipement = $equipementRepository->findOneBy(['id' => $id, 'utilisateur' => $user]);
 
         if (!$equipement) {
-            throw $this->createNotFoundException('Équipement introuvable');
+            throw $this->createNotFoundException('Equipement introuvable');
         }
 
-        if ($this->isCsrfTokenValid('equipement_delete'.$equipement->getId(), $request->request->get('_token'))) {
-            if ($equipement->getImage()) {
-                $imagePath = $this->getParameter('images_directory').'/'.$equipement->getImage();
-                if (file_exists($imagePath)) {
-                    unlink($imagePath);
-                }
-            }
+        if ($this->isCsrfTokenValid('equipement_delete' . $equipement->getId(), $request->request->get('_token'))) {
+            $imageProcessor->deleteIfExists($equipement->getImage());
             $entityManager->remove($equipement);
             $entityManager->flush();
-            $this->addFlash('success', 'Équipement supprimé avec succès !');
+            $this->addFlash('success', 'Equipement supprime avec succes !');
         } else {
             $this->addFlash('error', 'Token CSRF invalide');
         }
@@ -326,7 +309,7 @@ final class ProprietaireController extends AbstractController
     ): Response {
         $user = $this->getUser();
 
-        if (!$this->isCsrfTokenValid('commande_cycle_statut'.$commande->getId(), $request->request->get('_token'))) {
+        if (!$this->isCsrfTokenValid('commande_cycle_statut' . $commande->getId(), $request->request->get('_token'))) {
             $this->addFlash('error', 'Token CSRF invalide');
             return $this->redirectToRoute('front_proprietaire_equipements');
         }
@@ -340,7 +323,7 @@ final class ProprietaireController extends AbstractController
         }
 
         if (!$owned) {
-            throw $this->createAccessDeniedException('Commande non autorisée.');
+            throw $this->createAccessDeniedException('Commande non autorisee.');
         }
 
         $cycle = [
@@ -361,8 +344,7 @@ final class ProprietaireController extends AbstractController
         $commande->setStatutCommande($next);
         $entityManager->flush();
 
-        $this->addFlash('success', 'Statut de la commande mis à jour.');
+        $this->addFlash('success', 'Statut de la commande mis a jour.');
         return $this->redirectToRoute('front_proprietaire_equipements');
     }
-
 }
