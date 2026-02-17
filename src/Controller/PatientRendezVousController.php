@@ -4,12 +4,16 @@ namespace App\Controller;
 
 use Dompdf\Dompdf;
 use App\Entity\RendezVous;
+use App\Entity\TypeRendezVous;
 use App\Entity\Utilisateur;
 use App\Form\PatientRendezVousType;
 use App\Repository\RendezVousRepository;
 use App\Service\StripeCheckoutService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormError;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -67,7 +71,7 @@ class PatientRendezVousController extends AbstractController
 
     #[IsGranted('ROLE_PATIENT')]
     #[Route('/new', name: 'new')]
-    public function new(Request $request, EntityManagerInterface $em): Response
+    public function new(Request $request, EntityManagerInterface $em, RendezVousRepository $rendezVousRepository): Response
     {
         $rdv = new RendezVous();
         $patient = $this->getUser();
@@ -81,6 +85,10 @@ class PatientRendezVousController extends AbstractController
         $rdv->setEtat('EN_ATTENTE');
         $form = $this->createForm(PatientRendezVousType::class, $rdv);
         $form->handleRequest($request);
+
+        if ($form->isSubmitted()) {
+            $this->addConflictErrorIfNeeded($form, $rdv, $rendezVousRepository, null);
+        }
 
         if ($form->isSubmitted() && $form->isValid()) {
             $rdv->setEtat('EN_ATTENTE');
@@ -98,8 +106,24 @@ class PatientRendezVousController extends AbstractController
     }
 
     #[IsGranted('ROLE_PATIENT')]
+    #[Route('/rendezvous/types-disponibles', name: 'types_available', methods: ['GET'])]
+    public function typesAvailable(EntityManagerInterface $em): Response
+    {
+        $patient = $this->getUser();
+        if (!$patient instanceof Utilisateur) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $typesRendezVous = $em->getRepository(TypeRendezVous::class)->findBy([], ['type' => 'ASC']);
+
+        return $this->render('FrontOffice/patient/rendezvous/types_available.html.twig', [
+            'typesRendezVous' => $typesRendezVous,
+        ]);
+    }
+
+    #[IsGranted('ROLE_PATIENT')]
     #[Route('/edit/{id}', name: 'edit')]
-    public function edit(RendezVous $rdv, Request $request, EntityManagerInterface $em): Response
+    public function edit(RendezVous $rdv, Request $request, EntityManagerInterface $em, RendezVousRepository $rendezVousRepository): Response
     {
         $patient = $this->getUser();
         if (!$patient instanceof Utilisateur || $rdv->getPatient()?->getId() !== $patient->getId()) {
@@ -114,6 +138,10 @@ class PatientRendezVousController extends AbstractController
         $form = $this->createForm(PatientRendezVousType::class, $rdv);
         $form->handleRequest($request);
 
+        if ($form->isSubmitted()) {
+            $this->addConflictErrorIfNeeded($form, $rdv, $rendezVousRepository, $rdv->getId());
+        }
+
         if ($form->isSubmitted() && $form->isValid()) {
             $rdv->setEtat('EN_ATTENTE');
             $em->flush();
@@ -125,6 +153,73 @@ class PatientRendezVousController extends AbstractController
         return $this->render('FrontOffice/patient/rendezvous/form.html.twig', [
             'form' => $form->createView(),
             'mode' => 'edit',
+        ]);
+    }
+
+    #[IsGranted('ROLE_PATIENT')]
+    #[Route('/rendezvous/check-slot', name: 'check_slot', methods: ['GET'])]
+    public function checkSlot(Request $request, EntityManagerInterface $em, RendezVousRepository $rendezVousRepository): JsonResponse
+    {
+        $patient = $this->getUser();
+        if (!$patient instanceof Utilisateur) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $personnelId = $request->query->getInt('personnelId', 0);
+        $typeId = $request->query->getInt('typeId', 0);
+        $dateRaw = (string) $request->query->get('date', '');
+        $heureRaw = (string) $request->query->get('heure', '');
+        $excludeId = $request->query->getInt('excludeId', 0);
+
+        if ($personnelId <= 0 || $dateRaw === '' || $heureRaw === '') {
+            return $this->json([
+                'ok' => false,
+                'available' => true,
+                'message' => 'Informations incompletes.',
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        $personnel = $em->getRepository(Utilisateur::class)->find($personnelId);
+        if (!$personnel instanceof Utilisateur) {
+            return $this->json([
+                'ok' => false,
+                'available' => true,
+                'message' => 'Personnel medical introuvable.',
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        $date = \DateTimeImmutable::createFromFormat('Y-m-d', $dateRaw);
+        $heure = \DateTimeImmutable::createFromFormat('H:i', $heureRaw);
+        if (!$date instanceof \DateTimeImmutable || !$heure instanceof \DateTimeImmutable) {
+            return $this->json([
+                'ok' => false,
+                'available' => true,
+                'message' => 'Date ou heure invalide.',
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        $duration = 45;
+        if ($typeId > 0) {
+            $typeRendezVous = $em->getRepository(TypeRendezVous::class)->find($typeId);
+            if ($typeRendezVous instanceof TypeRendezVous) {
+                $duration = RendezVousRepository::durationToMinutes($typeRendezVous->getDuree(), 45);
+            }
+        }
+
+        $hasConflict = $rendezVousRepository->hasPlannedOverlapForPersonnel(
+            $personnel,
+            $date,
+            $heure,
+            $duration,
+            $excludeId > 0 ? $excludeId : null
+        );
+
+        return $this->json([
+            'ok' => true,
+            'available' => !$hasConflict,
+            'message' => $hasConflict
+                ? 'Ce creneau chevauche un rendez-vous deja planifie pour ce personnel medical.'
+                : 'Creneau disponible.',
         ]);
     }
 
@@ -363,6 +458,27 @@ class PatientRendezVousController extends AbstractController
         }
 
         return $this->redirectToRoute('patient_rendezvous_index');
+    }
+
+    private function addConflictErrorIfNeeded(
+        FormInterface $form,
+        RendezVous $rdv,
+        RendezVousRepository $rendezVousRepository,
+        ?int $excludeId
+    ): void {
+        $personnel = $rdv->getPersonnelMedical();
+        $date = $rdv->getDate();
+        $heure = $rdv->getHeure();
+        $typeRendezVous = $rdv->getTypeRendezVous();
+        if (!$personnel instanceof Utilisateur || $date === null || $heure === null || !$typeRendezVous instanceof TypeRendezVous) {
+            return;
+        }
+
+        $duration = RendezVousRepository::durationToMinutes($typeRendezVous->getDuree(), 45);
+        if ($rendezVousRepository->hasPlannedOverlapForPersonnel($personnel, $date, $heure, $duration, $excludeId)) {
+            $message = 'Ce creneau chevauche un rendez-vous deja planifie pour ce personnel medical. Veuillez choisir une autre date ou heure.';
+            $form->get('heure')->addError(new FormError($message));
+        }
     }
 
 }

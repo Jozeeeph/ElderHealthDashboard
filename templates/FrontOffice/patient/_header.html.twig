@@ -15,11 +15,13 @@
 		{% set isNurse = is_granted('ROLE_PERSONNEL_MEDICAL') %}
 		{% set homeRoute = isNurse ? 'app_infermier_interface' : 'app_patient_interfce' %}
 		{% set rendezVousRoute = isNurse ? 'front_infermier_rendezvous_index' : 'patient_rendezvous_index' %}
+		{% set calendarRoute = isNurse ? 'front_infermier_calendar_index' : '' %}
 		{% set consultationRoute = isNurse ? 'front_infermier_consultation_index' : 'patient_consultations' %}
 		{% set profileRoute = isNurse ? 'front_infermier_profile' : 'patient_profile' %}
 		{% set forumRoute = isNurse ? 'front_infermier_forum_index' : 'forum_post_forum_index' %}
 		{% set notif = header_notifications() %}
 		{% set rendezVousActive = isNurse ? (currentRoute starts with 'front_infermier_rendezvous_') : (currentRoute starts with 'patient_rendezvous') %}
+		{% set calendarActive = isNurse and (currentRoute starts with 'front_infermier_calendar_') %}
 		{% set consultationActive = isNurse
             ? (currentRoute starts with 'front_infermier_consultation_' or currentRoute starts with 'front_infermier_prescription_' or currentRoute starts with 'front_infermier_rapport_')
             : (currentRoute == 'patient_consultations' or currentRoute == 'patient_prescription_show' or currentRoute == 'patient_rapport_show') %}
@@ -34,6 +36,11 @@
 			<a href="{{ path(rendezVousRoute) }}" class="{{ rendezVousActive ? 'active' }}">
 				Rendez-vous
 			</a>
+			{% if isNurse %}
+				<a href="{{ path(calendarRoute) }}" class="{{ calendarActive ? 'active' }}">
+					Calendrier
+				</a>
+			{% endif %}
 
 			<a href="{{ path(consultationRoute) }}" class="{{ consultationActive ? 'active' }}">
 				Consultation

@@ -1,0 +1,192 @@
+{% block stylesheets %}
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="{{ asset('css/infermier.css') }}?v=20260217-2">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.css">
+{% endblock %}
+
+{% block body %}
+	<div class="nurse-app">
+		{% include 'FrontOffice/infermier/_header.html.twig' %}
+		<main class="nurse-main consultation-page">
+			<section class="consultation-header">
+				<div class="card-head">
+					<div>
+						<h2 class="consultation-title">Calendrier des rendez-vous planifies</h2>
+						<p class="consultation-subtitle">Calendrier personnel infirmier avec les rendez-vous confirmes des patients.</p>
+					</div>
+					<div class="consult-calendar-refresh">
+						<span class="consultation-chip chip-blue">
+							<i class="bi bi-person-badge"></i>
+							{{ nurseName }}
+						</span>
+						<span class="consultation-chip" id="calendar-last-sync">
+							<i class="bi bi-clock-history"></i>
+							Synchronisation: -
+						</span>
+					</div>
+				</div>
+			</section>
+
+			<section class="grid consult-grid mt-3">
+				<div class="card span-2">
+					<div class="card-head">
+						<h2>
+							<i class="bi bi-calendar3"></i>
+							Mon calendrier (Jour / Semaine / Mois)
+						</h2>
+					</div>
+					<div id="nurse-calendar" data-events-url="{{ eventsFeedUrl }}"></div>
+				</div>
+				<div class="card consult-notifs">
+					<div class="card-head">
+						<h2>
+							<i class="bi bi-hourglass-split"></i>
+							Demandes en attente
+						</h2>
+					</div>
+					<div class="consult-notif-list">
+						{% for rdv in notifications %}
+							<div class="consult-notif-item">
+								<i class="bi bi-bell"></i>
+								<div>
+									<div>{{ rdv.patient ? rdv.patient.prenom ~ ' ' ~ rdv.patient.nom : 'Patient' }}</div>
+									<small class="text-muted">
+										{{ rdv.date ? rdv.date|date('d/m/Y') : '-' }}
+										a
+										{{ rdv.heure ? rdv.heure|date('H:i') : '-' }}
+									</small>
+								</div>
+							</div>
+						{% else %}
+							<div class="consult-notif-item">Aucune demande en attente.</div>
+						{% endfor %}
+					</div>
+				</div>
+			</section>
+		</main>
+	</div>
+
+	<div class="modal fade" id="rdvDetailModal" tabindex="-1" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Detail du rendez-vous planifie</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+				</div>
+				<div class="modal-body">
+					<div class="consultation-grid">
+						<div class="consultation-row"><span class="consultation-label">Patient</span><span class="value" id="rdv-detail-patient">-</span></div>
+						<div class="consultation-row"><span class="consultation-label">Heure</span><span class="value" id="rdv-detail-time">-</span></div>
+						<div class="consultation-row"><span class="consultation-label">Type de soin</span><span class="value" id="rdv-detail-care">-</span></div>
+						<div class="consultation-row"><span class="consultation-label">Statut</span><span class="value" id="rdv-detail-status">-</span></div>
+						<div class="consultation-row"><span class="consultation-label">Lieu</span><span class="value" id="rdv-detail-location">-</span></div>
+						<div class="consultation-row"><span class="consultation-label">Paiement</span><span class="value" id="rdv-detail-payment">-</span></div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block javascripts %}
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js"></script>
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			const calendarEl = document.getElementById('nurse-calendar');
+			if (!calendarEl) {
+				return;
+			}
+
+			const lastSync = document.getElementById('calendar-last-sync');
+			const detailModalEl = document.getElementById('rdvDetailModal');
+			const detailModal = detailModalEl ? new bootstrap.Modal(detailModalEl) : null;
+
+			const detailPatient = document.getElementById('rdv-detail-patient');
+			const detailTime = document.getElementById('rdv-detail-time');
+			const detailCare = document.getElementById('rdv-detail-care');
+			const detailStatus = document.getElementById('rdv-detail-status');
+			const detailLocation = document.getElementById('rdv-detail-location');
+			const detailPayment = document.getElementById('rdv-detail-payment');
+
+			const updateSyncLabel = function () {
+				if (!lastSync) {
+					return;
+				}
+				const now = new Date();
+				const hh = String(now.getHours()).padStart(2, '0');
+				const mm = String(now.getMinutes()).padStart(2, '0');
+				const ss = String(now.getSeconds()).padStart(2, '0');
+				lastSync.innerHTML = '<i class="bi bi-clock-history"></i> Synchronisation: ' + hh + ':' + mm + ':' + ss;
+			};
+
+			const normalizeStatus = function (status) {
+				const text = String(status || '').replaceAll('_', ' ').toLowerCase();
+				return text.charAt(0).toUpperCase() + text.slice(1);
+			};
+
+			const calendar = new FullCalendar.Calendar(calendarEl, {
+				locale: 'fr',
+				initialView: 'timeGridWeek',
+				height: 'auto',
+				slotMinTime: '00:00:00',
+				slotMaxTime: '24:00:00',
+				nowIndicator: true,
+				headerToolbar: {
+					left: 'prev,next today',
+					center: 'title',
+					right: 'dayGridMonth,timeGridWeek,timeGridDay'
+				},
+				slotLabelFormat: {
+					hour: '2-digit',
+					minute: '2-digit',
+					hour12: false
+				},
+				eventTimeFormat: {
+					hour: '2-digit',
+					minute: '2-digit',
+					hour12: false
+				},
+				events: {
+					url: calendarEl.dataset.eventsUrl
+				},
+				loading: function (isLoading) {
+					if (!isLoading) {
+						updateSyncLabel();
+					}
+				},
+				eventClick: function (info) {
+					const props = info.event.extendedProps || {};
+					if (!detailModal) {
+						return;
+					}
+					detailPatient.textContent = props.patientName || '-';
+					detailTime.textContent = props.time || '-';
+					detailCare.textContent = props.careType || '-';
+					detailStatus.textContent = normalizeStatus(props.status || '-');
+					detailLocation.textContent = props.location || '-';
+					detailPayment.textContent = props.isPaid ? 'Paye' : 'Non paye';
+					detailModal.show();
+				}
+			});
+
+			calendar.render();
+			updateSyncLabel();
+			window.setInterval(function () {
+				calendar.refetchEvents();
+			}, 5000);
+			document.addEventListener('visibilitychange', function () {
+				if (document.visibilityState === 'visible') {
+					calendar.refetchEvents();
+				}
+			});
+			window.addEventListener('focus', function () {
+				calendar.refetchEvents();
+			});
+		});
+	</script>
+{% endblock %}

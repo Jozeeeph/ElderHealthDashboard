@@ -407,6 +407,22 @@ body{
 .content b{ display:block; }
 .content p{ margin:2px 0 0; color:var(--muted); font-weight:700; }
 
+.alert-cancelled-item{
+  border-color:#f5c2c7;
+  background:linear-gradient(180deg, #fff5f5 0%, #ffe9ec 100%);
+}
+.alert-cancelled-item .bubble{
+  background:#fee2e2;
+  border-color:#fecaca;
+  color:#991b1b;
+}
+.alert-cancelled-item .content b{
+  color:#991b1b;
+}
+.alert-cancelled-item .content p{
+  color:#7f1d1d;
+}
+
 /* Patients */
 .patients{ display:flex; flex-direction:column; gap:10px; }
 .p-item{
@@ -1308,5 +1324,65 @@ body{
 
 @media (max-width: 520px){
   .stats{ grid-template-columns: 1fr; }
+}
+
+/* Nurse calendar page */
+.consult-calendar-refresh{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+#nurse-calendar{
+  min-height:640px;
+}
+.fc .fc-toolbar.fc-header-toolbar{
+  margin-bottom:1rem;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.fc .fc-button{
+  border-radius:999px;
+  border:1px solid #dbeafe;
+  background:#eff6ff;
+  color:#1d4ed8;
+  box-shadow:none;
+  padding:0.35rem 0.8rem;
+  font-weight:700;
+}
+.fc .fc-button:hover{
+  background:#dbeafe;
+  color:#1e3a8a;
+}
+.fc .fc-button-primary:not(:disabled).fc-button-active,
+.fc .fc-button-primary:not(:disabled):active{
+  background:linear-gradient(135deg, #2563eb 0%, #60a5fa 100%);
+  border-color:transparent;
+  color:#fff;
+}
+.fc .fc-daygrid-day-number,
+.fc .fc-col-header-cell-cushion{
+  color:#334155;
+  font-weight:700;
+  text-decoration:none;
+}
+.fc .fc-timegrid-slot-label-cushion,
+.fc .fc-timegrid-axis-cushion{
+  color:#64748b;
+  font-weight:700;
+}
+.fc .fc-event{
+  border-radius:10px;
+  padding:2px 4px;
+  font-weight:700;
+}
+.fc .fc-event-title{
+  font-weight:700;
+}
+#rdvDetailModal .modal-content{
+  border-radius:14px;
+}
+#rdvDetailModal .consultation-row{
+  grid-template-columns:120px 1fr;
 }
 
