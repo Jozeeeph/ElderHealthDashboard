@@ -183,6 +183,18 @@
     color: #166534;
 }
 
+.rdv-flash-warning {
+    background: #fffbeb;
+    border-color: #fde68a;
+    color: #92400e;
+}
+
+.rdv-flash-danger {
+    background: #fef2f2;
+    border-color: #fecaca;
+    color: #991b1b;
+}
+
 .rdv-flash-text {
     font-weight: 600;
     line-height: 1.35;
@@ -203,6 +215,24 @@
 
 .rdv-flash-close:hover {
     background: #dcfce7;
+}
+
+.rdv-flash-warning .rdv-flash-close {
+    border-color: #fde68a;
+    color: #92400e;
+}
+
+.rdv-flash-warning .rdv-flash-close:hover {
+    background: #fef3c7;
+}
+
+.rdv-flash-danger .rdv-flash-close {
+    border-color: #fecaca;
+    color: #991b1b;
+}
+
+.rdv-flash-danger .rdv-flash-close:hover {
+    background: #fee2e2;
 }
 
 /* ===== RDV LIST ===== */
@@ -315,6 +345,13 @@
     border-color: #fecdd3;
 }
 
+.status-paye {
+    background: #dcfce7;
+    color: #166534;
+    border-color: #bbf7d0;
+    margin-left: 6px;
+}
+
 .status-terminee {
     background: #dcfce7;
     color: #166534;
@@ -351,6 +388,18 @@
     color: #1d4ed8;
     border-color: #bfdbfe;
     background: #eff6ff;
+}
+
+.btn-action.pay:hover {
+    color: #047857;
+    border-color: #a7f3d0;
+    background: #ecfdf5;
+}
+
+.btn-action.invoice:hover {
+    color: #7c3aed;
+    border-color: #ddd6fe;
+    background: #f5f3ff;
 }
 
 .btn-action.delete:hover {

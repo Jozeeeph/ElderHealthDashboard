@@ -3,6 +3,10 @@ parameters:
     images_directory: '%kernel.project_dir%/public/uploads/images'
     app.url: '%env(APP_URL)%'
     app.mail_from: '%env(MAIL_FROM)%'
+    app.image_processor.api_url: '%env(string:IMAGE_PROCESSOR_API_URL)%'
+    app.image_processor.api_key: '%env(string:IMAGE_PROCESSOR_API_KEY)%'
+    app.image_processor.auth_header: '%env(string:IMAGE_PROCESSOR_AUTH_HEADER)%'
+    app.image_processor.auth_prefix: '%env(string:IMAGE_PROCESSOR_AUTH_PREFIX)%'
 
 services:
     _defaults:
@@ -35,3 +39,17 @@ services:
     App\Service\EventReminderService:
         arguments:
             $fromEmail: '%app.mail_from%'
+
+    App\Service\ImageProcessor:
+        arguments:
+            $apiUrl: '%app.image_processor.api_url%'
+            $apiKey: '%app.image_processor.api_key%'
+            $targetDirectory: '%images_directory%'
+            $authHeaderName: '%app.image_processor.auth_header%'
+            $authHeaderPrefix: '%app.image_processor.auth_prefix%'
+
+    App\Service\StripeCheckoutService:
+        arguments:
+            $stripeSecretKey: '%env(string:STRIPE_SECRET_KEY)%'
+            $stripeCurrency: '%env(string:STRIPE_CURRENCY)%'
+            $stripeApiBaseUrl: '%env(string:STRIPE_API_BASE_URL)%'

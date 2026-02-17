@@ -1,0 +1,76 @@
+.reset-wrapper{
+    min-height: 100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:40px 20px;
+    background:
+        radial-gradient(circle at 20% 20%, rgba(37,99,235,0.15), transparent 40%),
+        radial-gradient(circle at 80% 60%, rgba(255,153,0,0.15), transparent 40%),
+        #f4f7fb;
+    font-family: "Segoe UI", system-ui, sans-serif;
+}
+
+.reset-box{
+    width:100%;
+    max-width:560px;
+    background:white;
+    padding:40px;
+    border-radius:20px;
+    box-shadow:0 30px 80px rgba(0,0,0,0.08);
+    text-align:center;
+}
+
+.reset-logo img{
+    width:90px;
+    margin-bottom:15px;
+}
+
+.reset-title{
+    font-size:32px;
+    font-weight:800;
+    margin-bottom:8px;
+    color:#0f172a;
+}
+
+.reset-subtitle{
+    font-size:14px;
+    color:#64748b;
+    margin-bottom:22px;
+}
+
+/* Info box */
+.reset-info{
+    background: #eef6ff;
+    border: 1px solid #cfe2ff;
+    color: #0f172a;
+    padding: 14px 16px;
+    border-radius: 14px;
+    margin-bottom: 16px;
+    font-size: 14px;
+}
+
+/* Help text */
+.reset-help{
+    font-size:14px;
+    color:#64748b;
+    line-height: 1.5;
+    margin-bottom: 18px;
+}
+
+/* Links */
+.reset-link{
+    color:#2563eb;
+    text-decoration:none;
+    font-weight:700;
+}
+
+.reset-link:hover{
+    text-decoration:underline;
+}
+
+/* Footer */
+.reset-footer{
+    margin-top: 10px;
+    font-size: 13px;
+}
