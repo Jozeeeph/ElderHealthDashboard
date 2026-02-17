@@ -37,10 +37,12 @@
 				</section>
 
 				{% for message in app.flashes('success') %}
-					<div class="rdv-flash rdv-flash-success" role="alert">
-						<div class="rdv-flash-text">{{ message }}</div>
-						<button type="button" class="rdv-flash-close" aria-label="Fermer">x</button>
-					</div>
+					{% if 'Dose confirmee. Le rappel est masque.' not in message %}
+						<div class="rdv-flash rdv-flash-success" role="alert">
+							<div class="rdv-flash-text">{{ message }}</div>
+							<button type="button" class="rdv-flash-close" aria-label="Fermer">x</button>
+						</div>
+					{% endif %}
 				{% endfor %}
 				{% for message in app.flashes('warning') %}
 					<div class="rdv-flash rdv-flash-warning" role="alert">

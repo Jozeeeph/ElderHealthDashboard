@@ -8,7 +8,10 @@ use App\Entity\RapportMedical;
 use App\Enum\Role;
 use App\Form\PatientProfileType;
 use App\Repository\ConsultationRepository;
+use App\Repository\PrescriptionDoseAckRepository;
+use App\Repository\PrescriptionRepository;
 use App\Repository\UtilisateurRepository;
+use App\Service\PrescriptionReminderScheduler;
 use Doctrine\ORM\EntityManagerInterface;
 use Dompdf\Dompdf;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -31,7 +34,7 @@ class PatientController extends AbstractController
     {
         $patient = $this->resolveCurrentPatient($utilisateurRepository);
         if (!$patient) {
-            $this->addFlash('danger', 'Patient introuvable.');
+            $this->addFlash('medication_error', 'Patient introuvable.');
             return $this->redirectToRoute('app_patient_interfce');
         }
 
@@ -239,6 +242,74 @@ class PatientController extends AbstractController
         return $response;
     }
 
+    #[Route('/patient/prescription/reminder/done', name: 'patient_prescription_reminder_done', methods: ['POST'])]
+    public function markPrescriptionReminderDone(
+        Request $request,
+        UtilisateurRepository $utilisateurRepository,
+        PrescriptionRepository $prescriptionRepository,
+        PrescriptionDoseAckRepository $prescriptionDoseAckRepository,
+        PrescriptionReminderScheduler $prescriptionReminderScheduler,
+        EntityManagerInterface $em
+    ): Response {
+        $patient = $this->resolveCurrentPatient($utilisateurRepository);
+        if (!$patient) {
+            $this->addFlash('danger', 'Patient introuvable.');
+            return $this->redirectToRoute('app_patient_interfce');
+        }
+
+        $prescriptionId = (int) $request->request->get('prescription_id');
+        $scheduledAtRaw = trim((string) $request->request->get('scheduled_at'));
+        $tokenId = 'patient_med_reminder_' . $prescriptionId . '_' . $scheduledAtRaw;
+        if (!$this->isCsrfTokenValid($tokenId, (string) $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }
+
+        $prescription = $prescriptionRepository->find($prescriptionId);
+        if (!$prescription instanceof Prescription) {
+            throw $this->createNotFoundException('Prescription introuvable.');
+        }
+
+        $consultation = $prescription->getConsultation();
+        if (!$consultation || $consultation->getPatient()?->getId() !== $patient->getId()) {
+            throw $this->createNotFoundException('Prescription introuvable.');
+        }
+
+        $scheduledAt = \DateTimeImmutable::createFromFormat('Y-m-d H:i', $scheduledAtRaw);
+        if (!$scheduledAt) {
+            $this->addFlash('medication_error', 'Horaire de rappel invalide.');
+            return $this->redirectToRoute('patient_consultations');
+        }
+
+        $slots = $prescriptionReminderScheduler->buildSlotsForDate($prescription, $scheduledAt->setTime(0, 0));
+        $validSlot = false;
+        foreach ($slots as $slot) {
+            if ($slot->format('Y-m-d H:i') === $scheduledAt->format('Y-m-d H:i')) {
+                $validSlot = true;
+                break;
+            }
+        }
+
+        if (!$validSlot) {
+            $this->addFlash('medication_error', 'Ce rappel ne correspond pas a votre prescription.');
+            return $this->redirectToRoute('patient_consultations');
+        }
+
+        $prescriptionDoseAckRepository->markDone($prescription, $scheduledAt);
+        try {
+            $em->flush();
+        } catch (\Throwable $e) {
+            if (str_contains((string) $e->getMessage(), 'prescription_dose_ack')) {
+                $this->addFlash('medication_error', 'Les rappels ne sont pas initialises en base. Lancez les migrations Doctrine.');
+                return $this->redirectToRoute('patient_consultations');
+            }
+            throw $e;
+        }
+
+        $this->addFlash('medication_success', 'Dose confirmee. Le rappel est masque.');
+
+        return $this->redirectToRoute('patient_consultations');
+    }
+
 
 
 
@@ -281,6 +352,161 @@ class PatientController extends AbstractController
         $em->flush();
 
         return $this->json(['message' => 'Dossier médical uploadé', 'path' => $patient->getDossierMedicalPath()]);
+    }
+
+    #[Route('/notifications/clear-all', name: 'app_notifications_clear_all', methods: ['POST'])]
+    public function clearAllNotifications(Request $request): Response
+    {
+        if (!$this->isCsrfTokenValid('clear_all_notifications', (string) $request->request->get('_token'))) {
+            return $this->redirect($request->headers->get('referer') ?: $this->generateUrl('app_public_site'));
+        }
+
+        $session = $request->getSession();
+        if ($session) {
+            if ($this->isGranted('ROLE_PERSONNEL_MEDICAL')) {
+                $stock = $session->get('personnel_notification_stock', []);
+                $dismissed = $session->get('personnel_notification_dismissed_keys', []);
+                $seen = $session->get('personnel_notification_toast_seen_keys', []);
+                if (!is_array($stock)) {
+                    $stock = [];
+                }
+                if (!is_array($dismissed)) {
+                    $dismissed = [];
+                }
+                if (!is_array($seen)) {
+                    $seen = [];
+                }
+
+                foreach ($stock as $entry) {
+                    $key = $this->extractNotificationKey($entry);
+                    if ($key === null) {
+                        continue;
+                    }
+                    $dismissed[] = $key;
+                    $seen[] = $key;
+                }
+
+                $session->set('personnel_notification_dismissed_keys', array_values(array_unique($dismissed)));
+                $session->set('personnel_notification_toast_seen_keys', array_values(array_unique($seen)));
+                $session->remove('personnel_notification_stock');
+                $session->remove('personnel_med_ack_seen_ids');
+            } elseif ($this->isGranted('ROLE_PATIENT')) {
+                $stock = $session->get('patient_notification_stock', []);
+                $dismissed = $session->get('patient_notification_dismissed_keys', []);
+                $seen = $session->get('patient_notification_toast_seen_keys', []);
+                if (!is_array($stock)) {
+                    $stock = [];
+                }
+                if (!is_array($dismissed)) {
+                    $dismissed = [];
+                }
+                if (!is_array($seen)) {
+                    $seen = [];
+                }
+
+                foreach ($stock as $entry) {
+                    $key = $this->extractNotificationKey($entry);
+                    if ($key === null) {
+                        continue;
+                    }
+                    $dismissed[] = $key;
+                    $seen[] = $key;
+                }
+
+                $session->set('patient_notification_dismissed_keys', array_values(array_unique($dismissed)));
+                $session->set('patient_notification_toast_seen_keys', array_values(array_unique($seen)));
+                $session->remove('patient_notification_stock');
+                $session->remove('patient_rdv_seen_notification_ids');
+            }
+        }
+
+        return $this->redirect($request->headers->get('referer') ?: $this->generateUrl('app_public_site'));
+    }
+
+    #[Route('/notifications/clear-one', name: 'app_notifications_clear_one', methods: ['POST'])]
+    public function clearOneNotification(Request $request): Response
+    {
+        $key = trim((string) $request->request->get('key'));
+        $tokenId = 'clear_one_notification_' . $key;
+        if ($key === '' || !$this->isCsrfTokenValid($tokenId, (string) $request->request->get('_token'))) {
+            return $this->redirect($request->headers->get('referer') ?: $this->generateUrl('app_public_site'));
+        }
+
+        $session = $request->getSession();
+        if ($session) {
+            if ($this->isGranted('ROLE_PERSONNEL_MEDICAL')) {
+                $stock = $session->get('personnel_notification_stock', []);
+                $dismissed = $session->get('personnel_notification_dismissed_keys', []);
+                $seen = $session->get('personnel_notification_toast_seen_keys', []);
+                if (!is_array($stock)) {
+                    $stock = [];
+                }
+                if (!is_array($dismissed)) {
+                    $dismissed = [];
+                }
+                if (!is_array($seen)) {
+                    $seen = [];
+                }
+
+                $stock = array_values(array_filter($stock, static function ($entry) use ($key): bool {
+                    return !(is_array($entry) && (($entry['_key'] ?? null) === $key));
+                }));
+                $dismissed[] = $key;
+                $seen[] = $key;
+
+                $session->set('personnel_notification_stock', $stock);
+                $session->set('personnel_notification_dismissed_keys', array_values(array_unique($dismissed)));
+                $session->set('personnel_notification_toast_seen_keys', array_values(array_unique($seen)));
+            } elseif ($this->isGranted('ROLE_PATIENT')) {
+                $stock = $session->get('patient_notification_stock', []);
+                $dismissed = $session->get('patient_notification_dismissed_keys', []);
+                $seen = $session->get('patient_notification_toast_seen_keys', []);
+                if (!is_array($stock)) {
+                    $stock = [];
+                }
+                if (!is_array($dismissed)) {
+                    $dismissed = [];
+                }
+                if (!is_array($seen)) {
+                    $seen = [];
+                }
+
+                $stock = array_values(array_filter($stock, static function ($entry) use ($key): bool {
+                    return !(is_array($entry) && (($entry['_key'] ?? null) === $key));
+                }));
+                $dismissed[] = $key;
+                $seen[] = $key;
+
+                $session->set('patient_notification_stock', $stock);
+                $session->set('patient_notification_dismissed_keys', array_values(array_unique($dismissed)));
+                $session->set('patient_notification_toast_seen_keys', array_values(array_unique($seen)));
+            }
+        }
+
+        return $this->redirect($request->headers->get('referer') ?: $this->generateUrl('app_public_site'));
+    }
+
+    private function extractNotificationKey(mixed $entry): ?string
+    {
+        if (is_array($entry)) {
+            if (isset($entry['_key']) && is_string($entry['_key']) && $entry['_key'] !== '') {
+                return $entry['_key'];
+            }
+
+            $type = (string) ($entry['type'] ?? 'info');
+            $message = (string) ($entry['message'] ?? '');
+            $ref = (string) ($entry['ref'] ?? '');
+            $prescriptionId = (string) ($entry['prescription_id'] ?? '');
+            $scheduledAt = (string) ($entry['scheduled_at'] ?? '');
+
+            return hash('sha256', $type . '|' . $message . '|' . $ref . '|' . $prescriptionId . '|' . $scheduledAt);
+        }
+
+        if (is_string($entry) && $entry !== '') {
+            return hash('sha256', 'info|' . $entry . '|||');
+        }
+
+        return null;
     }
 
     private function resolveCurrentPatient(UtilisateurRepository $utilisateurRepository): ?Utilisateur
