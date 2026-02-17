@@ -495,14 +495,15 @@ class PatientController extends AbstractController
 
             $type = (string) ($entry['type'] ?? 'info');
             $message = (string) ($entry['message'] ?? '');
+            $ref = (string) ($entry['ref'] ?? '');
             $prescriptionId = (string) ($entry['prescription_id'] ?? '');
             $scheduledAt = (string) ($entry['scheduled_at'] ?? '');
 
-            return hash('sha256', $type . '|' . $message . '|' . $prescriptionId . '|' . $scheduledAt);
+            return hash('sha256', $type . '|' . $message . '|' . $ref . '|' . $prescriptionId . '|' . $scheduledAt);
         }
 
         if (is_string($entry) && $entry !== '') {
-            return hash('sha256', 'info|' . $entry . '||');
+            return hash('sha256', 'info|' . $entry . '|||');
         }
 
         return null;

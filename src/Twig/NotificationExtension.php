@@ -72,8 +72,10 @@ class NotificationExtension extends AbstractExtension
                 }
 
                 $doneAt = $ack->getDoneAt();
+                $ackId = $ack->getId();
                 $doneItems[] = [
                     'type' => 'patient_dose_done',
+                    'ref' => $ackId !== null ? ('ack:' . $ackId) : null,
                     'message' => sprintf(
                         '%s a confirme une prise (%s).',
                         $patientName,
@@ -94,6 +96,7 @@ class NotificationExtension extends AbstractExtension
 
                 $endingItems[] = [
                     'type' => 'treatment_ended',
+                    'ref' => 'ending:' . (string) ($prescription->getIdPrescription() ?? '') . ':' . $today->format('Y-m-d'),
                     'message' => sprintf(
                         'Fin de traitement aujourd hui pour %s.',
                         $patientName
@@ -411,7 +414,7 @@ class NotificationExtension extends AbstractExtension
                 'message' => (string) ($entry['message'] ?? ''),
             ];
 
-            foreach (['overdue', 'prescription_id', 'scheduled_at', 'token_id'] as $field) {
+            foreach (['overdue', 'prescription_id', 'scheduled_at', 'token_id', 'ref'] as $field) {
                 if (array_key_exists($field, $entry)) {
                     $item[$field] = $entry[$field];
                 }
@@ -432,6 +435,7 @@ class NotificationExtension extends AbstractExtension
             'sha256',
             (string) ($item['type'] ?? '') . '|' .
             (string) ($item['message'] ?? '') . '|' .
+            (string) ($item['ref'] ?? '') . '|' .
             (string) ($item['prescription_id'] ?? '') . '|' .
             (string) ($item['scheduled_at'] ?? '')
         );
