@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 	<head>
 		<meta charset="UTF-8">
@@ -29,21 +29,13 @@
 			class="products-page">
 			<!-- Hero Section -->
 			<section class="hero-section">
-				<h1 class="hero-title">Équipements Médicaux</h1>
-				<p class="hero-subtitle">Découvrez notre sélection d'équipements médicaux de qualité pour professionnels et particuliers</p>
-				<div class="d-flex justify-content-end mb-3">
-					<a href="{{ path('cart_view') }}" class="btn btn-outline-secondary position-relative">
-						<i class="bi bi-cart"></i>
-						Panier
-						<span id="cart-count" class="badge bg-danger rounded-pill ms-2">{{ (app.session.get('cart')|default([]))|length }}</span>
-					</a>
-				</div>
-
+				<h1 class="hero-title">Equipements Medicaux</h1>
+				<p class="hero-subtitle">Decouvrez notre selection d'equipements medicaux de qualite pour professionnels et particuliers</p>
 				<!-- Search Bar -->
 				<div class="search-container">
 					<div class="search-box">
-						<input type="text" placeholder="Rechercher un équipement..." class="search-input">
-						<button class="search-button">
+						<input type="text" id="equipment-search-input" placeholder="Rechercher un équipement..." class="search-input" autocomplete="off">
+						<button class="search-button" type="button" aria-label="Rechercher">
 							<i class="bi bi-search"></i>
 						</button>
 					</div>
@@ -53,14 +45,14 @@
 			<!-- Categories -->
 			<section class="categories-section">
 				<div class="categories-container">
-					<a href="{{ path('front_equipements_index') }}" class="category-btn {% if current_category is not defined or current_category is null %}active{% endif %}">
+					<a href="{{ path('front_equipements_index') }}?sort={{ current_sort|default('best_sellers') }}" class="category-btn {% if current_category is not defined or current_category is null %}active{% endif %}">
 						Tous les produits
 					</a>
 					{% set categories = [] %}
 					{% for equipement in equipements %}
 						{% if equipement.categorie and equipement.categorie not in categories %}
 							{% set categories = categories|merge([equipement.categorie]) %}
-							<a href="{{ path('front_equipements_by_category', {'categorie': equipement.categorie}) }}" class="category-btn {% if current_category is defined and current_category == equipement.categorie %}active{% endif %}">
+							<a href="{{ path('front_equipements_by_category', {'categorie': equipement.categorie}) }}?sort={{ current_sort|default('best_sellers') }}" class="category-btn {% if current_category is defined and current_category == equipement.categorie %}active{% endif %}">
 								{{ equipement.categorie }}
 							</a>
 						{% endif %}
@@ -75,108 +67,28 @@
 						{% if current_category is defined and current_category %}
 							{{ current_category }}
 						{% else %}
-							Tous les équipements
+							Tous les Equipements
 						{% endif %}
-						<span class="products-count">({{ equipements|length }}
+						<span id="products-count" class="products-count">({{ equipements|length }}
 							produits)</span>
 					</h2>
 
 					<div class="sort-container">
 						<span class="sort-label">Trier par :</span>
-						<select class="sort-select">
-							<option>Meilleurs ventes</option>
-							<option>Prix croissant</option>
-							<option>Prix décroissant</option>
-							<option>Nouveautés</option>
-						</select>
+						<form method="get" action="{% if current_category is defined and current_category %}{{ path('front_equipements_by_category', {'categorie': current_category}) }}{% else %}{{ path('front_equipements_index') }}{% endif %}">
+							<select class="sort-select" name="sort" onchange="this.form.submit()">
+								<option value="best_sellers" {% if current_sort|default('best_sellers') == 'best_sellers' %}selected{% endif %}>Meilleurs ventes</option>
+								<option value="price_asc" {% if current_sort|default('best_sellers') == 'price_asc' %}selected{% endif %}>Prix croissant</option>
+								<option value="price_desc" {% if current_sort|default('best_sellers') == 'price_desc' %}selected{% endif %}>Prix dÃ©croissant</option>
+								<option value="newest" {% if current_sort|default('best_sellers') == 'newest' %}selected{% endif %}>NouveautÃ©s</option>
+							</select>
+						</form>
 					</div>
 				</div>
 
-				{% if equipements|length > 0 %}
-					<div class="products-grid">
-						{% for equipement in equipements %}
-							<div
-								class="product-card">
-								<!-- Badge "Meilleurs ventes" pour certains produits -->
-								{% if loop.index <= 3 %}
-									<div class="product-badge">Meilleurs ventes</div>
-								{% endif %}
-
-								<!-- Image du produit -->
-								<div style="position: relative; overflow: hidden; height: 240px;">
-									{% if equipement.image %}
-										<img src="{{ asset('uploads/images/' ~ equipement.image) }}" alt="{{ equipement.nom }}" class="product-image">
-									{% else %}
-										<div style="width: 100%; height: 100%; background: linear-gradient(135deg, #e8f6f9, #eef8f4); display: flex; align-items: center; justify-content: center;">
-											<i class="bi bi-heart-pulse" style="font-size: 4rem; color: var(--primary-color); opacity: 0.5;"></i>
-										</div>
-									{% endif %}
-								</div>
-
-								<!-- Informations du produit -->
-								<div class="product-info">
-									<h3 class="product-title">{{ equipement.nom }}</h3>
-
-									{% if equipement.description %}
-										<p class="product-description">{{ equipement.description|slice(0, 120) }}...</p>
-									{% endif %}
-
-									<!-- Catégorie -->
-									{% if equipement.categorie %}
-										<div class="product-category-tag">
-											{{ equipement.categorie }}
-										</div>
-									{% endif %}
-
-									<!-- Prix -->
-									<div class="product-price">{{ equipement.prix }}
-										DT</div>
-
-									<!-- Statut et quantité -->
-									<div class="product-meta">
-										<div>
-											{% if equipement.statut == 'disponible' and equipement.quantiteDisponible > 5 %}
-												<span class="status-badge status-available">✓ En stock</span>
-											{% elseif equipement.statut == 'disponible' and equipement.quantiteDisponible <= 5 %}
-												<span class="status-badge status-low">⚠ Stock limité</span>
-											{% else %}
-												<span class="status-badge status-out">✗ Rupture</span>
-											{% endif %}
-										</div>
-
-										<div class="stock-info">
-											{{ equipement.quantiteDisponible }}
-											unités
-										</div>
-									</div>
-
-									<!-- Actions -->
-									<div class="product-actions">
-										<a href="{{ path('front_equipements_show', {'id': equipement.id}) }}" class="btn-view">
-											<i class="bi bi-eye"></i>
-											Voir détails
-										</a>
-										<a href="{{ path('cart_add', {'id': equipement.id}) }}" class="btn-cart">
-											<i class="bi bi-cart-plus"></i>
-											Ajouter
-										</a>
-									</div>
-								</div>
-							</div>
-						{% endfor %}
-					</div>
-				{% else %}
-					<div class="empty-state">
-						<div class="empty-icon">
-							<i class="bi bi-clipboard-x"></i>
-						</div>
-						<h3 class="empty-title">Aucun équipement trouvé</h3>
-						<p class="empty-text">Aucun équipement n'est disponible pour le moment dans cette catégorie.</p>
-						<a href="{{ path('front_equipements_index') }}" class="empty-action">
-							Voir tous les produits
-						</a>
-					</div>
-				{% endif %}
+				<div id="products-results" data-search-url="{{ path('front_equipements_search_ajax') }}" data-current-category="{{ current_category|default('') }}" data-current-sort="{{ current_sort|default('best_sellers') }}">
+					{% include 'FrontOffice/equipement/_products_results.html.twig' with { equipements: equipements } %}
+				</div>
 			</section>
 		</div>
 
@@ -193,7 +105,7 @@
 				        .then(response => response.json())
 				        .then(data => {
 				            if (data.success) {
-				                showNotification('Produit ajouté au panier !', 'success');
+				                showNotification('Produit ajoutÃ© au panier !', 'success');
 				                updateCartCount(data.cartCount);
 				            } else {
 				                showNotification('Erreur lors de l\'ajout au panier', 'error');
@@ -237,7 +149,53 @@
 				            setTimeout(() => cartCount.style.animation = '', 300);
 				        }
 				    }
-				
+				const searchInput = document.getElementById('equipment-search-input');
+				const productsResults = document.getElementById('products-results');
+				const productsCount = document.getElementById('products-count');
+				const searchButton = document.querySelector('.search-button');
+
+				if (searchInput && productsResults) {
+					const searchUrl = productsResults.dataset.searchUrl;
+					const currentCategory = productsResults.dataset.currentCategory || '';
+					const currentSort = productsResults.dataset.currentSort || 'best_sellers';
+					let debounceTimer = null;
+
+					const runSearch = () => {
+						clearTimeout(debounceTimer);
+						debounceTimer = setTimeout(async () => {
+							const params = new URLSearchParams({
+								q: searchInput.value,
+								sort: currentSort,
+								category: currentCategory
+							});
+
+							try {
+								const response = await fetch(`${searchUrl}?${params.toString()}`, {
+									headers: {
+										'X-Requested-With': 'XMLHttpRequest'
+									}
+								});
+
+								if (!response.ok) {
+									return;
+								}
+
+								const data = await response.json();
+								productsResults.innerHTML = data.html;
+								if (productsCount) {
+									productsCount.textContent = `(${data.count} produits)`;
+								}
+							} catch (error) {
+								console.error('Erreur de recherche AJAX:', error);
+							}
+						}, 250);
+					};
+
+					searchInput.addEventListener('input', runSearch);
+					if (searchButton) {
+						searchButton.addEventListener('click', runSearch);
+					}
+				}
 				    // Animation CSS
 				    const style = document.createElement('style');
 				    style.textContent = `
@@ -258,3 +216,4 @@
 				</script>
 	{% endblock %}
 </html>
+

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Facture Rendez-vous #{{ rdv.id }}</title>
+    <style>
+        body { font-family: DejaVu Sans, Arial, sans-serif; color: #0f172a; font-size: 13px; }
+        .header { margin-bottom: 18px; }
+        .title { font-size: 20px; font-weight: 700; margin: 0 0 6px; }
+        .muted { color: #475569; }
+        .card { border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; margin-bottom: 12px; }
+        .row { margin: 4px 0; }
+        .label { display: inline-block; width: 180px; color: #334155; font-weight: 700; }
+        .total { margin-top: 16px; border-top: 1px solid #cbd5e1; padding-top: 10px; }
+        .total strong { font-size: 16px; }
+        .footnote { margin-top: 20px; color: #64748b; font-size: 11px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <p class="title">Facture rendez-vous</p>
+        <p class="muted">Reference: RDV-{{ rdv.id }} | Date emission: {{ generatedAt|date('d/m/Y H:i') }}</p>
+    </div>
+
+    <div class="card">
+        <div class="row"><span class="label">Patient</span>{{ patient.prenom }} {{ patient.nom }}</div>
+        <div class="row"><span class="label">Email</span>{{ patient.email }}</div>
+        <div class="row"><span class="label">Telephone</span>{{ patient.numeroTelephone ?: '-' }}</div>
+    </div>
+
+    <div class="card">
+        <div class="row"><span class="label">Type de rendez-vous</span>{{ rdv.typeRendezVous ? rdv.typeRendezVous.type : 'Rendez-vous' }}</div>
+        <div class="row"><span class="label">Date</span>{{ rdv.date ? rdv.date|date('d/m/Y') : '-' }}</div>
+        <div class="row"><span class="label">Heure</span>{{ rdv.heure ? rdv.heure|date('H:i') : '-' }}</div>
+        <div class="row"><span class="label">Lieu</span>{{ rdv.lieu ?: '-' }}</div>
+        <div class="row"><span class="label">Personnel medical</span>{{ rdv.personnelMedical ? (rdv.personnelMedical.prenom ~ ' ' ~ rdv.personnelMedical.nom) : '-' }}</div>
+    </div>
+
+    <div class="total">
+        <div class="row"><span class="label">Mode de paiement</span>Paiement sur place</div>
+        <div class="row"><span class="label">Montant total</span><strong>{{ (rdv.typeRendezVous ? rdv.typeRendezVous.tarif : 0)|number_format(2, '.', ' ') }} TND</strong></div>
+    </div>
+
+    <p class="footnote">
+        Cette facture est generee automatiquement. Merci de la presenter lors de votre passage pour paiement sur place.
+    </p>
+</body>
+</html>
+

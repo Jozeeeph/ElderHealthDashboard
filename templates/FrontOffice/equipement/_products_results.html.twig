@@ -1,0 +1,75 @@
+{% if equipements|length > 0 %}
+	<div class="products-grid">
+		{% for equipement in equipements %}
+			<div class="product-card">
+				{% if loop.index <= 3 %}
+					<div class="product-badge">Meilleurs ventes</div>
+				{% endif %}
+
+				<div style="position: relative; overflow: hidden; height: 240px;">
+					{% if equipement.image %}
+						<img src="{{ asset('uploads/images/' ~ equipement.image) }}" alt="{{ equipement.nom }}" class="product-image">
+					{% else %}
+						<div style="width: 100%; height: 100%; background: linear-gradient(135deg, #e8f6f9, #eef8f4); display: flex; align-items: center; justify-content: center;">
+							<i class="bi bi-heart-pulse" style="font-size: 4rem; color: var(--primary-color); opacity: 0.5;"></i>
+						</div>
+					{% endif %}
+				</div>
+
+				<div class="product-info">
+					<h3 class="product-title">{{ equipement.nom }}</h3>
+
+					{% if equipement.description %}
+						<p class="product-description">{{ equipement.description|slice(0, 120) }}...</p>
+					{% endif %}
+
+					{% if equipement.categorie %}
+						<div class="product-category-tag">
+							{{ equipement.categorie }}
+						</div>
+					{% endif %}
+
+					<div class="product-price">{{ equipement.prix }} DT</div>
+
+					<div class="product-meta">
+						<div>
+							{% if equipement.statut == 'disponible' and equipement.quantiteDisponible > 5 %}
+								<span class="status-badge status-available">✓ En stock</span>
+							{% elseif equipement.statut == 'disponible' and equipement.quantiteDisponible <= 5 %}
+								<span class="status-badge status-low">⚠ Stock limité</span>
+							{% else %}
+								<span class="status-badge status-out">✗ Rupture</span>
+							{% endif %}
+						</div>
+
+						<div class="stock-info">
+							{{ equipement.quantiteDisponible }} unités
+						</div>
+					</div>
+
+					<div class="product-actions">
+						<a href="{{ path('front_equipements_show', {'id': equipement.id}) }}" class="btn-view">
+							<i class="bi bi-eye"></i>
+							Voir détails
+						</a>
+						<a href="{{ path('cart_add', {'id': equipement.id}) }}" class="btn-cart">
+							<i class="bi bi-cart-plus"></i>
+							Ajouter
+						</a>
+					</div>
+				</div>
+			</div>
+		{% endfor %}
+	</div>
+{% else %}
+	<div class="empty-state">
+		<div class="empty-icon">
+			<i class="bi bi-clipboard-x"></i>
+		</div>
+		<h3 class="empty-title">Aucun équipement trouvé</h3>
+		<p class="empty-text">Aucun équipement n'est disponible pour le moment dans cette catégorie.</p>
+		<a href="{{ path('front_equipements_index') }}" class="empty-action">
+			Voir tous les produits
+		</a>
+	</div>
+{% endif %}
