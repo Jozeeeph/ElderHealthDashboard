@@ -18,7 +18,11 @@ class CartController extends AbstractController
     private EquipementRepository $equipRepo;
     private Security $security;
 
-    public function __construct(EntityManagerInterface $em, EquipementRepository $equipRepo, Security $security)
+    public function __construct(
+        EntityManagerInterface $em,
+        EquipementRepository $equipRepo,
+        Security $security
+    )
     {
         $this->em = $em;
         $this->equipRepo = $equipRepo;
