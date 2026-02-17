@@ -1,14 +1,9 @@
-
-        <link
-		href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-		{# Bootstrap Icons #}
-		<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-
-		<link rel="stylesheet" href="{{ asset('css/patient.css') }}?v=20260214-notif1">
-		<link rel="stylesheet" href="{{ asset('css/patient-rendezvous.css') }}?v=20260214-7">
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-	</head>
+﻿<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+<link rel="stylesheet" href="{{ asset('css/patient.css') }}?v=20260214-notif1">
+<link rel="stylesheet" href="{{ asset('css/patient-rendezvous.css') }}?v=20260217-1">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
 
 {% block public_nav %}{% endblock %}
 
@@ -36,7 +31,11 @@
                                 <i class="bi bi-calendar2-plus"></i>
                                 {{ mode == 'edit' ? 'Modifier' : 'Ajouter' }} un rendez-vous
                             </h2>
-                            <p>Complétez les informations puis validez l’enregistrement.</p>
+                            <p>Completez les informations puis validez l'enregistrement.</p>
+                            <a class="btn btn-outline-primary btn-sm" href="{{ path('patient_rendezvous_types_available') }}">
+                                <i class="bi bi-tags"></i>
+                                Consulter les types disponibles
+                            </a>
                         </div>
 
                         {{ form_start(form, {'attr': {'id': 'rdvForm', 'class': 'rdv-form', 'novalidate': 'novalidate'}}) }}
@@ -59,6 +58,7 @@
                             </div>
                             <div class="rdv-field rdv-field-wide">{{ form_row(form.typeRendezVous) }}</div>
                         </div>
+                        <div id="rdv-slot-feedback" class="alert d-none mt-3 mb-0" role="alert"></div>
 
                         <div class="rdv-form-actions">
                             <a href="{{ path('patient_rendezvous_index') }}" class="rdv-btn rdv-btn-secondary">Annuler</a>
@@ -76,10 +76,17 @@
 {% block javascripts %}
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    const formEl = document.getElementById('rdvForm');
     const select = document.getElementById('patient_rendez_vous_personnelMedical');
+    const typeSelect = document.getElementById('patient_rendez_vous_typeRendezVous');
+    const dateInput = document.getElementById('patient_rendez_vous_date');
+    const timeInput = document.getElementById('patient_rendez_vous_heure');
     const meta = document.getElementById('personnel-meta');
+    const feedback = document.getElementById('rdv-slot-feedback');
+    const submitBtn = formEl ? formEl.querySelector('button[type="submit"]') : null;
     const fonctionTarget = meta ? meta.querySelector('[data-meta-fonction]') : null;
     const specialiteTarget = meta ? meta.querySelector('[data-meta-specialite]') : null;
+    let slotAvailable = true;
 
     if (!select || !meta || !fonctionTarget || !specialiteTarget) {
         return;
@@ -101,8 +108,111 @@ document.addEventListener('DOMContentLoaded', function () {
         meta.hidden = false;
     };
 
+    const setFeedback = function (type, message) {
+        if (!feedback) {
+            return;
+        }
+        if (!message) {
+            feedback.classList.add('d-none');
+            feedback.classList.remove('alert-danger', 'alert-success', 'alert-warning');
+            feedback.textContent = '';
+            return;
+        }
+        feedback.classList.remove('d-none', 'alert-danger', 'alert-success', 'alert-warning');
+        feedback.classList.add(type === 'danger' ? 'alert-danger' : (type === 'success' ? 'alert-success' : 'alert-warning'));
+        feedback.textContent = message;
+    };
+
+    const updateSubmitState = function () {
+        if (!submitBtn) {
+            return;
+        }
+        submitBtn.disabled = !slotAvailable;
+    };
+
+    const checkSlot = function () {
+        if (!dateInput || !timeInput || !select) {
+            return;
+        }
+
+        const personnelId = select.value || '';
+        const date = dateInput.value || '';
+        const heure = timeInput.value || '';
+        const typeId = typeSelect ? (typeSelect.value || '') : '';
+        const excludeId = "{{ form.vars.value and form.vars.value.id ? form.vars.value.id : '' }}";
+
+        if (!personnelId || !date || !heure) {
+            slotAvailable = true;
+            setFeedback('', '');
+            updateSubmitState();
+            return;
+        }
+
+        const params = new URLSearchParams({
+            personnelId: personnelId,
+            date: date,
+            heure: heure
+        });
+        if (typeId) {
+            params.append('typeId', typeId);
+        }
+        if (excludeId) {
+            params.append('excludeId', excludeId);
+        }
+
+        fetch("{{ path('patient_rendezvous_check_slot') }}?" + params.toString(), {
+            method: 'GET',
+            headers: {'X-Requested-With': 'XMLHttpRequest'}
+        })
+            .then(function (response) { return response.json(); })
+            .then(function (data) {
+                if (!data || data.ok !== true) {
+                    slotAvailable = true;
+                    setFeedback('warning', (data && data.message) ? data.message : 'Verification indisponible.');
+                    updateSubmitState();
+                    return;
+                }
+
+                slotAvailable = !!data.available;
+                if (slotAvailable) {
+                    setFeedback('success', 'Creneau disponible.');
+                } else {
+                    setFeedback('danger', data.message || 'Ce creneau est deja planifie.');
+                }
+                updateSubmitState();
+            })
+            .catch(function () {
+                slotAvailable = true;
+                setFeedback('warning', 'Verification du creneau momentanement indisponible.');
+                updateSubmitState();
+            });
+    };
+
     select.addEventListener('change', updateMeta);
+    select.addEventListener('change', checkSlot);
+    if (typeSelect) {
+        typeSelect.addEventListener('change', checkSlot);
+    }
+    if (dateInput) {
+        dateInput.addEventListener('change', checkSlot);
+    }
+    if (timeInput) {
+        timeInput.addEventListener('change', checkSlot);
+        timeInput.addEventListener('blur', checkSlot);
+    }
+    if (formEl) {
+        formEl.addEventListener('submit', function (event) {
+            if (!slotAvailable) {
+                event.preventDefault();
+                setFeedback('danger', 'Impossible d enregistrer: ce creneau est deja planifie.');
+            }
+        });
+    }
     updateMeta();
+    checkSlot();
+    window.setInterval(function () {
+        checkSlot();
+    }, 5000);
 });
 </script>
 {% endblock %}

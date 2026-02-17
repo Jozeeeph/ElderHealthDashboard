@@ -153,13 +153,16 @@
 												<span class="status-badge {{ etatClass[rdv.etat] ?? 'status-planifiee' }}">
 													{{ rdv.etat|replace({'_': ' '})|lower|title }}
 												</span>
-												{% if paidRdvIds is defined and rdv.id in paidRdvIds %}
+												{% if rdv.isPaid %}
 													<span class="status-badge status-paye">Paye</span>
 												{% endif %}
 											</div>
 											<div class="rdv-actions">
 												{% if rdv.etat in ['PLANIFIE', 'PLANIFIEE'] %}
-													{% if not (paidRdvIds is defined and rdv.id in paidRdvIds) %}
+													{% if not rdv.isPaid %}
+														<a class="btn-action invoice" href="{{ path('patient_rendezvous_invoice', {'id': rdv.id}) }}" title="Telecharger facture">
+															<i class="bi bi-file-earmark-arrow-down"></i>
+														</a>
 														<form method="post" action="{{ path('patient_rendezvous_pay_online', {'id': rdv.id}) }}" class="m-0">
 															<input type="hidden" name="_token" value="{{ csrf_token('patient_pay_online_' ~ rdv.id) }}">
 															<button type="submit" class="btn-action pay" title="Payer en ligne">
@@ -167,9 +170,11 @@
 															</button>
 														</form>
 													{% endif %}
-													<a class="btn-action invoice" href="{{ path('patient_rendezvous_invoice', {'id': rdv.id}) }}" title="Telecharger facture">
-														<i class="bi bi-file-earmark-arrow-down"></i>
-													</a>
+													{% if rdv.isPaid %}
+														<a class="btn-action receipt" href="{{ path('patient_rendezvous_receipt', {'id': rdv.id}) }}" title="Telecharger recu de paiement">
+															<i class="bi bi-receipt"></i>
+														</a>
+													{% endif %}
 												{% endif %}
 												{% if rdv.etat != 'REFUSEE' %}
 													<a class="btn-action edit" href="{{ path('patient_rendezvous_edit', {'id': rdv.id}) }}" title="Modifier">

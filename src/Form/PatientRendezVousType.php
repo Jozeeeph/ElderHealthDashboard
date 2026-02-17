@@ -54,6 +54,12 @@ class PatientRendezVousType extends AbstractType
             ->add('typeRendezVous', EntityType::class, [
                 'class' => TypeRendezVous::class,
                 'choice_label' => 'type',
+                'choice_attr' => function (TypeRendezVous $type): array {
+                    return [
+                        'data-duree' => (string) ($type->getDuree() ?? ''),
+                        'data-tarif' => (string) ($type->getTarif() ?? ''),
+                    ];
+                },
                 'placeholder' => 'Choisir un type de rendez-vous',
                 'label' => 'Type de rendez-vous',
             ]);

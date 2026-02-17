@@ -38,6 +38,8 @@ final class InfermierController extends AbstractController
         $consultationCount = $consultationRepository->count(['personnelMedical' => $user]);
         $plannedRdvCount = $rendezVousRepository->countPlannedForPersonnel($user);
         $plannedRendezVous = $rendezVousRepository->findPlannedForPersonnel($user, 5);
+        $cancelledRdvCount = $rendezVousRepository->countCancelledForPersonnel($user);
+        $cancelledRendezVous = $rendezVousRepository->findCancelledForPersonnel($user, 3);
 
         return $this->render('FrontOffice/infermier/index.html.twig', [
             'controller_name' => 'InfermierController',
@@ -45,6 +47,8 @@ final class InfermierController extends AbstractController
             'consultationCount' => $consultationCount,
             'plannedRdvCount' => $plannedRdvCount,
             'plannedRendezVous' => $plannedRendezVous,
+            'cancelledRdvCount' => $cancelledRdvCount,
+            'cancelledRendezVous' => $cancelledRendezVous,
         ]);
     }
 }
