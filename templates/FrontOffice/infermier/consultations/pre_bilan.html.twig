@@ -159,7 +159,7 @@
 							<div class="v">{{ consultations|length }}</div>
 						</div>
 
-						{% if preBilanSource == 'openai' %}
+						{% if preBilanSource != 'fallback' %}
 							<span class="prebilan-source ok">Generation IA active</span>
 						{% else %}
 							<span class="prebilan-source fallback">Mode fallback analytique</span>
@@ -167,7 +167,7 @@
 					</aside>
 
 					<div class="prebilan-content">
-						{% if preBilanSource != 'openai' and preBilanDebugReason %}
+						{% if preBilanSource == 'fallback' and preBilanDebugReason %}
 							<div class="alert alert-info mb-2 py-2">
 								<strong>Debug IA :</strong> {{ preBilanDebugReason }}
 							</div>
