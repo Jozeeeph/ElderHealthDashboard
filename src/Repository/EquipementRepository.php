@@ -30,6 +30,33 @@ class EquipementRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function searchForFront(string $query, ?string $category, array $orderBy): array
+    {
+        $qb = $this->createQueryBuilder('e');
+        $normalizedQuery = mb_strtolower(trim($query));
+
+        if ($normalizedQuery !== '') {
+            $qb->andWhere(
+                $qb->expr()->orX(
+                    'LOWER(e.nom) LIKE :query',
+                    'LOWER(e.description) LIKE :query',
+                    'LOWER(e.categorie) LIKE :query'
+                )
+            )->setParameter('query', '%'.$normalizedQuery.'%');
+        }
+
+        if ($category !== null && $category !== '') {
+            $qb->andWhere('e.categorie = :category')
+                ->setParameter('category', $category);
+        }
+
+        $field = array_key_first($orderBy) ?? 'id';
+        $direction = strtoupper((string) ($orderBy[$field] ?? 'DESC')) === 'ASC' ? 'ASC' : 'DESC';
+        $qb->orderBy('e.'.$field, $direction);
+
+        return $qb->getQuery()->getResult();
+    }
+
     //    /**
     //     * @return Equipement[] Returns an array of Equipement objects
     //     */

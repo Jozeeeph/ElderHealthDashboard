@@ -1,12 +1,38 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_public.html.twig' %}
 
 {% block title %}Reset your password{% endblock %}
 
-{% block body %}
-    <h1>Reset your password</h1>
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/reset_reset.css') }}">
+{% endblock %}
 
-    {{ form_start(resetForm) }}
-        {{ form_row(resetForm.plainPassword) }}
-        <button class="btn btn-primary">Reset password</button>
-    {{ form_end(resetForm) }}
+{% block body %}
+<div class="reset-wrapper">
+
+    <div class="reset-box">
+
+        <div class="reset-logo">
+            <img src="{{ asset('img/logo.png') }}" alt="Elder HealthCare Logo">
+        </div>
+
+        <h1 class="reset-title">Reset your password</h1>
+        <p class="reset-subtitle">
+            Choose a strong password to secure your account
+        </p>
+
+        {{ form_start(resetForm) }}
+            <div class="reset-field">
+                {{ form_row(resetForm.plainPassword) }}
+            </div>
+
+            <button class="reset-btn" type="submit">Reset password</button>
+        {{ form_end(resetForm) }}
+
+        <div class="reset-footer">
+            <a href="{{ path('app_login') }}">Back to login</a>
+        </div>
+
+    </div>
+
+</div>
 {% endblock %}
