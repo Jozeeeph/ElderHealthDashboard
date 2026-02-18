@@ -71,10 +71,9 @@ class RegistrationController extends AbstractController
             $em->flush();
 
             $this->addFlash('success', "Demande envoyée. Votre compte est en attente de validation par l’administrateur.");
-            return $this->redirectToRoute('app_home'); 
-
-
+            return $this->redirectToRoute('app_home');
         }
+
         return $this->render('FrontOffice/security/register.html.twig', [
             'form' => $form->createView(),
         ]);

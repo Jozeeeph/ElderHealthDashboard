@@ -1,0 +1,208 @@
+/* ==========================
+   REGISTER - ElderHealthCare
+   ========================== */
+
+:root {
+  --bg: #f3f7ff;
+  --card: #ffffff;
+  --text: #0f172a;
+  --muted: #6b7280;
+
+  --primary: #2563eb;
+  --primary2: #1d4ed8;
+  --accent: #f59e0b;
+
+  --border: rgba(15, 23, 42, 0.12);
+  --shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+
+  --danger: #b42318;
+  --dangerBg: rgba(180, 35, 24, 0.10);
+  --dangerBorder: rgba(180, 35, 24, 0.25);
+}
+
+/* Page */
+.register-page {
+  background:
+    radial-gradient(900px 500px at 20% 0%, rgba(37,99,235,.14), transparent 55%),
+    radial-gradient(900px 500px at 85% 25%, rgba(245,158,11,.12), transparent 60%),
+    var(--bg);
+  padding: 55px 0 90px;
+  min-height: calc(100vh - 120px);
+}
+
+/* Wrapper centered */
+.register-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 0 16px;
+}
+
+/* Card */
+.register-card {
+  width: 100%;
+  max-width: 980px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  padding: 34px 34px 28px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* top decorative bar */
+.register-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+}
+
+/* Header */
+.register-header h1 {
+  margin: 10px 0 6px;
+  font-weight: 900;
+  font-size: 30px;
+  color: var(--text);
+}
+
+.register-header p {
+  margin: 0 0 18px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+/* Global errors */
+.register-global-error {
+  background: var(--dangerBg);
+  border: 1px solid var(--dangerBorder);
+  color: var(--danger);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-weight: 900;
+  margin: 8px 0 18px;
+}
+
+/* Make symfony rows cleaner */
+#registrationForm .mb-3,
+#registrationForm .form-group {
+  margin-bottom: 10px !important;
+}
+
+/* Labels */
+#registrationForm label {
+  font-weight: 900;
+  font-size: 13px;
+  color: rgba(15, 23, 42, .85);
+  margin-bottom: 6px;
+}
+
+/* Inputs */
+#registrationForm input,
+#registrationForm select,
+#registrationForm textarea {
+  border-radius: 12px !important;
+  border: 1px solid rgba(15, 23, 42, 0.16) !important;
+  padding: 12px 14px !important;
+  background: #fff !important;
+  color: var(--text) !important;
+  transition: box-shadow .15s ease, border-color .15s ease, transform .04s ease;
+}
+
+#registrationForm input:focus,
+#registrationForm select:focus,
+#registrationForm textarea:focus {
+  border-color: rgba(37,99,235,.55) !important;
+  box-shadow: 0 0 0 4px rgba(37,99,235,.14) !important;
+  outline: none !important;
+}
+
+/* Role sections */
+.role-section {
+  margin-top: 22px;
+  padding: 16px 16px 6px;
+  border-radius: 16px;
+  border: 1px dashed rgba(37,99,235,.35);
+  background: rgba(37,99,235,.04);
+}
+
+.role-section h5 {
+  margin: 0 0 12px;
+  font-weight: 900;
+  color: var(--text);
+}
+
+/* Submit button */
+.btn-register {
+  border: none !important;
+  border-radius: 12px !important;
+  padding: 14px 16px !important;
+  font-weight: 900 !important;
+  letter-spacing: .2px;
+  color: #fff !important;
+  background: linear-gradient(180deg, var(--primary), var(--primary2)) !important;
+  box-shadow: 0 16px 32px rgba(37,99,235,.18);
+  transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+}
+
+.btn-register:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 36px rgba(37,99,235,.22);
+  filter: brightness(1.02);
+}
+
+/* Login link */
+.login-link a {
+  font-weight: 900;
+  color: var(--primary);
+  text-decoration: none;
+}
+.login-link a:hover {
+  text-decoration: underline;
+}
+
+/* ==========================
+   Symfony errors (per field)
+   ========================== */
+
+/* Symfony might render ul/li for errors */
+#registrationForm ul {
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
+#registrationForm li {
+  color: var(--danger);
+  font-size: 12.8px;
+  font-weight: 800;
+}
+
+/* If bootstrap invalid class exists */
+.is-invalid {
+  border-color: rgba(180, 35, 24, 0.55) !important;
+  box-shadow: 0 0 0 4px rgba(180, 35, 24, 0.12) !important;
+}
+
+/* Common error containers */
+.form-error-message,
+.form-error,
+.invalid-feedback,
+.form-errors {
+  display: block !important;
+  color: var(--danger) !important;
+  font-size: 12.8px !important;
+  font-weight: 800 !important;
+  margin-top: 6px !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .register-card {
+    padding: 22px 18px;
+  }
+  .register-header h1 {
+    font-size: 24px;
+  }
+}

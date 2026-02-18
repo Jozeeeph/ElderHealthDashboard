@@ -65,10 +65,59 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
         // ✅ ADMIN => PIN session + email + redirect /admin/pin
         if (in_array('ROLE_ADMIN', $roles, true)) {
 
+            // ================================
+            // ✅ ADD #1: Admin flash notification about pending registrations
+            // ================================
+            $session = $request->getSession();
+
+            // Count pending users (STATUS_PENDING + isActive=false)
+            $pendingCount = (int) $this->em->getRepository(Utilisateur::class)
+                ->createQueryBuilder('u')
+                ->select('COUNT(u.id)')
+                ->andWhere('u.accountStatus = :status')
+                ->andWhere('u.isActive = :active')
+                ->setParameter('status', Utilisateur::STATUS_PENDING)
+                ->setParameter('active', false)
+                ->getQuery()
+                ->getSingleScalarResult();
+
+            if ($pendingCount > 0) {
+
+                // Latest pending user (for name/email display)
+                $latestPending = $this->em->getRepository(Utilisateur::class)
+                    ->createQueryBuilder('u')
+                    ->andWhere('u.accountStatus = :status')
+                    ->andWhere('u.isActive = :active')
+                    ->setParameter('status', Utilisateur::STATUS_PENDING)
+                    ->setParameter('active', false)
+                    ->orderBy('u.id', 'DESC')
+                    ->setMaxResults(1)
+                    ->getQuery()
+                    ->getOneOrNullResult();
+
+                if ($latestPending instanceof Utilisateur) {
+                    $nom = method_exists($latestPending, 'getNom') ? (string) $latestPending->getNom() : '';
+                    $prenom = method_exists($latestPending, 'getPrenom') ? (string) $latestPending->getPrenom() : '';
+                    $emailPending = method_exists($latestPending, 'getEmail') ? (string) $latestPending->getEmail() : '';
+
+                    $session->getFlashBag()->add(
+                        'admin_notification',
+                        "⏳ $pendingCount demande(s) en attente. Dernière: $nom $prenom ($emailPending)"
+                    );
+                } else {
+                    $session->getFlashBag()->add(
+                        'admin_notification',
+                        "⏳ $pendingCount demande(s) en attente. Veuillez vérifier la liste."
+                    );
+                }
+            }
+
+            // ================================
+            // ✅ your code continues exactly the same
+            // ================================
             $pin = (string) random_int(100000, 999999);
 
             // Stockage en session (hash + expiry)
-            $session = $request->getSession();
             $session->set('admin_pin_hash', password_hash($pin, PASSWORD_BCRYPT));
             $session->set('admin_pin_expires', time() + 300); // 5 minutes
             $session->set('admin_2fa_verified', false);

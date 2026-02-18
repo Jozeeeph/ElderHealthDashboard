@@ -1,11 +1,13 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_public.html.twig' %}
 {% block title %}Inscription{% endblock %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="{{ asset('css/register.css') }}">
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/register.css') }}?v=3">
 {% endblock %}
 
 {% block body %}
+
 <div class="container mt-5" style="max-width: 900px;">
     <h2 class="mb-4">Inscription</h2>
 

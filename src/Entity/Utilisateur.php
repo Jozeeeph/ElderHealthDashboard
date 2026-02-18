@@ -11,6 +11,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
+
 #[UniqueEntity(
     fields: ['email'],
     message: 'Cet email est déjà utilisé.'
@@ -239,11 +240,12 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->dateNaissance;
     }
 
-    public function setDateNaissance(\DateTimeInterface $date): self
+    public function setDateNaissance(?\DateTimeInterface $date): self
     {
         $this->dateNaissance = $date;
         return $this;
     }
+
 
     public function getNumeroTelephone(): ?string
     {
