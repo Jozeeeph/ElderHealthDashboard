@@ -18,7 +18,7 @@
 
     {# ✅ NEW: ton design sidebar bleu + layout #}
     <link rel="stylesheet" href="{{ asset('css/elder-layout.css') }}">
-      <link rel="stylesheet" href="{{ asset('css/footer.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/footer.css') }}">
 
     {% block stylesheets %}{% endblock %}
 </head>
@@ -46,13 +46,6 @@
                         Accueil
                     </a>
                 </li>
-{# 
-                <li class="nav-item">
-                    <a class="nav-link fw-semibold text-primary" href="{{ path('app_public_site') }}">
-                        <i class="fas fa-globe me-1"></i>
-                        Accéder au site
-                    </a>
-                </li> #}
 
                 <li class="nav-item">
                     <a class="nav-link" href="{{ path('app_dashboard') }}">
@@ -67,12 +60,6 @@
                         Mon compte
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        {# <li>
-                            <a class="dropdown-item" href="#">
-                                <i class="fas fa-gear me-2"></i>
-                                Paramètres
-                            </a>
-                        </li> #}
                         <li>
                             <a class="dropdown-item text-danger" href="{{ path('app_logout') }}">
                                 <i class="fas fa-right-from-bracket me-2"></i>
@@ -152,6 +139,30 @@
 
         {# Main #}
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 elder-main">
+
+            {# ✅ POPUP Toast: uniquement dans admin_home (pas dans admin_pin) #}
+            {% if app.request.attributes.get('_route') == 'admin_home' %}
+                <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1200;">
+                    {% for message in app.flashes('admin_notification') %}
+                        <div class="toast align-items-center text-bg-warning border-0 mb-2"
+                             role="alert" aria-live="assertive" aria-atomic="true">
+                            <div class="d-flex">
+                                <div class="toast-body">
+                                    <i class="fas fa-bell me-2"></i>{{ message }}
+                                    <div class="mt-2">
+                                        <a href="{{ path('admin_users_index') }}" class="btn btn-sm btn-dark">
+                                            Voir demandes en attente
+                                        </a>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                                        data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
             {% block body %}{% endblock %}
         </main>
 
@@ -163,6 +174,19 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{{ asset('js/sb-admin-2.min.js') }}"></script>
+
+{# ✅ Auto-show Toast (uniquement admin_home) #}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const currentRoute = "{{ app.request.attributes.get('_route') }}";
+    if (currentRoute === "admin_home") {
+        document.querySelectorAll('.toast').forEach(t => {
+            const toast = new bootstrap.Toast(t, { delay: 15000 });
+            toast.show();
+        });
+    }
+});
+</script>
 
 {% block javascripts %}{% endblock %}
 </body>
