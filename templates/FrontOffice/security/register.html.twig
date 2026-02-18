@@ -3,8 +3,8 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('css/register.css') }}">
     <link rel="stylesheet" href="{{ asset('css/public-site.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/registerrr.css') }}?v=3">
 {% endblock %}
 
 {% block body %}
@@ -19,7 +19,15 @@
                 <p>Rejoignez la plateforme Elder HealthCare</p>
             </div>
 
-            {{ form_start(form, {'attr': {'id': 'registrationForm'}}) }}
+            {# ✅ Disable HTML5 validation + keep Symfony errors #}
+            {{ form_start(form, {'attr': {'id': 'registrationForm', 'novalidate': 'novalidate'}}) }}
+
+            {# ✅ Global errors banner #}
+            {% if form.vars.submitted and not form.vars.valid %}
+                <div class="register-global-error">
+                    les champs en rouge sont obligaoires veuillez les remplir 
+                </div>
+            {% endif %}
 
             <div class="row g-4">
 
@@ -62,12 +70,12 @@
             </div>
 
             <!-- ROLE SECTIONS -->
-            <div id="patientFields" class="role-section">
+            <div id="patientFields" class="role-section" style="display:none;">
                 <h5>👤 Espace Patient</h5>
                 {{ form_row(form.dossierMedicalFile) }}
             </div>
 
-            <div id="medicalFields" class="role-section">
+            <div id="medicalFields" class="role-section" style="display:none;">
                 <h5>🩺 Personnel Médical</h5>
                 <div class="row g-3">
                     <div class="col-md-6">{{ form_row(form.cvFile) }}</div>
@@ -79,7 +87,7 @@
                 </div>
             </div>
 
-            <div id="ownerFields" class="role-section">
+            <div id="ownerFields" class="role-section" style="display:none;">
                 <h5>🏥 Propriétaire Médicaux</h5>
                 <div class="row g-3">
                     <div class="col-md-6">{{ form_row(form.patante) }}</div>
@@ -91,11 +99,10 @@
                 {{ form_row(form.password) }}
             </div>
 
-            <button class="btn btn-register mt-4 w-100">
+            <button type="submit" class="btn btn-register mt-4 w-100">
                 Envoyer la demande
             </button>
 
-            {{ form_rest(form) }}
             {{ form_end(form) }}
 
             <div class="login-link text-center mt-4">
@@ -123,9 +130,9 @@
   function update(){
     hideAll();
     const v = roleSelect?.value;
-    if(v === 'PATIENT') patient.style.display = 'block';
-    if(v === 'PERSONNEL_MEDICAL') medical.style.display = 'block';
-    if(v === 'PROPRIETAIRE_MEDICAUX') owner.style.display = 'block';
+    if(v === 'PATIENT' && patient) patient.style.display = 'block';
+    if(v === 'PERSONNEL_MEDICAL' && medical) medical.style.display = 'block';
+    if(v === 'PROPRIETAIRE_MEDICAUX' && owner) owner.style.display = 'block';
   }
 
   roleSelect?.addEventListener('change', update);
