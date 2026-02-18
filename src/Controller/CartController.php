@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Commande;
 use App\Repository\EquipementRepository;
+use App\Service\TwilioSmsService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -17,16 +18,19 @@ class CartController extends AbstractController
     private EntityManagerInterface $em;
     private EquipementRepository $equipRepo;
     private Security $security;
+    private TwilioSmsService $twilioSmsService;
 
     public function __construct(
         EntityManagerInterface $em,
         EquipementRepository $equipRepo,
-        Security $security
+        Security $security,
+        TwilioSmsService $twilioSmsService
     )
     {
         $this->em = $em;
         $this->equipRepo = $equipRepo;
         $this->security = $security;
+        $this->twilioSmsService = $twilioSmsService;
     }
 
     #[Route('/cart', name: 'cart_view')]
@@ -225,10 +229,14 @@ class CartController extends AbstractController
             $lineTotal = bcmul((string) ($equip->getPrix() ?? '0.00'), (string) $qty, 2);
             $total = bcadd($total, $lineTotal, 2);
 
+            $previousStatus = $equip->getStatut();
             $newQty = max(0, (int) ($equip->getQuantiteDisponible() ?? 0) - $qty);
             $equip->setQuantiteDisponible($newQty);
             if ($newQty === 0) {
                 $equip->setStatut('en_rupture');
+                if ($previousStatus !== 'en_rupture') {
+                    $this->twilioSmsService->sendStockOutAlert($equip);
+                }
             }
         }
         $commande->setMontantTotal($total);
