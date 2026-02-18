@@ -4,197 +4,382 @@
 
 {% block body %}
 <style>
-  .home-wrap{
-    padding: 24px;
+  :root{
+    --ink:#0f172a;
+    --muted:#64748b;
+    --line: rgba(15,23,42,.08);
+    --card: rgba(255,255,255,.72);
+    --card2: rgba(248,250,252,.85);
+    --blue:#1e6fb9;
+    --warn:#f59e0b;
+    --ok:#10b981;
   }
 
+  .home-wrap{ padding: 22px 24px; }
+
+  /* Header */
+  .home-head{
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap: 16px;
+    margin-bottom: 14px;
+  }
   .home-title{
-    font-size: 34px;
-    font-weight: 800;
-    color: #2b2f38;
-    margin: 0 0 6px 0;
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -.2px;
+    margin:0;
+    color: var(--ink);
+  }
+  .home-subtitle{
+    margin: 6px 0 0;
+    color: var(--muted);
+    font-weight: 400;
   }
 
-  .home-subtitle{
-    color: #7b8794;
-    margin: 0 0 18px 0;
+  .head-actions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:flex-end;
+  }
+
+  /* Chips */
+  .chip{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding: 9px 12px;
+    border-radius: 999px;
+    background: rgba(30,111,185,.10);
+    border: 1px solid rgba(30,111,185,.14);
+    color: var(--ink);
+    font-weight: 600;
+    text-decoration:none;
+    white-space:nowrap;
+  }
+  .chip:hover{ filter: brightness(.98); }
+  .chip-count{
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: rgba(245,158,11,.16);
+    border: 1px solid rgba(245,158,11,.22);
     font-weight: 600;
   }
 
+  /* Stats row */
+  .stats{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .stat{
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 12px;
+    display:flex;
+    align-items:center;
+    gap: 12px;
+    backdrop-filter: blur(10px);
+  }
+  .stat-ic{
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    display:grid;
+    place-items:center;
+    background: rgba(30,111,185,.12);
+    border: 1px solid rgba(30,111,185,.16);
+    color: var(--blue);
+    font-size: 18px;
+  }
+  .stat b{
+    display:block;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.1;
+  }
+  .stat small{
+    display:block;
+    color: var(--muted);
+    font-weight: 400;
+    margin-top: 2px;
+  }
+
+  /* Grid */
   .home-grid{
-    display: grid;
-    grid-template-columns: 1.3fr 1fr;
-    gap: 18px;
+    display:grid;
+    grid-template-columns: 1.35fr 1fr;
+    gap: 14px;
   }
 
   .cardx{
-    background: #fff;
-    border: 1px solid rgba(0,0,0,.06);
-    border-radius: 14px;
-    box-shadow: 0 10px 22px rgba(16,24,40,.08);
-    padding: 16px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 14px;
+    backdrop-filter: blur(10px);
   }
-
-  .cardx h4{
-    margin: 0 0 12px 0;
-    font-size: 18px;
-    font-weight: 800;
-    color: #2b2f38;
-  }
-
-  .box{
-    background: #f7fafc;
-    border: 1px solid rgba(0,0,0,.06);
-    border-radius: 12px;
-    padding: 12px;
-  }
-
-  .row-between{
+  .cardx-head{
     display:flex;
     align-items:center;
     justify-content:space-between;
     gap:12px;
+    margin-bottom: 10px;
+  }
+  .cardx h4{
+    margin:0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ink);
   }
 
-  .pill{
-    padding: 10px 14px;
+  /* Flat box */
+  .box{
+    background: var(--card2);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 12px;
+  }
+  .row-between{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap: 12px;
+  }
+  .muted{ color: var(--muted); font-weight: 400; }
+
+  /* Buttons */
+  .btn-mini{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding: 9px 12px;
     border-radius: 999px;
-    border: 1px solid rgba(244,201,137,.7);
     background: rgba(244,201,137,.45);
-    font-weight: 800;
-    color: #1f2937;
+    border: 1px solid rgba(244,201,137,.75);
+    color: var(--ink);
+    font-weight: 600;
     text-decoration:none;
-    display:inline-block;
     white-space:nowrap;
   }
+  .btn-mini:hover{ filter: brightness(.98); }
 
+  /* List tasks */
   .list{
-    margin:0;
-    padding:0;
-    list-style:none;
+    margin: 0;
+    padding: 0;
+    list-style: none;
     display:flex;
     flex-direction:column;
-    gap:10px;
+    gap: 10px;
+    margin-top: 10px;
   }
-
   .item{
     display:flex;
     align-items:center;
     gap:10px;
     padding: 10px 12px;
-    border-radius: 12px;
-    background: #f7fafc;
-    border: 1px solid rgba(0,0,0,.06);
-    font-weight: 700;
-    color:#2b2f38;
+    border-radius: 14px;
+    background: var(--card2);
+    border: 1px solid var(--line);
+    font-weight: 500;
+    color: var(--ink);
   }
-
   .dot{
-    width:10px;height:10px;border-radius:50%;
-    background: rgba(59,130,246,.8);
+    width:10px; height:10px; border-radius: 50%;
+    background: rgba(59,130,246,.9);
+  }
+  .dot.ok{ background: rgba(16,185,129,.9); }
+  .dot.warn{ background: rgba(245,158,11,.95); }
+
+  /* Activity */
+  .activity{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 12px;
+  }
+  .activity strong{ display:block; font-weight: 600; }
+  .who{ font-weight: 500; color: var(--muted); }
+
+  .empty{
+    background: var(--card2);
+    border: 1px dashed rgba(15,23,42,.18);
+    border-radius: 14px;
+    padding: 12px;
+    color: var(--muted);
+    font-weight: 500;
+    display:flex;
+    align-items:center;
+    gap:10px;
   }
 
-  .dot.ok{ background: rgba(16,185,129,.8); }
-  .dot.warn{ background: rgba(245,158,11,.85); }
-
+  /* Bottom */
   .home-bottom{
-    margin-top: 18px;
+    margin-top: 14px;
     display:grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 18px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  .ok-pill{
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(16,185,129,.15);
+    border: 1px solid rgba(16,185,129,.30);
+    font-weight: 600;
+    color: var(--ink);
   }
 
   @media (max-width: 1100px){
     .home-grid{ grid-template-columns: 1fr; }
+    .stats{ grid-template-columns: 1fr; }
     .home-bottom{ grid-template-columns: 1fr; }
+    .home-head{ flex-direction: column; align-items:flex-start; }
+    .head-actions{ justify-content:flex-start; }
   }
 </style>
 
 <div class="home-wrap">
-  <h1 class="home-title">Accueil Admin</h1>
-  <p class="home-subtitle">
-    Bienvenue {{ app.user ? app.user.userIdentifier : 'Admin' }} - aperçu rapide et raccourcis.
-  </p>
+
+  <div class="home-head">
+    <div>
+      <h1 class="home-title">Accueil Admin</h1>
+      <p class="home-subtitle">
+        Bienvenue {{ app.user ? app.user.userIdentifier : 'Admin' }} — aperçu rapide et raccourcis.
+      </p>
+    </div>
+
+    <div class="head-actions">
+      <span class="chip"><i class="fa-solid fa-clock"></i> {{ now|date("d/m/Y - H:i") }}</span>
+      <a class="chip" href="{{ path('admin_users_index') }}">
+        <i class="fa-solid fa-bell"></i>
+        En attente <span class="chip-count">{{ pendingCount }}</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-ic"><i class="fa-solid fa-users"></i></div>
+      <div>
+        <b>{{ totalUsers }}</b>
+        <small>Total utilisateurs</small>
+      </div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-ic"><i class="fa-solid fa-user-clock"></i></div>
+      <div>
+        <b>{{ pendingCount }}</b>
+        <small>Demandes en attente</small>
+      </div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-ic"><i class="fa-solid fa-shield-heart"></i></div>
+      <div>
+        <b>OK</b>
+        <small>Système stable</small>
+      </div>
+    </div>
+  </div>
 
   <div class="home-grid">
     <div class="cardx">
-      <h4>A faire aujourd'hui</h4>
+      <div class="cardx-head">
+        <h4>A faire aujourd'hui</h4>
+        <a class="btn-mini" href="{{ path('admin_users_index') }}">
+          <i class="fa-solid fa-arrow-right"></i> Voir
+        </a>
+      </div>
+
       <div class="box">
         <div class="row-between">
           <div>
-            <strong style="display:block; font-size:15px;">Verifier les inscriptions</strong>
-            <small style="color:#7b8794; font-weight:700;">
-              Derniere connexion : {{ "now"|date("d/m/Y - H:i") }}
-            </small>
+            <div style="font-weight:600; color:var(--ink);">Vérifier les inscriptions</div>
+            <div class="muted">En attente : {{ pendingCount }}</div>
           </div>
-          <a class="pill" href="#">Voir</a>
+          <div class="muted" style="white-space:nowrap;">
+            {{ now|date("H:i") }}
+          </div>
         </div>
       </div>
 
-      <div style="height:12px"></div>
-
       <ul class="list">
         <li class="item"><span class="dot ok"></span> Valider les nouveaux utilisateurs</li>
-        <li class="item"><span class="dot warn"></span> Verifier les evenements a venir</li>
-        <li class="item"><span class="dot"></span> Controler les publications / forum</li>
+        <li class="item"><span class="dot warn"></span> Vérifier les événements à venir</li>
+        <li class="item"><span class="dot"></span> Contrôler les publications / forum</li>
       </ul>
     </div>
 
     <div class="cardx">
-      <h4>Dernieres activites</h4>
-
-      <div class="box" style="margin-bottom:10px;">
-        <strong style="display:block;">Nouvel utilisateur ajoute</strong>
-        <small style="color:#7b8794; font-weight:700;">{{ "now"|date("d/m/Y") }}</small>
+      <div class="cardx-head">
+        <h4>Dernières activités</h4>
       </div>
 
-      <div class="box" style="margin-bottom:10px;">
-        <strong style="display:block;">Evenement mis a jour</strong>
-        <small style="color:#7b8794; font-weight:700;">{{ "now"|date("d/m/Y") }}</small>
-      </div>
-
-      <div class="box">
-        <strong style="display:block;">Equipement medical ajoute</strong>
-        <small style="color:#7b8794; font-weight:700;">{{ "now"|date("d/m/Y") }}</small>
-      </div>
+      {% if lastPending is empty %}
+        <div class="empty">
+          <i class="fa-regular fa-face-smile"></i>
+          Aucune demande en attente.
+        </div>
+      {% else %}
+        {% for u in lastPending %}
+          <div class="box" style="margin-bottom:10px;">
+            <div class="activity">
+              <div>
+                <strong>Nouvelle demande d’inscription</strong>
+                <div class="who">
+                  {{ (u.nom ~ ' ' ~ u.prenom)|trim ?: u.email }}
+                </div>
+              </div>
+              <a class="btn-mini" style="padding:8px 12px;" href="{{ path('admin_users_index') }}">Ouvrir</a>
+            </div>
+          </div>
+        {% endfor %}
+      {% endif %}
     </div>
   </div>
 
   <div class="home-bottom">
     <div class="cardx">
       <h4>Raccourci</h4>
-      <div class="row-between box">
+      <div class="box row-between">
         <div>
-          <strong>Utilisateurs</strong><br>
-          <small style="color:#7b8794; font-weight:700;">Creer / modifier / desactiver</small>
+          <div style="font-weight:600; color:var(--ink);">Utilisateurs</div>
+          <div class="muted">Créer / modifier / désactiver</div>
         </div>
-        <a class="pill" href="#">Ouvrir</a>
+        <a class="btn-mini" href="{{ path('admin_users_index') }}">Ouvrir</a>
       </div>
     </div>
 
     <div class="cardx">
       <h4>Raccourci</h4>
-      <div class="row-between box">
+      <div class="box row-between">
         <div>
-          <strong>Evenements</strong><br>
-          <small style="color:#7b8794; font-weight:700;">Liste + ajout</small>
+          <div style="font-weight:600; color:var(--ink);">Événements</div>
+          <div class="muted">Liste + ajout</div>
         </div>
-        <a class="pill" href="#">Ouvrir</a>
+        <a class="btn-mini" href="{{ path('event_index') }}">Ouvrir</a>
       </div>
     </div>
 
     <div class="cardx">
       <h4>Etat</h4>
-      <div class="row-between box">
+      <div class="box row-between">
         <div>
-          <strong>Systeme</strong><br>
-          <small style="color:#7b8794; font-weight:700;">Tout fonctionne</small>
+          <div style="font-weight:600; color:var(--ink);">Système</div>
+          <div class="muted">Tout fonctionne</div>
         </div>
-        <span class="pill" style="background: rgba(16,185,129,.15); border-color: rgba(16,185,129,.35);">
-          OK
-        </span>
+        <span class="ok-pill">OK</span>
       </div>
     </div>
   </div>
+
 </div>
 {% endblock %}

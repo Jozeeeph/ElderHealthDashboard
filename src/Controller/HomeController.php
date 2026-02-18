@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Utilisateur;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -21,13 +22,40 @@ class HomeController extends AbstractController
         }
 
         // Sinon, page d'accueil (publique / front)
-        return $this->render('front/home.html.twig'); // adapte si tu as un autre twig
+        return $this->render('front/home.html.twig');
     }
 
-    // ✅ Page d'accueil ADMIN (celle que tu veux)
+    // ✅ Page d'accueil ADMIN (dynamique - no DB changes)
     #[Route('/admin/home', name: 'admin_home')]
-    public function adminHome(): Response
+    public function adminHome(EntityManagerInterface $em): Response
     {
-        return $this->render('BackOffice/home/index.html.twig');
+        $repo = $em->getRepository(Utilisateur::class);
+
+        $totalUsers = (int) $repo->createQueryBuilder('u')
+            ->select('COUNT(u.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        $pendingCount = (int) $repo->createQueryBuilder('u')
+            ->select('COUNT(u.id)')
+            ->andWhere('u.accountStatus = :st')
+            ->setParameter('st', Utilisateur::STATUS_PENDING)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        $lastPending = $repo->createQueryBuilder('u')
+            ->andWhere('u.accountStatus = :st')
+            ->setParameter('st', Utilisateur::STATUS_PENDING)
+            ->orderBy('u.id', 'DESC')
+            ->setMaxResults(3)
+            ->getQuery()
+            ->getResult();
+
+        return $this->render('BackOffice/home/index.html.twig', [
+            'totalUsers'   => $totalUsers,
+            'pendingCount' => $pendingCount,
+            'lastPending'  => $lastPending,
+            'now'          => new \DateTimeImmutable(),
+        ]);
     }
 }
