@@ -79,8 +79,8 @@
 							<select class="sort-select" name="sort" onchange="this.form.submit()">
 								<option value="best_sellers" {% if current_sort|default('best_sellers') == 'best_sellers' %}selected{% endif %}>Meilleurs ventes</option>
 								<option value="price_asc" {% if current_sort|default('best_sellers') == 'price_asc' %}selected{% endif %}>Prix croissant</option>
-								<option value="price_desc" {% if current_sort|default('best_sellers') == 'price_desc' %}selected{% endif %}>Prix dÃ©croissant</option>
-								<option value="newest" {% if current_sort|default('best_sellers') == 'newest' %}selected{% endif %}>NouveautÃ©s</option>
+								<option value="price_desc" {% if current_sort|default('best_sellers') == 'price_desc' %}selected{% endif %}>Prix decroissant</option>
+								<option value="newest" {% if current_sort|default('best_sellers') == 'newest' %}selected{% endif %}>Nouveautes</option>
 							</select>
 						</form>
 					</div>

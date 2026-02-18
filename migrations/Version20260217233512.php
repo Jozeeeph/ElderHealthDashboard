@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20260215182944 extends AbstractMigration
+final class Version20260217233512 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -29,8 +29,9 @@ final class Version20260215182944 extends AbstractMigration
         $this->addSql('CREATE TABLE participation (id INT AUTO_INCREMENT NOT NULL, date_inscription DATETIME NOT NULL, statut VARCHAR(30) NOT NULL, presence TINYINT DEFAULT NULL, commentaire LONGTEXT DEFAULT NULL, event_id INT DEFAULT NULL, utilisateur_id INT DEFAULT NULL, INDEX IDX_AB55E24F71F7E88B (event_id), INDEX IDX_AB55E24FFB88E14F (utilisateur_id), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4');
         $this->addSql('CREATE TABLE post (id INT AUTO_INCREMENT NOT NULL, title VARCHAR(255) NOT NULL, content LONGTEXT NOT NULL, date_de_creation DATETIME NOT NULL, status VARCHAR(255) NOT NULL, image_name VARCHAR(255) DEFAULT NULL, utilisateur_id INT NOT NULL, INDEX IDX_5A8A6C8DFB88E14F (utilisateur_id), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4');
         $this->addSql('CREATE TABLE prescription (id_prescription INT AUTO_INCREMENT NOT NULL, medicaments LONGTEXT NOT NULL, frequence VARCHAR(50) NOT NULL, dosage VARCHAR(50) NOT NULL, duree_traitement VARCHAR(50) NOT NULL, consignes LONGTEXT NOT NULL, date_debut DATE NOT NULL, date_fin DATE NOT NULL, consultation_id INT NOT NULL, UNIQUE INDEX UNIQ_1FBFB8D962FF6CDF (consultation_id), PRIMARY KEY (id_prescription)) DEFAULT CHARACTER SET utf8mb4');
+        $this->addSql('CREATE TABLE prescription_dose_ack (id INT AUTO_INCREMENT NOT NULL, scheduled_at DATETIME NOT NULL, done_at DATETIME NOT NULL, prescription_id INT NOT NULL, INDEX IDX_6918043693DB413D (prescription_id), UNIQUE INDEX uniq_prescription_slot (prescription_id, scheduled_at), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4');
         $this->addSql('CREATE TABLE rapport_medical (id_rapport INT AUTO_INCREMENT NOT NULL, diagnostic LONGTEXT NOT NULL, recommandations LONGTEXT NOT NULL, niveau_gravite VARCHAR(10) NOT NULL, date_rapport DATETIME NOT NULL, fichier_path VARCHAR(255) DEFAULT NULL, consultation_id INT NOT NULL, UNIQUE INDEX UNIQ_C0B673962FF6CDF (consultation_id), PRIMARY KEY (id_rapport)) DEFAULT CHARACTER SET utf8mb4');
-        $this->addSql('CREATE TABLE rendez_vous (id INT AUTO_INCREMENT NOT NULL, date DATE NOT NULL, heure TIME NOT NULL, lieu VARCHAR(255) NOT NULL, etat VARCHAR(20) NOT NULL, patient_id INT DEFAULT NULL, personnel_medical_id INT DEFAULT NULL, type_rendez_vous_id INT DEFAULT NULL, admin_id INT DEFAULT NULL, INDEX IDX_65E8AA0A6B899279 (patient_id), INDEX IDX_65E8AA0A5E412A67 (personnel_medical_id), INDEX IDX_65E8AA0AC72C573E (type_rendez_vous_id), INDEX IDX_65E8AA0A642B8210 (admin_id), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4');
+        $this->addSql('CREATE TABLE rendez_vous (id INT AUTO_INCREMENT NOT NULL, date DATE NOT NULL, heure TIME NOT NULL, lieu VARCHAR(255) NOT NULL, etat VARCHAR(20) NOT NULL, is_paid TINYINT DEFAULT 0 NOT NULL, paid_at DATETIME DEFAULT NULL, patient_id INT DEFAULT NULL, personnel_medical_id INT DEFAULT NULL, type_rendez_vous_id INT DEFAULT NULL, admin_id INT DEFAULT NULL, INDEX IDX_65E8AA0A6B899279 (patient_id), INDEX IDX_65E8AA0A5E412A67 (personnel_medical_id), INDEX IDX_65E8AA0AC72C573E (type_rendez_vous_id), INDEX IDX_65E8AA0A642B8210 (admin_id), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4');
         $this->addSql('CREATE TABLE reset_password_request (id INT AUTO_INCREMENT NOT NULL, selector VARCHAR(20) NOT NULL, hashed_token VARCHAR(100) NOT NULL, requested_at DATETIME NOT NULL, expires_at DATETIME NOT NULL, user_id INT NOT NULL, INDEX IDX_7CE748AA76ED395 (user_id), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4');
         $this->addSql('CREATE TABLE type_event (id INT AUTO_INCREMENT NOT NULL, libelle VARCHAR(100) NOT NULL, description LONGTEXT DEFAULT NULL, couleur VARCHAR(20) DEFAULT NULL, is_active TINYINT NOT NULL, PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4');
         $this->addSql('CREATE TABLE type_rendez_vous (id INT AUTO_INCREMENT NOT NULL, type VARCHAR(200) NOT NULL, tarif DOUBLE PRECISION NOT NULL, duree VARCHAR(200) DEFAULT NULL, admin_id INT DEFAULT NULL, INDEX IDX_2EF17D9B642B8210 (admin_id), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4');
@@ -50,6 +51,7 @@ final class Version20260215182944 extends AbstractMigration
         $this->addSql('ALTER TABLE participation ADD CONSTRAINT FK_AB55E24FFB88E14F FOREIGN KEY (utilisateur_id) REFERENCES utilisateur (id)');
         $this->addSql('ALTER TABLE post ADD CONSTRAINT FK_5A8A6C8DFB88E14F FOREIGN KEY (utilisateur_id) REFERENCES utilisateur (id)');
         $this->addSql('ALTER TABLE prescription ADD CONSTRAINT FK_1FBFB8D962FF6CDF FOREIGN KEY (consultation_id) REFERENCES consultation (id) ON DELETE CASCADE');
+        $this->addSql('ALTER TABLE prescription_dose_ack ADD CONSTRAINT FK_6918043693DB413D FOREIGN KEY (prescription_id) REFERENCES prescription (id_prescription) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE rapport_medical ADD CONSTRAINT FK_C0B673962FF6CDF FOREIGN KEY (consultation_id) REFERENCES consultation (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE rendez_vous ADD CONSTRAINT FK_65E8AA0A6B899279 FOREIGN KEY (patient_id) REFERENCES utilisateur (id)');
         $this->addSql('ALTER TABLE rendez_vous ADD CONSTRAINT FK_65E8AA0A5E412A67 FOREIGN KEY (personnel_medical_id) REFERENCES utilisateur (id)');
@@ -76,6 +78,7 @@ final class Version20260215182944 extends AbstractMigration
         $this->addSql('ALTER TABLE participation DROP FOREIGN KEY FK_AB55E24FFB88E14F');
         $this->addSql('ALTER TABLE post DROP FOREIGN KEY FK_5A8A6C8DFB88E14F');
         $this->addSql('ALTER TABLE prescription DROP FOREIGN KEY FK_1FBFB8D962FF6CDF');
+        $this->addSql('ALTER TABLE prescription_dose_ack DROP FOREIGN KEY FK_6918043693DB413D');
         $this->addSql('ALTER TABLE rapport_medical DROP FOREIGN KEY FK_C0B673962FF6CDF');
         $this->addSql('ALTER TABLE rendez_vous DROP FOREIGN KEY FK_65E8AA0A6B899279');
         $this->addSql('ALTER TABLE rendez_vous DROP FOREIGN KEY FK_65E8AA0A5E412A67');
@@ -92,6 +95,7 @@ final class Version20260215182944 extends AbstractMigration
         $this->addSql('DROP TABLE participation');
         $this->addSql('DROP TABLE post');
         $this->addSql('DROP TABLE prescription');
+        $this->addSql('DROP TABLE prescription_dose_ack');
         $this->addSql('DROP TABLE rapport_medical');
         $this->addSql('DROP TABLE rendez_vous');
         $this->addSql('DROP TABLE reset_password_request');

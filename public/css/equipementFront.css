@@ -54,16 +54,16 @@ body,
 
 /* Hero Section */
 .hero-section {
-    background: linear-gradient(135deg, #e8f6f9 0%, #eef8f4 100%);
+    background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 55%, #0a58ca 100%);
     padding: 80px 40px 50px;
     text-align: center;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 0;
     width: 100% !important;
     margin-left: 0 !important;
 }
 
 .hero-title {
-    color: var(--text-dark);
+    color: #ffffff;
     font-size: 3rem;
     font-weight: 800;
     margin-bottom: 20px;
@@ -71,7 +71,7 @@ body,
 }
 
 .hero-subtitle {
-    color: var(--text-light);
+    color: #dbe9ff;
     font-size: 1.2rem;
     max-width: 700px;
     margin: 0 auto 40px;
@@ -91,7 +91,7 @@ body,
 .search-input {
     width: 100%;
     padding: 16px 50px 16px 25px;
-    border: 2px solid var(--border-color);
+    border: 2px solid #b8d2ff;
     border-radius: 50px;
     font-size: 1.1rem;
     transition: all 0.3s ease;

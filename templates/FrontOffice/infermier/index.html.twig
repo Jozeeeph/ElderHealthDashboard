@@ -101,25 +101,19 @@
 						<a class="link" href="#">Tout</a>
 					</div>
 					<div class="list">
-						<div class="item">
-							<div class="bubble">BP</div>
+						<div class="item alert-cancelled-item">
+							<div class="bubble">RDV</div>
 							<div class="content">
-								<b>Tension instable</b>
-								<p>Patient: Noura S. - controle requis</p>
-							</div>
-						</div>
-						<div class="item">
-							<div class="bubble">Rx</div>
-							<div class="content">
-								<b>Traitement a administrer</b>
-								<p>Ordonnance a 14:00</p>
-							</div>
-						</div>
-						<div class="item">
-							<div class="bubble">Lab</div>
-							<div class="content">
-								<b>Resultats disponibles</b>
-								<p>Analyser et valider</p>
+								<b>Rendez-vous annules: {{ cancelledRdvCount|default(0) }}</b>
+								{% if cancelledRendezVous|default([]) is not empty %}
+									<p>
+										Dernier: {{ cancelledRendezVous[0].patient ? (cancelledRendezVous[0].patient.prenom ~ ' ' ~ cancelledRendezVous[0].patient.nom) : 'Patient' }}
+										- {{ cancelledRendezVous[0].date ? cancelledRendezVous[0].date|date('d/m/Y') : '-' }}
+										a {{ cancelledRendezVous[0].heure ? cancelledRendezVous[0].heure|date('H:i') : '-' }}
+									</p>
+								{% else %}
+									<p>Aucune annulation recente.</p>
+								{% endif %}
 							</div>
 						</div>
 					</div>

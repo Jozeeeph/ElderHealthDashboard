@@ -209,6 +209,140 @@ class RendezVousRepository extends ServiceEntityRepository
     /**
      * @return RendezVous[]
      */
+    public function findCancelledForPersonnel(Utilisateur $personnel, int $limit = 5): array
+    {
+        return $this->createQueryBuilder('r')
+            ->leftJoin('r.patient', 'p')->addSelect('p')
+            ->leftJoin('r.typeRendezVous', 't')->addSelect('t')
+            ->andWhere('r.personnelMedical = :personnel')
+            ->andWhere('r.etat = :etat')
+            ->setParameter('personnel', $personnel)
+            ->setParameter('etat', 'ANNULEE')
+            ->orderBy('r.date', 'DESC')
+            ->addOrderBy('r.heure', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function countCancelledForPersonnel(Utilisateur $personnel): int
+    {
+        return (int) $this->createQueryBuilder('r')
+            ->select('COUNT(r.id)')
+            ->andWhere('r.personnelMedical = :personnel')
+            ->andWhere('r.etat = :etat')
+            ->setParameter('personnel', $personnel)
+            ->setParameter('etat', 'ANNULEE')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function hasPlannedConflictForPersonnel(
+        Utilisateur $personnel,
+        \DateTimeInterface $date,
+        \DateTimeInterface $heure,
+        ?int $excludeId = null
+    ): bool {
+        $qb = $this->createQueryBuilder('r')
+            ->select('COUNT(r.id)')
+            ->andWhere('r.personnelMedical = :personnel')
+            ->andWhere('r.date = :date')
+            ->andWhere('r.heure = :heure')
+            ->andWhere('r.etat IN (:etats)')
+            ->setParameter('personnel', $personnel)
+            ->setParameter('date', $date->format('Y-m-d'))
+            ->setParameter('heure', $heure->format('H:i:s'))
+            ->setParameter('etats', ['PLANIFIE', 'PLANIFIEE', 'EN_COURS']);
+
+        if ($excludeId !== null) {
+            $qb->andWhere('r.id != :excludeId')
+                ->setParameter('excludeId', $excludeId);
+        }
+
+        return (int) $qb->getQuery()->getSingleScalarResult() > 0;
+    }
+
+    public function hasPlannedOverlapForPersonnel(
+        Utilisateur $personnel,
+        \DateTimeInterface $date,
+        \DateTimeInterface $heure,
+        int $durationMinutes,
+        ?int $excludeId = null
+    ): bool {
+        $candidateStart = \DateTimeImmutable::createFromFormat(
+            'Y-m-d H:i:s',
+            $date->format('Y-m-d') . ' ' . $heure->format('H:i:s')
+        );
+        if (!$candidateStart instanceof \DateTimeImmutable) {
+            return false;
+        }
+        $candidateDuration = max(1, $durationMinutes);
+        $candidateEnd = $candidateStart->modify('+' . $candidateDuration . ' minutes');
+
+        $qb = $this->createQueryBuilder('r')
+            ->leftJoin('r.typeRendezVous', 't')->addSelect('t')
+            ->andWhere('r.personnelMedical = :personnel')
+            ->andWhere('r.date = :date')
+            ->andWhere('r.etat IN (:etats)')
+            ->setParameter('personnel', $personnel)
+            ->setParameter('date', $date->format('Y-m-d'))
+            ->setParameter('etats', ['PLANIFIE', 'PLANIFIEE', 'EN_COURS']);
+
+        if ($excludeId !== null) {
+            $qb->andWhere('r.id != :excludeId')
+                ->setParameter('excludeId', $excludeId);
+        }
+
+        /** @var RendezVous[] $items */
+        $items = $qb->getQuery()->getResult();
+        foreach ($items as $item) {
+            $itemDate = $item->getDate();
+            $itemHeure = $item->getHeure();
+            if ($itemDate === null || $itemHeure === null) {
+                continue;
+            }
+
+            $itemStart = \DateTimeImmutable::createFromFormat(
+                'Y-m-d H:i:s',
+                $itemDate->format('Y-m-d') . ' ' . $itemHeure->format('H:i:s')
+            );
+            if (!$itemStart instanceof \DateTimeImmutable) {
+                continue;
+            }
+
+            $existingDuration = self::durationToMinutes($item->getTypeRendezVous()?->getDuree(), 45);
+            $itemEnd = $itemStart->modify('+' . $existingDuration . ' minutes');
+
+            if ($candidateStart < $itemEnd && $candidateEnd > $itemStart) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return RendezVous[]
+     */
+    public function findForPersonnelBetween(Utilisateur $personnel, \DateTimeInterface $start, \DateTimeInterface $end): array
+    {
+        return $this->createQueryBuilder('r')
+            ->leftJoin('r.patient', 'p')->addSelect('p')
+            ->leftJoin('r.typeRendezVous', 't')->addSelect('t')
+            ->andWhere('r.personnelMedical = :personnel')
+            ->andWhere('r.date BETWEEN :startDate AND :endDate')
+            ->setParameter('personnel', $personnel)
+            ->setParameter('startDate', $start->format('Y-m-d'))
+            ->setParameter('endDate', $end->format('Y-m-d'))
+            ->orderBy('r.date', 'ASC')
+            ->addOrderBy('r.heure', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return RendezVous[]
+     */
     public function findStatusNotificationsForPatient(Utilisateur $patient, int $limit = 5): array
     {
         return $this->createQueryBuilder('r')
@@ -252,6 +386,19 @@ class RendezVousRepository extends ServiceEntityRepository
             ->getArrayResult();
 
         return array_map(static fn(array $row): int => (int) $row['id'], $rows);
+    }
+
+    public static function durationToMinutes(?string $rawDuration, int $default = 45): int
+    {
+        if ($rawDuration === null) {
+            return max(1, $default);
+        }
+
+        if (preg_match('/\d+/', $rawDuration, $matches) === 1) {
+            return max(1, (int) $matches[0]);
+        }
+
+        return max(1, $default);
     }
 
 //    /**

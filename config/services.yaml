@@ -3,6 +3,14 @@ parameters:
     images_directory: '%kernel.project_dir%/public/uploads/images'
     app.url: '%env(APP_URL)%'
     app.mail_from: '%env(MAIL_FROM)%'
+    app.image_processor.api_url: '%env(string:IMAGE_PROCESSOR_API_URL)%'
+    app.image_processor.api_key: '%env(string:IMAGE_PROCESSOR_API_KEY)%'
+    app.image_processor.auth_header: '%env(string:IMAGE_PROCESSOR_AUTH_HEADER)%'
+    app.image_processor.auth_prefix: '%env(string:IMAGE_PROCESSOR_AUTH_PREFIX)%'
+    app.twilio.account_sid: '%env(default::TWILIO_ACCOUNT_SID)%'
+    app.twilio.auth_token: '%env(default::TWILIO_AUTH_TOKEN)%'
+    app.twilio.from_number: '%env(default::TWILIO_FROM_NUMBER)%'
+    app.twilio.stock_alert_to_number: '%env(default::TWILIO_STOCK_ALERT_TO_NUMBER)%'
 
 services:
     _defaults:
@@ -36,8 +44,23 @@ services:
         arguments:
             $fromEmail: '%app.mail_from%'
 
+    App\Service\ImageProcessor:
+        arguments:
+            $apiUrl: '%app.image_processor.api_url%'
+            $apiKey: '%app.image_processor.api_key%'
+            $targetDirectory: '%images_directory%'
+            $authHeaderName: '%app.image_processor.auth_header%'
+            $authHeaderPrefix: '%app.image_processor.auth_prefix%'
+
     App\Service\StripeCheckoutService:
         arguments:
             $stripeSecretKey: '%env(string:STRIPE_SECRET_KEY)%'
             $stripeCurrency: '%env(string:STRIPE_CURRENCY)%'
             $stripeApiBaseUrl: '%env(string:STRIPE_API_BASE_URL)%'
+
+    App\Service\TwilioSmsService:
+        arguments:
+            $accountSid: '%app.twilio.account_sid%'
+            $authToken: '%app.twilio.auth_token%'
+            $fromNumber: '%app.twilio.from_number%'
+            $toNumber: '%app.twilio.stock_alert_to_number%'

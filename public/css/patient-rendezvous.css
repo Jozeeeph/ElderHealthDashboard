@@ -402,6 +402,12 @@
     background: #f5f3ff;
 }
 
+.btn-action.receipt:hover {
+    color: #7c3aed;
+    border-color: #ddd6fe;
+    background: #f5f3ff;
+}
+
 .btn-action.delete:hover {
     color: #b91c1c;
     border-color: #fecaca;

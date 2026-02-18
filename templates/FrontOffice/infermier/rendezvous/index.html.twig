@@ -103,6 +103,10 @@
 									{{ rdv.lieu }}
 								</span>
 							{% endif %}
+							<span class="consultation-chip {{ rdv.isPaid ? 'chip-green' : 'chip-amber' }}" title="Paiement">
+								<i class="bi {{ rdv.isPaid ? 'bi-wallet2' : 'bi-wallet' }}"></i>
+								{{ rdv.isPaid ? 'Paye' : 'Non paye' }}
+							</span>
 						</div>
 						<div class="consultation-actions">
 							{% if rdv.etat == 'EN_ATTENTE' %}
