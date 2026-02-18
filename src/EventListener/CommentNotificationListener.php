@@ -27,7 +27,6 @@ class CommentNotificationListener
             return;
         }
 
-        // option: ne pas s’envoyer de mail à soi-même
         if ($comment->getUtilisateur() && $comment->getUtilisateur()->getId() === $owner->getId()) {
             return;
         }

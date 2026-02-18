@@ -1,154 +1,241 @@
 {% extends 'base.html.twig' %}
 {% block title %}Forum - Publications{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/forum.css') }}">
+{% endblock %}
+
 {% block body %}
-	{% block stylesheets %}
-		{{ parent() }}
-		<link rel="stylesheet" href="{{ asset('css/forum.css') }}">
-	{% endblock %}
 
-	<div class="forum-wrap">
-		<div class="container">
+<div class="forum-wrap">
+    <div class="container">
 
-			<div class="forum-header">
-				<div>
-					<h2 class="forum-title">Publications</h2>
-					<div class="text-muted">
-						Forum Elder<span style="color:var(--brand-orange);font-weight:900;">Health</span>Care
-					</div>
-				</div>
+        <div class="forum-header">
+            <div>
+                <h2 class="forum-title">Publications</h2>
+                <div class="text-muted">
+                    Forum Elder<span style="color:var(--brand-orange);font-weight:900;">Health</span>Care
+                </div>
+            </div>
 
-				<a class="btn btn-brand" href="{{ path('forum_post_new') }}">
-					<i class="bi bi-plus-circle"></i>
-					Nouvelle publication
-				</a>
-			</div>
+            <a class="btn btn-brand" href="{{ path('forum_post_new') }}">
+                <i class="bi bi-plus-circle"></i>
+                Nouvelle publication
+            </a>
+        </div>
 
-			{% for post in posts %}
-				<div class="post-card">
+        {% for post in posts %}
+        <div class="post-card">
 
-					<div class="post-card__top">
-						<div class="post-meta">
-							<h5>{{ post.title }}</h5>
-							<div class="small">
-								<i class="bi bi-clock"></i>
-								{{ post.dateDeCreation|date('d/m/Y H:i') }}
-							</div>
-						</div>
+            <div class="post-card__top">
+                <div class="post-meta">
+                    <h5>{{ post.title }}</h5>
+                    <div class="small">
+                        <i class="bi bi-clock"></i>
+                        {{ post.dateDeCreation|date('d/m/Y H:i') }}
+                    </div>
+                </div>
 
-						<span class="badge-soft {{ post.status == 'ACTIVE' ? 'badge-active' : 'badge-inactive' }}">
-							{{ post.status == 'ACTIVE' ? 'Actif' : 'Inactif' }}
-						</span>
-					</div>
+                <span class="badge-soft {{ post.status == 'ACTIVE' ? 'badge-active' : 'badge-inactive' }}">
+                    {{ post.status == 'ACTIVE' ? 'Actif' : 'Inactif' }}
+                </span>
+            </div>
 
-					<div class="post-card__body">
-						<p class="post-content">{{ post.content|default('') }}</p>
+            <div class="post-card__body">
+                <p class="post-content">{{ post.content|default('') }}</p>
 
-						{% if post.imageName %}
-							<div class="post-image-wrapper mt-3">
-								<img src="{{ asset('uploads/posts/' ~ post.imageName) }}" alt="Image de la publication" class="post-image">
-							</div>
-						{% endif %}
-					</div>
+                {% if post.imageName %}
+                <div class="post-image-wrapper mt-3">
+                    <img src="{{ asset('uploads/posts/' ~ post.imageName) }}" class="post-image">
+                </div>
+                {% endif %}
+            </div>
 
-					<div class="actions">
-						{# Modifier la publication #}
-						<a class="icon-btn" title="Modifier la publication" href="{{ path('forum_post_edit', {id: post.id}) }}">
-							<i class="bi bi-pencil-square"></i>
-						</a>
+            <div class="actions">
 
-						{# Ajouter un commentaire #}
-						<a class="btn btn-outline-primary btn-pill btn-sm" href="{{ path('forum_comment_new', {postId: post.id}) }}">
-							<i class="bi bi-chat-left-text"></i>
-							Ajouter un commentaire
-						</a>
+                <!-- edit -->
+                <a class="icon-btn" href="{{ path('forum_post_edit',{id:post.id}) }}">
+                    <i class="bi bi-pencil-square"></i>
+                </a>
 
-						{# Afficher / masquer les commentaires #}
-						<button
-							class="btn btn-outline-primary btn-pill btn-sm toggle-comments"
-							type="button"
-							data-bs-toggle="collapse"
-							data-bs-target="#comments-{{ post.id }}"
-							aria-expanded="false"
-							aria-controls="comments-{{ post.id }}"
-						>
-							<i class="bi bi-chat-dots"></i>
-							Commentaires ({{ post.commentaires|length }})
-							<i class="bi bi-chevron-down chev ms-1"></i>
-						</button>
+                <!-- add comment -->
+                <a class="btn btn-outline-primary btn-pill btn-sm"
+                   href="{{ path('forum_comment_new',{postId:post.id}) }}">
+                    <i class="bi bi-chat-left-text"></i>
+                    Ajouter un commentaire
+                </a>
 
-						{# Supprimer la publication #}
-						<form method="post" action="{{ path('forum_post_delete', {id: post.id}) }}" onsubmit="return confirm('Voulez-vous vraiment supprimer cette publication ?');" class="d-inline">
-							<input type="hidden" name="_token" value="{{ csrf_token('delete_post_' ~ post.id) }}">
-							<button class="icon-btn danger" title="Supprimer la publication" type="submit">
-								<i class="bi bi-trash"></i>
-							</button>
-						</form>
-					</div>
+                <!-- toggle comments -->
+                <button class="btn btn-outline-primary btn-pill btn-sm toggle-comments"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#comments-{{ post.id }}">
+                    <i class="bi bi-chat-dots"></i>
+                    Commentaires ({{ post.commentaires|length }})
+                    <i class="bi bi-chevron-down chev ms-1"></i>
+                </button>
 
-					{# Commentaires #}
-					<div class="collapse" id="comments-{{ post.id }}">
-						<div class="comments">
+                <!-- delete POST -->
+                <button class="icon-btn danger open-delete-modal"
+                        type="button"
+                        data-id="{{ post.id }}"
+                        data-type="post">
+                    <i class="bi bi-trash"></i>
+                </button>
 
-							{% if post.commentaires|length > 0 %}
-								{% for c in post.commentaires %}
-									<div class="comment-item">
-										<div class="comment-top">
-											<span>
-												<i class="bi bi-clock-history"></i>
-												{{ c.date|date('d/m/Y H:i') }}
-											</span>
-											<span class="badge-soft {{ c.status == 'ACTIVE' ? 'badge-active' : 'badge-inactive' }}">
-												{{ c.status == 'ACTIVE' ? 'Actif' : 'Inactif' }}
-											</span>
-										</div>
+            </div>
 
-										<div>{{ c.content }}</div>
+            <!-- COMMENTS -->
+            <div class="collapse" id="comments-{{ post.id }}">
+                <div class="comments">
 
-										<div class="comment-actions">
-											<a class="icon-btn" title="Modifier le commentaire" href="{{ path('forum_comment_edit', {postId: post.id, id: c.id}) }}">
-												<i class="bi bi-pencil-square"></i>
-											</a>
+                    {% if post.commentaires|length > 0 %}
+                        {% for c in post.commentaires %}
 
-											<form method="post" action="{{ path('forum_comment_delete', {postId: post.id, id: c.id}) }}" onsubmit="return confirm('Voulez-vous vraiment supprimer ce commentaire ?');">
-												<input type="hidden" name="_token" value="{{ csrf_token('delete_comment_' ~ c.id) }}">
-												<button class="icon-btn danger" title="Supprimer le commentaire" type="submit">
-													<i class="bi bi-trash"></i>
-												</button>
-											</form>
-										</div>
-									</div>
-								{% endfor %}
-							{% else %}
-								<div class="empty">Aucun commentaire pour le moment 🙂</div>
-							{% endif %}
+                        <div class="comment-item">
 
-						</div>
-					</div>
+                            <div class="comment-top">
+                                <span>
+                                    <i class="bi bi-clock-history"></i>
+                                    {{ c.date|date('d/m/Y H:i') }}
+                                </span>
 
-				</div>
-			{% else %}
-				<div class="empty">Aucune publication pour le moment. Cliquez sur « Nouvelle publication » pour en créer une 🙂</div>
-			{% endfor %}
+                                <span class="badge-soft {{ c.status == 'ACTIVE' ? 'badge-active' : 'badge-inactive' }}">
+                                    {{ c.status == 'ACTIVE' ? 'Actif' : 'Inactif' }}
+                                </span>
+                            </div>
 
-		</div>
-	</div>
+                            <div>{{ c.content }}</div>
 
-	<script>
-		document.querySelectorAll('.toggle-comments').forEach(btn => {
-			const targetSel = btn.getAttribute('data-bs-target');
-			const target = document.querySelector(targetSel);
-			if (!target) return;
+                            <div class="comment-actions">
 
-			target.addEventListener('show.bs.collapse', () => {
-				const chev = btn.querySelector('.chev');
-				if (chev) chev.style.transform = 'rotate(180deg)';
-			});
+                                <!-- edit comment -->
+                                <a class="icon-btn"
+                                   href="{{ path('forum_comment_edit',{postId:post.id,id:c.id}) }}">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
 
-			target.addEventListener('hide.bs.collapse', () => {
-				const chev = btn.querySelector('.chev');
-				if (chev) chev.style.transform = 'rotate(0deg)';
-			});
-		});
-	</script>
+                                <!-- delete COMMENT -->
+                                <button class="icon-btn danger open-delete-modal"
+                                        type="button"
+                                        data-id="{{ c.id }}"
+                                        data-type="comment">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty">Aucun commentaire pour le moment 🙂</div>
+                    {% endif %}
+
+                </div>
+            </div>
+
+        </div>
+        {% else %}
+            <div class="empty">
+                Aucune publication pour le moment 🙂
+            </div>
+        {% endfor %}
+
+    </div>
+</div>
+
+
+<!-- ===================================================== -->
+<!-- DELETE MODAL -->
+<!-- ===================================================== -->
+
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow">
+
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    Confirmation
+                </h5>
+                <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body text-center">
+                <p class="mb-0 fs-5">
+                    Voulez-vous vraiment supprimer ?
+                </p>
+                <small class="text-muted">
+                    Cette action est irréversible
+                </small>
+            </div>
+
+            <div class="modal-footer justify-content-center">
+
+                <button class="btn btn-light px-4"
+                        data-bs-dismiss="modal">
+                    Annuler
+                </button>
+
+                <form id="deleteForm" method="post">
+                    <input type="hidden" name="_token" id="deleteToken">
+                    <button class="btn btn-danger px-4">
+                        Supprimer
+                    </button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ===================================================== -->
+<!-- JS -->
+<!-- ===================================================== -->
+
+<script>
+
+document.querySelectorAll('.toggle-comments').forEach(btn=>{
+    const target=document.querySelector(btn.dataset.bsTarget);
+    if(!target) return;
+
+    target.addEventListener('show.bs.collapse',()=>{
+        btn.querySelector('.chev').style.transform='rotate(180deg)';
+    });
+
+    target.addEventListener('hide.bs.collapse',()=>{
+        btn.querySelector('.chev').style.transform='rotate(0deg)';
+    });
+});
+
+
+document.querySelectorAll('.open-delete-modal').forEach(btn=>{
+
+    btn.addEventListener('click',()=>{
+
+        const id=btn.dataset.id;
+        const type=btn.dataset.type;
+
+        const form=document.getElementById('deleteForm');
+        const token=document.getElementById('deleteToken');
+
+        if(type==="post"){
+            form.action="/forum/post/"+id+"/delete";
+            token.value="{{ csrf_token('delete_post_') }}"+id;
+        }
+        else{
+            form.action="/forum/comment/"+id+"/delete";
+            token.value="{{ csrf_token('delete_comment_') }}"+id;
+        }
+
+        new bootstrap.Modal(document.getElementById('deleteModal')).show();
+    });
+
+});
+
+</script>
+
 {% endblock %}
