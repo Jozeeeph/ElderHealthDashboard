@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Equipement;
 use App\Form\EquipementType;
 use App\Repository\EquipementRepository;
+use App\Service\TwilioSmsService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -16,6 +17,11 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 #[Route('/admin/equipements', name: 'equipment_')]
 class EquipmentController extends AbstractController
 {
+    public function __construct(
+        private readonly TwilioSmsService $twilioSmsService
+    ) {
+    }
+
     #[Route('/', name: 'index', methods: ['GET'])]
     public function index(EquipementRepository $equipementRepository): Response
     {
@@ -59,6 +65,7 @@ class EquipmentController extends AbstractController
                 }
             }
 
+            $this->syncStockStatusAndNotify($equipement, null);
             $entityManager->persist($equipement);
             $entityManager->flush();
 
@@ -78,6 +85,7 @@ class EquipmentController extends AbstractController
         EntityManagerInterface $entityManager,
         SluggerInterface $slugger
     ): Response {
+        $previousStatus = $equipement->getStatut();
         $form = $this->createForm(EquipementType::class, $equipement);
         $form->handleRequest($request);
 
@@ -103,6 +111,7 @@ class EquipmentController extends AbstractController
                 }
             }
 
+            $this->syncStockStatusAndNotify($equipement, $previousStatus);
             $entityManager->flush();
 
             $this->addFlash('success', 'Equipement modifie avec succes !');
@@ -135,5 +144,16 @@ class EquipmentController extends AbstractController
         }
 
         return $this->redirectToRoute('equipment_index');
+    }
+
+    private function syncStockStatusAndNotify(Equipement $equipement, ?string $previousStatus): void
+    {
+        $quantity = (int) ($equipement->getQuantiteDisponible() ?? 0);
+        if ($quantity <= 0) {
+            $equipement->setStatut('en_rupture');
+            if ($previousStatus !== 'en_rupture') {
+                $this->twilioSmsService->sendStockOutAlert($equipement);
+            }
+        }
     }
 }

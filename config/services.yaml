@@ -7,6 +7,10 @@ parameters:
     app.image_processor.api_key: '%env(string:IMAGE_PROCESSOR_API_KEY)%'
     app.image_processor.auth_header: '%env(string:IMAGE_PROCESSOR_AUTH_HEADER)%'
     app.image_processor.auth_prefix: '%env(string:IMAGE_PROCESSOR_AUTH_PREFIX)%'
+    app.twilio.account_sid: '%env(default::TWILIO_ACCOUNT_SID)%'
+    app.twilio.auth_token: '%env(default::TWILIO_AUTH_TOKEN)%'
+    app.twilio.from_number: '%env(default::TWILIO_FROM_NUMBER)%'
+    app.twilio.stock_alert_to_number: '%env(default::TWILIO_STOCK_ALERT_TO_NUMBER)%'
 
 services:
     _defaults:
@@ -53,3 +57,10 @@ services:
             $stripeSecretKey: '%env(string:STRIPE_SECRET_KEY)%'
             $stripeCurrency: '%env(string:STRIPE_CURRENCY)%'
             $stripeApiBaseUrl: '%env(string:STRIPE_API_BASE_URL)%'
+
+    App\Service\TwilioSmsService:
+        arguments:
+            $accountSid: '%app.twilio.account_sid%'
+            $authToken: '%app.twilio.auth_token%'
+            $fromNumber: '%app.twilio.from_number%'
+            $toNumber: '%app.twilio.stock_alert_to_number%'
