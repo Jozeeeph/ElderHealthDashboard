@@ -12,26 +12,52 @@ use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Event;
 use App\Entity\Participation;
 use App\Service\EventReminderService;
+use App\Repository\TypeEventRepository;
+
 
 
 #[Route('/eventsFront', name: 'front_events_')]
 class EventController extends AbstractController
 {
     #[Route('/', name: 'index', methods: ['GET'])]
-    public function index(EventRepository $eventRepository, EventReminderService $reminderService): Response
-    {
+    public function index(
+        Request $request,
+        EventRepository $eventRepository,
+        TypeEventRepository $typeEventRepository,
+        EventReminderService $reminderService
+    ): Response {
         $reminderService->checkAndSendReminders();
 
-        $events = $eventRepository->findBy(
-            ['statut' => 'PUBLIE'],
+        // Récupérer tous les types d'événements pour le filtre
+        $eventTypes = $typeEventRepository->findAll();
+
+        // Récupérer le filtre de type depuis la requête
+        $typeId = $request->query->get('type');
+
+        // Construire la requête avec filtre
+        $criteria = ['statut' => 'PUBLIE'];
+
+        if ($typeId) {
+            $criteria['type'] = $typeId;
+        }
+
+        // Récupérer tous les événements
+        $allEvents = $eventRepository->findBy(
+            $criteria,
             ['dateDebut' => 'DESC']
         );
 
+        // 👇 SEUL AJOUT : Filtrer pour garder uniquement les événements à venir (date non dépassée)
+        $now = new \DateTime();
+        $events = array_filter($allEvents, function($event) use ($now) {
+            return $event->getDateDebut() > $now;
+        });
+
         return $this->render('FrontOffice/events/index.html.twig', [
-            'events' => $events
+            'events' => $events, // 👈 On passe les événements filtrés
+            'eventTypes' => $eventTypes
         ]);
     }
-
     #[Route('/{id}', name: 'show', methods: ['GET'])]
     public function show(
         int $id,
@@ -155,4 +181,5 @@ class EventController extends AbstractController
 
         return $this->redirectToRoute('front_events_show', ['id' => $event->getId()]);
     }
+
 }

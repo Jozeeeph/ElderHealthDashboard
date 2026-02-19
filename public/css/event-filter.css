@@ -1,0 +1,236 @@
+/* public/css/event-filter.css */
+
+/* Section de filtrage */
+.events-filter-section {
+    margin-bottom: 2rem;
+}
+
+.filter-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.filter-header {
+    padding: 1.2rem 1.5rem;
+    border-bottom: 1px solid #e9ecef;
+    background: #f8f9fa;
+}
+
+.filter-title {
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.filter-title i {
+    color: #2d6cdf;
+    margin-right: 0.5rem;
+}
+
+.btn-reset {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.4rem 1rem;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 20px;
+    color: #6c757d;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.btn-reset:hover {
+    background: #e9ecef;
+    border-color: #ced4da;
+    color: #495057;
+}
+
+.filter-body {
+    padding: 1.5rem;
+}
+
+/* Formulaire de filtre */
+.filter-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: flex-end;
+    margin-bottom: 1.5rem;
+}
+
+.filter-form-group {
+    flex: 1;
+    min-width: 250px;
+}
+
+.filter-label {
+    display: block;
+    font-weight: 500;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.filter-label i {
+    color: #2d6cdf;
+    margin-right: 0.3rem;
+}
+
+.filter-select-wrapper {
+    position: relative;
+}
+
+.filter-select {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    border: 1.5px solid #e9ecef;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    background: white;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236c757d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 16px;
+    transition: all 0.2s;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: #2d6cdf;
+    box-shadow: 0 0 0 0.2rem rgba(45, 108, 223, 0.1);
+}
+
+.filter-select option {
+    padding: 0.5rem;
+}
+
+.filter-form-actions {
+    flex-shrink: 0;
+}
+
+.btn-filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.8rem;
+    background: #2d6cdf;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-filter:hover {
+    background: #1e4f9e;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(45, 108, 223, 0.3);
+}
+
+/* Chips de filtre */
+.filter-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-bottom: 1.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #e9ecef;
+}
+
+.filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.3rem;
+    border-radius: 30px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s;
+    border: 1.5px solid transparent;
+    background: white;
+}
+
+.filter-chip:not(.active):not([data-active]) {
+    border-color: #e9ecef;
+    color: #495057;
+}
+
+.filter-chip:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.filter-chip.active {
+    background: #2d6cdf;
+    border-color: #2d6cdf;
+    color: white;
+}
+
+.filter-chip i {
+    font-size: 0.9rem;
+}
+
+/* Statistiques */
+.filter-stats {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    color: #6c757d;
+}
+
+.filter-stats i {
+    color: #2d6cdf;
+}
+
+.stats-count {
+    font-weight: 600;
+    color: #2d6cdf;
+}
+
+.stats-filter {
+    color: #495057;
+}
+
+.stats-filter strong {
+    color: #2d6cdf;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .filter-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .filter-form-group {
+        width: 100%;
+    }
+    
+    .btn-filter {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .filter-chips {
+        gap: 0.5rem;
+    }
+    
+    .filter-chip {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+    }
+}

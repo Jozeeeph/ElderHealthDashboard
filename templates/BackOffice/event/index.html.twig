@@ -4,6 +4,7 @@
 {% block stylesheets %}
 	{{ parent() }}
 	<link rel="stylesheet" href="{{ asset('css/forum.css') }}">
+	<link rel="stylesheet" href="{{ asset('css/admin-event.css') }}?v=3">
 {% endblock %}
 
 {% block body %}
@@ -37,83 +38,217 @@
 				{% endfor %}
 			{% endfor %}
 
-			{% for e in events %}
-				{% set typeColor = e.type and e.type.couleur ? e.type.couleur : '#6c757d' %}
+			{# SECTION FILTRES #}
+			<div class="admin-filter-section">
+				<div class="filter-header">
+					<h6 class="filter-title">
+						<i class="bi bi-funnel"></i> Filtrer les événements
+					</h6>
+					
+					{% if currentStatus != 'all' or currentType %}
+						<a href="{{ path('admin_event_index') }}" class="btn-reset">
+							<i class="bi bi-x-circle"></i> Réinitialiser
+						</a>
+					{% endif %}
+				</div>
 
-				<div class="post-card" style="border-left: 8px solid {{ typeColor }};">
-					<div class="post-card__top">
-						<div class="post-meta">
-							<h5 class="mb-1">{{ e.titre }}</h5>
-
-							<div class="small">
-								<i class="bi bi-calendar-event"></i>
-								{{ e.dateDebut ? e.dateDebut|date('d/m/Y H:i') : '—' }}
-								{% if e.dateFin %}
-									→ {{ e.dateFin|date('d/m/Y H:i') }}
-								{% endif %}
-
-								<span class="ms-2">
-									<i class="bi bi-tag"></i>
-									{{ e.type ? e.type.libelle : 'Sans type' }}
-									{% if e.type and e.type.couleur %}
-										<span class="ms-2 badge-color" style="background: {{ e.type.couleur }};"></span>
-									{% endif %}
-								</span>
-							</div>
-
-							{% if e.lieu %}
-								<div class="small text-muted mt-1">
-									<i class="bi bi-geo-alt"></i>
-									{{ e.lieu }}
-								</div>
-							{% endif %}
+				<div class="filter-body">
+					{# FILTRE PAR STATUT #}
+					<div class="filter-group">
+						<label class="filter-group-label">
+							<i class="bi bi-calendar-check"></i> Statut
+						</label>
+						<div class="filter-buttons">
+							<a href="{{ path('admin_event_index', {type: currentType}) }}" 
+							   class="filter-btn {% if currentStatus == 'all' %}active{% endif %}">
+								<i class="bi bi-grid-3x3-gap-fill"></i> Tous
+							</a>
+							<a href="{{ path('admin_event_index', {status: 'upcoming', type: currentType}) }}" 
+							   class="filter-btn {% if currentStatus == 'upcoming' %}active{% endif %}">
+								<i class="bi bi-calendar-check"></i> À venir
+							</a>
+							<a href="{{ path('admin_event_index', {status: 'passed', type: currentType}) }}" 
+							   class="filter-btn {% if currentStatus == 'passed' %}active{% endif %}">
+								<i class="bi bi-calendar-x"></i> Passés
+							</a>
 						</div>
-
-						<span class="badge-soft {{ e.statut == 'PUBLIE' ? 'badge-active' : 'badge-inactive' }}">
-							{{ e.statut|default('BROUILLON') }}
-						</span>
 					</div>
 
-					<div class="post-card__body">
-						<p class="post-content">{{ e.description|default('') }}</p>
+					{# FILTRE PAR TYPE #}
+					{% if eventTypes is defined and eventTypes|length > 0 %}
+						<div class="filter-group">
+							<label class="filter-group-label">
+								<i class="bi bi-tags"></i> Type d'événement
+							</label>
+							<div class="filter-chips">
+								<a href="{{ path('admin_event_index', {status: currentStatus}) }}" 
+								   class="filter-chip {% if not currentType %}active{% endif %}">
+									<i class="bi bi-grid-3x3-gap-fill"></i> Tous
+								</a>
+								
+								{% for type in eventTypes %}
+									{% set isActive = currentType == type.id %}
+									<a href="{{ path('admin_event_index', {type: type.id, status: currentStatus}) }}" 
+									   class="filter-chip" 
+									   style="{% if isActive %}background: {{ type.couleur|default('#667eea') }}; border-color: {{ type.couleur|default('#667eea') }}; color: white;{% else %}border-color: {{ type.couleur|default('#667eea') }}; color: {{ type.couleur|default('#667eea') }};{% endif %}">
+										<i class="bi bi-tag"></i>
+										{{ type.libelle }}
+									</a>
+								{% endfor %}
+							</div>
+						</div>
+					{% endif %}
 
-						<div class="d-flex flex-wrap gap-3 mt-2 small">
-							{% if e.capaciteMax %}
-								<span>
-									<i class="bi bi-people"></i>
-									Capacité : {{ e.capaciteMax }}
+					{# STATISTIQUES #}
+					<div class="filter-stats">
+						<i class="bi bi-info-circle"></i>
+						{{ events|length }} événement(s) trouvé(s)
+						{% if currentStatus == 'passed' %}
+							<span class="stats-badge passed">(passés)</span>
+						{% elseif currentStatus == 'upcoming' %}
+							<span class="stats-badge upcoming">(à venir)</span>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+
+			{# Message informatif pour les événements passés masqués #}
+			{% if passedCount is defined and passedCount > 0 and currentStatus != 'passed' %}
+				<div class="alert alert-info mb-4">
+					<div class="d-flex align-items-center">
+						<i class="bi bi-clock-history fs-4 me-3"></i>
+						<div>
+							<strong>{{ passedCount }} événement(s) passé(s) ont été masqués.</strong>
+							<p class="mb-0 small">
+								<a href="{{ path('admin_event_index', {status: 'passed', type: currentType}) }}" class="alert-link">
+									Cliquez ici pour les voir
+								</a>
+							</p>
+						</div>
+					</div>
+				</div>
+			{% endif %}
+
+			{# LISTE DES ÉVÉNEMENTS #}
+			<div class="admin-events-list">
+				{% for e in events %}
+					{% set typeColor = e.type and e.type.couleur ? e.type.couleur : '#6c757d' %}
+					{% set now = date() %}
+					{% set isPassed = e.dateDebut <= now %}
+
+					<div class="admin-post-card {% if isPassed %}passed-event{% endif %}" 
+						 style="border-left: 8px solid {{ typeColor }};">
+						
+						<div class="admin-post-card__top">
+							<div class="admin-post-meta">
+								<div class="d-flex align-items-center gap-2 flex-wrap">
+									<h5 class="mb-1">{{ e.titre }}</h5>
+									{% if e.type %}
+										<span class="type-badge" style="background-color: {{ typeColor }}; color: white;">
+											<i class="bi bi-tag"></i> {{ e.type.libelle }}
+										</span>
+									{% endif %}
+								</div>
+
+								<div class="meta-info">
+									<i class="bi bi-calendar-event"></i>
+									{{ e.dateDebut ? e.dateDebut|date('d/m/Y H:i') : '—' }}
+									{% if e.dateFin %}
+										→ {{ e.dateFin|date('d/m/Y H:i') }}
+									{% endif %}
+								</div>
+
+								{% if e.lieu %}
+									<div class="meta-info">
+										<i class="bi bi-geo-alt"></i>
+										{{ e.lieu }}
+									</div>
+								{% endif %}
+							</div>
+
+							<div class="d-flex align-items-center gap-2 flex-wrap">
+								{% if isPassed %}
+									<span class="status-badge passed">
+										<i class="bi bi-clock-history"></i> Passé
+									</span>
+								{% else %}
+									<span class="status-badge upcoming">
+										<i class="bi bi-calendar-check"></i> À venir
+									</span>
+								{% endif %}
+								
+								<span class="status-badge {{ e.statut == 'PUBLIE' ? 'published' : 'draft' }}">
+									<i class="bi bi-{{ e.statut == 'PUBLIE' ? 'eye' : 'eye-slash' }}"></i>
+									{{ e.statut|default('BROUILLON') }}
 								</span>
-							{% endif %}
+							</div>
+						</div>
+
+						<div class="admin-post-card__body">
+							<p class="post-content">{{ e.description|default('') }}</p>
+
+							<div class="event-stats">
+								{% if e.capaciteMax %}
+									{% set participantsCount = e.participations|length %}
+									<span class="stat-item">
+										<i class="bi bi-people"></i>
+										Participants : {{ participantsCount }}/{{ e.capaciteMax }}
+									</span>
+								{% endif %}
+
+								{% if not isPassed %}
+									{% set daysRemaining = e.dateDebut.diff(date()).days %}
+									<span class="stat-item upcoming">
+										<i class="bi bi-clock"></i>
+										Dans {{ daysRemaining }} jour(s)
+									</span>
+								{% endif %}
+							</div>
 
 							{% if e.image %}
 								<div class="mt-2">
-									<img
-										src="{{ asset('uploads/events/' ~ e.image) }}"
-										alt="Image event"
-										style="max-width:150px;border-radius:8px;"
-									>
+									<img src="{{ asset('uploads/events/' ~ e.image) }}" alt="Image event" class="event-image">
 								</div>
 							{% endif %}
 						</div>
+
+						<div class="actions">
+							<a class="icon-btn" title="Détails" href="{{ path('admin_event_show', {id: e.id}) }}">
+								<i class="bi bi-eye"></i>
+							</a>
+
+							<a class="icon-btn" title="Modifier" href="{{ path('admin_event_edit', {id: e.id}) }}">
+								<i class="bi bi-pencil-square"></i>
+							</a>
+
+							{% include 'BackOffice/event/_delete_form.html.twig' with {event: e} %}
+						</div>
+
 					</div>
-
-					<div class="actions">
-						{# ✅ NOUVEAU : détails #}
-						<a class="icon-btn" title="Détails" href="{{ path('admin_event_show', {id: e.id}) }}">
-							<i class="bi bi-eye"></i>
-						</a>
-
-						<a class="icon-btn" title="Modifier" href="{{ path('admin_event_edit', {id: e.id}) }}">
-							<i class="bi bi-pencil-square"></i>
-						</a>
-
-						{% include 'BackOffice/event/_delete_form.html.twig' with {event: e} %}
+				{% else %}
+					<div class="empty">
+						<i class="bi bi-calendar-x"></i>
+						Aucun événement trouvé
+						{% if currentStatus == 'passed' %}
+							passé
+						{% elseif currentStatus == 'upcoming' %}
+							à venir
+						{% endif %}
+						{% if currentType %}
+							avec ce type
+						{% endif %}
+						🙂
 					</div>
+				{% endfor %}
+			</div>
 
+			{# Résumé #}
+			{% if totalEvents is defined and totalEvents > 0 %}
+				<div class="text-muted text-center mt-3 small">
+					<i class="bi bi-info-circle"></i>
+					{{ events|length }} événement(s) affiché(s) sur {{ totalEvents }} au total
 				</div>
-			{% else %}
-				<div class="empty">Aucun événement pour le moment 🙂</div>
-			{% endfor %}
+			{% endif %}
 
 		</div>
 	</div>
