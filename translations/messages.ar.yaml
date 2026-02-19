@@ -1,0 +1,32 @@
+patient:
+  prescription:
+    page_title: "وصفة المريض"
+    title: "الوصفة"
+    consultation: "الاستشارة"
+    tagline: "اعتن بصحتك"
+    details_title: "تفاصيل الوصفة"
+    ui_language_label: "لغة الواجهة"
+    download_pdf: "تحميل PDF"
+    back: "رجوع"
+    period_to: "إلى"
+    speech:
+      header: "الوصفة رقم %id%"
+    field:
+      frequency: "التكرار"
+      dosage: "الجرعة"
+      duration: "المدة"
+      period: "الفترة"
+      medications: "الأدوية"
+      instructions: "التعليمات"
+    tts:
+      panel_label: "تشغيل الوصفة صوتيا"
+      language_label: "لغة الصوت"
+      language_fr: "الفرنسية"
+      language_ar: "العربية"
+      language_ar_tn: "الدارجة التونسية"
+      language_en: "الإنجليزية"
+      read_button: "قراءة الوصفة"
+      stop_button: "إيقاف القراءة"
+      unsupported: "المتصفح لا يدعم تحويل النص إلى كلام."
+      playing: "جار قراءة الوصفة..."
+      stopped: "تم إيقاف القراءة."

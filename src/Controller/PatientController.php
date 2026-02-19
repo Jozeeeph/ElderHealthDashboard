@@ -16,9 +16,12 @@ use Doctrine\ORM\EntityManagerInterface;
 use Dompdf\Dompdf;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PatientController extends AbstractController
 {
@@ -77,8 +80,22 @@ class PatientController extends AbstractController
     }
 
     #[Route('/patient/prescription/{id}', name: 'patient_prescription_show', methods: ['GET'])]
-    public function patientPrescriptionShow(Prescription $prescription, UtilisateurRepository $utilisateurRepository): Response
+    public function patientPrescriptionShow(
+        Prescription $prescription,
+        Request $request,
+        UtilisateurRepository $utilisateurRepository,
+        HttpClientInterface $httpClient
+    ): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_PATIENT');
+
+        $allowedLocales = ['fr', 'ar', 'en'];
+        $uiLocale = strtolower((string) $request->query->get('lang', $request->getLocale()));
+        if (!in_array($uiLocale, $allowedLocales, true)) {
+            $uiLocale = 'en';
+        }
+        $request->setLocale($uiLocale);
+
         $patient = $this->resolveCurrentPatient($utilisateurRepository);
         if (!$patient) {
             $this->addFlash('danger', 'Patient introuvable.');
@@ -90,9 +107,13 @@ class PatientController extends AbstractController
             throw $this->createNotFoundException('Prescription introuvable.');
         }
 
+        $translatedPrescription = $this->translatePrescriptionFields($prescription, $uiLocale, $httpClient);
+
         return $this->render('FrontOffice/patient/prescription_show.html.twig', [
             'prescription' => $prescription,
             'patient' => $patient,
+            'ui_locale' => $uiLocale,
+            'translated_prescription' => $translatedPrescription,
         ]);
     }
 
@@ -240,6 +261,94 @@ class PatientController extends AbstractController
         );
 
         return $response;
+    }
+
+    #[Route('/patient/prescription/{id}/tts', name: 'patient_prescription_tts', methods: ['GET'])]
+    public function patientPrescriptionTts(
+        Prescription $prescription,
+        Request $request,
+        UtilisateurRepository $utilisateurRepository,
+        HttpClientInterface $httpClient,
+        TranslatorInterface $translator
+    ): Response {
+        $this->denyAccessUnlessGranted('ROLE_PATIENT');
+
+        $patient = $this->resolveCurrentPatient($utilisateurRepository);
+        if (!$patient) {
+            return new JsonResponse(['error' => 'Patient introuvable.'], Response::HTTP_NOT_FOUND);
+        }
+
+        $consultation = $prescription->getConsultation();
+        if (!$consultation || $consultation->getPatient()?->getId() !== $patient->getId()) {
+            return new JsonResponse(['error' => 'Prescription introuvable.'], Response::HTTP_NOT_FOUND);
+        }
+
+        $lang = strtolower((string) $request->query->get('lang', 'en-US'));
+        $voiceLang = match (true) {
+            str_starts_with($lang, 'ar-tn') => 'ar-TN',
+            str_starts_with($lang, 'ar') => 'ar-SA',
+            str_starts_with($lang, 'fr') => 'fr-FR',
+            default => 'en-US',
+        };
+        $uiLocale = match (true) {
+            str_starts_with($lang, 'ar') => 'ar',
+            str_starts_with($lang, 'fr') => 'fr',
+            default => 'en',
+        };
+        $speechLocale = str_starts_with($lang, 'ar-tn') ? 'ar_tn' : $uiLocale;
+
+        $translatedPrescription = $this->translatePrescriptionFields($prescription, $uiLocale, $httpClient);
+        $speechText = $this->buildPrescriptionSpeechText($prescription, $translator, $speechLocale, $translatedPrescription);
+
+        try {
+            $ttsResponse = $httpClient->request('GET', 'https://translate.google.com/translate_tts', [
+                'query' => [
+                    'ie' => 'UTF-8',
+                    'client' => 'tw-ob',
+                    'tl' => $voiceLang,
+                    'q' => $speechText,
+                ],
+                'headers' => [
+                    'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0 Safari/537.36',
+                ],
+                'timeout' => 15,
+            ]);
+
+            $audioContent = $ttsResponse->getContent();
+        } catch (\Throwable) {
+            if ($voiceLang === 'ar-TN') {
+                try {
+                    $ttsResponse = $httpClient->request('GET', 'https://translate.google.com/translate_tts', [
+                        'query' => [
+                            'ie' => 'UTF-8',
+                            'client' => 'tw-ob',
+                            'tl' => 'ar-SA',
+                            'q' => $speechText,
+                        ],
+                        'headers' => [
+                            'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0 Safari/537.36',
+                        ],
+                        'timeout' => 15,
+                    ]);
+                    $audioContent = $ttsResponse->getContent();
+                } catch (\Throwable) {
+                    return new JsonResponse(
+                        ['error' => 'Service TTS indisponible pour le moment.'],
+                        Response::HTTP_SERVICE_UNAVAILABLE
+                    );
+                }
+            } else {
+            return new JsonResponse(
+                ['error' => 'Service TTS indisponible pour le moment.'],
+                Response::HTTP_SERVICE_UNAVAILABLE
+            );
+            }
+        }
+
+        return new Response($audioContent, Response::HTTP_OK, [
+            'Content-Type' => 'audio/mpeg',
+            'Cache-Control' => 'no-store, private',
+        ]);
     }
 
     #[Route('/patient/prescription/reminder/done', name: 'patient_prescription_reminder_done', methods: ['POST'])]
@@ -524,6 +633,175 @@ class PatientController extends AbstractController
         }
 
         return null;
+    }
+
+    private function buildPrescriptionSpeechText(
+        Prescription $prescription,
+        TranslatorInterface $translator,
+        string $locale,
+        array $translatedFields = []
+    ): string {
+        $periodStart = $prescription->getDateDebut()?->format('d/m/Y') ?? '-';
+        $periodEnd = $prescription->getDateFin()?->format('d/m/Y') ?? '-';
+        $frequence = (string) ($translatedFields['frequence'] ?? $prescription->getFrequence() ?? '-');
+        $dosage = (string) ($translatedFields['dosage'] ?? $prescription->getDosage() ?? '-');
+        $duree = (string) ($translatedFields['dureeTraitement'] ?? $prescription->getDureeTraitement() ?? '-');
+        $medicaments = (string) ($translatedFields['medicaments'] ?? $prescription->getMedicaments() ?? '-');
+        $consignes = (string) ($translatedFields['consignes'] ?? $prescription->getConsignes() ?? '-');
+
+        if ($locale === 'ar_tn') {
+            $parts = [
+                'الوصفة رقم ' . $prescription->getIdPrescription(),
+                'المرات: ' . $this->toTunisianDarija($frequence),
+                'الجرعة: ' . $this->toTunisianDarija($dosage),
+                'المدة: ' . $this->toTunisianDarija($duree),
+                'الفترة: ' . $periodStart . ' حتى ' . $periodEnd,
+                'الدوايات: ' . $this->toTunisianDarija($medicaments),
+                'التعليمات: ' . $this->toTunisianDarija($consignes),
+            ];
+
+            return implode('. ', $parts) . '.';
+        }
+
+        $parts = [
+            $translator->trans('patient.prescription.speech.header', ['%id%' => $prescription->getIdPrescription()], 'messages', $locale),
+            $translator->trans('patient.prescription.field.frequency', [], 'messages', $locale) . ': ' . $frequence,
+            $translator->trans('patient.prescription.field.dosage', [], 'messages', $locale) . ': ' . $dosage,
+            $translator->trans('patient.prescription.field.duration', [], 'messages', $locale) . ': ' . $duree,
+            $translator->trans('patient.prescription.field.period', [], 'messages', $locale) . ': ' . $periodStart . ' '
+                . $translator->trans('patient.prescription.period_to', [], 'messages', $locale) . ' ' . $periodEnd,
+            $translator->trans('patient.prescription.field.medications', [], 'messages', $locale) . ': ' . $medicaments,
+            $translator->trans('patient.prescription.field.instructions', [], 'messages', $locale) . ': ' . $consignes,
+        ];
+
+        return implode('. ', $parts) . '.';
+    }
+
+    /**
+     * Translate prescription dynamic fields to requested UI language.
+     *
+     * @return array{frequence:string,dosage:string,dureeTraitement:string,medicaments:string,consignes:string}
+     */
+    private function translatePrescriptionFields(
+        Prescription $prescription,
+        string $targetLocale,
+        HttpClientInterface $httpClient
+    ): array {
+        $source = [
+            'frequence' => (string) ($prescription->getFrequence() ?? '-'),
+            'dosage' => (string) ($prescription->getDosage() ?? '-'),
+            'dureeTraitement' => (string) ($prescription->getDureeTraitement() ?? '-'),
+            'medicaments' => (string) ($prescription->getMedicaments() ?? '-'),
+            'consignes' => (string) ($prescription->getConsignes() ?? '-'),
+        ];
+
+        $target = in_array($targetLocale, ['fr', 'ar', 'en'], true) ? $targetLocale : 'en';
+        $translated = [];
+
+        foreach ($source as $field => $value) {
+            if ($value === '-' || trim($value) === '') {
+                $translated[$field] = '-';
+                continue;
+            }
+
+            $normalized = $this->normalizeTextForTranslation($value);
+            $translatedValue = $this->translateTextWithGoogle($normalized, $target, $httpClient);
+            $translated[$field] = $this->postProcessTranslatedText($translatedValue, $target);
+        }
+
+        return $translated;
+    }
+
+    private function translateTextWithGoogle(
+        string $text,
+        string $targetLocale,
+        HttpClientInterface $httpClient
+    ): string {
+        $target = match ($targetLocale) {
+            'ar' => 'ar',
+            'fr' => 'fr',
+            default => 'en',
+        };
+
+        try {
+            $response = $httpClient->request('GET', 'https://translate.googleapis.com/translate_a/single', [
+                'query' => [
+                    'client' => 'gtx',
+                    'sl' => 'auto',
+                    'tl' => $target,
+                    'dt' => 't',
+                    'q' => $text,
+                ],
+                'headers' => [
+                    'User-Agent' => 'Mozilla/5.0',
+                ],
+                'timeout' => 12,
+            ]);
+
+            $data = $response->toArray(false);
+            if (!is_array($data) || !isset($data[0]) || !is_array($data[0])) {
+                return $text;
+            }
+
+            $translatedText = '';
+            foreach ($data[0] as $chunk) {
+                if (is_array($chunk) && isset($chunk[0]) && is_string($chunk[0])) {
+                    $translatedText .= $chunk[0];
+                }
+            }
+
+            $translatedText = trim($translatedText);
+            return $translatedText !== '' ? $translatedText : $text;
+        } catch (\Throwable) {
+            return $text;
+        }
+    }
+
+    private function normalizeTextForTranslation(string $text): string
+    {
+        // Improve machine translation quality for tokens like "2jours".
+        return preg_replace('/(\d)([A-Za-z\x{00C0}-\x{024F}]+)/u', '$1 $2', $text) ?? $text;
+    }
+
+    private function postProcessTranslatedText(string $text, string $targetLocale): string
+    {
+        if ($targetLocale !== 'ar') {
+            return $text;
+        }
+
+        $replacements = [
+            'jours' => 'أيام',
+            'jour' => 'يوم',
+            'heures' => 'ساعات',
+            'heure' => 'ساعة',
+            'hours' => 'ساعات',
+            'hour' => 'ساعة',
+            'days' => 'أيام',
+            'day' => 'يوم',
+        ];
+
+        return str_ireplace(array_keys($replacements), array_values($replacements), $text);
+    }
+
+    private function toTunisianDarija(string $text): string
+    {
+        // User-provided simple dictionary: Arabic -> Tunisian Darja (Latin transcription).
+        $darjaDict = [
+            'تفاصيل الوصفة' => 'Tfasyl el-wasfa',
+            'التكرار' => 'Tkrar',
+            'الجرعة' => 'Jor3a',
+            'المدة' => 'Moda dawa',
+            'الفترة' => 'Fatra mtaa dawa',
+            'الأدوية' => 'Dawa',
+            'التعليمات' => 'Instructions',
+            'ساعات' => 'saa3at',
+            'أيام' => 'ayyam',
+            'ساعة' => 'saa3a',
+            'يوم' => 'nhar',
+            'إلى' => 'ila',
+        ];
+
+        return strtr($text, $darjaDict);
     }
 
 }

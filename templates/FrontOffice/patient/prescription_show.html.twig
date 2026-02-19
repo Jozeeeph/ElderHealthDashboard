@@ -1,135 +1,421 @@
-﻿<!DOCTYPE html>
-<html lang="fr">
+<!DOCTYPE html>
+{% set currentLocale = ui_locale|default(app.request.locale|default('en')) %}
+<html lang="{{ app.request.locale|default('en') }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prescription Patient</title>
+    <title>{{ 'patient.prescription.page_title'|trans({}, 'messages', currentLocale) }}</title>
 
-    {# Bootstrap CSS #}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    {# Bootstrap Icons #}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-
-    {# CSS personnalisés #}
     <link rel="stylesheet" href="{{ asset('css/patient.css') }}?v=20260214-notif1">
     <link rel="stylesheet" href="{{ asset('css/patient-rendezvous.css') }}?v=20260214-7">
 </head>
-
 <body>
 {% block body %}
-	<div class="patient-app">
-		<style>
-			.cute-header {
-				display: flex;
-				align-items: center;
-				justify-content: space-between;
-				gap: 12px;
-				padding: 18px 20px;
-				border-radius: 18px;
-				background: linear-gradient(135deg, #ffeef6 0%, #e8f7ff 100%);
-				border: 1px solid #f4d9e7;
-			}
+    <div class="patient-app">
+        <style>
+            .cute-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+                padding: 18px 20px;
+                border-radius: 18px;
+                background: linear-gradient(135deg, #ffeef6 0%, #e8f7ff 100%);
+                border: 1px solid #f4d9e7;
+            }
 
-			.cute-title {
-				font-size: 1.35rem;
-				font-weight: 800;
-				color: #7a2c4c;
-			}
+            .cute-title {
+                font-size: 1.35rem;
+                font-weight: 800;
+                color: #7a2c4c;
+            }
 
-			.cute-chip {
-				display: inline-flex;
-				align-items: center;
-				gap: 6px;
-				padding: 6px 10px;
-				border-radius: 999px;
-				background: #fff5fb;
-				border: 1px solid #f4d9e7;
-				font-size: 0.8rem;
-				font-weight: 700;
-				color: #7a2c4c;
-			}
+            .cute-chip {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                padding: 6px 10px;
+                border-radius: 999px;
+                background: #fff5fb;
+                border: 1px solid #f4d9e7;
+                font-size: 0.8rem;
+                font-weight: 700;
+                color: #7a2c4c;
+            }
 
-			.cute-grid {
-				display: grid;
-				gap: 12px;
-				grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-			}
+            .cute-grid {
+                display: grid;
+                gap: 12px;
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            }
 
-			.cute-card {
-				background: #ffffff;
-				border: 1px solid #f0ddea;
-				border-radius: 16px;
-				padding: 14px;
-				box-shadow: 0 10px 24px rgba(122, 44, 76, 0.08);
-			}
+            .cute-card {
+                background: #ffffff;
+                border: 1px solid #f0ddea;
+                border-radius: 16px;
+                padding: 14px;
+                box-shadow: 0 10px 24px rgba(122, 44, 76, 0.08);
+            }
 
-			.cute-label {
-				font-size: 0.7rem;
-				text-transform: uppercase;
-				letter-spacing: 0.05em;
-				color: #a0627b;
-				font-weight: 700;
-			}
+            .cute-label {
+                font-size: 0.7rem;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                color: #a0627b;
+                font-weight: 700;
+            }
 
-			.cute-value {
-				font-weight: 800;
-				color: #3b1c2a;
-				margin-top: 4px;
-			}
-		</style>
-		{% include 'FrontOffice/patient/_header.html.twig' %}
+            .cute-value {
+                font-weight: 800;
+                color: #3b1c2a;
+                margin-top: 4px;
+            }
 
-		<main class="patient-main">
-			<section class="cute-header">
-				<div>
-					<div class="cute-title">Prescription</div>
-					<div class="cute-chip">Consultation {{ prescription.consultation.id }}</div>
-				</div>
-				<div class="cute-chip">Prenez soin de vous</div>
-			</section>
+            .tts-panel {
+                margin-top: 14px;
+                padding: 14px;
+                border: 1px solid #e2e8f0;
+                border-radius: 12px;
+                background: #f8fafc;
+            }
 
-			<section class="content-grid" style="grid-template-columns: 1fr;">
-				<div class="card">
-					<h2>Details bien-etre</h2>
-					<div class="cute-grid">
-						<div class="cute-card">
-							<div class="cute-label">Frequence</div>
-							<div class="cute-value">{{ prescription.frequence }}</div>
-						</div>
-						<div class="cute-card">
-							<div class="cute-label">Dosage</div>
-							<div class="cute-value">{{ prescription.dosage }}</div>
-						</div>
-						<div class="cute-card">
-							<div class="cute-label">Duree</div>
-							<div class="cute-value">{{ prescription.dureeTraitement }}</div>
-						</div>
-						<div class="cute-card">
-							<div class="cute-label">Periode</div>
-							<div class="cute-value">
-								{{ prescription.dateDebut ? prescription.dateDebut|date('d/m/Y') : '-' }}
-								->
-								{{ prescription.dateFin ? prescription.dateFin|date('d/m/Y') : '-' }}
-							</div>
-						</div>
-					</div>
-					<div class="item">
-						<strong>Medicaments</strong>
-						<p>{{ prescription.medicaments }}</p>
-					</div>
-					<div class="item">
-						<strong>Consignes</strong>
-						<p>{{ prescription.consignes ?: '-' }}</p>
-					</div>
-					<div class="actions">
-						<a class="btn primary" href="{{ path('patient_prescription_pdf', {'id': prescription.idPrescription}) }}">Telecharger PDF</a>
-						<a class="btn ghost" href="{{ path('patient_consultations') }}">Retour</a>
-					</div>
-				</div>
-			</section>
-		</main>
-	</div>
+            .tts-controls {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                align-items: center;
+            }
+
+            .tts-status {
+                margin-top: 8px;
+                font-size: 0.9rem;
+                color: #334155;
+            }
+        </style>
+
+        {% set consultId = prescription.consultation ? prescription.consultation.id : '-' %}
+        {% set periodStart = prescription.dateDebut ? prescription.dateDebut|date('d/m/Y') : '-' %}
+        {% set periodEnd = prescription.dateFin ? prescription.dateFin|date('d/m/Y') : '-' %}
+        {% set tFrequence = translated_prescription.frequence|default(prescription.frequence ?: '-') %}
+        {% set tDosage = translated_prescription.dosage|default(prescription.dosage ?: '-') %}
+        {% set tDuree = translated_prescription.dureeTraitement|default(prescription.dureeTraitement ?: '-') %}
+        {% set tMedicaments = translated_prescription.medicaments|default(prescription.medicaments ?: '-') %}
+        {% set tConsignes = translated_prescription.consignes|default(prescription.consignes ?: '-') %}
+        {% set defaultTtsLang = ui_locale == 'fr' ? 'fr-FR' : (ui_locale == 'ar' ? 'ar-TN' : 'en-US') %}
+        {% set speechTextFr = 'patient.prescription.speech.header'|trans({'%id%': prescription.idPrescription}, 'messages', 'fr') ~ '. '
+            ~ 'patient.prescription.field.frequency'|trans({}, 'messages', 'fr') ~ ': ' ~ tFrequence ~ '. '
+            ~ 'patient.prescription.field.dosage'|trans({}, 'messages', 'fr') ~ ': ' ~ tDosage ~ '. '
+            ~ 'patient.prescription.field.duration'|trans({}, 'messages', 'fr') ~ ': ' ~ tDuree ~ '. '
+            ~ 'patient.prescription.field.period'|trans({}, 'messages', 'fr') ~ ': ' ~ periodStart ~ ' ' ~ 'patient.prescription.period_to'|trans({}, 'messages', 'fr') ~ ' ' ~ periodEnd ~ '. '
+            ~ 'patient.prescription.field.medications'|trans({}, 'messages', 'fr') ~ ': ' ~ tMedicaments ~ '. '
+            ~ 'patient.prescription.field.instructions'|trans({}, 'messages', 'fr') ~ ': ' ~ tConsignes ~ '.'
+        %}
+        {% set speechTextAr = 'patient.prescription.speech.header'|trans({'%id%': prescription.idPrescription}, 'messages', 'ar') ~ '. '
+            ~ 'patient.prescription.field.frequency'|trans({}, 'messages', 'ar') ~ ': ' ~ tFrequence ~ '. '
+            ~ 'patient.prescription.field.dosage'|trans({}, 'messages', 'ar') ~ ': ' ~ tDosage ~ '. '
+            ~ 'patient.prescription.field.duration'|trans({}, 'messages', 'ar') ~ ': ' ~ tDuree ~ '. '
+            ~ 'patient.prescription.field.period'|trans({}, 'messages', 'ar') ~ ': ' ~ periodStart ~ ' ' ~ 'patient.prescription.period_to'|trans({}, 'messages', 'ar') ~ ' ' ~ periodEnd ~ '. '
+            ~ 'patient.prescription.field.medications'|trans({}, 'messages', 'ar') ~ ': ' ~ tMedicaments ~ '. '
+            ~ 'patient.prescription.field.instructions'|trans({}, 'messages', 'ar') ~ ': ' ~ tConsignes ~ '.'
+        %}
+        {% set speechTextEn = 'patient.prescription.speech.header'|trans({'%id%': prescription.idPrescription}, 'messages', 'en') ~ '. '
+            ~ 'patient.prescription.field.frequency'|trans({}, 'messages', 'en') ~ ': ' ~ tFrequence ~ '. '
+            ~ 'patient.prescription.field.dosage'|trans({}, 'messages', 'en') ~ ': ' ~ tDosage ~ '. '
+            ~ 'patient.prescription.field.duration'|trans({}, 'messages', 'en') ~ ': ' ~ tDuree ~ '. '
+            ~ 'patient.prescription.field.period'|trans({}, 'messages', 'en') ~ ': ' ~ periodStart ~ ' ' ~ 'patient.prescription.period_to'|trans({}, 'messages', 'en') ~ ' ' ~ periodEnd ~ '. '
+            ~ 'patient.prescription.field.medications'|trans({}, 'messages', 'en') ~ ': ' ~ tMedicaments ~ '. '
+            ~ 'patient.prescription.field.instructions'|trans({}, 'messages', 'en') ~ ': ' ~ tConsignes ~ '.'
+        %}
+
+        {% include 'FrontOffice/patient/_header.html.twig' %}
+
+        <main class="patient-main">
+            <section class="cute-header">
+                <div>
+                    <div class="cute-title">{{ 'patient.prescription.title'|trans({}, 'messages', currentLocale) }}</div>
+                    <div class="cute-chip">{{ 'patient.prescription.consultation'|trans({}, 'messages', currentLocale) }} {{ consultId }}</div>
+                </div>
+                <div class="cute-chip">{{ 'patient.prescription.tagline'|trans({}, 'messages', currentLocale) }}</div>
+            </section>
+
+            <section class="content-grid" style="grid-template-columns: 1fr;">
+                <div class="card">
+                    <div class="actions" style="margin-bottom: 12px;">
+                        <span class="cute-label">{{ 'patient.prescription.ui_language_label'|trans({}, 'messages', currentLocale) }}</span>
+                        <a class="btn ghost" href="{{ path('patient_prescription_show', {'id': prescription.idPrescription, 'lang': 'fr'}) }}">FR</a>
+                        <a class="btn ghost" href="{{ path('patient_prescription_show', {'id': prescription.idPrescription, 'lang': 'ar'}) }}">AR</a>
+                        <a class="btn ghost" href="{{ path('patient_prescription_show', {'id': prescription.idPrescription, 'lang': 'en'}) }}">EN</a>
+                    </div>
+
+                    <h2>{{ 'patient.prescription.details_title'|trans({}, 'messages', currentLocale) }}</h2>
+                    <div class="cute-grid">
+                        <div class="cute-card">
+                            <div class="cute-label">{{ 'patient.prescription.field.frequency'|trans({}, 'messages', currentLocale) }}</div>
+                            <div class="cute-value">{{ tFrequence }}</div>
+                        </div>
+                        <div class="cute-card">
+                            <div class="cute-label">{{ 'patient.prescription.field.dosage'|trans({}, 'messages', currentLocale) }}</div>
+                            <div class="cute-value">{{ tDosage }}</div>
+                        </div>
+                        <div class="cute-card">
+                            <div class="cute-label">{{ 'patient.prescription.field.duration'|trans({}, 'messages', currentLocale) }}</div>
+                            <div class="cute-value">{{ tDuree }}</div>
+                        </div>
+                        <div class="cute-card">
+                            <div class="cute-label">{{ 'patient.prescription.field.period'|trans({}, 'messages', currentLocale) }}</div>
+                            <div class="cute-value">
+                                {{ periodStart }}
+                                ->
+                                {{ periodEnd }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="item">
+                        <strong>{{ 'patient.prescription.field.medications'|trans({}, 'messages', currentLocale) }}</strong>
+                        <p>{{ tMedicaments }}</p>
+                    </div>
+
+                    <div class="item">
+                        <strong>{{ 'patient.prescription.field.instructions'|trans({}, 'messages', currentLocale) }}</strong>
+                        <p>{{ tConsignes }}</p>
+                    </div>
+
+                    <div class="tts-panel" aria-label="{{ 'patient.prescription.tts.panel_label'|trans({}, 'messages', currentLocale) }}">
+                        <div class="tts-controls">
+                            <label for="ttsLanguage" class="cute-label mb-0">{{ 'patient.prescription.tts.language_label'|trans({}, 'messages', currentLocale) }}</label>
+                            <select id="ttsLanguage" class="form-select form-select-sm" style="max-width: 220px;">
+                                <option value="fr-FR" {{ defaultTtsLang == 'fr-FR' ? 'selected' : '' }}>{{ 'patient.prescription.tts.language_fr'|trans({}, 'messages', currentLocale) }}</option>
+                                <option value="ar-TN" {{ defaultTtsLang == 'ar-TN' ? 'selected' : '' }}>{{ 'patient.prescription.tts.language_ar_tn'|trans({}, 'messages', currentLocale) }}</option>
+                                <option value="ar-SA" {{ defaultTtsLang == 'ar-SA' ? 'selected' : '' }}>{{ 'patient.prescription.tts.language_ar'|trans({}, 'messages', currentLocale) }}</option>
+                                <option value="en-US" {{ defaultTtsLang == 'en-US' ? 'selected' : '' }}>{{ 'patient.prescription.tts.language_en'|trans({}, 'messages', currentLocale) }}</option>
+                            </select>
+                            <button
+                                type="button"
+                                id="readPrescriptionBtn"
+                                class="btn primary"
+                                data-tts-url="{{ path('patient_prescription_tts', {'id': prescription.idPrescription})|e('html_attr') }}"
+                                data-label-read="{{ 'patient.prescription.tts.read_button'|trans({}, 'messages', currentLocale)|e('html_attr') }}"
+                                data-label-stop="{{ 'patient.prescription.tts.stop_button'|trans({}, 'messages', currentLocale)|e('html_attr') }}"
+                                data-msg-unsupported="{{ 'patient.prescription.tts.unsupported'|trans({}, 'messages', currentLocale)|e('html_attr') }}"
+                                data-msg-playing="{{ 'patient.prescription.tts.playing'|trans({}, 'messages', currentLocale)|e('html_attr') }}"
+                                data-msg-stopped="{{ 'patient.prescription.tts.stopped'|trans({}, 'messages', currentLocale)|e('html_attr') }}"
+                            >
+                                {{ 'patient.prescription.tts.read_button'|trans({}, 'messages', currentLocale) }}
+                            </button>
+                        </div>
+                        <p id="ttsStatus" class="tts-status" role="status" aria-live="polite"></p>
+                    </div>
+
+                    <div id="prescriptionSpeechTextFr" class="visually-hidden" aria-hidden="true">{{ speechTextFr }}</div>
+                    <div id="prescriptionSpeechTextAr" class="visually-hidden" aria-hidden="true">{{ speechTextAr }}</div>
+                    <div id="prescriptionSpeechTextEn" class="visually-hidden" aria-hidden="true">{{ speechTextEn }}</div>
+
+                    <div class="actions">
+                        <a class="btn primary" href="{{ path('patient_prescription_pdf', {'id': prescription.idPrescription}) }}">{{ 'patient.prescription.download_pdf'|trans({}, 'messages', currentLocale) }}</a>
+                        <a class="btn ghost" href="{{ path('patient_consultations') }}">{{ 'patient.prescription.back'|trans({}, 'messages', currentLocale) }}</a>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
 {% endblock %}
+<script>
+    // Read prescription text using Web Speech API with language-aware voices.
+    document.addEventListener('DOMContentLoaded', function () {
+        const btn = document.getElementById('readPrescriptionBtn');
+        const langSelect = document.getElementById('ttsLanguage');
+        const speechTextFrEl = document.getElementById('prescriptionSpeechTextFr');
+        const speechTextArEl = document.getElementById('prescriptionSpeechTextAr');
+        const speechTextEnEl = document.getElementById('prescriptionSpeechTextEn');
+        const statusEl = document.getElementById('ttsStatus');
+        const synth = window.speechSynthesis;
+        let currentAudio = null;
+        let isLoadingAudio = false;
+
+        if (!btn || !langSelect || !speechTextFrEl || !speechTextArEl || !speechTextEnEl || !statusEl) {
+            return;
+        }
+
+        const setStatus = function (message) {
+            statusEl.textContent = message || '';
+        };
+
+        const resetButton = function () {
+            btn.textContent = btn.dataset.labelRead || 'Read Prescription';
+            btn.setAttribute('aria-pressed', 'false');
+        };
+
+        const isAudioPlaying = function () {
+            return !!(currentAudio && !currentAudio.paused);
+        };
+
+        const findVoiceForLang = function (lang) {
+            const voices = synth.getVoices();
+            if (!voices || !voices.length) {
+                return null;
+            }
+
+            const langPrefix = (lang.split('-')[0] || '').toLowerCase();
+            return (
+                voices.find(function (voice) { return (voice.lang || '').toLowerCase() === lang.toLowerCase(); }) ||
+                voices.find(function (voice) { return (voice.lang || '').toLowerCase().startsWith(langPrefix); }) ||
+                null
+            );
+        };
+
+        const getSpeechTextByLang = function (lang) {
+            const normalized = (lang || '').toLowerCase();
+            if (normalized.startsWith('ar')) {
+                return (speechTextArEl.textContent || '').trim();
+            }
+            if (normalized.startsWith('fr')) {
+                return (speechTextFrEl.textContent || '').trim();
+            }
+            return (speechTextEnEl.textContent || '').trim();
+        };
+
+        if (!synth || typeof window.SpeechSynthesisUtterance === 'undefined') {
+            btn.disabled = true;
+            setStatus(btn.dataset.msgUnsupported || 'Speech synthesis is not supported in this browser.');
+            return;
+        }
+
+        resetButton();
+
+        const stopSpeech = function () {
+            synth.cancel();
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+            }
+            isLoadingAudio = false;
+            resetButton();
+            setStatus(btn.dataset.msgStopped || 'Reading stopped.');
+        };
+
+        const playServerAudio = async function (selectedLang) {
+            if (!btn.dataset.ttsUrl) {
+                return false;
+            }
+
+            const ttsUrl = new URL(btn.dataset.ttsUrl, window.location.origin);
+            ttsUrl.searchParams.set('lang', selectedLang);
+
+            isLoadingAudio = true;
+            btn.textContent = btn.dataset.labelStop || 'Stop Reading';
+            btn.setAttribute('aria-pressed', 'true');
+            setStatus(btn.dataset.msgPlaying || 'Reading prescription...');
+
+            try {
+                const response = await fetch(ttsUrl.toString(), {
+                    method: 'GET',
+                    headers: { 'Accept': 'audio/mpeg' },
+                    credentials: 'same-origin'
+                });
+
+                if (!response.ok) {
+                    throw new Error('TTS HTTP error');
+                }
+
+                const audioBlob = await response.blob();
+                if (!audioBlob || audioBlob.size === 0) {
+                    throw new Error('Empty audio response');
+                }
+
+                if (currentAudio) {
+                    currentAudio.pause();
+                }
+
+                const audioUrl = URL.createObjectURL(audioBlob);
+                currentAudio = new Audio(audioUrl);
+                currentAudio.onended = function () {
+                    URL.revokeObjectURL(audioUrl);
+                    isLoadingAudio = false;
+                    resetButton();
+                    setStatus(btn.dataset.msgStopped || 'Reading stopped.');
+                };
+                currentAudio.onerror = function () {
+                    URL.revokeObjectURL(audioUrl);
+                    isLoadingAudio = false;
+                    resetButton();
+                    setStatus(btn.dataset.msgUnsupported || 'Speech synthesis is not supported in this browser.');
+                };
+
+                await currentAudio.play();
+                isLoadingAudio = false;
+                return true;
+            } catch (error) {
+                isLoadingAudio = false;
+                resetButton();
+                setStatus(btn.dataset.msgUnsupported || 'Speech synthesis is not supported in this browser.');
+                return false;
+            }
+        };
+
+        btn.addEventListener('click', function () {
+            if (synth.speaking || isAudioPlaying() || isLoadingAudio) {
+                stopSpeech();
+                return;
+            }
+
+            const selectedLang = langSelect.value || 'en-US';
+            const isArabic = selectedLang.toLowerCase().startsWith('ar');
+
+            // Arabic is played via server MP3 to avoid dependency on local OS voices.
+            if (isArabic) {
+                void playServerAudio(selectedLang);
+                return;
+            }
+
+            const speechText = getSpeechTextByLang(selectedLang);
+            const utterance = new SpeechSynthesisUtterance(speechText);
+            const matchingVoice = findVoiceForLang(selectedLang);
+
+            utterance.lang = selectedLang;
+            if (matchingVoice) {
+                utterance.voice = matchingVoice;
+            }
+
+            utterance.onend = function () {
+                resetButton();
+                setStatus(btn.dataset.msgStopped || 'Reading stopped.');
+            };
+
+            utterance.onerror = function () {
+                resetButton();
+                setStatus(btn.dataset.msgUnsupported || 'Speech synthesis is not supported in this browser.');
+            };
+
+            btn.textContent = btn.dataset.labelStop || 'Stop Reading';
+            btn.setAttribute('aria-pressed', 'true');
+            setStatus(btn.dataset.msgPlaying || 'Reading prescription...');
+            synth.speak(utterance);
+        });
+
+        // Keep interface language aligned with selected audio language.
+        langSelect.addEventListener('change', function () {
+            const selectedLang = (langSelect.value || 'en-US').toLowerCase();
+            const targetUiLang = selectedLang.startsWith('ar')
+                ? 'ar'
+                : (selectedLang.startsWith('fr') ? 'fr' : 'en');
+
+            const currentUrl = new URL(window.location.href);
+            if (currentUrl.searchParams.get('lang') === targetUiLang) {
+                return;
+            }
+
+            currentUrl.searchParams.set('lang', targetUiLang);
+            window.location.assign(currentUrl.toString());
+        });
+
+        // Voices may load asynchronously on some browsers.
+        window.speechSynthesis.onvoiceschanged = function () {
+            void findVoiceForLang(langSelect.value || 'en-US');
+        };
+    });
+</script>
 </body>
 </html>

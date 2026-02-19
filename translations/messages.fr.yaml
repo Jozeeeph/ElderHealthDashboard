@@ -1,0 +1,32 @@
+patient:
+  prescription:
+    page_title: "Prescription patient"
+    title: "Prescription"
+    consultation: "Consultation"
+    tagline: "Prenez soin de votre sante"
+    details_title: "Details de la prescription"
+    ui_language_label: "Langue de l'interface"
+    download_pdf: "Telecharger PDF"
+    back: "Retour"
+    period_to: "au"
+    speech:
+      header: "Prescription numero %id%"
+    field:
+      frequency: "Frequence"
+      dosage: "Dosage"
+      duration: "Duree"
+      period: "Periode"
+      medications: "Medicaments"
+      instructions: "Consignes"
+    tts:
+      panel_label: "Lecture audio de la prescription"
+      language_label: "Langue audio"
+      language_fr: "Francais"
+      language_ar: "Arabe"
+      language_ar_tn: "Darja tunisienne"
+      language_en: "Anglais"
+      read_button: "Lire la prescription"
+      stop_button: "Arreter la lecture"
+      unsupported: "La synthese vocale n'est pas prise en charge par ce navigateur."
+      playing: "Lecture de la prescription..."
+      stopped: "Lecture arretee."

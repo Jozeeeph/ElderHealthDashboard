@@ -1,0 +1,32 @@
+patient:
+  prescription:
+    page_title: "Patient Prescription"
+    title: "Prescription"
+    consultation: "Consultation"
+    tagline: "Take care of your health"
+    details_title: "Prescription details"
+    ui_language_label: "Interface language"
+    download_pdf: "Download PDF"
+    back: "Back"
+    period_to: "to"
+    speech:
+      header: "Prescription number %id%"
+    field:
+      frequency: "Frequency"
+      dosage: "Dosage"
+      duration: "Duration"
+      period: "Period"
+      medications: "Medications"
+      instructions: "Instructions"
+    tts:
+      panel_label: "Prescription audio playback"
+      language_label: "Audio language"
+      language_fr: "French"
+      language_ar: "Arabic"
+      language_ar_tn: "Tunisian Darija"
+      language_en: "English"
+      read_button: "Read Prescription"
+      stop_button: "Stop Reading"
+      unsupported: "Speech synthesis is not supported in this browser."
+      playing: "Reading prescription..."
+      stopped: "Reading stopped."
