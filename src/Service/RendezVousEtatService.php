@@ -8,7 +8,8 @@ class RendezVousEtatService
 {
     public function __construct(
         private RendezVousRepository $repository,
-        private EntityManagerInterface $em
+        private EntityManagerInterface $em,
+        private GoogleCalendarSyncService $googleCalendarSyncService
     ) {}
 
     public function updateEtats(): void
@@ -31,12 +32,17 @@ class RendezVousEtatService
                 $rdv->getHeure()->format('H:i:s')
             );
 
+            $previousEtat = (string) $rdv->getEtat();
             if ($rdvDateTime > $now) {
                 $rdv->setEtat('PLANIFIE');
             } elseif ($rdvDateTime->format('Y-m-d') === $now->format('Y-m-d')) {
                 $rdv->setEtat('EN_COURS');
             } else {
                 $rdv->setEtat('TERMINE');
+            }
+
+            if ($previousEtat !== 'PLANIFIE' && (string) $rdv->getEtat() === 'PLANIFIE' && $this->googleCalendarSyncService->isEnabled()) {
+                $this->googleCalendarSyncService->syncPlannedRendezVous($rdv);
             }
         }
 

@@ -176,9 +176,6 @@
 
 			calendar.render();
 			updateSyncLabel();
-			window.setInterval(function () {
-				calendar.refetchEvents();
-			}, 5000);
 			document.addEventListener('visibilitychange', function () {
 				if (document.visibilityState === 'visible') {
 					calendar.refetchEvents();

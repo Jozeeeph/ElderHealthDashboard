@@ -11,6 +11,13 @@ parameters:
     app.twilio.auth_token: '%env(default::TWILIO_AUTH_TOKEN)%'
     app.twilio.from_number: '%env(default::TWILIO_FROM_NUMBER)%'
     app.twilio.stock_alert_to_number: '%env(default::TWILIO_STOCK_ALERT_TO_NUMBER)%'
+    app.google_calendar.enabled: '%env(bool:GOOGLE_CALENDAR_ENABLED)%'
+    app.google_calendar.calendar_id: '%env(string:GOOGLE_CALENDAR_ID)%'
+    app.google_calendar.api_key: '%env(string:GOOGLE_CALENDAR_API_KEY)%'
+    app.google_calendar.timezone: '%env(string:GOOGLE_CALENDAR_TIMEZONE)%'
+    app.google_calendar.write_enabled: '%env(bool:GOOGLE_CALENDAR_WRITE_ENABLED)%'
+    app.google_calendar.service_account_email: '%env(string:GOOGLE_CALENDAR_SERVICE_ACCOUNT_EMAIL)%'
+    app.google_calendar.service_account_private_key: '%env(string:GOOGLE_CALENDAR_SERVICE_ACCOUNT_PRIVATE_KEY)%'
 
 services:
     _defaults:
@@ -64,3 +71,18 @@ services:
             $authToken: '%app.twilio.auth_token%'
             $fromNumber: '%app.twilio.from_number%'
             $toNumber: '%app.twilio.stock_alert_to_number%'
+
+    App\Service\GoogleCalendarService:
+        arguments:
+            $enabled: '%app.google_calendar.enabled%'
+            $calendarId: '%app.google_calendar.calendar_id%'
+            $apiKey: '%app.google_calendar.api_key%'
+            $timezone: '%app.google_calendar.timezone%'
+
+    App\Service\GoogleCalendarSyncService:
+        arguments:
+            $enabled: '%app.google_calendar.write_enabled%'
+            $calendarId: '%app.google_calendar.calendar_id%'
+            $serviceAccountEmail: '%app.google_calendar.service_account_email%'
+            $serviceAccountPrivateKey: '%app.google_calendar.service_account_private_key%'
+            $timezone: '%app.google_calendar.timezone%'

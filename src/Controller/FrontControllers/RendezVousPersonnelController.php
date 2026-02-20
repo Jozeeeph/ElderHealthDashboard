@@ -5,6 +5,8 @@ namespace App\Controller\FrontControllers;
 use App\Entity\RendezVous;
 use App\Entity\Utilisateur;
 use App\Repository\RendezVousRepository;
+use App\Service\GoogleCalendarService;
+use App\Service\GoogleCalendarSyncService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -50,7 +52,12 @@ class RendezVousPersonnelController extends AbstractController
     }
 
     #[Route('/accept/{id}', name: 'accept')]
-    public function accept(RendezVous $rdv, EntityManagerInterface $em): Response
+    public function accept(
+        RendezVous $rdv,
+        EntityManagerInterface $em,
+        GoogleCalendarSyncService $googleCalendarSyncService,
+        GoogleCalendarService $googleCalendarService
+    ): Response
     {
         $user = $this->requirePersonnel();
         if ($rdv->getPersonnelMedical()?->getId() !== $user->getId()) {
@@ -59,6 +66,23 @@ class RendezVousPersonnelController extends AbstractController
 
         $rdv->setEtat('PLANIFIE');
         $em->flush();
+
+        if ($googleCalendarSyncService->isEnabled()) {
+            $synced = $googleCalendarSyncService->syncPlannedRendezVous($rdv);
+            if (!$synced) {
+                $details = $googleCalendarSyncService->getLastError();
+                $this->addFlash(
+                    'warning',
+                    'Rendez-vous planifie, mais synchronisation Google Calendar echouee.'
+                    . ($details ? ' Detail: ' . $details : '')
+                );
+            } else {
+                $googleUrl = $googleCalendarService->getCalendarWebUrl();
+                if (is_string($googleUrl) && $googleUrl !== '') {
+                    return $this->redirect($googleUrl);
+                }
+            }
+        }
 
         $this->addFlash('success', 'Rendez-vous accepte.');
         return $this->redirectToRoute('front_infermier_rendezvous_index');
