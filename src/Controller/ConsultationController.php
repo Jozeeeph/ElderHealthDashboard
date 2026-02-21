@@ -20,7 +20,7 @@ class ConsultationController extends AbstractController
         $patient = trim((string) $request->query->get('patient', ''));
         $personnel = trim((string) $request->query->get('personnel', ''));
         $page = max(1, $request->query->getInt('page', 1));
-        $perPage = 2;
+        $perPage = 4;
         $dateInput = $request->query->get('date');
         $date = null;
         if (is_string($dateInput) && $dateInput !== '') {
@@ -55,7 +55,7 @@ class ConsultationController extends AbstractController
         $patient = trim((string) $request->query->get('patient', ''));
         $personnel = trim((string) $request->query->get('personnel', ''));
         $page = max(1, $request->query->getInt('page', 1));
-        $perPage = 2;
+        $perPage = 4;
         $dateInput = $request->query->get('date');
         $date = null;
         if (is_string($dateInput) && $dateInput !== '') {

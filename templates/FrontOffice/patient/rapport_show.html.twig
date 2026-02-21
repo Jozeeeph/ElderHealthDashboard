@@ -17,121 +17,161 @@
 {% block body %}
 	<div class="patient-app">
 		<style>
-			.cute-header {
+			.report-page {
+				background: linear-gradient(180deg, #f7fafc 0%, #eef7f2 60%, #ffffff 100%);
+				border-radius: 20px;
+				padding: 14px;
+			}
+
+			.report-hero {
 				display: flex;
-				align-items: center;
 				justify-content: space-between;
-				gap: 12px;
-				padding: 18px 20px;
-				border-radius: 18px;
-				background: linear-gradient(135deg, #fff3e6 0%, #e9f7ff 100%);
-				border: 1px solid #f3ddc8;
+				align-items: flex-start;
+				flex-wrap: wrap;
+				gap: 10px;
+				background: linear-gradient(130deg, #0f766e 0%, #0891b2 50%, #2563eb 100%);
+				border-radius: 16px;
+				padding: 12px;
+				color: #f8fafc;
 			}
 
-			.cute-title {
-				font-size: 1.35rem;
+			.report-title {
+				font-size: 1.12rem;
 				font-weight: 800;
-				color: #7b3f1e;
+				margin: 0 0 4px;
 			}
 
-			.cute-chip {
+			.report-subtitle {
+				margin: 0;
+				color: rgba(248, 250, 252, 0.9);
+				font-weight: 500;
+				font-size: 0.86rem;
+			}
+
+			.report-chip {
 				display: inline-flex;
 				align-items: center;
 				gap: 6px;
-				padding: 6px 10px;
 				border-radius: 999px;
-				background: #fff7ee;
-				border: 1px solid #f3ddc8;
-				font-size: 0.8rem;
+				padding: 6px 10px;
+				border: 1px solid rgba(248, 250, 252, 0.25);
+				background: rgba(255, 255, 255, 0.14);
+				font-size: 0.76rem;
 				font-weight: 700;
-				color: #7b3f1e;
+				margin-top: 6px;
 			}
 
-			.cute-grid {
+			.report-shell {
+				margin-top: 10px;
+				background: #ffffff;
+				border: 1px solid #dbe7ee;
+				border-radius: 14px;
+				box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+				padding: 13px;
+			}
+
+			.report-grid {
 				display: grid;
-				gap: 12px;
+				gap: 10px;
 				grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 			}
 
-			.cute-card {
-				background: #ffffff;
-				border: 1px solid #f0e1d2;
-				border-radius: 16px;
-				padding: 14px;
-				box-shadow: 0 10px 24px rgba(123, 63, 30, 0.08);
+			.report-metric {
+				border: 1px solid #dbe7ee;
+				border-radius: 14px;
+				padding: 10px 12px;
+				background: #f8fcfa;
 			}
 
-			.cute-label {
-				font-size: 0.7rem;
+			.report-label {
+				font-size: 0.72rem;
 				text-transform: uppercase;
-				letter-spacing: 0.05em;
-				color: #a06a4b;
+				letter-spacing: 0.06em;
+				color: #64748b;
 				font-weight: 700;
 			}
 
-			.cute-value {
-				font-weight: 800;
-				color: #3b2214;
+			.report-value {
 				margin-top: 4px;
+				color: #0f172a;
+				font-size: 0.95rem;
+				font-weight: 800;
 			}
 
-			.actions .btn.primary {
-				background: linear-gradient(135deg, #a5d8ff 0%, #c3f5d4 100%);
-				color: #0b3042;
-				border: none;
-				box-shadow: 0 8px 16px rgba(30, 136, 229, 0.15);
+			.report-block {
+				margin-top: 10px;
+				border: 1px solid #dbe7ee;
+				border-radius: 12px;
+				background: #fcfffe;
+				padding: 12px;
 			}
 
-			.actions .btn.ghost {
-				background: #fff3e6;
-				color: #7b3f1e;
-				border: 1px solid #f3ddc8;
+			.report-block h3 {
+				margin: 0 0 8px;
+				font-size: 1rem;
+				font-weight: 800;
+				color: #0f172a;
+			}
+
+			.report-block p {
+				margin: 0;
+				color: #1e293b;
+				line-height: 1.55;
+				white-space: pre-wrap;
 			}
 		</style>
 		{% include 'FrontOffice/patient/_header.html.twig' %}
 
-		<main class="patient-main">
-			<section class="cute-header">
+		<main class="patient-main report-page">
+			<section class="report-hero">
 				<div>
-					<div class="cute-title">Rapport medical</div>
-					<div class="cute-chip">Consultation {{ rapport.consultation.id }}</div>
+					<h1 class="report-title">Rapport medical</h1>
+					<p class="report-subtitle">Synthese de votre etat de sante et recommandations de suivi</p>
+					<div class="report-chip">
+						<i class="bi bi-journal-medical"></i>
+						Consultation {{ rapport.consultation.id }}
+					</div>
 				</div>
-				<div class="cute-chip">Bon retablissement</div>
+				<div class="report-chip">
+					<i class="bi bi-heart-pulse"></i>
+					Bon retablissement
+				</div>
 			</section>
 
-			<section class="content-grid" style="grid-template-columns: 1fr;">
-				<div class="card">
-					<h2>Details sante</h2>
-					<div class="cute-grid">
-						<div class="cute-card">
-							<div class="cute-label">Gravite</div>
-							<div class="cute-value">{{ rapport.niveauGravite }}</div>
-						</div>
-						<div class="cute-card">
-							<div class="cute-label">Date</div>
-							<div class="cute-value">{{ rapport.dateRapport ? rapport.dateRapport|date('d/m/Y H:i') : '-' }}</div>
-						</div>
+			<section class="report-shell">
+				<div class="report-grid">
+					<div class="report-metric">
+						<div class="report-label">Gravite</div>
+						<div class="report-value">{{ rapport.niveauGravite }}</div>
 					</div>
-					<div class="item">
-						<strong>Diagnostic</strong>
-						<p>{{ rapport.diagnostic }}</p>
+					<div class="report-metric">
+						<div class="report-label">Date du rapport</div>
+						<div class="report-value">{{ rapport.dateRapport ? rapport.dateRapport|date('d/m/Y H:i') : '-' }}</div>
 					</div>
-					<div class="item">
-						<strong>Recommandations</strong>
-						<p>{{ rapport.recommandations }}</p>
-					</div>
-					{% if rapport.fichierPath %}
-						<div class="item">
-							<strong>Piece jointe</strong>
-							<p>
-								<a class="btn ghost" href="{{ asset(rapport.fichierPath) }}" target="_blank" rel="noopener">Ouvrir le fichier</a>
-							</p>
-						</div>
-					{% endif %}
-					<div class="actions">
-						<a class="btn primary" href="{{ path('patient_rapport_pdf', {'id': rapport.idRapport}) }}">Telecharger PDF</a>
-						<a class="btn ghost" href="{{ path('patient_consultations') }}">Retour</a>
-					</div>
+				</div>
+
+				<section class="report-block">
+					<h3><i class="bi bi-clipboard2-pulse me-1"></i>Diagnostic</h3>
+					<p>{{ rapport.diagnostic }}</p>
+				</section>
+
+				<section class="report-block">
+					<h3><i class="bi bi-lightbulb me-1"></i>Recommandations</h3>
+					<p>{{ rapport.recommandations }}</p>
+				</section>
+
+				{% if rapport.fichierPath %}
+					<section class="report-block">
+						<h3><i class="bi bi-paperclip me-1"></i>Piece jointe</h3>
+						<p>
+							<a class="btn ghost" href="{{ asset(rapport.fichierPath) }}" target="_blank" rel="noopener">Ouvrir le fichier</a>
+						</p>
+					</section>
+				{% endif %}
+
+				<div class="actions mt-3">
+					<a class="btn primary" href="{{ path('patient_rapport_pdf', {'id': rapport.idRapport}) }}">Telecharger PDF</a>
+					<a class="btn ghost" href="{{ path('patient_consultations') }}">Retour</a>
 				</div>
 			</section>
 		</main>

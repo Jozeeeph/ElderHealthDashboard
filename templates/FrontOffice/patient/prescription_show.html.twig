@@ -15,69 +15,122 @@
 {% block body %}
     <div class="patient-app">
         <style>
-            .cute-header {
+            .rx-page {
+                background: linear-gradient(180deg, #f7fafc 0%, #eef7f2 60%, #ffffff 100%);
+                border-radius: 20px;
+                padding: 18px;
+            }
+
+            .rx-hero {
                 display: flex;
-                align-items: center;
                 justify-content: space-between;
+                align-items: flex-start;
+                flex-wrap: wrap;
                 gap: 12px;
-                padding: 18px 20px;
+                background: linear-gradient(130deg, #0f766e 0%, #0891b2 50%, #2563eb 100%);
                 border-radius: 18px;
-                background: linear-gradient(135deg, #ffeef6 0%, #e8f7ff 100%);
-                border: 1px solid #f4d9e7;
+                padding: 18px;
+                color: #f8fafc;
             }
 
-            .cute-title {
-                font-size: 1.35rem;
+            .rx-title {
+                font-size: 1.45rem;
                 font-weight: 800;
-                color: #7a2c4c;
+                margin: 0 0 6px;
             }
 
-            .cute-chip {
+            .rx-subtitle {
+                margin: 0;
+                color: rgba(248, 250, 252, 0.9);
+                font-weight: 500;
+            }
+
+            .rx-chip {
                 display: inline-flex;
                 align-items: center;
                 gap: 6px;
-                padding: 6px 10px;
                 border-radius: 999px;
-                background: #fff5fb;
-                border: 1px solid #f4d9e7;
-                font-size: 0.8rem;
+                padding: 7px 12px;
+                border: 1px solid rgba(248, 250, 252, 0.25);
+                background: rgba(255, 255, 255, 0.14);
+                font-size: 0.82rem;
                 font-weight: 700;
-                color: #7a2c4c;
+                margin-top: 8px;
             }
 
-            .cute-grid {
+            .rx-shell {
+                margin-top: 14px;
+                background: #ffffff;
+                border: 1px solid #dbe7ee;
+                border-radius: 16px;
+                box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+                padding: 16px;
+            }
+
+            .rx-toolbar {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-between;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 12px;
+            }
+
+            .rx-grid {
                 display: grid;
                 gap: 12px;
                 grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             }
 
-            .cute-card {
-                background: #ffffff;
-                border: 1px solid #f0ddea;
-                border-radius: 16px;
-                padding: 14px;
-                box-shadow: 0 10px 24px rgba(122, 44, 76, 0.08);
+            .rx-metric {
+                border: 1px solid #dbe7ee;
+                border-radius: 14px;
+                padding: 12px 14px;
+                background: #f8fcfa;
             }
 
-            .cute-label {
-                font-size: 0.7rem;
+            .rx-label {
+                font-size: 0.72rem;
                 text-transform: uppercase;
-                letter-spacing: 0.05em;
-                color: #a0627b;
+                letter-spacing: 0.06em;
+                color: #64748b;
                 font-weight: 700;
             }
 
-            .cute-value {
-                font-weight: 800;
-                color: #3b1c2a;
+            .rx-value {
                 margin-top: 4px;
+                color: #0f172a;
+                font-size: 1.02rem;
+                font-weight: 800;
+            }
+
+            .rx-block {
+                margin-top: 12px;
+                border: 1px solid #dbe7ee;
+                border-radius: 14px;
+                background: #fcfffe;
+                padding: 14px;
+            }
+
+            .rx-block h3 {
+                margin: 0 0 8px;
+                font-size: 1rem;
+                font-weight: 800;
+                color: #0f172a;
+            }
+
+            .rx-block p {
+                margin: 0;
+                color: #1e293b;
+                line-height: 1.55;
+                white-space: pre-wrap;
             }
 
             .tts-panel {
-                margin-top: 14px;
+                margin-top: 12px;
                 padding: 14px;
-                border: 1px solid #e2e8f0;
-                border-radius: 12px;
+                border: 1px solid #dbe7ee;
+                border-radius: 14px;
                 background: #f8fafc;
             }
 
@@ -131,92 +184,94 @@
 
         {% include 'FrontOffice/patient/_header.html.twig' %}
 
-        <main class="patient-main">
-            <section class="cute-header">
+        <main class="patient-main rx-page">
+            <section class="rx-hero">
                 <div>
-                    <div class="cute-title">{{ 'patient.prescription.title'|trans({}, 'messages', currentLocale) }}</div>
-                    <div class="cute-chip">{{ 'patient.prescription.consultation'|trans({}, 'messages', currentLocale) }} {{ consultId }}</div>
+                    <h1 class="rx-title">{{ 'patient.prescription.title'|trans({}, 'messages', currentLocale) }}</h1>
+                    <p class="rx-subtitle">{{ 'patient.prescription.tagline'|trans({}, 'messages', currentLocale) }}</p>
+                    <div class="rx-chip">
+                        <i class="bi bi-journal-medical"></i>
+                        {{ 'patient.prescription.consultation'|trans({}, 'messages', currentLocale) }} {{ consultId }}
+                    </div>
                 </div>
-                <div class="cute-chip">{{ 'patient.prescription.tagline'|trans({}, 'messages', currentLocale) }}</div>
+                <div class="rx-chip">
+                    <i class="bi bi-heart-pulse"></i>
+                    Suivi quotidien de sante
+                </div>
             </section>
 
-            <section class="content-grid" style="grid-template-columns: 1fr;">
-                <div class="card">
-                    <div class="actions" style="margin-bottom: 12px;">
-                        <span class="cute-label">{{ 'patient.prescription.ui_language_label'|trans({}, 'messages', currentLocale) }}</span>
+            <section class="rx-shell">
+                <div class="rx-toolbar">
+                    <div class="rx-label">{{ 'patient.prescription.ui_language_label'|trans({}, 'messages', currentLocale) }}</div>
+                    <div class="actions">
                         <a class="btn ghost" href="{{ path('patient_prescription_show', {'id': prescription.idPrescription, 'lang': 'fr'}) }}">FR</a>
                         <a class="btn ghost" href="{{ path('patient_prescription_show', {'id': prescription.idPrescription, 'lang': 'ar'}) }}">AR</a>
                         <a class="btn ghost" href="{{ path('patient_prescription_show', {'id': prescription.idPrescription, 'lang': 'en'}) }}">EN</a>
                     </div>
+                </div>
 
-                    <h2>{{ 'patient.prescription.details_title'|trans({}, 'messages', currentLocale) }}</h2>
-                    <div class="cute-grid">
-                        <div class="cute-card">
-                            <div class="cute-label">{{ 'patient.prescription.field.frequency'|trans({}, 'messages', currentLocale) }}</div>
-                            <div class="cute-value">{{ tFrequence }}</div>
-                        </div>
-                        <div class="cute-card">
-                            <div class="cute-label">{{ 'patient.prescription.field.dosage'|trans({}, 'messages', currentLocale) }}</div>
-                            <div class="cute-value">{{ tDosage }}</div>
-                        </div>
-                        <div class="cute-card">
-                            <div class="cute-label">{{ 'patient.prescription.field.duration'|trans({}, 'messages', currentLocale) }}</div>
-                            <div class="cute-value">{{ tDuree }}</div>
-                        </div>
-                        <div class="cute-card">
-                            <div class="cute-label">{{ 'patient.prescription.field.period'|trans({}, 'messages', currentLocale) }}</div>
-                            <div class="cute-value">
-                                {{ periodStart }}
-                                ->
-                                {{ periodEnd }}
-                            </div>
-                        </div>
+                <div class="rx-grid">
+                    <article class="rx-metric">
+                        <div class="rx-label">{{ 'patient.prescription.field.frequency'|trans({}, 'messages', currentLocale) }}</div>
+                        <div class="rx-value">{{ tFrequence }}</div>
+                    </article>
+                    <article class="rx-metric">
+                        <div class="rx-label">{{ 'patient.prescription.field.dosage'|trans({}, 'messages', currentLocale) }}</div>
+                        <div class="rx-value">{{ tDosage }}</div>
+                    </article>
+                    <article class="rx-metric">
+                        <div class="rx-label">{{ 'patient.prescription.field.duration'|trans({}, 'messages', currentLocale) }}</div>
+                        <div class="rx-value">{{ tDuree }}</div>
+                    </article>
+                    <article class="rx-metric">
+                        <div class="rx-label">{{ 'patient.prescription.field.period'|trans({}, 'messages', currentLocale) }}</div>
+                        <div class="rx-value">{{ periodStart }} -> {{ periodEnd }}</div>
+                    </article>
+                </div>
+
+                <section class="rx-block">
+                    <h3><i class="bi bi-capsule-pill me-1"></i>{{ 'patient.prescription.field.medications'|trans({}, 'messages', currentLocale) }}</h3>
+                    <p>{{ tMedicaments }}</p>
+                </section>
+
+                <section class="rx-block">
+                    <h3><i class="bi bi-clipboard2-pulse me-1"></i>{{ 'patient.prescription.field.instructions'|trans({}, 'messages', currentLocale) }}</h3>
+                    <p>{{ tConsignes }}</p>
+                </section>
+
+                <div class="tts-panel" aria-label="{{ 'patient.prescription.tts.panel_label'|trans({}, 'messages', currentLocale) }}">
+                    <div class="tts-controls">
+                        <label for="ttsLanguage" class="rx-label mb-0">{{ 'patient.prescription.tts.language_label'|trans({}, 'messages', currentLocale) }}</label>
+                        <select id="ttsLanguage" class="form-select form-select-sm" style="max-width: 220px;">
+                            <option value="fr-FR" {{ defaultTtsLang == 'fr-FR' ? 'selected' : '' }}>{{ 'patient.prescription.tts.language_fr'|trans({}, 'messages', currentLocale) }}</option>
+                            <option value="ar-TN" {{ defaultTtsLang == 'ar-TN' ? 'selected' : '' }}>{{ 'patient.prescription.tts.language_ar_tn'|trans({}, 'messages', currentLocale) }}</option>
+                            <option value="ar-SA" {{ defaultTtsLang == 'ar-SA' ? 'selected' : '' }}>{{ 'patient.prescription.tts.language_ar'|trans({}, 'messages', currentLocale) }}</option>
+                            <option value="en-US" {{ defaultTtsLang == 'en-US' ? 'selected' : '' }}>{{ 'patient.prescription.tts.language_en'|trans({}, 'messages', currentLocale) }}</option>
+                        </select>
+                        <button
+                            type="button"
+                            id="readPrescriptionBtn"
+                            class="btn primary"
+                            data-tts-url="{{ path('patient_prescription_tts', {'id': prescription.idPrescription})|e('html_attr') }}"
+                            data-label-read="{{ 'patient.prescription.tts.read_button'|trans({}, 'messages', currentLocale)|e('html_attr') }}"
+                            data-label-stop="{{ 'patient.prescription.tts.stop_button'|trans({}, 'messages', currentLocale)|e('html_attr') }}"
+                            data-msg-unsupported="{{ 'patient.prescription.tts.unsupported'|trans({}, 'messages', currentLocale)|e('html_attr') }}"
+                            data-msg-playing="{{ 'patient.prescription.tts.playing'|trans({}, 'messages', currentLocale)|e('html_attr') }}"
+                            data-msg-stopped="{{ 'patient.prescription.tts.stopped'|trans({}, 'messages', currentLocale)|e('html_attr') }}"
+                        >
+                            {{ 'patient.prescription.tts.read_button'|trans({}, 'messages', currentLocale) }}
+                        </button>
                     </div>
+                    <p id="ttsStatus" class="tts-status" role="status" aria-live="polite"></p>
+                </div>
 
-                    <div class="item">
-                        <strong>{{ 'patient.prescription.field.medications'|trans({}, 'messages', currentLocale) }}</strong>
-                        <p>{{ tMedicaments }}</p>
-                    </div>
+                <div id="prescriptionSpeechTextFr" class="visually-hidden" aria-hidden="true">{{ speechTextFr }}</div>
+                <div id="prescriptionSpeechTextAr" class="visually-hidden" aria-hidden="true">{{ speechTextAr }}</div>
+                <div id="prescriptionSpeechTextEn" class="visually-hidden" aria-hidden="true">{{ speechTextEn }}</div>
 
-                    <div class="item">
-                        <strong>{{ 'patient.prescription.field.instructions'|trans({}, 'messages', currentLocale) }}</strong>
-                        <p>{{ tConsignes }}</p>
-                    </div>
-
-                    <div class="tts-panel" aria-label="{{ 'patient.prescription.tts.panel_label'|trans({}, 'messages', currentLocale) }}">
-                        <div class="tts-controls">
-                            <label for="ttsLanguage" class="cute-label mb-0">{{ 'patient.prescription.tts.language_label'|trans({}, 'messages', currentLocale) }}</label>
-                            <select id="ttsLanguage" class="form-select form-select-sm" style="max-width: 220px;">
-                                <option value="fr-FR" {{ defaultTtsLang == 'fr-FR' ? 'selected' : '' }}>{{ 'patient.prescription.tts.language_fr'|trans({}, 'messages', currentLocale) }}</option>
-                                <option value="ar-TN" {{ defaultTtsLang == 'ar-TN' ? 'selected' : '' }}>{{ 'patient.prescription.tts.language_ar_tn'|trans({}, 'messages', currentLocale) }}</option>
-                                <option value="ar-SA" {{ defaultTtsLang == 'ar-SA' ? 'selected' : '' }}>{{ 'patient.prescription.tts.language_ar'|trans({}, 'messages', currentLocale) }}</option>
-                                <option value="en-US" {{ defaultTtsLang == 'en-US' ? 'selected' : '' }}>{{ 'patient.prescription.tts.language_en'|trans({}, 'messages', currentLocale) }}</option>
-                            </select>
-                            <button
-                                type="button"
-                                id="readPrescriptionBtn"
-                                class="btn primary"
-                                data-tts-url="{{ path('patient_prescription_tts', {'id': prescription.idPrescription})|e('html_attr') }}"
-                                data-label-read="{{ 'patient.prescription.tts.read_button'|trans({}, 'messages', currentLocale)|e('html_attr') }}"
-                                data-label-stop="{{ 'patient.prescription.tts.stop_button'|trans({}, 'messages', currentLocale)|e('html_attr') }}"
-                                data-msg-unsupported="{{ 'patient.prescription.tts.unsupported'|trans({}, 'messages', currentLocale)|e('html_attr') }}"
-                                data-msg-playing="{{ 'patient.prescription.tts.playing'|trans({}, 'messages', currentLocale)|e('html_attr') }}"
-                                data-msg-stopped="{{ 'patient.prescription.tts.stopped'|trans({}, 'messages', currentLocale)|e('html_attr') }}"
-                            >
-                                {{ 'patient.prescription.tts.read_button'|trans({}, 'messages', currentLocale) }}
-                            </button>
-                        </div>
-                        <p id="ttsStatus" class="tts-status" role="status" aria-live="polite"></p>
-                    </div>
-
-                    <div id="prescriptionSpeechTextFr" class="visually-hidden" aria-hidden="true">{{ speechTextFr }}</div>
-                    <div id="prescriptionSpeechTextAr" class="visually-hidden" aria-hidden="true">{{ speechTextAr }}</div>
-                    <div id="prescriptionSpeechTextEn" class="visually-hidden" aria-hidden="true">{{ speechTextEn }}</div>
-
-                    <div class="actions">
-                        <a class="btn primary" href="{{ path('patient_prescription_pdf', {'id': prescription.idPrescription}) }}">{{ 'patient.prescription.download_pdf'|trans({}, 'messages', currentLocale) }}</a>
-                        <a class="btn ghost" href="{{ path('patient_consultations') }}">{{ 'patient.prescription.back'|trans({}, 'messages', currentLocale) }}</a>
-                    </div>
+                <div class="actions mt-3">
+                    <a class="btn primary" href="{{ path('patient_prescription_pdf', {'id': prescription.idPrescription}) }}">{{ 'patient.prescription.download_pdf'|trans({}, 'messages', currentLocale) }}</a>
+                    <a class="btn ghost" href="{{ path('patient_consultations') }}">{{ 'patient.prescription.back'|trans({}, 'messages', currentLocale) }}</a>
                 </div>
             </section>
         </main>

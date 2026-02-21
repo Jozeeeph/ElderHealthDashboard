@@ -86,15 +86,68 @@ class ConsultationRepository extends ServiceEntityRepository
      */
     public function findByPatient(Utilisateur $patient): array
     {
+        return $this->createByPatientQueryBuilder($patient)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return array{items: array<int, Consultation>, total: int, page: int, perPage: int, pages: int}
+     */
+    public function findByPatientPaginated(Utilisateur $patient, int $page, int $perPage): array
+    {
+        $qb = $this->createQueryBuilder('c')
+            ->leftJoin('c.patient', 'p')->addSelect('p')
+            ->leftJoin('c.personnelMedical', 'm')->addSelect('m')
+            ->andWhere('c.patient = :patient')
+            ->setParameter('patient', $patient)
+            ->orderBy('c.dateConsultation', 'DESC')
+            ->addOrderBy('c.heureConsultation', 'DESC');
+
+        return $this->paginateQueryBuilder($qb, $page, $perPage);
+    }
+
+    public function createByPatientQueryBuilder(Utilisateur $patient): QueryBuilder
+    {
         return $this->createQueryBuilder('c')
             ->leftJoin('c.patient', 'p')->addSelect('p')
             ->leftJoin('c.personnelMedical', 'm')->addSelect('m')
             ->andWhere('c.patient = :patient')
             ->setParameter('patient', $patient)
             ->orderBy('c.dateConsultation', 'DESC')
-            ->addOrderBy('c.heureConsultation', 'DESC')
+            ->addOrderBy('c.heureConsultation', 'DESC');
+    }
+
+    public function countForPatient(Utilisateur $patient): int
+    {
+        return (int) $this->createQueryBuilder('c')
+            ->select('COUNT(c.id)')
+            ->andWhere('c.patient = :patient')
+            ->setParameter('patient', $patient)
             ->getQuery()
-            ->getResult();
+            ->getSingleScalarResult();
+    }
+
+    public function countRapportsForPatient(Utilisateur $patient): int
+    {
+        return (int) $this->createQueryBuilder('c')
+            ->select('COUNT(rm)')
+            ->innerJoin('App\Entity\RapportMedical', 'rm', 'WITH', 'rm.consultation = c')
+            ->andWhere('c.patient = :patient')
+            ->setParameter('patient', $patient)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function countPrescriptionsForPatient(Utilisateur $patient): int
+    {
+        return (int) $this->createQueryBuilder('c')
+            ->select('COUNT(p)')
+            ->innerJoin('App\Entity\Prescription', 'p', 'WITH', 'p.consultation = c')
+            ->andWhere('c.patient = :patient')
+            ->setParameter('patient', $patient)
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 
     /**
@@ -248,4 +301,3 @@ class ConsultationRepository extends ServiceEntityRepository
         ];
     }
 }
-

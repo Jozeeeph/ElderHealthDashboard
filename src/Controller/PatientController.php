@@ -14,6 +14,7 @@ use App\Repository\UtilisateurRepository;
 use App\Service\PrescriptionReminderScheduler;
 use Doctrine\ORM\EntityManagerInterface;
 use Dompdf\Dompdf;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -25,6 +26,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PatientController extends AbstractController
 {
+    private const CONSULTATIONS_PER_PAGE = 4;
 
     #[Route('/patient/home', name: 'app_patient_interfce')]
     public function patientDashboard(): Response
@@ -33,7 +35,12 @@ class PatientController extends AbstractController
     }
 
     #[Route('/patient/consultations', name: 'patient_consultations')]
-    public function patientConsultations(ConsultationRepository $consultationRepository, UtilisateurRepository $utilisateurRepository): Response
+    public function patientConsultations(
+        Request $request,
+        ConsultationRepository $consultationRepository,
+        UtilisateurRepository $utilisateurRepository,
+        PaginatorInterface $paginator
+    ): Response
     {
         $patient = $this->resolveCurrentPatient($utilisateurRepository);
         if (!$patient) {
@@ -41,10 +48,23 @@ class PatientController extends AbstractController
             return $this->redirectToRoute('app_patient_interfce');
         }
 
-        $consultations = $consultationRepository->findByPatient($patient);
+        $page = max(1, $request->query->getInt('page', 1));
+        $pagination = $paginator->paginate(
+            $consultationRepository->createByPatientQueryBuilder($patient),
+            $page,
+            self::CONSULTATIONS_PER_PAGE,
+            ['distinct' => true]
+        );
+        $totals = [
+            'consultations' => $consultationRepository->countForPatient($patient),
+            'rapports' => $consultationRepository->countRapportsForPatient($patient),
+            'prescriptions' => $consultationRepository->countPrescriptionsForPatient($patient),
+        ];
 
         return $this->render('FrontOffice/patient/consultations.html.twig', [
-            'consultations' => $consultations,
+            'consultations' => $pagination,
+            'pagination' => $pagination,
+            'totals' => $totals,
             'patient' => $patient,
         ]);
     }

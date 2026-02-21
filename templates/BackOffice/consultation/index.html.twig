@@ -341,10 +341,6 @@
                                href="{{ path('rapport_medical_show', {'id': consultation.rapportMedical.idRapport}) }}">
                                 📄 Rapport
                             </a>
-                            <a class="btn btn-outline-secondary btn-sm"
-                               href="{{ path('rapport_medical_pdf', {'id': consultation.rapportMedical.idRapport}) }}">
-                                📎 PDF
-                            </a>
                         {% else %}
                             <button type="button"
                                     class="btn btn-success btn-sm js-rapport-new"
@@ -359,10 +355,6 @@
                             <a class="btn btn-outline-primary btn-sm"
                                href="{{ path('prescription_show', {'id': consultation.prescription.idPrescription}) }}">
                                 💊 Prescription
-                            </a>
-                            <a class="btn btn-outline-secondary btn-sm"
-                               href="{{ path('prescription_pdf', {'id': consultation.prescription.idPrescription}) }}">
-                                📎 PDF
                             </a>
                         {% else %}
                             <button type="button"
@@ -530,6 +522,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const deleteModal = document.getElementById('consultationDeleteModal');
     const errorToastEl = document.getElementById('consultationErrorToast');
     const errorToast = errorToastEl ? bootstrap.Toast.getOrCreateInstance(errorToastEl, { delay: 4000 }) : null;
+    const modalFormCache = new Map();
     if (!editModal && !newModal && !rapportNewModal && !prescriptionNewModal && !deleteModal) return;
 
     const showErrorToast = (message) => {
@@ -620,9 +613,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    const loadFormIntoModal = async (modal, url) => {
+    const loadFormIntoModal = async (modal, url, options = {}) => {
+        const useCache = Boolean(options.useCache);
         const modalBody = modal.querySelector('.modal-body');
         if (!modalBody) return;
+
+        if (useCache && modalFormCache.has(url)) {
+            modalBody.innerHTML = modalFormCache.get(url);
+            bindFormSubmit(modal);
+            return;
+        }
+
         modalBody.innerHTML = '<div class="text-muted small">Chargement...</div>';
         try {
             const response = await fetch(url, {
@@ -632,11 +633,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error('Impossible de charger le formulaire.');
             }
             const html = await response.text();
+            if (useCache) {
+                modalFormCache.set(url, html);
+            }
             modalBody.innerHTML = html;
             bindFormSubmit(modal);
         } catch (e) {
             modalBody.innerHTML = '<div class="alert alert-danger mb-0">Impossible de charger le formulaire.</div>';
             showErrorToast(e.message || 'Erreur de chargement.');
+        }
+    };
+
+    const prefetchForm = async (url) => {
+        if (!url || modalFormCache.has(url)) return;
+        try {
+            const response = await fetch(url, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            if (!response.ok) return;
+            modalFormCache.set(url, await response.text());
+        } catch (_) {
+            // Keep silent: prefetch should never block UI.
         }
     };
 
@@ -656,7 +673,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!trigger) return;
             const newUrl = trigger.getAttribute('data-new-url');
             if (!newUrl) return;
-            await loadFormIntoModal(newModal, newUrl);
+            await loadFormIntoModal(newModal, newUrl, { useCache: true });
         });
     }
 
@@ -666,7 +683,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!trigger) return;
             const newUrl = trigger.getAttribute('data-new-url');
             if (!newUrl) return;
-            await loadFormIntoModal(rapportNewModal, newUrl);
+            await loadFormIntoModal(rapportNewModal, newUrl, { useCache: true });
         });
     }
 
@@ -676,8 +693,16 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!trigger) return;
             const newUrl = trigger.getAttribute('data-new-url');
             if (!newUrl) return;
-            await loadFormIntoModal(prescriptionNewModal, newUrl);
+            await loadFormIntoModal(prescriptionNewModal, newUrl, { useCache: true });
         });
+    }
+
+    if (newModal) {
+        const trigger = document.querySelector('[data-bs-target="#consultationNewModal"][data-new-url]');
+        const newUrl = trigger ? trigger.getAttribute('data-new-url') : null;
+        if (newUrl) {
+            window.setTimeout(() => { prefetchForm(newUrl); }, 300);
+        }
     }
 
     if (deleteModal) {
