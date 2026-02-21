@@ -118,6 +118,31 @@ class ConsultationRepository extends ServiceEntityRepository
             ->addOrderBy('c.heureConsultation', 'DESC');
     }
 
+    public function findPreviousForPatient(Consultation $consultation): ?Consultation
+    {
+        $patient = $consultation->getPatient();
+        $date = $consultation->getDateConsultation();
+        $heure = $consultation->getHeureConsultation();
+        if (!$patient || !$date || !$heure || !$consultation->getId()) {
+            return null;
+        }
+
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.patient = :patient')
+            ->andWhere('c.id != :id')
+            ->andWhere('(c.dateConsultation < :date OR (c.dateConsultation = :date AND c.heureConsultation < :heure) OR (c.dateConsultation = :date AND c.heureConsultation = :heure AND c.id < :id))')
+            ->setParameter('patient', $patient)
+            ->setParameter('date', $date)
+            ->setParameter('heure', $heure)
+            ->setParameter('id', $consultation->getId())
+            ->orderBy('c.dateConsultation', 'DESC')
+            ->addOrderBy('c.heureConsultation', 'DESC')
+            ->addOrderBy('c.id', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     public function countForPatient(Utilisateur $patient): int
     {
         return (int) $this->createQueryBuilder('c')

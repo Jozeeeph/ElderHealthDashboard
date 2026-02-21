@@ -1,6 +1,6 @@
 fos_ck_editor:
-    base_path: "https://cdn.ckeditor.com/4.22.1/full-all/"
-    js_path: "https://cdn.ckeditor.com/4.22.1/full-all/ckeditor.js"
+    base_path: "https://cdn.ckeditor.com/4.25.1-lts/full-all/"
+    js_path: "https://cdn.ckeditor.com/4.25.1-lts/full-all/ckeditor.js"
     configs:
         consultation_notes:
             language: fr

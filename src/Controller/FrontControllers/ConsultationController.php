@@ -7,6 +7,7 @@ use App\Entity\Utilisateur;
 use App\Form\ConsultationType;
 use App\Repository\ConsultationRepository;
 use App\Repository\UtilisateurRepository;
+use App\Service\ClinicalSeverityService;
 use App\Service\PreBilanAnalytiqueService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -174,6 +175,23 @@ class ConsultationController extends AbstractController
             'preBilan' => $result['content'],
             'preBilanSource' => $result['source'],
             'preBilanDebugReason' => $result['debugReason'] ?? null,
+            'nurseName' => $user->getPrenom(),
+        ]);
+    }
+
+    #[Route('/{id}/etat-3d', name: 'severity_3d', methods: ['GET'])]
+    public function severity3d(Consultation $consultation, ClinicalSeverityService $clinicalSeverityService): Response
+    {
+        $user = $this->requirePersonnel();
+        if ($consultation->getPersonnelMedical()?->getId() !== $user->getId()) {
+            throw $this->createAccessDeniedException('Acces refuse.');
+        }
+
+        $severity = $clinicalSeverityService->evaluate($consultation);
+
+        return $this->render('FrontOffice/infermier/consultations/severity_3d.html.twig', [
+            'consultation' => $consultation,
+            'severity' => $severity,
             'nurseName' => $user->getPrenom(),
         ]);
     }

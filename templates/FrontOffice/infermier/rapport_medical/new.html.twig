@@ -13,9 +13,22 @@
                     <a class="btn-outline" href="{{ path('front_infermier_consultation_index') }}">Retour</a>
                 </div>
                 <p class="muted">Consultation {{ consultation.id }}</p>
+                {% if severity is defined %}
+                    <div class="alert alert-info mt-2 mb-0">
+                        Gravite clinique calculee: <strong>{{ severity.levelLabel }}</strong>
+                        (score {{ severity.score }}/100).
+                        Niveau du rapport pre-rempli: <strong>{{ severity_prefill_level|default('faible')|capitalize }}</strong>.
+                        Vous pouvez le modifier avant validation.
+                    </div>
+                {% endif %}
             </section>
 
-            {{ include('FrontOffice/infermier/rapport_medical/_form.html.twig', { form: form, submit_label: 'Ajouter' }) }}
+            {{ include('FrontOffice/infermier/rapport_medical/_form.html.twig', {
+                form: form,
+                submit_label: 'Ajouter',
+                severity: severity|default(null),
+                severity_prefill_level: severity_prefill_level|default(null)
+            }) }}
         </main>
     </div>
 {% endblock %}

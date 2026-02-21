@@ -412,6 +412,7 @@
                                     <div class="consultation-actions">
                                         <a class="btn btn-outline-primary btn-sm" href="{{ path('front_infermier_consultation_edit', {'id': consultation.id}) }}">Modifier</a>
                                         <a class="btn btn-outline-info btn-sm" href="{{ path('front_infermier_consultation_pre_bilan', {'patientId': consultation.patient.id}) }}">Pre-bilan IA</a>
+                                        <a class="btn btn-outline-dark btn-sm" href="{{ path('front_infermier_consultation_severity_3d', {'id': consultation.id}) }}">Etat 3D</a>
 
                                         {% if consultation.rapportMedical %}
                                             <a class="btn btn-outline-primary btn-sm" href="{{ path('front_infermier_rapport_show', {'id': consultation.rapportMedical.idRapport}) }}">Rapport</a>

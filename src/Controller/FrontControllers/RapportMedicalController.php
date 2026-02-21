@@ -6,6 +6,7 @@ use App\Entity\Consultation;
 use App\Entity\RapportMedical;
 use App\Entity\Utilisateur;
 use App\Form\RapportMedicalType;
+use App\Service\ClinicalSeverityService;
 use Doctrine\ORM\EntityManagerInterface;
 use Dompdf\Dompdf;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -38,7 +39,12 @@ class RapportMedicalController extends AbstractController
     }
 
     #[Route('/consultation/{id}/new', name: 'new', methods: ['GET', 'POST'])]
-    public function new(Consultation $consultation, Request $request, EntityManagerInterface $em): Response
+    public function new(
+        Consultation $consultation,
+        Request $request,
+        EntityManagerInterface $em,
+        ClinicalSeverityService $clinicalSeverityService
+    ): Response
     {
         $user = $this->requirePersonnel();
         $this->assertConsultationOwned($consultation, $user);
@@ -53,6 +59,10 @@ class RapportMedicalController extends AbstractController
         $rapport = new RapportMedical();
         $consultation->setRapportMedical($rapport);
         $rapport->setDateRapport(new \DateTime());
+        $severity = $clinicalSeverityService->evaluate($consultation);
+        if (!$rapport->getNiveauGravite()) {
+            $rapport->setNiveauGravite($this->mapSeverityToRapportLevel($severity['level']));
+        }
 
         $form = $this->createForm(RapportMedicalType::class, $rapport);
         $form->handleRequest($request);
@@ -67,6 +77,8 @@ class RapportMedicalController extends AbstractController
         return $this->render('FrontOffice/infermier/rapport_medical/new.html.twig', [
             'form' => $form->createView(),
             'consultation' => $consultation,
+            'severity' => $severity,
+            'severity_prefill_level' => $rapport->getNiveauGravite(),
             'nurseName' => $user->getPrenom(),
         ]);
     }
@@ -210,5 +222,14 @@ class RapportMedicalController extends AbstractController
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'attachment; filename="rapport-medical-' . $rapport->getIdRapport() . '.pdf"',
         ]);
+    }
+
+    private function mapSeverityToRapportLevel(string $severityLevel): string
+    {
+        return match ($severityLevel) {
+            'high' => 'eleve',
+            'medium' => 'moyen',
+            default => 'faible',
+        };
     }
 }
