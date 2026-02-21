@@ -64,3 +64,6 @@ services:
             $authToken: '%app.twilio.auth_token%'
             $fromNumber: '%app.twilio.from_number%'
             $toNumber: '%app.twilio.stock_alert_to_number%'
+    App\Service\WeatherService:
+        arguments:
+            $apiKey: '%env(WEATHER_API_KEY)%'
