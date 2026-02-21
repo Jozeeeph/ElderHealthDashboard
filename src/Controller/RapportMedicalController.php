@@ -8,7 +8,6 @@ use App\Form\RapportMedicalType;
 use Doctrine\ORM\EntityManagerInterface;
 use Dompdf\Dompdf;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -34,11 +33,6 @@ class RapportMedicalController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $upload = $form->get('fichier')->getData();
-            if ($upload instanceof UploadedFile) {
-                $path = $this->storeRapportFile($upload);
-                $rapport->setFichierPath($path);
-            }
             $em->persist($rapport);
             $em->flush();
             $this->addFlash('success', 'Rapport medical ajoute.');
@@ -74,11 +68,6 @@ class RapportMedicalController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $upload = $form->get('fichier')->getData();
-            if ($upload instanceof UploadedFile) {
-                $path = $this->storeRapportFile($upload);
-                $rapport->setFichierPath($path);
-            }
             $em->flush();
             $this->addFlash('success', 'Rapport medical mis a jour.');
             return $this->redirectToRoute('rapport_medical_show', ['id' => $rapport->getIdRapport()]);
@@ -135,7 +124,11 @@ class RapportMedicalController extends AbstractController
         $attachment = null;
         if ($rapport->getFichierPath()) {
             $projectDir = $this->getParameter('kernel.project_dir');
-            $publicPath = $projectDir . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . $rapport->getFichierPath();
+            $storedPath = ltrim((string) $rapport->getFichierPath(), '/\\');
+            $publicPath = str_starts_with($storedPath, 'uploads' . DIRECTORY_SEPARATOR)
+                || str_starts_with($storedPath, 'uploads/')
+                ? $projectDir . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . $storedPath
+                : $projectDir . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'rapports' . DIRECTORY_SEPARATOR . $storedPath;
             if (is_file($publicPath)) {
                 $ext = strtolower(pathinfo($publicPath, PATHINFO_EXTENSION));
                 $isImage = in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'], true);
@@ -178,24 +171,5 @@ class RapportMedicalController extends AbstractController
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'attachment; filename="rapport-medical-' . $rapport->getIdRapport() . '.pdf"',
         ]);
-    }
-
-    private function storeRapportFile(UploadedFile $file): string
-    {
-        $projectDir = $this->getParameter('kernel.project_dir');
-        $uploadDir = $projectDir . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'rapports';
-
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0775, true);
-        }
-
-        $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-        $safeName = preg_replace('/[^a-zA-Z0-9_-]+/', '-', $originalName) ?: 'rapport';
-        $extension = $file->guessExtension() ?: $file->getClientOriginalExtension();
-        $filename = $safeName . '-' . bin2hex(random_bytes(6)) . ($extension ? '.' . $extension : '');
-
-        $file->move($uploadDir, $filename);
-
-        return 'uploads/rapports/' . $filename;
     }
 }

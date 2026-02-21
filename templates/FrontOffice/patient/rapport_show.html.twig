@@ -160,11 +160,12 @@
 					<p>{{ rapport.recommandations }}</p>
 				</section>
 
-				{% if rapport.fichierPath %}
+				{% set rapport_file_url = rapport.fichierPath starts with 'uploads/' ? asset(rapport.fichierPath) : vich_uploader_asset(rapport, 'fichier') %}
+				{% if rapport_file_url %}
 					<section class="report-block">
 						<h3><i class="bi bi-paperclip me-1"></i>Piece jointe</h3>
 						<p>
-							<a class="btn ghost" href="{{ asset(rapport.fichierPath) }}" target="_blank" rel="noopener">Ouvrir le fichier</a>
+							<a class="btn ghost" href="{{ rapport_file_url }}" target="_blank" rel="noopener">Ouvrir le fichier</a>
 						</p>
 					</section>
 				{% endif %}

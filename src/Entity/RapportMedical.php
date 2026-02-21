@@ -5,7 +5,10 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\RapportMedicalRepository;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
+#[Vich\Uploadable]
 #[ORM\Entity(repositoryClass: RapportMedicalRepository::class)]
 #[ORM\Table(name: "rapport_medical")]
 class RapportMedical
@@ -34,6 +37,9 @@ class RapportMedical
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $fichier_path = null;
+
+    #[Vich\UploadableField(mapping: 'rapport_files', fileNameProperty: 'fichier_path')]
+    private ?File $fichier = null;
 
     #[ORM\OneToOne(targetEntity: Consultation::class)]
     #[ORM\JoinColumn(name: "consultation_id", referencedColumnName: "id", nullable: false, unique: true, onDelete: "CASCADE")]
@@ -99,6 +105,23 @@ class RapportMedical
     public function setFichierPath(?string $fichier_path): self
     {
         $this->fichier_path = $fichier_path;
+        return $this;
+    }
+
+    public function getFichier(): ?File
+    {
+        return $this->fichier;
+    }
+
+    public function setFichier(?File $fichier): self
+    {
+        $this->fichier = $fichier;
+
+        if ($fichier !== null) {
+            // Trigger Doctrine update so Vich can process file replacement.
+            $this->date_rapport = new \DateTime();
+        }
+
         return $this;
     }
 

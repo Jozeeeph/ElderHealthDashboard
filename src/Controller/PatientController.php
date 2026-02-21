@@ -189,7 +189,11 @@ class PatientController extends AbstractController
         $attachment = null;
         if ($rapport->getFichierPath()) {
             $projectDir = $this->getParameter('kernel.project_dir');
-            $publicPath = $projectDir . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . $rapport->getFichierPath();
+            $storedPath = ltrim((string) $rapport->getFichierPath(), '/\\');
+            $publicPath = str_starts_with($storedPath, 'uploads' . DIRECTORY_SEPARATOR)
+                || str_starts_with($storedPath, 'uploads/')
+                ? $projectDir . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . $storedPath
+                : $projectDir . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'rapports' . DIRECTORY_SEPARATOR . $storedPath;
             if (is_file($publicPath)) {
                 $ext = strtolower(pathinfo($publicPath, PATHINFO_EXTENSION));
                 $isImage = in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'], true);

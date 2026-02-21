@@ -5,11 +5,11 @@ namespace App\Form;
 use App\Entity\RapportMedical;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
+use Vich\UploaderBundle\Form\Type\VichFileType;
 
 class RapportMedicalType extends AbstractType
 {
@@ -33,10 +33,11 @@ class RapportMedicalType extends AbstractType
                 ],
                 'placeholder' => 'Choisir un niveau',
             ])
-            ->add('fichier', FileType::class, [
+            ->add('fichier', VichFileType::class, [
                 'label' => 'Fichier / Image (PDF, JPG, PNG)',
-                'mapped' => false,
                 'required' => false,
+                'allow_delete' => true,
+                'download_uri' => false,
                 'constraints' => [
                     new File([
                         'maxSize' => '5M',

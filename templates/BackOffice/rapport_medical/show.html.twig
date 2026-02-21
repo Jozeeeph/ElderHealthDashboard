@@ -220,11 +220,12 @@
                     <div class="rapport-meta-value">{{ rapport.dateRapport ? rapport.dateRapport|date('d/m/Y H:i') : '-' }}</div>
                 </div>
 
-                {% if rapport.fichierPath %}
+                {% set rapport_file_url = rapport.fichierPath starts with 'uploads/' ? asset(rapport.fichierPath) : vich_uploader_asset(rapport, 'fichier') %}
+                {% if rapport_file_url %}
                     <div class="rapport-meta-item">
                         <div class="rapport-meta-label">Fichier joint</div>
                         <div class="rapport-meta-value">
-                            <a href="{{ asset(rapport.fichierPath) }}" target="_blank" rel="noopener">Voir le fichier</a>
+                            <a href="{{ rapport_file_url }}" target="_blank" rel="noopener">Voir le fichier</a>
                         </div>
                     </div>
                 {% endif %}
