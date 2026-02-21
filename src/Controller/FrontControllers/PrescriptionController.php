@@ -6,9 +6,12 @@ use App\Entity\Consultation;
 use App\Entity\Prescription;
 use App\Entity\Utilisateur;
 use App\Form\PrescriptionType;
+use App\Service\MedicationSafetyService;
 use Doctrine\ORM\EntityManagerInterface;
 use Dompdf\Dompdf;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormError;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -38,7 +41,12 @@ class PrescriptionController extends AbstractController
     }
 
     #[Route('/consultation/{id}/new', name: 'new', methods: ['GET', 'POST'])]
-    public function new(Consultation $consultation, Request $request, EntityManagerInterface $em): Response
+    public function new(
+        Consultation $consultation,
+        Request $request,
+        EntityManagerInterface $em,
+        MedicationSafetyService $medicationSafetyService
+    ): Response
     {
         $user = $this->requirePersonnel();
         $this->assertConsultationOwned($consultation, $user);
@@ -55,10 +63,47 @@ class PrescriptionController extends AbstractController
 
         $form = $this->createForm(PrescriptionType::class, $prescription);
         $form->handleRequest($request);
+        $interactionAnalysis = null;
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $interactionAnalysis = $medicationSafetyService->analyze(
+                $consultation,
+                (string) $prescription->getMedicaments()
+            );
+
+            if ($interactionAnalysis['hasCritical']) {
+                $form->get('medicaments')->addError(new FormError(
+                    'Interaction medicamenteuse critique detectee. Corrigez la liste des medicaments avant validation.'
+                ));
+            }
+        }
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em->persist($prescription);
             $em->flush();
+
+            if (is_array($interactionAnalysis) && count($interactionAnalysis['alerts']) > 0) {
+                $criticalCount = count(array_filter(
+                    $interactionAnalysis['alerts'],
+                    static fn (array $alert): bool => $alert['severity'] === 'critical'
+                ));
+                $highCount = count(array_filter(
+                    $interactionAnalysis['alerts'],
+                    static fn (array $alert): bool => $alert['severity'] === 'high'
+                ));
+
+                if ($criticalCount > 0 || $highCount > 0) {
+                    $this->addFlash(
+                        'warning',
+                        sprintf(
+                            'Vigilance medicamenteuse: %d alerte(s) critique(s), %d alerte(s) elevee(s).',
+                            $criticalCount,
+                            $highCount
+                        )
+                    );
+                }
+            }
+
             $this->addFlash('success', 'Prescription ajoutee.');
             return $this->redirectToRoute('front_infermier_prescription_show', ['id' => $prescription->getIdPrescription()]);
         }
@@ -66,6 +111,7 @@ class PrescriptionController extends AbstractController
         return $this->render('FrontOffice/infermier/prescription/new.html.twig', [
             'form' => $form->createView(),
             'consultation' => $consultation,
+            'interaction_check_url' => $this->generateUrl('front_infermier_prescription_interaction_check', ['id' => $consultation->getId()]),
             'nurseName' => $user->getPrenom(),
         ]);
     }
@@ -88,7 +134,12 @@ class PrescriptionController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'edit', methods: ['GET', 'POST'])]
-    public function edit(Prescription $prescription, Request $request, EntityManagerInterface $em): Response
+    public function edit(
+        Prescription $prescription,
+        Request $request,
+        EntityManagerInterface $em,
+        MedicationSafetyService $medicationSafetyService
+    ): Response
     {
         $user = $this->requirePersonnel();
         $consultation = $prescription->getConsultation();
@@ -99,9 +150,46 @@ class PrescriptionController extends AbstractController
 
         $form = $this->createForm(PrescriptionType::class, $prescription);
         $form->handleRequest($request);
+        $interactionAnalysis = null;
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $interactionAnalysis = $medicationSafetyService->analyze(
+                $consultation,
+                (string) $prescription->getMedicaments()
+            );
+
+            if ($interactionAnalysis['hasCritical']) {
+                $form->get('medicaments')->addError(new FormError(
+                    'Interaction medicamenteuse critique detectee. Corrigez la liste des medicaments avant validation.'
+                ));
+            }
+        }
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em->flush();
+
+            if (is_array($interactionAnalysis) && count($interactionAnalysis['alerts']) > 0) {
+                $criticalCount = count(array_filter(
+                    $interactionAnalysis['alerts'],
+                    static fn (array $alert): bool => $alert['severity'] === 'critical'
+                ));
+                $highCount = count(array_filter(
+                    $interactionAnalysis['alerts'],
+                    static fn (array $alert): bool => $alert['severity'] === 'high'
+                ));
+
+                if ($criticalCount > 0 || $highCount > 0) {
+                    $this->addFlash(
+                        'warning',
+                        sprintf(
+                            'Vigilance medicamenteuse: %d alerte(s) critique(s), %d alerte(s) elevee(s).',
+                            $criticalCount,
+                            $highCount
+                        )
+                    );
+                }
+            }
+
             $this->addFlash('success', 'Prescription mise a jour.');
             return $this->redirectToRoute('front_infermier_prescription_show', ['id' => $prescription->getIdPrescription()]);
         }
@@ -110,7 +198,36 @@ class PrescriptionController extends AbstractController
             'form' => $form->createView(),
             'prescription' => $prescription,
             'consultation' => $consultation,
+            'interaction_check_url' => $this->generateUrl('front_infermier_prescription_interaction_check', ['id' => $consultation->getId()]),
             'nurseName' => $user->getPrenom(),
+        ]);
+    }
+
+    #[Route('/consultation/{id}/interaction-check', name: 'interaction_check', methods: ['POST'])]
+    public function interactionCheck(
+        Consultation $consultation,
+        Request $request,
+        MedicationSafetyService $medicationSafetyService
+    ): JsonResponse {
+        $user = $this->requirePersonnel();
+        $this->assertConsultationOwned($consultation, $user);
+
+        $payload = json_decode($request->getContent(), true);
+        $medicaments = '';
+
+        if (is_array($payload) && isset($payload['medicaments']) && is_string($payload['medicaments'])) {
+            $medicaments = $payload['medicaments'];
+        } else {
+            $medicaments = (string) $request->request->get('medicaments', '');
+        }
+
+        $analysis = $medicationSafetyService->analyze($consultation, $medicaments);
+
+        return $this->json([
+            'ok' => true,
+            'medications' => $analysis['medications'],
+            'alerts' => $analysis['alerts'],
+            'hasCritical' => $analysis['hasCritical'],
         ]);
     }
 

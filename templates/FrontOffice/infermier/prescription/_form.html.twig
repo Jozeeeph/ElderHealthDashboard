@@ -1,40 +1,164 @@
 {% form_theme form 'bootstrap_5_layout.html.twig' %}
 <div class="form-card">
-	<h3 class="form-title">Prescription</h3>
-	<p class="form-subtitle">Renseignez les informations principales.</p>
+    <h3 class="form-title">Prescription</h3>
+    <p class="form-subtitle">Renseignez les informations principales.</p>
 
-	{% if form_action is defined %}
-		{{ form_start(form, {'attr': {'class': 'consultation-form', 'novalidate': 'novalidate'}, 'action': form_action}) }}
-	{% else %}
-		{{ form_start(form, {'attr': {'class': 'consultation-form', 'novalidate': 'novalidate'}}) }}
-	{% endif %}
-		<div class="form-grid">
-			<div class="full">
-				{{ form_row(form.medicaments, { label: '💊 Médicaments' }) }}
-			</div>
-			<div>
-				{{ form_row(form.frequence, { label: '⏱️ Fréquence' }) }}
-			</div>
-			<div>
-				{{ form_row(form.dosage, { label: '🧪 Dosage' }) }}
-			</div>
-			<div>
-				{{ form_row(form.dureeTraitement, { label: '📆 Durée du traitement' }) }}
-			</div>
-			<div>
-				{{ form_row(form.dateDebut, { label: '📅 Date de début' }) }}
-			</div>
-			<div>
-				{{ form_row(form.dateFin, { label: '📅 Date de fin' }) }}
-			</div>
-			<div class="full">
-				{{ form_row(form.consignes, { label: '🧾 Consignes' }) }}
-			</div>
-		</div>
+    {% if form_action is defined %}
+        {{ form_start(form, {'attr': {'class': 'consultation-form js-rx-form', 'novalidate': 'novalidate'}, 'action': form_action}) }}
+    {% else %}
+        {{ form_start(form, {'attr': {'class': 'consultation-form js-rx-form', 'novalidate': 'novalidate'}}) }}
+    {% endif %}
+        <div class="form-grid">
+            <div class="full">
+                {{ form_row(form.medicaments, {
+                    label: 'Medicaments',
+                    attr: (form.medicaments.vars.attr|default({}))|merge({
+                        class: ((form.medicaments.vars.attr.class|default('')) ~ ' js-medications-input')|trim
+                    })
+                }) }}
+                {% if interaction_check_url is defined %}
+                    <div class="d-flex align-items-center justify-content-between mt-2">
+                        <small class="text-muted">Verification automatique des interactions et contre-indications.</small>
+                        <button type="button"
+                                class="btn btn-outline-secondary btn-sm js-interaction-check-btn"
+                                data-check-url="{{ interaction_check_url }}">
+                            Verifier maintenant
+                        </button>
+                    </div>
+                    <div class="alert alert-light border mt-2 mb-0 d-none js-interaction-status"></div>
+                    <div class="mt-2 d-none js-interaction-alerts"></div>
+                {% endif %}
+            </div>
+            <div>
+                {{ form_row(form.frequence, { label: 'Frequence' }) }}
+            </div>
+            <div>
+                {{ form_row(form.dosage, { label: 'Dosage' }) }}
+            </div>
+            <div>
+                {{ form_row(form.dureeTraitement, { label: 'Duree du traitement' }) }}
+            </div>
+            <div>
+                {{ form_row(form.dateDebut, { label: 'Date de debut' }) }}
+            </div>
+            <div>
+                {{ form_row(form.dateFin, { label: 'Date de fin' }) }}
+            </div>
+            <div class="full">
+                {{ form_row(form.consignes, { label: 'Consignes' }) }}
+            </div>
+        </div>
 
-		<div class="form-actions">
-			<button class="btn-solid" type="submit">{{ submit_label|default('Enregistrer') }}</button>
-			<a class="btn-outline" href="{{ path('front_infermier_consultation_index') }}">Retour</a>
-		</div>
-	{{ form_end(form) }}
+        <div class="form-actions">
+            <button class="btn-solid" type="submit">{{ submit_label|default('Enregistrer') }}</button>
+            <a class="btn-outline" href="{{ path('front_infermier_consultation_index') }}">Retour</a>
+        </div>
+    {{ form_end(form) }}
 </div>
+
+{% if interaction_check_url is defined %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.querySelector('.js-rx-form');
+        if (!form) return;
+
+        const input = form.querySelector('.js-medications-input');
+        const button = form.querySelector('.js-interaction-check-btn');
+        const statusBox = form.querySelector('.js-interaction-status');
+        const alertsBox = form.querySelector('.js-interaction-alerts');
+        const checkUrl = button ? button.getAttribute('data-check-url') : null;
+        if (!input || !button || !statusBox || !alertsBox || !checkUrl) return;
+
+        let timer = null;
+        let inFlight = false;
+
+        const severityClass = (severity) => {
+            if (severity === 'critical') return 'danger';
+            if (severity === 'high') return 'warning';
+            if (severity === 'medium') return 'info';
+            return 'secondary';
+        };
+
+        const render = (payload) => {
+            const alerts = Array.isArray(payload.alerts) ? payload.alerts : [];
+            const meds = Array.isArray(payload.medications) ? payload.medications : [];
+
+            statusBox.classList.remove('d-none', 'alert-light', 'alert-success', 'alert-warning', 'alert-danger');
+            if (meds.length === 0) {
+                statusBox.classList.add('alert-light');
+                statusBox.textContent = 'Ajoutez des medicaments pour verifier les interactions.';
+                alertsBox.classList.add('d-none');
+                alertsBox.innerHTML = '';
+                return;
+            }
+
+            if (alerts.length === 0) {
+                statusBox.classList.add('alert-success');
+                statusBox.textContent = 'Aucune interaction majeure detectee pour: ' + meds.join(', ') + '.';
+                alertsBox.classList.add('d-none');
+                alertsBox.innerHTML = '';
+                return;
+            }
+
+            const hasCritical = !!payload.hasCritical;
+            statusBox.classList.add(hasCritical ? 'alert-danger' : 'alert-warning');
+            statusBox.textContent = hasCritical
+                ? 'Attention: interaction critique detectee. Verification medicale requise.'
+                : 'Des alertes de vigilance ont ete detectees.';
+
+            alertsBox.classList.remove('d-none');
+            alertsBox.innerHTML = alerts.map((alert) => {
+                const badgeClass = severityClass(alert.severity || 'info');
+                const title = alert.title || 'Alerte';
+                const details = alert.details || '';
+                const source = alert.source || 'system';
+                return `
+                    <div class="alert alert-${badgeClass} py-2 mb-2">
+                        <div class="fw-bold">${title}</div>
+                        <div>${details}</div>
+                        <div class="small mt-1 opacity-75">Source: ${source}</div>
+                    </div>
+                `;
+            }).join('');
+        };
+
+        const runCheck = async () => {
+            if (inFlight) return;
+            const medicaments = input.value.trim();
+
+            inFlight = true;
+            statusBox.classList.remove('d-none');
+            statusBox.classList.add('alert-light');
+            statusBox.textContent = 'Analyse en cours...';
+            try {
+                const response = await fetch(checkUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({ medicaments })
+                });
+                if (!response.ok) throw new Error('request_failed');
+                const payload = await response.json();
+                render(payload);
+            } catch (e) {
+                statusBox.classList.remove('alert-light', 'alert-success', 'alert-warning');
+                statusBox.classList.add('alert-danger');
+                statusBox.textContent = 'Verification indisponible pour le moment.';
+                alertsBox.classList.add('d-none');
+                alertsBox.innerHTML = '';
+            } finally {
+                inFlight = false;
+            }
+        };
+
+        button.addEventListener('click', runCheck);
+        input.addEventListener('input', () => {
+            if (timer) clearTimeout(timer);
+            timer = setTimeout(runCheck, 700);
+        });
+    });
+</script>
+{% endif %}
+

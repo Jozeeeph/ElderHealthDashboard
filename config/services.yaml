@@ -53,3 +53,8 @@ services:
             $stripeSecretKey: '%env(string:STRIPE_SECRET_KEY)%'
             $stripeCurrency: '%env(string:STRIPE_CURRENCY)%'
             $stripeApiBaseUrl: '%env(string:STRIPE_API_BASE_URL)%'
+
+    App\Service\MedicationSafetyService:
+        arguments:
+            $openFdaApiUrl: '%env(string:OPENFDA_API_URL)%'
+            $openFdaApiKey: '%env(string:OPENFDA_API_KEY)%'
