@@ -13,16 +13,66 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use App\Repository\TypeEventRepository;
 
 #[IsGranted('ROLE_ADMIN')]
-#[Route('/admin/event', name: 'admin_event_')]
+#[Route('/admin/events', name: 'admin_event_')]
 class AdminEventController extends AbstractController
 {
     #[Route('/', name: 'index', methods: ['GET'])]
-    public function index(EventRepository $eventRepository): Response
-    {
+    public function index(
+        Request $request, // 👈 AJOUTER REQUEST
+        EventRepository $eventRepository,
+        TypeEventRepository $typeEventRepository // 👈 AJOUTER LE REPOSITORY DES TYPES
+    ): Response {
+        // Récupérer tous les types d'événements pour le filtre
+        $eventTypes = $typeEventRepository->findAll();
+
+        // Récupérer les filtres depuis la requête
+        $status = $request->query->get('status', 'all'); // all, upcoming, passed
+        $typeId = $request->query->get('type');
+
+        // Récupérer tous les événements
+        $allEvents = $eventRepository->findBy([], ['dateDebut' => 'DESC']);
+
+        // Date actuelle
+        $now = new \DateTime();
+
+        // Filtrer selon le statut
+        $filteredEvents = [];
+        foreach ($allEvents as $event) {
+            $isPassed = $event->getDateDebut() <= $now;
+
+            // Filtre par statut
+            if ($status === 'passed' && !$isPassed)
+                continue;
+            if ($status === 'upcoming' && $isPassed)
+                continue;
+
+            // Filtre par type
+            if ($typeId && $event->getType() && $event->getType()->getId() != $typeId)
+                continue;
+            if ($typeId && !$event->getType())
+                continue;
+
+            $filteredEvents[] = $event;
+        }
+
+        // Compter les événements passés pour le message
+        $passedCount = 0;
+        foreach ($allEvents as $event) {
+            if ($event->getDateDebut() <= $now) {
+                $passedCount++;
+            }
+        }
+
         return $this->render('BackOffice/event/index.html.twig', [
-            'events' => $eventRepository->findBy([], ['dateDebut' => 'DESC']),
+            'events' => $filteredEvents,
+            'eventTypes' => $eventTypes, // 👈 IMPORTANT: passer les types au template
+            'totalEvents' => count($allEvents),
+            'passedCount' => $passedCount,
+            'currentStatus' => $status,
+            'currentType' => $typeId
         ]);
     }
 

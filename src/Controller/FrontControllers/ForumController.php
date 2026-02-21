@@ -122,4 +122,5 @@ class ForumController extends AbstractController
 
         return $this->redirectToRoute('forum_post_forum_index');
     }
+    
 }

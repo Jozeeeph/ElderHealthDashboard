@@ -18,21 +18,29 @@ class EventReminderService
 
     public function checkAndSendReminders(): int
     {
-        $now = new \DateTimeImmutable('now');
+        // ✅ Force timezone (IMPORTANT)
+        $tz  = new \DateTimeZone('Africa/Tunis');
+        $now = new \DateTimeImmutable('now', $tz);
+
         $events = $this->eventRepository->findEventsToRemind($now);
         $sent = 0;
 
         foreach ($events as $event) {
 
+            $sentForThisEvent = 0;
+
             foreach ($event->getParticipations() as $p) {
                 $user = $p->getUtilisateur();
-                if (!$user || !$user->getEmail()) continue;
+                if (!$user || !$user->getEmail()) {
+                    continue;
+                }
 
                 $prenom = $user->getPrenom() ?? $user->getNom() ?? '';
                 $titre  = $event->getTitre() ?? 'Événement';
                 $lieu   = $event->getLieu() ?? '—';
-                $date   = $event->getDateDebut()
-                    ? $event->getDateDebut()->format('d/m/Y H:i')
+
+                $date = $event->getDateDebut()
+                    ? (clone $event->getDateDebut())->setTimezone($tz)->format('d/m/Y H:i')
                     : '—';
 
                 $message = (new Email())
@@ -49,21 +57,23 @@ class EventReminderService
                         </ul>
                         <p>À bientôt 😊</p>
                     ")
-                    ->text("
-                        Rappel événement : {$titre}
+                    ->text("Rappel événement : {$titre}\n\nDate : {$date}\nLieu : {$lieu}\n\nÀ bientôt.");
 
-                        Date : {$date}
-                        Lieu : {$lieu}
-
-                        À bientôt.
-                    ");
-
-                $this->mailer->send($message);
-                $sent++;
+                try {
+                    $this->mailer->send($message);
+                    $sent++;
+                    $sentForThisEvent++;
+                } catch (\Throwable $e) {
+                    // ✅ En dev tu verras l'erreur dans les logs Symfony
+                    // Tu peux aussi logger $e->getMessage() si tu utilises LoggerInterface
+                    continue;
+                }
             }
 
-            $event->setReminderSent(true);
-            $this->em->persist($event);
+            // ✅ Mark reminder_sent ONLY if at least 1 email sent
+            if ($sentForThisEvent > 0) {
+                $event->setReminderSent(true);
+            }
         }
 
         $this->em->flush();

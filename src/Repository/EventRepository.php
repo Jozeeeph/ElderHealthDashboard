@@ -27,16 +27,16 @@ class EventRepository extends ServiceEntityRepository
     }
     public function findEventsToRemind(\DateTimeImmutable $now): array
     {
-        $from = $now->modify('+23 hours'); // fenêtre 23h -> 25h pour être safe
-        $to = $now->modify('+25 hours');
+        $to = $now->modify('+24 hours');
 
         return $this->createQueryBuilder('e')
             ->leftJoin('e.participations', 'p')->addSelect('p')
-            ->leftJoin('p.utilisateur', 'u')->addSelect('u') // 🔁 adapte si ce n'est pas "utilisateur"
-            ->andWhere('e.dateDebut BETWEEN :from AND :to')
+            ->leftJoin('p.utilisateur', 'u')->addSelect('u')
+            ->andWhere('e.dateDebut BETWEEN :now AND :to')
             ->andWhere('e.reminderSent = false')
-            ->andWhere('e.statut = :s')->setParameter('s', 'PUBLIE')
-            ->setParameter('from', $from)
+            ->andWhere('e.statut = :s')
+            ->setParameter('s', 'PUBLIE')
+            ->setParameter('now', $now)
             ->setParameter('to', $to)
             ->getQuery()
             ->getResult();
