@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\Consultation;
 use App\Entity\Utilisateur;
 use App\Enum\Role;
+use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -50,6 +51,10 @@ class ConsultationType extends AbstractType
             ->add('tensionDiastolique', IntegerType::class, [
                 'required' => false,
                 'attr' => ['min' => 30, 'max' => 150],
+            ])
+            ->add('notesConsultation', CKEditorType::class, [
+                'required' => false,
+                'config_name' => 'consultation_notes',
             ])
             ->add('patient', EntityType::class, [
                 'class' => Utilisateur::class,

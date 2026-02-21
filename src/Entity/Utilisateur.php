@@ -171,6 +171,16 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     {
     }
 
+    public function __toString(): string
+    {
+        $fullName = trim((string) $this->prenom . ' ' . (string) $this->nom);
+        if ($fullName !== '') {
+            return $fullName;
+        }
+
+        return (string) ($this->email ?? 'Utilisateur');
+    }
+
     // --------------------
     // Getters / setters
     // --------------------

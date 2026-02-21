@@ -79,6 +79,9 @@ class Consultation
     )]
     private ?int $tensionDiastolique = null;
 
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $notesConsultation = null;
+
     // ================= RELATIONS =================
     #[ORM\ManyToOne(targetEntity: Utilisateur::class)]
     #[ORM\JoinColumn(name: "patient_id", referencedColumnName: "id", nullable: false, onDelete: "CASCADE")]
@@ -133,6 +136,9 @@ class Consultation
 
     public function getTensionDiastolique(): ?int { return $this->tensionDiastolique; }
     public function setTensionDiastolique(?int $tensionDiastolique): self { $this->tensionDiastolique = $tensionDiastolique; return $this; }
+
+    public function getNotesConsultation(): ?string { return $this->notesConsultation; }
+    public function setNotesConsultation(?string $notesConsultation): self { $this->notesConsultation = $notesConsultation; return $this; }
 
     public function getPatient(): ?Utilisateur { return $this->patient; }
     public function setPatient(Utilisateur $patient): self { $this->patient = $patient; return $this; }

@@ -1,0 +1,10 @@
+fos_ck_editor:
+    base_path: "https://cdn.ckeditor.com/4.22.1/full-all/"
+    js_path: "https://cdn.ckeditor.com/4.22.1/full-all/ckeditor.js"
+    configs:
+        consultation_notes:
+            language: fr
+            height: 170
+            toolbar:
+                - [ "Bold", "Italic", "Underline", "-", "NumberedList", "BulletedList" ]
+                - [ "Link", "Unlink", "-", "Undo", "Redo", "-", "RemoveFormat" ]
