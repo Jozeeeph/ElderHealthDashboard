@@ -3,180 +3,274 @@
 
 {% block stylesheets %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="{{ asset('css/patient.css') }}?v=20260214-notif1">
-
-	<link rel="stylesheet" href="{{ asset('css/eventsFront.css') }}?v=4">
+<link rel="stylesheet" href="{{ asset('css/patient.css') }}?v=20260214-notif1">
+<link rel="stylesheet" href="{{ asset('css/eventsFront.css') }}?v=4">
+<link rel="stylesheet" href="{{ asset('css/weather.css') }}?v=1"> <!-- 👈 AJOUTER -->
 {% endblock %}
 
-
 {% block body %}
-	<div
-		class="patient-app">
+<div class="patient-app">
 
-		{# ✅ TOPBAR patient #}
-		{% include 'FrontOffice/patient/_header.html.twig' %}
+    {# ✅ TOPBAR patient #}
+    {% include 'FrontOffice/patient/_header.html.twig' %}
 
-		<main class="patient-main">
+    <main class="patient-main">
 
-			<div class="container" style="max-width: 1100px;">
+        <div class="container" style="max-width: 1100px;">
 
-				{% set typeColor = event.type and event.type.couleur ? event.type.couleur : '#6c757d' %}
+            {% set typeColor = event.type and event.type.couleur ? event.type.couleur : '#6c757d' %}
 
-				{# ✅ Flash messages #}
-				{% for label, messages in app.flashes %}
-					{% for msg in messages %}
-						<div class="alert alert-{{ label }} mb-3">{{ msg }}</div>
-					{% endfor %}
-				{% endfor %}
+            {# ✅ Flash messages #}
+            {% for label, messages in app.flashes %}
+                {% for msg in messages %}
+                    <div class="alert alert-{{ label }} mb-3">{{ msg }}</div>
+                {% endfor %}
+            {% endfor %}
 
-				<div class="ev-header mb-4">
-					<div class="d-flex align-items-center justify-content-between gap-3 flex-wrap">
-						<div>
-							<h1 class="ev-title">{{ event.titre }}</h1>
-							<p class="ev-subtitle">Toutes les informations de l’événement.</p>
-						</div>
+            <div class="ev-header mb-4">
+                <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap">
+                    <div>
+                        <h1 class="ev-title">{{ event.titre }}</h1>
+                        <p class="ev-subtitle">Toutes les informations de l’événement.</p>
+                    </div>
+                </div>
+            </div>
 
-					
-					</div>
-				</div>
+            <div class="row">
+                {# Colonne principale - Informations de l'événement #}
+                <div class="col-md-8">
+                    <div class="ev-card mb-4" style="--typeColor: {{ typeColor }};">
+                        <div class="ev-card__top">
+                            <div class="ev-avatar" style="background: {{ typeColor }}22; color: {{ typeColor }};">
+                                {{ event.titre|default('E')|slice(0,1)|upper }}
+                            </div>
 
-				<div class="ev-card mb-4" style="--typeColor: {{ typeColor }};">
+                            <div class="ev-meta">
+                                <div class="ev-name">{{ event.titre }}</div>
 
-					<div class="ev-card__top">
-						<div class="ev-avatar" style="background: {{ typeColor }}22; color: {{ typeColor }};">
-							{{ event.titre|default('E')|slice(0,1)|upper }}
-						</div>
+                                <div class="ev-time">
+                                    <i class="bi bi-calendar-event"></i>
+                                    {{ event.dateDebut ? event.dateDebut|date('d/m/Y H:i') : 'Date non définie' }}
+                                    {% if event.dateFin %}
+                                        <span class="mx-1">→</span>
+                                        {{ event.dateFin|date('d/m/Y H:i') }}
+                                    {% endif %}
+                                </div>
 
-						<div class="ev-meta">
-							<div class="ev-name">{{ event.titre }}</div>
+                                {% if event.lieu %}
+                                    <div class="ev-place">
+                                        <i class="bi bi-geo-alt"></i>
+                                        {{ event.lieu }}
+                                    </div>
+                                {% endif %}
+                            </div>
 
-							<div class="ev-time">
-								<i class="bi bi-calendar-event"></i>
-								{{ event.dateDebut ? event.dateDebut|date('d/m/Y H:i') : 'Date non définie' }}
-								{% if event.dateFin %}
-									<span class="mx-1">→</span>
-									{{ event.dateFin|date('d/m/Y H:i') }}
-								{% endif %}
-							</div>
+                            {% if event.type %}
+                                <span class="ev-badge" style="background: {{ typeColor }};">
+                                    <i class="bi bi-tag"></i>
+                                    {{ event.type.libelle }}
+                                </span>
+                            {% else %}
+                                <span class="ev-badge ev-badge--muted">
+                                    <i class="bi bi-tag"></i>
+                                    Sans type
+                                </span>
+                            {% endif %}
+                        </div>
 
-							{% if event.lieu %}
-								<div class="ev-place">
-									<i class="bi bi-geo-alt"></i>
-									{{ event.lieu }}
-								</div>
-							{% endif %}
-						</div>
+                        <div class="ev-card__body">
+                            {% if event.image %}
+                                <div class="ev-image ev-image--big">
+                                    <img src="{{ asset('uploads/events/' ~ event.image) }}" alt="Image de l'événement" loading="lazy">
+                                </div>
+                            {% endif %}
 
-						{% if event.type %}
-							<span class="ev-badge" style="background: {{ typeColor }};">
-								<i class="bi bi-tag"></i>
-								{{ event.type.libelle }}
-							</span>
-						{% else %}
-							<span class="ev-badge ev-badge--muted">
-								<i class="bi bi-tag"></i>
-								Sans type
-							</span>
-						{% endif %}
-					</div>
+                            <div class="ev-infos ev-infos--big">
+                                {% if event.capaciteMax %}
+                                    <span class="ev-chip">
+                                        <i class="bi bi-people"></i>
+                                        Capacité : {{ participantsCount }}/{{ event.capaciteMax }}
+                                    </span>
+                                {% else %}
+                                    <span class="ev-chip">
+                                        <i class="bi bi-people"></i>
+                                        Participants : {{ participantsCount }}
+                                    </span>
+                                {% endif %}
 
-					<div class="ev-card__body">
+                                <span class="ev-chip">
+                                    <i class="bi bi-megaphone"></i>
+                                    Statut : {{ event.statut|default('BROUILLON') }}
+                                </span>
 
-						{% if event.image %}
-							<div class="ev-image ev-image--big">
-								<img src="{{ asset('uploads/events/' ~ event.image) }}" alt="Image de l'événement" loading="lazy">
-							</div>
-						{% endif %}
+                                {% if isFull %}
+                                    <span class="ev-chip" style="border-color:#dc3545;color:#dc3545;">
+                                        <i class="bi bi-x-circle"></i>
+                                        Complet
+                                    </span>
+                                {% endif %}
 
-						<div class="ev-infos ev-infos--big">
-							{% if event.capaciteMax %}
-								<span class="ev-chip">
-									<i class="bi bi-people"></i>
-									Capacité :
-									{{ participantsCount }}/{{ event.capaciteMax }}
-								</span>
-							{% else %}
-								<span class="ev-chip">
-									<i class="bi bi-people"></i>
-									Participants :
-									{{ participantsCount }}
-								</span>
-							{% endif %}
+                                {% if isParticipating %}
+                                    <span class="ev-chip" style="border-color:#198754;color:#198754;">
+                                        <i class="bi bi-check-circle"></i>
+                                        Vous participez
+                                    </span>
+                                {% endif %}
+                            </div>
 
-							<span class="ev-chip">
-								<i class="bi bi-megaphone"></i>
-								Statut :
-								{{ event.statut|default('BROUILLON') }}
-							</span>
+                            <div class="ev-section">
+                                <h3 class="ev-section__title">Description</h3>
+                                <div class="ev-desc">
+                                    {{ event.description|default('') }}
+                                </div>
+                            </div>
 
-							{% if isFull %}
-								<span class="ev-chip" style="border-color:#dc3545;color:#dc3545;">
-									<i class="bi bi-x-circle"></i>
-									Complet
-								</span>
-							{% endif %}
+                            <div class="ev-btnrow">
+                                {% if app.user is null %}
+                                    <a class="ehc-btn ehc-btn-primary" href="{{ path('app_login') }}">
+                                        <i class="bi bi-box-arrow-in-right"></i>
+                                        Se connecter pour participer
+                                    </a>
+                                {% else %}
+                                    <form method="post" action="{{ path('front_events_participer', {id: event.id}) }}">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('front_participer_' ~ event.id) }}">
+                                        <button type="submit" class="ehc-btn ehc-btn-primary" {% if isParticipating or isFull %} disabled {% endif %}>
+                                            <i class="bi bi-check2-circle"></i>
+                                            Participer
+                                        </button>
+                                    </form>
 
-							{% if isParticipating %}
-								<span class="ev-chip" style="border-color:#198754;color:#198754;">
-									<i class="bi bi-check-circle"></i>
-									Vous participez
-								</span>
-							{% endif %}
-						</div>
+                                    {% if isParticipating %}
+                                        <form method="post" action="{{ path('front_events_annuler', {id: event.id}) }}">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('front_annuler_' ~ event.id) }}">
+                                            <button type="submit" class="ehc-btn ehc-btn-danger">
+                                                <i class="bi bi-x-circle"></i>
+                                                Annuler
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
 
-						<div class="ev-section">
-							<h3 class="ev-section__title">Description</h3>
-							<div class="ev-desc">
-								{{ event.description|default('') }}
-							</div>
-						</div>
+                        <div class="ev-actions">
+                            <a class="ev-action" href="{{ path('front_events_index') }}">
+                                <i class="bi bi-grid"></i>
+                                Voir tous les événements
+                            </a>
+                        </div>
+                    </div>
+                </div>
 
-						<div class="ev-btnrow">
-							{% if app.user is null %}
-								<a class="ehc-btn ehc-btn-primary" href="{{ path('app_login') }}">
-									<i class="bi bi-box-arrow-in-right"></i>
-									Se connecter pour participer
-								</a>
-							{% else %}
-								<form method="post" action="{{ path('front_events_participer', {id: event.id}) }}">
-									<input type="hidden" name="_token" value="{{ csrf_token('front_participer_' ~ event.id) }}">
-									<button type="submit" class="ehc-btn ehc-btn-primary" {% if isParticipating or isFull %} disabled {% endif %}>
-										<i class="bi bi-check2-circle"></i>
-										Participer
-									</button>
-								</form>
+                {# Colonne de droite - Widget Météo #}
+                {# Colonne de droite - Widget Météo #}
+<div class="col-md-4">
+    {% if weather is defined and weather is not null %}
+        {# Déterminer la classe selon la température #}
+        {% set tempClass = 'weather-hot' %}
+        {% if weather.temp < 10 %}
+            {% set tempClass = 'weather-cold' %}
+        {% elseif weather.temp < 18 %}
+            {% set tempClass = 'weather-mild' %}
+        {% elseif weather.temp < 25 %}
+            {% set tempClass = 'weather-warm' %}
+        {% else %}
+            {% set tempClass = 'weather-hot' %}
+        {% endif %}
+        
+        {# Classes selon la météo (pluie, neige, etc.) #}
+        {% set weatherType = 'weather-sunny' %}
+        {% if 'pluie' in weather.description|lower or 'rain' in weather.description|lower %}
+            {% set weatherType = 'weather-rainy' %}
+        {% elseif 'nuage' in weather.description|lower or 'cloud' in weather.description|lower %}
+            {% set weatherType = 'weather-cloudy' %}
+        {% elseif 'neige' in weather.description|lower or 'snow' in weather.description|lower %}
+            {% set weatherType = 'weather-snowy' %}
+        {% elseif 'orage' in weather.description|lower or 'storm' in weather.description|lower %}
+            {% set weatherType = 'weather-stormy' %}
+        {% endif %}
 
-								{% if isParticipating %}
-									<form method="post" action="{{ path('front_events_annuler', {id: event.id}) }}">
-										<input type="hidden" name="_token" value="{{ csrf_token('front_annuler_' ~ event.id) }}">
-										<button type="submit" class="ehc-btn ehc-btn-danger">
-											<i class="bi bi-x-circle"></i>
-											Annuler
-										</button>
-									</form>
-								{% endif %}
-							{% endif %}
-						</div>
+        <div class="weather-widget {{ tempClass }} {{ weatherType }}">
+            <div class="weather-header">
+                <i class="bi 
+                    {% if weather.temp >= 25 %}bi-brightness-high-fill
+                    {% elseif weather.temp >= 18 %}bi-sun-fill
+                    {% elseif weather.temp >= 10 %}bi-cloud-sun-fill
+                    {% else %}bi-cloud-snow-fill{% endif %}">
+                </i>
+                <div>
+                    <h4>Météo à {{ event.lieu }}</h4>
+                    <span>{{ event.dateDebut|date('d/m/Y') }}</span>
+                </div>
+            </div>
+            
+            <div class="weather-main">
+                <div class="weather-temp-block">
+                    <div class="weather-temp">{{ weather.temp }}°C</div>
+                    <div class="weather-desc">{{ weather.description }}</div>
+                </div>
+                <img src="https://openweathermap.org/img/wn/{{ weather.icon }}@4x.png" 
+                     alt="{{ weather.description }}" 
+                     class="weather-icon"
+                     onerror="this.src='https://openweathermap.org/img/wn/01d@4x.png'">
+            </div>
+            
+            <div class="weather-details">
+                <div class="weather-detail">
+                    <i class="bi bi-thermometer-half"></i>
+                    <div class="weather-detail-info">
+                        <span class="weather-detail-label">Ressenti</span>
+                        <span class="weather-detail-value">{{ weather.ressenti }}°C</span>
+                    </div>
+                </div>
+                
+                <div class="weather-detail">
+                    <i class="bi bi-droplet"></i>
+                    <div class="weather-detail-info">
+                        <span class="weather-detail-label">Humidité</span>
+                        <span class="weather-detail-value">{{ weather.humidity }}%</span>
+                    </div>
+                </div>
+                
+                <div class="weather-detail">
+                    <i class="bi bi-wind"></i>
+                    <div class="weather-detail-info">
+                        <span class="weather-detail-label">Vent</span>
+                        <span class="weather-detail-value">{{ weather.wind }} km/h</span>
+                    </div>
+                </div>
+                
+                <div class="weather-detail">
+                    <i class="bi bi-speedometer2"></i>
+                    <div class="weather-detail-info">
+                        <span class="weather-detail-label">Pression</span>
+                        <span class="weather-detail-value">{{ weather.pressure }} hPa</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="weather-footer">
+                <i class="bi bi-calendar3"></i>
+                Prévisions pour le {{ event.dateDebut|date('d/m/Y') }}
+            </div>
+        </div>
+    {% elseif event.dateDebut > date() and event.lieu %}
+        <div class="weather-widget weather-unavailable">
+            <i class="bi bi-cloud-slash-fill"></i>
+            <h5>Météo non disponible</h5>
+            <p>Impossible de récupérer les prévisions météo.</p>
+        </div>
+    {% endif %}
+</div>
+            </div>
 
+        </div>
+    </main>
+</div>
 
-					</div>
-
-					<div class="ev-actions">
-						<a class="ev-action" href="{{ path('front_events_index') }}">
-							<i class="bi bi-grid"></i>
-							Voir tous les événements
-						</a>
-					</div>
-
-				</div>
-
-			</div>
-		</main>
-	</div>
-
-	<script>
-		window.addEventListener('scroll', () => {
-document.querySelector('.topbar') ?. classList.toggle('is-scrolled', window.scrollY > 10);
-});
-	</script>
+<script>
+    window.addEventListener('scroll', () => {
+        document.querySelector('.topbar')?.classList.toggle('is-scrolled', window.scrollY > 10);
+    });
+</script>
 {% endblock %}

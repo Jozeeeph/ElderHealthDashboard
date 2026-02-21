@@ -49,7 +49,7 @@ class EventController extends AbstractController
 
         // 👇 SEUL AJOUT : Filtrer pour garder uniquement les événements à venir (date non dépassée)
         $now = new \DateTime();
-        $events = array_filter($allEvents, function($event) use ($now) {
+        $events = array_filter($allEvents, function ($event) use ($now) {
             return $event->getDateDebut() > $now;
         });
 
@@ -62,7 +62,8 @@ class EventController extends AbstractController
     public function show(
         int $id,
         EventRepository $eventRepository,
-        ParticipationRepository $participationRepo
+        ParticipationRepository $participationRepo,
+        \App\Service\WeatherService $weatherService // 👈 AJOUTER
     ): Response {
         $event = $eventRepository->find($id);
 
@@ -92,11 +93,29 @@ class EventController extends AbstractController
             ]);
         }
 
+        // 👇 AJOUT DE LA MÉTÉO
+        $weather = null;
+        $now = new \DateTime();
+
+        // Vérifier si l'événement a un lieu et est dans le futur (max 5 jours)
+        if ($event->getLieu() && $event->getDateDebut() > $now) {
+            $daysDiff = $now->diff($event->getDateDebut())->days;
+
+            // L'API OpenWeather ne donne que 5 jours de prévisions
+            if ($daysDiff <= 5) {
+                $weather = $weatherService->getWeatherForDate($event->getLieu(), $event->getDateDebut());
+            } else {
+                // Optionnel : message pour les dates trop lointaines
+                $weather = ['too_far' => true];
+            }
+        }
+
         return $this->render('FrontOffice/events/show.html.twig', [
             'event' => $event,
             'participantsCount' => $participantsCount,
             'isFull' => $isFull,
-            'isParticipating' => $isParticipating
+            'isParticipating' => $isParticipating,
+            'weather' => $weather // 👈 PASSER LA MÉTÉO
         ]);
     }
 
