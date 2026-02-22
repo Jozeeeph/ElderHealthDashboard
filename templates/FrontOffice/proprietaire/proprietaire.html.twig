@@ -258,6 +258,18 @@
     .prop-pagination .pagination {
       margin: 0;
     }
+
+    .prop-ai-actions {
+      margin-top: 8px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .prop-ai-hint {
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
   </style>
 {% endblock %}
 
@@ -477,7 +489,7 @@
               </ul>
             </div>
           {% endif %}
-          <form class="prop-form" method="post" novalidate
+          <form class="prop-form" method="post" novalidate data-ai-description-url="{{ path('front_proprietaire_api_generate_description') }}"
                 action="{% if mode == 'edit' and selected %}{{ path('front_proprietaire_equipements_edit', {'id': selected.id}) }}{% else %}{{ path('front_proprietaire_equipements_new') }}{% endif %}"
                 enctype="multipart/form-data">
             <input type="hidden" name="_token"
@@ -515,6 +527,10 @@
             <div>
               <label>Description</label>
               <textarea class="prop-textarea" name="description">{{ selected.description ?? '' }}</textarea>
+              <div class="prop-ai-actions">
+                <button type="button" class="btn-prop secondary js-generate-description">Generer avec AI</button>
+                <span class="prop-ai-hint">Base sur le nom de l'equipement</span>
+              </div>
             </div>
 
             <div>
@@ -600,6 +616,48 @@
     if (deleteModalEl) {
       deleteModalEl.addEventListener('hidden.bs.modal', function () {
         pendingDeleteForm = null;
+      });
+    }
+
+    const aiForm = document.querySelector('.prop-form[data-ai-description-url]');
+    const generateBtn = aiForm ? aiForm.querySelector('.js-generate-description') : null;
+    const nameInput = aiForm ? aiForm.querySelector('input[name="nom"]') : null;
+    const descriptionInput = aiForm ? aiForm.querySelector('textarea[name="description"]') : null;
+
+    if (aiForm && generateBtn && nameInput && descriptionInput) {
+      generateBtn.addEventListener('click', async function () {
+        const name = (nameInput.value || '').trim();
+        if (!name) {
+          nameInput.focus();
+          return;
+        }
+
+        const originalText = generateBtn.textContent;
+        generateBtn.disabled = true;
+        generateBtn.textContent = 'Loading...';
+
+        try {
+          const response = await fetch(aiForm.dataset.aiDescriptionUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            body: JSON.stringify({name: name})
+          });
+
+          const data = await response.json();
+          if (!response.ok) {
+            throw new Error(data.error || 'Generation impossible');
+          }
+
+          descriptionInput.value = data.description || '';
+        } catch (error) {
+          alert(error.message || 'Erreur lors de la generation.');
+        } finally {
+          generateBtn.disabled = false;
+          generateBtn.textContent = originalText;
+        }
       });
     }
   });
