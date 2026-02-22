@@ -74,5 +74,69 @@ class StripeCheckoutService
 
         return $url;
     }
+
+    /**
+     * @param array<int, array{name: string, unit_amount: int, quantity: int}> $items
+     */
+    public function createCartCheckoutUrl(
+        array $items,
+        ?Utilisateur $customer,
+        string $successUrl,
+        string $cancelUrl
+    ): string {
+        $secret = trim($this->stripeSecretKey);
+        if ($secret === '') {
+            throw new \RuntimeException('Configuration Stripe absente: STRIPE_SECRET_KEY.');
+        }
+
+        if ($items === []) {
+            throw new \RuntimeException('Panier vide: impossible de creer une session Stripe.');
+        }
+
+        $currency = strtolower(trim($this->stripeCurrency)) ?: 'eur';
+        $body = [
+            'mode' => 'payment',
+            'success_url' => $successUrl,
+            'cancel_url' => $cancelUrl,
+            'client_reference_id' => 'cart-' . uniqid('', true),
+        ];
+
+        if ($customer && $customer->getEmail()) {
+            $body['customer_email'] = (string) $customer->getEmail();
+            $body['metadata[user_id]'] = (string) $customer->getId();
+        }
+
+        foreach ($items as $index => $item) {
+            if (($item['unit_amount'] ?? 0) <= 0 || ($item['quantity'] ?? 0) <= 0 || trim((string) ($item['name'] ?? '')) === '') {
+                continue;
+            }
+
+            $i = (int) $index;
+            $body[sprintf('line_items[%d][price_data][currency]', $i)] = $currency;
+            $body[sprintf('line_items[%d][price_data][unit_amount]', $i)] = (string) $item['unit_amount'];
+            $body[sprintf('line_items[%d][price_data][product_data][name]', $i)] = (string) $item['name'];
+            $body[sprintf('line_items[%d][quantity]', $i)] = (string) $item['quantity'];
+        }
+
+        try {
+            $response = $this->httpClient->request('POST', rtrim($this->stripeApiBaseUrl, '/') . '/v1/checkout/sessions', [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $secret,
+                ],
+                'body' => $body,
+            ]);
+        } catch (TransportExceptionInterface $e) {
+            throw new \RuntimeException('Echec de connexion a Stripe.', 0, $e);
+        }
+
+        $data = $response->toArray(false);
+        $url = $data['url'] ?? null;
+        if (!is_string($url) || $url === '') {
+            $errorMessage = is_array($data['error'] ?? null) ? ($data['error']['message'] ?? null) : null;
+            throw new \RuntimeException((string) ($errorMessage ?: 'Creation de session Stripe impossible.'));
+        }
+
+        return $url;
+    }
 }
 

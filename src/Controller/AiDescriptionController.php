@@ -12,6 +12,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class AiDescriptionController extends AbstractController
 {
+    #[Route('/admin/api/generate-description', name: 'admin_api_generate_description', methods: ['POST'])]
     #[Route('/proprietaire/api/generate-description', name: 'front_proprietaire_api_generate_description', methods: ['POST'])]
     public function generate(Request $request, HttpClientInterface $httpClient): JsonResponse
     {
