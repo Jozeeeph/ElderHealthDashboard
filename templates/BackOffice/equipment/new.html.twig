@@ -118,7 +118,7 @@
     <!-- Form Container -->
     <div class="form-container">
         {# DÉSACTIVER HTML5 comme dans le workshop #}
-        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+        {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'class': 'js-ai-form', 'data-ai-description-url': path('admin_api_generate_description')}}) }}
         
         <div class="row">
             <div class="col-md-6 mb-3">
@@ -167,6 +167,11 @@
                 'attr': {'class': 'form-input-custom', 'rows': 4}
             }) }}
             {{ form_errors(form.description) }}
+            <div class="mt-2">
+                <button type="button" class="btn btn-outline-secondary btn-sm js-generate-description">
+                    Generer avec AI
+                </button>
+            </div>
         </div>
 
         <div class="mb-3">
@@ -192,4 +197,50 @@
         {{ form_end(form) }}
     </div>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const aiForm = document.querySelector('.js-ai-form[data-ai-description-url]');
+    if (!aiForm) return;
+
+    const generateBtn = aiForm.querySelector('.js-generate-description');
+    const nameInput = aiForm.querySelector('input[name$="[nom]"]');
+    const descriptionInput = aiForm.querySelector('textarea[name$="[description]"]');
+    if (!generateBtn || !nameInput || !descriptionInput) return;
+
+    generateBtn.addEventListener('click', async function () {
+        const name = (nameInput.value || '').trim();
+        if (!name) {
+            nameInput.focus();
+            return;
+        }
+
+        const originalText = generateBtn.textContent;
+        generateBtn.disabled = true;
+        generateBtn.textContent = 'Loading...';
+
+        try {
+            const response = await fetch(aiForm.dataset.aiDescriptionUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ name: name })
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.error || 'Generation impossible');
+            }
+
+            descriptionInput.value = data.description || '';
+        } catch (error) {
+            alert(error.message || 'Erreur lors de la generation.');
+        } finally {
+            generateBtn.disabled = false;
+            generateBtn.textContent = originalText;
+        }
+    });
+});
+</script>
 {% endblock %}

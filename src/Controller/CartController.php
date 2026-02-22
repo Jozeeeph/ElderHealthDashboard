@@ -4,13 +4,15 @@ namespace App\Controller;
 
 use App\Entity\Commande;
 use App\Repository\EquipementRepository;
+use App\Service\StripeCheckoutService;
 use App\Service\TwilioSmsService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Security;
 
 class CartController extends AbstractController
@@ -19,18 +21,20 @@ class CartController extends AbstractController
     private EquipementRepository $equipRepo;
     private Security $security;
     private TwilioSmsService $twilioSmsService;
+    private StripeCheckoutService $stripeCheckoutService;
 
     public function __construct(
         EntityManagerInterface $em,
         EquipementRepository $equipRepo,
         Security $security,
-        TwilioSmsService $twilioSmsService
-    )
-    {
+        TwilioSmsService $twilioSmsService,
+        StripeCheckoutService $stripeCheckoutService
+    ) {
         $this->em = $em;
         $this->equipRepo = $equipRepo;
         $this->security = $security;
         $this->twilioSmsService = $twilioSmsService;
+        $this->stripeCheckoutService = $stripeCheckoutService;
     }
 
     #[Route('/cart', name: 'cart_view')]
@@ -49,6 +53,7 @@ class CartController extends AbstractController
             if ($id === null) {
                 continue;
             }
+
             $qty = max(1, (int) ($cart[$id] ?? 1));
             $itemsCount += $qty;
             $lineTotal = bcmul((string) ($e->getPrix() ?? '0.00'), (string) $qty, 2);
@@ -88,8 +93,8 @@ class CartController extends AbstractController
             $this->addFlash(
                 'warning',
                 sprintf(
-                    "Quantite demandee trop grande pour %s. Choisissez une quantite entre 1 et %d.",
-                    $equip->getNom() ?? ('#'.$id),
+                    'Quantite demandee trop grande pour %s. Choisissez une quantite entre 1 et %d.',
+                    $equip->getNom() ?? ('#' . $id),
                     $availableQty
                 )
             );
@@ -104,8 +109,8 @@ class CartController extends AbstractController
             $this->addFlash(
                 'warning',
                 sprintf(
-                    "Stock insuffisant pour %s. Maximum disponible: %d.",
-                    $equip->getNom() ?? ('#'.$id),
+                    'Stock insuffisant pour %s. Maximum disponible: %d.',
+                    $equip->getNom() ?? ('#' . $id),
                     $availableQty
                 )
             );
@@ -147,8 +152,8 @@ class CartController extends AbstractController
             $this->addFlash(
                 'warning',
                 sprintf(
-                    "Quantite demandee trop grande pour %s. Choisissez une quantite entre 1 et %d.",
-                    $equip->getNom() ?? ('#'.$id),
+                    'Quantite demandee trop grande pour %s. Choisissez une quantite entre 1 et %d.',
+                    $equip->getNom() ?? ('#' . $id),
                     $availableQty
                 )
             );
@@ -183,7 +188,7 @@ class CartController extends AbstractController
             }
         }
 
-        // Validate stock at checkout time to prevent negative inventory.
+        // Validate stock before creating Stripe session.
         foreach ($cart as $id => $qty) {
             $id = (int) $id;
             $qty = max(1, (int) $qty);
@@ -199,10 +204,89 @@ class CartController extends AbstractController
                 $this->addFlash(
                     'error',
                     sprintf(
-                        "Stock insuffisant pour %s: demande %d, disponible %d.",
-                        $equip->getNom() ?? ('#'.$id),
+                        'Stock insuffisant pour %s: demande %d, disponible %d.',
+                        $equip->getNom() ?? ('#' . $id),
                         $qty,
                         $available
+                    )
+                );
+                return $this->redirectToRoute('cart_view');
+            }
+        }
+
+        $items = [];
+        foreach ($cart as $id => $qty) {
+            $id = (int) $id;
+            $qty = max(1, (int) $qty);
+            $equip = $equipementsById[$id] ?? null;
+            if (!$equip) {
+                continue;
+            }
+
+            $items[] = [
+                'name' => (string) ($equip->getNom() ?: ('Equipement #' . $id)),
+                'unit_amount' => (int) round(((float) ($equip->getPrix() ?? '0')) * 100),
+                'quantity' => $qty,
+            ];
+        }
+
+        try {
+            $successUrl = $this->generateUrl('cart_payment_success', [], UrlGeneratorInterface::ABSOLUTE_URL) . '?session_id={CHECKOUT_SESSION_ID}';
+            $cancelUrl = $this->generateUrl('cart_payment_cancel', [], UrlGeneratorInterface::ABSOLUTE_URL);
+
+            $checkoutUrl = $this->stripeCheckoutService->createCartCheckoutUrl(
+                $items,
+                $this->getUser(),
+                $successUrl,
+                $cancelUrl
+            );
+        } catch (\RuntimeException $e) {
+            $this->addFlash('error', $e->getMessage());
+            return $this->redirectToRoute('cart_view');
+        }
+
+        return $this->redirect($checkoutUrl);
+    }
+
+    #[Route('/cart/payment-success', name: 'cart_payment_success', methods: ['GET'])]
+    public function paymentSuccess(SessionInterface $session): Response
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
+        $cart = $this->normalizeCart($session->get('cart', []));
+        if (empty($cart)) {
+            $this->addFlash('warning', 'Panier deja valide ou vide.');
+            return $this->redirectToRoute('cart_view');
+        }
+
+        $ids = array_map('intval', array_keys($cart));
+        $equipements = $this->equipRepo->findBy(['id' => $ids]);
+        $equipementsById = [];
+        foreach ($equipements as $equipement) {
+            $eid = $equipement->getId();
+            if ($eid !== null) {
+                $equipementsById[$eid] = $equipement;
+            }
+        }
+
+        // Revalidate stock at payment completion time.
+        foreach ($cart as $id => $qty) {
+            $id = (int) $id;
+            $qty = max(1, (int) $qty);
+            $equip = $equipementsById[$id] ?? null;
+
+            if (!$equip) {
+                $this->addFlash('error', sprintf("L'equipement #%d n'existe plus.", $id));
+                return $this->redirectToRoute('cart_view');
+            }
+
+            $available = max(0, (int) ($equip->getQuantiteDisponible() ?? 0));
+            if ($available < $qty) {
+                $this->addFlash(
+                    'error',
+                    sprintf(
+                        'Stock insuffisant pour %s apres paiement. Contactez le support.',
+                        $equip->getNom() ?? ('#' . $id)
                     )
                 );
                 return $this->redirectToRoute('cart_view');
@@ -239,6 +323,7 @@ class CartController extends AbstractController
                 }
             }
         }
+
         $commande->setMontantTotal($total);
 
         $this->em->persist($commande);
@@ -246,8 +331,15 @@ class CartController extends AbstractController
 
         $session->remove('cart');
 
-        $this->addFlash('success', 'Commande créée avec succès.');
+        $this->addFlash('success', 'Paiement confirme. Commande creee avec succes.');
 
+        return $this->redirectToRoute('cart_view');
+    }
+
+    #[Route('/cart/payment-cancel', name: 'cart_payment_cancel', methods: ['GET'])]
+    public function paymentCancel(): Response
+    {
+        $this->addFlash('warning', 'Paiement annule. Votre panier est conserve.');
         return $this->redirectToRoute('cart_view');
     }
 
