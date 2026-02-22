@@ -3,28 +3,19 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>Forum communautaire</title>
-		<meta
-		name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
 
-		{# Bootstrap CSS #}
-		<link
-		href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
-		{# Bootstrap Icons #}
-		<link
-		href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-
-		{# Your CSS #}
-		<link rel="stylesheet" href="{{ asset('css/patient.css') }}?v=20260214-notif1">
+		<link rel="stylesheet" href="{{ asset('css/patient.css') }}">
 		<link rel="stylesheet" href="{{ asset('css/forum.css') }}">
 	</head>
 
 	<body>
 
-		<div
-			class="patient-app forum-page">
+		<div class="patient-app forum-page">
 
-			{# HEADER #}
 			{% include 'FrontOffice/patient/_header.html.twig' %}
 
 			<main
@@ -33,15 +24,11 @@
 				<!-- HERO -->
 				<section class="forum-hero container">
 					<div class="forum-hero-card">
-
 						<div class="forum-hero-content">
+
 							<div>
-								<h1 class="forum-hero-title">
-									Forum communautaire 💬
-								</h1>
-								<p class="forum-hero-subtitle">
-									Échangez avec la communauté Elder HealthCare
-								</p>
+								<h1 class="forum-hero-title">Forum communautaire 💬</h1>
+								<p class="forum-hero-subtitle">Échangez avec la communauté Elder HealthCare</p>
 							</div>
 
 							{% if app.user %}
@@ -49,9 +36,13 @@
 									<i class="bi bi-plus-circle"></i>
 									Nouvelle publication
 								</button>
+								<a href="{{ path('forum_post_forum_medical_ai_chat') }}" class="btn btn-outline-success rounded-pill ms-2">
+									<i class="bi bi-robot"></i>
+									Medical AI
+								</a>
 							{% endif %}
-						</div>
 
+						</div>
 					</div>
 				</section>
 
@@ -63,53 +54,110 @@
 						<article
 							class="post-card">
 
-							<!-- TOP -->
+							<!-- HEADER -->
 							<header class="post-card__top">
-								<div class="post-meta">
-									<h5>{{ post.title }}</h5>
-									<span class="small">
-										{{ post.utilisateur.prenom }}
-										{{ post.utilisateur.nom }}
-										·
-										{{ post.dateDeCreation|date('d/m/Y H:i') }}
-									</span>
+
+								<div
+									class="post-meta">
+
+									<!-- DISPLAY -->
+									<div id="postDisplay-{{ post.id }}">
+										<h5 id="title-{{ post.id }}">{{ post.title }}</h5>
+
+										<span class="small">
+											{{ post.utilisateur.prenom }}
+											{{ post.utilisateur.nom }}
+											·
+											{{ post.dateDeCreation|date('d/m/Y H:i') }}
+										</span>
+									</div>
+
+									<!-- EDIT -->
+									<div id="postEdit-{{ post.id }}" style="display:none;">
+
+										<input class="form-control mb-2" id="inputTitle-{{ post.id }}" value="{{ post.title }}">
+
+										<textarea class="form-control" id="inputContent-{{ post.id }}">{{ post.content }}</textarea>
+
+										<button class="btn btn-sm btn-success mt-2" onclick="savePostEdit({{ post.id }})">
+											✔ Sauvegarder
+										</button>
+
+										<button class="btn btn-sm btn-secondary mt-2" onclick="cancelPostEdit({{ post.id }})">
+											Annuler
+										</button>
+
+									</div>
+
 								</div>
 
 								<span class="badge-soft badge-active">
 									<span class="badge-color bg-success"></span>
 									{{ post.status }}
 								</span>
+
 							</header>
 
+
 							<!-- BODY -->
-							<div class="post-card__body">
+							<div class="post-card__body" id="contentPost-{{ post.id }}">
 								<p class="post-content">{{ post.content }}</p>
 
 								{% if post.imageName %}
 									<div class="post-image-wrapper mt-3">
-										<img src="{{ asset('uploads/posts/' ~ post.imageName) }}" class="post-image" alt="Image du post">
+										<img src="{{ asset('uploads/posts/' ~ post.imageName) }}" class="post-image">
 									</div>
 								{% endif %}
 							</div>
 
+
 							<!-- ACTIONS -->
 							<div class="actions">
+
 								<button class="btn btn-outline-primary btn-pill" data-bs-toggle="modal" data-bs-target="#commentModal-{{ post.id }}">
 									<i class="bi bi-chat"></i>
-									Ajouter un commentaire
+									Ajouter commentaire
 								</button>
 
 								<span class="btn-pill text-muted">
 									{{ post.commentaires|length }}
 									commentaires
 								</span>
+
+								<button class="btn btn-sm btn-outline-info" onclick="summarizeComments({{ post.id }})">
+									🤖 Résumer
+								</button>
+
 							</div>
+
+
+							<!-- OWNER ACTIONS -->
+							{% if app.user and app.user.id == post.utilisateur.id %}
+								<div class="mt-2">
+
+									<button class="btn btn-sm btn-outline-primary" onclick="editPost({{ post.id }})">
+										✏ Modifier
+									</button>
+
+									<form method="post" action="{{ path('forum_post_forum_forum_post_delete',{id:post.id}) }}" style="display:inline;">
+										<button class="btn btn-sm btn-outline-danger">🗑 Supprimer</button>
+									</form>
+
+									<form method="post" action="{{ path('forum_post_forum_forum_post_toggle',{id:post.id}) }}" style="display:inline;">
+										<button class="btn btn-sm btn-outline-warning">⛔ Désactiver</button>
+									</form>
+
+								</div>
+							{% endif %}
+
 
 							<!-- COMMENTS -->
 							<div class="comments">
+
 								{% if post.commentaires is empty %}
 									<div class="empty">Aucun commentaire</div>
 								{% else %}
+
 									{% for c in post.commentaires %}
 										<div class="comment-item {% if c.isAi %}ai-comment{% endif %}">
 
@@ -119,31 +167,156 @@
 														<span class="ai-badge">AI</span>
 													{% endif %}
 													{{ c.utilisateur.prenom }}
-											</strong>
+												</strong>
+												<span>{{ c.date|date('d/m/Y H:i') }}</span>
+											</div>
 
-											<span>{{ c.date|date('d/m/Y H:i') }}</span>
+											<!-- TEXT -->
+											<div id="commentText-{{ c.id }}" class="comment-content">
+												{{ c.content }}
+											</div>
+
+											<!-- EDIT -->
+											<div id="commentEdit-{{ c.id }}" style="display:none;">
+												<textarea class="form-control" id="commentInput-{{ c.id }}">{{ c.content }}</textarea>
+
+												<button class="btn btn-sm btn-success mt-2" onclick="saveCommentEdit({{ c.id }})">
+													✔ Sauvegarder
+												</button>
+
+												<button class="btn btn-sm btn-secondary mt-2" onclick="cancelCommentEdit({{ c.id }})">
+													Annuler
+												</button>
+											</div>
+
+											{% if app.user and app.user.id == c.utilisateur.id and not c.isAi %}
+												<div class="mt-2">
+
+													<button class="btn btn-sm btn-outline-primary" onclick="editComment({{ c.id }})">
+														✏ Modifier
+													</button>
+
+													<form method="post" action="{{ path('forum_post_forum_comment_delete',{id:c.id}) }}" style="display:inline;">
+														<button class="btn btn-sm btn-outline-danger">🗑 Supprimer</button>
+													</form>
+
+												</div>
+											{% endif %}
+
 										</div>
+									{% endfor %}
+								{% endif %}
+							</div>
 
-										<div class="comment-content">
-											{{ c.content }}
-										</div>
+						</article>
 
-									</div>
+						{% include 'FrontOffice/forum/_modal_comment.html.twig' with { post: post } %}
+					{% else %}
+						<div class="empty mt-5">Aucune publication pour le moment 🙂</div>
+					{% endfor %}
 
-								{% endfor %}
-							{% endif %}
-						</div>
+				</div>
+			</main>
+		</div>
 
-					</article>
+		{% include 'FrontOffice/forum/_modal_post.html.twig' %}
 
-					{# COMMENT MODAL (per post) #}
-					{% include 'FrontOffice/forum/_modal_comment.html.twig' with { post: post } %}
-				{% else %}
-					<div class="empty mt-5">Aucune publication pour le moment 🙂</div>
-				{% endfor %}
-
+		<!-- SUMMARY MODAL -->
+		<div class="modal fade" id="summaryModal">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Résumé de la discussion</h5>
+						<button class="btn-close" data-bs-dismiss="modal"></button>
+					</div>
+					<div class="modal-body" id="summaryContent">Chargement...</div>
+				</div>
 			</div>
+		</div>
 
-		</main>
+
+		 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+		 <script>
+						
+						// POST EDIT
+						function editPost(id){
+						document.getElementById("postDisplay-"+id).style.display="none";
+						document.getElementById("postEdit-"+id).style.display="block";
+						}
+						
+						function cancelPostEdit(id){
+						document.getElementById("postDisplay-"+id).style.display="block";
+						document.getElementById("postEdit-"+id).style.display="none";
+						}
+						
+						function savePostEdit(id){
+						
+						let title=document.getElementById("inputTitle-"+id).value;
+						let content=document.getElementById("inputContent-"+id).value;
+						
+						fetch("{{ path('forum_post_forum_post_edit_inline',{id:'ID'}) }}".replace('ID',id),{
+						method:"POST",
+						headers:{ "Content-Type":"application/json" },
+						body: JSON.stringify({title:title,content:content})
+						})
+						.then(r=>r.json())
+						.then(()=>{
+						document.getElementById("title-"+id).innerText=title;
+						document.querySelector("#contentPost-"+id+" .post-content").innerText=content;
+						cancelPostEdit(id);
+						});
+						}
+						
+						
+						// COMMENT EDIT
+						function editComment(id){
+						document.getElementById("commentText-"+id).style.display="none";
+						document.getElementById("commentEdit-"+id).style.display="block";
+						}
+						
+						function cancelCommentEdit(id){
+						document.getElementById("commentText-"+id).style.display="block";
+						document.getElementById("commentEdit-"+id).style.display="none";
+						}
+						
+						function saveCommentEdit(id){
+						
+						let content=document.getElementById("commentInput-"+id).value;
+						
+						fetch("{{ path('forum_post_forum_comment_edit_inline',{id:'ID'}) }}".replace('ID',id),{
+						method:"POST",
+						headers:{ "Content-Type":"application/json" },
+						body: JSON.stringify({content:content})
+						})
+						.then(r=>r.json())
+						.then(()=>{
+						document.getElementById("commentText-"+id).innerText=content;
+						cancelCommentEdit(id);
+						});
+						}
+						
+						
+						// SUMMARY POPUP
+						function summarizeComments(postId){
+						
+						let modal=new bootstrap.Modal(document.getElementById('summaryModal'));
+						document.getElementById("summaryContent").innerHTML="Analyse en cours...";
+						modal.show();
+						
+						fetch("/patient/ai/summarize/"+postId)
+						.then(r=>r.json())
+						.then(data=>{
+						document.getElementById("summaryContent").innerHTML=
+						"<div class='alert alert-info mb-0'>"+data.summary+"</div>";
+						})
+						.catch(()=>{
+						document.getElementById("summaryContent").innerHTML=
+						"<div class='alert alert-danger mb-0'>Erreur lors de l’analyse.</div>";
+						});
+						}
+						
+						</script>
+
 	</body>
-</html></div>{# NEW POST MODAL #}{% include 'FrontOffice/forum/_modal_post.html.twig' %}{# Bootstrap JS – REQUIRED FOR MODALS #} <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script></body></html>
+</html>

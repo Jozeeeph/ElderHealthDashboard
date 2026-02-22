@@ -16,6 +16,9 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use App\Event\CommentCreatedEvent;
 use App\Event\PostCreatedEvent;
+use App\Service\AiSummaryService;
+use App\Service\ExternalAiService;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 
 #[Route('/patient', name: 'forum_post_forum_')]
@@ -122,5 +125,130 @@ class ForumController extends AbstractController
 
         return $this->redirectToRoute('forum_post_forum_index');
     }
-    
+
+    #[Route('/comment/{id}/delete', name: 'comment_delete', methods: ['POST'])]
+    public function deleteComment(
+        Commentaire $comment,
+        EntityManagerInterface $em
+    ): Response {
+
+        if ($comment->getUtilisateur() !== $this->getUser()) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $em->remove($comment);
+        $em->flush();
+
+        return $this->redirectToRoute('forum_post_forum_index');
+    }
+
+    #[Route('/comment/{id}/edit-inline', name: 'comment_edit_inline', methods: ['POST'])]
+    public function editInline(
+        Commentaire $comment,
+        Request $request,
+        EntityManagerInterface $em
+    ): Response {
+
+        if ($comment->getUtilisateur() !== $this->getUser()) {
+            return $this->json(['error' => 'Access denied'], 403);
+        }
+
+        $data = json_decode($request->getContent(), true);
+
+        $comment->setContent($data['content'] ?? '');
+        $em->flush();
+
+        return $this->json(['success' => true]);
+    }
+
+    #[Route('/ai/summarize/{id}', name: 'ai_summary')]
+    public function summarize(Post $post, AiSummaryService $ai): Response
+    {
+        $combinedText = '';
+
+        foreach ($post->getCommentaires() as $c) {
+            $combinedText .= $c->getContent() . ' ';
+        }
+
+        if (!$combinedText) {
+            return $this->json([
+                'summary' => 'Aucun commentaire à analyser.'
+            ]);
+        }
+
+        return $this->json([
+            'summary' => $ai->summarize($combinedText)
+        ]);
+    }
+
+    #[Route('/post/{id}/delete', name: 'forum_post_delete', methods: ['POST'])]
+    public function deletePost(Post $post, EntityManagerInterface $em): Response
+    {
+        if ($post->getUtilisateur() !== $this->getUser()) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $em->remove($post);
+        $em->flush();
+
+        return $this->redirectToRoute('forum_post_forum_index');
+    }
+
+    #[Route('/post/{id}/toggle', name: 'forum_post_toggle', methods: ['POST'])]
+    public function togglePost(Post $post, EntityManagerInterface $em): Response
+    {
+        if ($post->getUtilisateur() !== $this->getUser()) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $post->setStatus(
+            $post->getStatus() === 'ACTIVE'
+            ? 'INACTIVE'
+            : 'ACTIVE'
+        );
+
+        $em->flush();
+
+        return $this->redirectToRoute('forum_post_forum_index');
+    }
+
+    #[Route('/post/{id}/edit-inline', name: 'post_edit_inline', methods: ['POST'])]
+    public function editPostInline(
+        Post $post,
+        Request $request,
+        EntityManagerInterface $em
+    ): Response {
+
+        if ($post->getUtilisateur() !== $this->getUser()) {
+            return $this->json(['error' => 'forbidden'], 403);
+        }
+
+        $data = json_decode($request->getContent(), true);
+
+        $post->setTitle($data['title']);
+        $post->setContent($data['content']);
+
+        $em->flush();
+
+        return $this->json(['success' => true]);
+    }
+
+    #[Route('/patient/ai-chat', name: 'medical_ai_chat')]
+    public function aiChat(): Response
+    {
+        return $this->render('FrontOffice/ai/chat.html.twig');
+    }
+
+    #[Route('/patient/ai-chat/send', name: 'ai_chat_send', methods: ['POST'])]
+    public function sendAi(Request $request,ExternalAiService $ai): JsonResponse {
+
+        $data = json_decode($request->getContent(), true);
+
+        $reply = $ai->ask($data['message']);
+
+        return $this->json([
+            'reply' => $reply
+        ]);
+    }
+
 }
