@@ -94,6 +94,16 @@
         font-size: 0.875em;
         margin-top: 0.25rem;
     }
+
+    .equipement-pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 16px;
+    }
+
+    .equipement-pagination .pagination {
+        margin-bottom: 0;
+    }
 </style>
 
 <div class="equipement-page">
@@ -132,14 +142,13 @@
     {% endfor %}
 
     <!-- Equipment List -->
-    {% if equipements|length > 0 %}
+    {% if equipementsPager.nbResults > 0 %}
         <div class="card shadow">
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th>ID</th>
                                 <th>Image</th>
                                 <th>Nom</th>
                                 <th>Catégorie</th>
@@ -150,9 +159,8 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for equipement in equipements %}
+                            {% for equipement in equipementsPager.currentPageResults %}
                                 <tr>
-                                    <td>{{ equipement.id }}</td>
                                     <td>
                                         {% if equipement.image %}
                                             <img src="{{ asset('uploads/images/' ~ equipement.image) }}" 
@@ -193,7 +201,6 @@
                                                     data-bs-html="true"
                                                     data-bs-title="Détails de: {{ equipement.nom }}"
                                                     data-bs-content="
-                                                        <strong>ID:</strong> {{ equipement.id }}<br>
                                                         <strong>Nom:</strong> {{ equipement.nom }}<br>
                                                         <strong>Catégorie:</strong> {{ equipement.categorie ? equipement.categorie : 'Non définie' }}<br>
                                                         <strong>Prix:</strong> {{ equipement.prix }} DT<br>
@@ -215,9 +222,10 @@
                                             <form method="post" 
                                                   action="{{ path('equipment_delete', {'id': equipement.id}) }}" 
                                                   style="display: inline;"
-                                                  onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet équipement ?');">
+                                                  class="js-delete-form"
+                                                  data-equipment-name="{{ equipement.nom|e('html_attr') }}">
                                                 <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ equipement.id) }}">
-                                                <button type="submit" class="btn btn-sm btn-danger" title="Supprimer">
+                                                <button type="button" class="btn btn-sm btn-danger js-delete-trigger" title="Supprimer">
                                                     <i class="bi bi-trash"></i>
                                                 </button>
                                             </form>
@@ -228,6 +236,15 @@
                         </tbody>
                     </table>
                 </div>
+                {% if equipementsPager.nbPages > 1 %}
+                    <div class="equipement-pagination">
+                        {{ pagerfanta(equipementsPager, 'twitter_bootstrap5', {
+                            routeName: app.current_route,
+                            routeParams: app.current_route_parameters,
+                            pageParameter: '[page]'
+                        }) }}
+                    </div>
+                {% endif %}
             </div>
         </div>
     {% else %}
@@ -242,12 +259,74 @@
     {% endif %}
 </div>
 
+<div class="modal fade" id="deleteEquipmentModal" tabindex="-1" aria-labelledby="deleteEquipmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteEquipmentModalLabel">Confirmer la suppression</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-0">
+                    Êtes-vous sûr de vouloir supprimer
+                    <strong id="deleteEquipmentName">cet équipement</strong>
+                    ?
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteEquipmentBtn">Supprimer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- JavaScript -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Initialize Bootstrap popovers
         const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
         const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl));
+
+        // Delete confirmation modal
+        const deleteModalEl = document.getElementById('deleteEquipmentModal');
+        const deleteNameEl = document.getElementById('deleteEquipmentName');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteEquipmentBtn');
+        const deleteModal = deleteModalEl ? new bootstrap.Modal(deleteModalEl) : null;
+        let pendingDeleteForm = null;
+
+        document.addEventListener('click', function(event) {
+            const trigger = event.target.closest('.js-delete-trigger');
+            if (!trigger || !deleteModal) {
+                return;
+            }
+
+            const form = trigger.closest('.js-delete-form');
+            if (!form) {
+                return;
+            }
+
+            pendingDeleteForm = form;
+            const equipmentName = form.getAttribute('data-equipment-name') || 'cet équipement';
+            deleteNameEl.textContent = equipmentName;
+            deleteModal.show();
+        });
+
+        if (confirmDeleteBtn) {
+            confirmDeleteBtn.addEventListener('click', function() {
+                if (!pendingDeleteForm) {
+                    return;
+                }
+
+                pendingDeleteForm.submit();
+            });
+        }
+
+        if (deleteModalEl) {
+            deleteModalEl.addEventListener('hidden.bs.modal', function() {
+                pendingDeleteForm = null;
+            });
+        }
     });
 </script>
 {% endblock %}
