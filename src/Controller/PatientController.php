@@ -11,6 +11,7 @@ use App\Repository\ConsultationRepository;
 use App\Repository\PrescriptionDoseAckRepository;
 use App\Repository\PrescriptionRepository;
 use App\Repository\UtilisateurRepository;
+use App\Service\PrescriptionMedicationImageService;
 use App\Service\PrescriptionReminderScheduler;
 use Doctrine\ORM\EntityManagerInterface;
 use Dompdf\Dompdf;
@@ -104,7 +105,8 @@ class PatientController extends AbstractController
         Prescription $prescription,
         Request $request,
         UtilisateurRepository $utilisateurRepository,
-        HttpClientInterface $httpClient
+        HttpClientInterface $httpClient,
+        PrescriptionMedicationImageService $prescriptionMedicationImageService
     ): Response
     {
         $this->denyAccessUnlessGranted('ROLE_PATIENT');
@@ -128,12 +130,16 @@ class PatientController extends AbstractController
         }
 
         $translatedPrescription = $this->translatePrescriptionFields($prescription, $uiLocale, $httpClient);
+        $medicationImages = $prescriptionMedicationImageService->resolveMedicationImages(
+            (string) ($prescription->getMedicaments() ?? '')
+        );
 
         return $this->render('FrontOffice/patient/prescription_show.html.twig', [
             'prescription' => $prescription,
             'patient' => $patient,
             'ui_locale' => $uiLocale,
             'translated_prescription' => $translatedPrescription,
+            'medication_images' => $medicationImages,
         ]);
     }
 
