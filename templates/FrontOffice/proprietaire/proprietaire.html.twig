@@ -248,6 +248,16 @@
       object-fit: cover;
       max-height: 180px;
     }
+
+    .prop-pagination {
+      display: flex;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .prop-pagination .pagination {
+      margin: 0;
+    }
   </style>
 {% endblock %}
 
@@ -283,19 +293,21 @@
       </div>
     {% endfor %}
 
+    {% set currentRoute = app.current_route %}
+    {% set routeParams = app.current_route_parameters %}
+    {% set queryParams = app.request.query.all %}
     <div class="prop-grid">
       <div>
-        {% if equipements|length > 0 %}
-          <div class="prop-card">
+        {% if equipementsPager.nbResults > 0 %}
+          <div class="prop-card" id="equipements-list">
             <div class="prop-card-head">
               <h2 class="prop-card-title">Liste des équipements</h2>
-              <div class="prop-meta">Total : <strong>{{ equipements|length }}</strong></div>
+              <div class="prop-meta">Total : <strong>{{ equipementsPager.nbResults }}</strong></div>
             </div>
             <div class="table-responsive">
               <table class="prop-table">
                 <thead>
                   <tr>
-                    <th>ID</th>
                     <th>Nom</th>
                     <th>Catégorie</th>
                     <th>Prix</th>
@@ -305,9 +317,8 @@
                   </tr>
                 </thead>
                 <tbody>
-                  {% for equipement in equipements %}
+                  {% for equipement in equipementsPager.currentPageResults %}
                     <tr>
-                      <td>{{ equipement.id }}</td>
                       <td><strong>{{ equipement.nom }}</strong></td>
                       <td>{{ equipement.categorie ?? '-' }}</td>
                       <td>{{ equipement.prix }} DT</td>
@@ -330,9 +341,10 @@
                             <i class="bi bi-pencil"></i>
                           </a>
                           <form method="post" action="{{ path('front_proprietaire_equipements_delete', {'id': equipement.id}) }}"
-                                onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet équipement ?');">
+                                class="js-delete-form"
+                                data-equipment-name="{{ equipement.nom|e('html_attr') }}">
                             <input type="hidden" name="_token" value="{{ csrf_token('equipement_delete' ~ equipement.id) }}">
-                            <button type="submit" class="prop-btn-sm delete" title="Supprimer">
+                            <button type="button" class="prop-btn-sm delete js-delete-trigger" title="Supprimer">
                               <i class="bi bi-trash"></i>
                             </button>
                           </form>
@@ -341,8 +353,17 @@
                     </tr>
                   {% endfor %}
                 </tbody>
-              </table>
+            </table>
             </div>
+            {% if equipementsPager.nbPages > 1 %}
+              <div class="prop-pagination">
+                {{ pagerfanta(equipementsPager, 'twitter_bootstrap5', {
+                  routeName: currentRoute,
+                  routeParams: routeParams|merge(queryParams|merge({'commandes_page': commandesPager.currentPage})),
+                  pageParameter: '[equipements_page]'
+                }) }}
+              </div>
+            {% endif %}
           </div>
         {% else %}
           <div class="prop-card prop-empty">
@@ -356,14 +377,13 @@
             <h2 class="prop-card-title">Commandes liées à vos équipements</h2>
             <div class="prop-meta">
               Total :
-              <strong>{{ commandes is defined ? commandes|length : 0 }}</strong>
+              <strong>{{ commandesPager.nbResults }}</strong>
             </div>
           </div>
           <div class="table-responsive">
             <table class="prop-table">
               <thead>
                 <tr>
-                  <th>ID</th>
                   <th>Date</th>
                   <th>Statut</th>
                   <th>Total</th>
@@ -372,11 +392,10 @@
                 </tr>
               </thead>
               <tbody>
-                {% if commandes is defined and commandes|length > 0 %}
-                  {% for commande in commandes %}
+                {% if commandesPager.nbResults > 0 %}
+                  {% for commande in commandesPager.currentPageResults %}
                     {% set ownedEquipements = commande.equipements|filter(e => e.utilisateur and e.utilisateur.id == app.user.id) %}
                     <tr>
-                      <td>#{{ commande.id }}</td>
                       <td>{{ commande.dateCommande|date('d/m/Y H:i') }}</td>
                       <td>{{ commande.getStatutCommandeReadable() }}</td>
                       <td>{{ commande.montantTotal }} DT</td>
@@ -403,8 +422,17 @@
                   </tr>
                 {% endif %}
               </tbody>
-            </table>
+              </table>
           </div>
+          {% if commandesPager.nbPages > 1 %}
+            <div class="prop-pagination">
+              {{ pagerfanta(commandesPager, 'twitter_bootstrap5', {
+                routeName: currentRoute,
+                routeParams: routeParams|merge(queryParams|merge({'equipements_page': equipementsPager.currentPage})),
+                pageParameter: '[commandes_page]'
+              }) }}
+            </div>
+          {% endif %}
         </div>
       </div>
 
@@ -511,4 +539,70 @@
     </div>
   </div>
 </div>
+
+<div class="modal fade" id="deleteOwnerEquipmentModal" tabindex="-1" aria-labelledby="deleteOwnerEquipmentModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteOwnerEquipmentModalLabel">Confirmer la suppression</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+      <div class="modal-body">
+        <p class="mb-0">
+          Êtes-vous sûr de vouloir supprimer
+          <strong id="deleteOwnerEquipmentName">cet équipement</strong>
+          ?
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-danger" id="confirmDeleteOwnerEquipmentBtn">Supprimer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const deleteModalEl = document.getElementById('deleteOwnerEquipmentModal');
+    const deleteNameEl = document.getElementById('deleteOwnerEquipmentName');
+    const confirmDeleteBtn = document.getElementById('confirmDeleteOwnerEquipmentBtn');
+    const deleteModal = deleteModalEl ? new bootstrap.Modal(deleteModalEl) : null;
+    let pendingDeleteForm = null;
+
+    document.addEventListener('click', function (event) {
+      const trigger = event.target.closest('.js-delete-trigger');
+      if (!trigger || !deleteModal) {
+        return;
+      }
+
+      const form = trigger.closest('.js-delete-form');
+      if (!form) {
+        return;
+      }
+
+      pendingDeleteForm = form;
+      const equipmentName = form.getAttribute('data-equipment-name') || 'cet équipement';
+      deleteNameEl.textContent = equipmentName;
+      deleteModal.show();
+    });
+
+    if (confirmDeleteBtn) {
+      confirmDeleteBtn.addEventListener('click', function () {
+        if (!pendingDeleteForm) {
+          return;
+        }
+
+        pendingDeleteForm.submit();
+      });
+    }
+
+    if (deleteModalEl) {
+      deleteModalEl.addEventListener('hidden.bs.modal', function () {
+        pendingDeleteForm = null;
+      });
+    }
+  });
+</script>
 {% endblock %}
+

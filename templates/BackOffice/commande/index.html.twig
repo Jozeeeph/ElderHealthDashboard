@@ -195,7 +195,6 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th>ID</th> {# CHANGED: From "Numéro" to "ID" #}
                             <th>Date</th>
                             <th>Client</th>
                             <th>Équipements</th>
@@ -207,7 +206,6 @@
                     <tbody>
                         {% for commande in commandes|sort((a, b) => b.dateCommande <=> a.dateCommande) %}
                             <tr>
-                                <td><strong>#{{ commande.id }}</strong></td> {# CHANGED: Use id instead of numero #}
                                 <td>{{ commande.dateCommande|date('d/m/Y H:i') }}</td>
                                 <td>
                                     {{ commande.utilisateur.nom }} {{ commande.utilisateur.prenom }}
@@ -256,7 +254,7 @@
                             </tr>
                         {% else %}
                             <tr>
-                                <td colspan="7" class="text-center py-4">
+                                <td colspan="6" class="text-center py-4">
                                     <div class="text-muted">
                                         <i class="bi bi-cart-x display-6 d-block mb-2"></i>
                                         Aucune commande trouvée

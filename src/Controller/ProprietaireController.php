@@ -8,6 +8,9 @@ use App\Repository\CommandeRepository;
 use App\Repository\EquipementRepository;
 use App\Service\ImageProcessor;
 use Doctrine\ORM\EntityManagerInterface;
+use Pagerfanta\Doctrine\ORM\QueryAdapter;
+use Pagerfanta\Exception\OutOfRangeCurrentPageException;
+use Pagerfanta\Pagerfanta;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,29 +30,15 @@ final class ProprietaireController extends AbstractController
 
     #[Route('/proprietaire/equipements', name: 'front_proprietaire_equipements', methods: ['GET'])]
     public function index(
+        Request $request,
         EquipementRepository $equipementRepository,
         CommandeRepository $commandeRepository
     ): Response {
         $user = $this->getUser();
-
-        $equipements = $equipementRepository->findBy(
-            ['utilisateur' => $user],
-            ['dateAjout' => 'DESC']
-        );
-
-        $commandes = $commandeRepository->createQueryBuilder('c')
-            ->select('DISTINCT c')
-            ->leftJoin('c.equipements', 'e')
-            ->addSelect('e')
-            ->andWhere('e.utilisateur = :user')
-            ->setParameter('user', $user)
-            ->orderBy('c.dateCommande', 'DESC')
-            ->getQuery()
-            ->getResult();
+        $paginationData = $this->buildPaginatedOwnerData($request, $equipementRepository, $commandeRepository, $user);
 
         return $this->render('FrontOffice/proprietaire/proprietaire.html.twig', [
-            'equipements' => $equipements,
-            'commandes' => $commandes,
+            ...$paginationData,
             'mode' => 'create',
             'selected' => null,
         ]);
@@ -96,20 +85,7 @@ final class ProprietaireController extends AbstractController
 
         $errors = $validator->validate($equipement);
         if (count($errors) > 0) {
-            $equipements = $equipementRepository->findBy(
-                ['utilisateur' => $user],
-                ['dateAjout' => 'DESC']
-            );
-
-            $commandes = $commandeRepository->createQueryBuilder('c')
-                ->select('DISTINCT c')
-                ->leftJoin('c.equipements', 'e')
-                ->addSelect('e')
-                ->andWhere('e.utilisateur = :user')
-                ->setParameter('user', $user)
-                ->orderBy('c.dateCommande', 'DESC')
-                ->getQuery()
-                ->getResult();
+            $paginationData = $this->buildPaginatedOwnerData($request, $equipementRepository, $commandeRepository, $user);
 
             $messages = [];
             foreach ($errors as $error) {
@@ -117,8 +93,7 @@ final class ProprietaireController extends AbstractController
             }
 
             return $this->render('FrontOffice/proprietaire/proprietaire.html.twig', [
-                'equipements' => $equipements,
-                'commandes' => $commandes,
+                ...$paginationData,
                 'mode' => 'create',
                 'selected' => $equipement,
                 'form_errors' => $messages,
@@ -135,6 +110,7 @@ final class ProprietaireController extends AbstractController
     #[Route('/proprietaire/equipements/{id}', name: 'front_proprietaire_equipements_show', methods: ['GET'])]
     public function show(
         int $id,
+        Request $request,
         EquipementRepository $equipementRepository,
         CommandeRepository $commandeRepository
     ): Response {
@@ -145,24 +121,10 @@ final class ProprietaireController extends AbstractController
             throw $this->createNotFoundException('Equipement introuvable');
         }
 
-        $equipements = $equipementRepository->findBy(
-            ['utilisateur' => $user],
-            ['dateAjout' => 'DESC']
-        );
-
-        $commandes = $commandeRepository->createQueryBuilder('c')
-            ->select('DISTINCT c')
-            ->leftJoin('c.equipements', 'e')
-            ->addSelect('e')
-            ->andWhere('e.utilisateur = :user')
-            ->setParameter('user', $user)
-            ->orderBy('c.dateCommande', 'DESC')
-            ->getQuery()
-            ->getResult();
+        $paginationData = $this->buildPaginatedOwnerData($request, $equipementRepository, $commandeRepository, $user);
 
         return $this->render('FrontOffice/proprietaire/proprietaire.html.twig', [
-            'equipements' => $equipements,
-            'commandes' => $commandes,
+            ...$paginationData,
             'mode' => 'view',
             'selected' => $selected,
         ]);
@@ -217,20 +179,7 @@ final class ProprietaireController extends AbstractController
 
             $errors = $validator->validate($equipement);
             if (count($errors) > 0) {
-                $equipements = $equipementRepository->findBy(
-                    ['utilisateur' => $user],
-                    ['dateAjout' => 'DESC']
-                );
-
-                $commandes = $commandeRepository->createQueryBuilder('c')
-                    ->select('DISTINCT c')
-                    ->leftJoin('c.equipements', 'e')
-                    ->addSelect('e')
-                    ->andWhere('e.utilisateur = :user')
-                    ->setParameter('user', $user)
-                    ->orderBy('c.dateCommande', 'DESC')
-                    ->getQuery()
-                    ->getResult();
+                $paginationData = $this->buildPaginatedOwnerData($request, $equipementRepository, $commandeRepository, $user);
 
                 $messages = [];
                 foreach ($errors as $error) {
@@ -238,8 +187,7 @@ final class ProprietaireController extends AbstractController
                 }
 
                 return $this->render('FrontOffice/proprietaire/proprietaire.html.twig', [
-                    'equipements' => $equipements,
-                    'commandes' => $commandes,
+                    ...$paginationData,
                     'mode' => 'edit',
                     'selected' => $equipement,
                     'form_errors' => $messages,
@@ -251,24 +199,10 @@ final class ProprietaireController extends AbstractController
             return $this->redirectToRoute('front_proprietaire_equipements');
         }
 
-        $equipements = $equipementRepository->findBy(
-            ['utilisateur' => $user],
-            ['dateAjout' => 'DESC']
-        );
-
-        $commandes = $commandeRepository->createQueryBuilder('c')
-            ->select('DISTINCT c')
-            ->leftJoin('c.equipements', 'e')
-            ->addSelect('e')
-            ->andWhere('e.utilisateur = :user')
-            ->setParameter('user', $user)
-            ->orderBy('c.dateCommande', 'DESC')
-            ->getQuery()
-            ->getResult();
+        $paginationData = $this->buildPaginatedOwnerData($request, $equipementRepository, $commandeRepository, $user);
 
         return $this->render('FrontOffice/proprietaire/proprietaire.html.twig', [
-            'equipements' => $equipements,
-            'commandes' => $commandes,
+            ...$paginationData,
             'mode' => 'edit',
             'selected' => $equipement,
         ]);
@@ -346,5 +280,51 @@ final class ProprietaireController extends AbstractController
 
         $this->addFlash('success', 'Statut de la commande mis a jour.');
         return $this->redirectToRoute('front_proprietaire_equipements');
+    }
+
+    private function buildPaginatedOwnerData(
+        Request $request,
+        EquipementRepository $equipementRepository,
+        CommandeRepository $commandeRepository,
+        object $user
+    ): array {
+        $equipementsPager = new Pagerfanta(
+            new QueryAdapter(
+                $equipementRepository->createQueryBuilder('e')
+                    ->andWhere('e.utilisateur = :user')
+                    ->setParameter('user', $user)
+                    ->orderBy('e.dateAjout', 'DESC')
+            )
+        );
+        $equipementsPager->setMaxPerPage(5);
+        $this->setPagerPage($equipementsPager, max(1, $request->query->getInt('equipements_page', 1)));
+
+        $commandesPager = new Pagerfanta(
+            new QueryAdapter(
+                $commandeRepository->createQueryBuilder('c')
+                    ->select('DISTINCT c')
+                    ->innerJoin('c.equipements', 'e')
+                    ->andWhere('e.utilisateur = :user')
+                    ->setParameter('user', $user)
+                    ->orderBy('c.dateCommande', 'DESC')
+            )
+        );
+        $commandesPager->setMaxPerPage(5);
+        $this->setPagerPage($commandesPager, max(1, $request->query->getInt('commandes_page', 1)));
+
+        return [
+            'equipementsPager' => $equipementsPager,
+            'commandesPager' => $commandesPager,
+        ];
+    }
+
+    private function setPagerPage(Pagerfanta $pagerfanta, int $page): void
+    {
+        try {
+            $pagerfanta->setCurrentPage($page);
+        } catch (OutOfRangeCurrentPageException) {
+            $lastPage = max(1, $pagerfanta->getNbPages());
+            $pagerfanta->setCurrentPage($lastPage);
+        }
     }
 }

@@ -7,6 +7,9 @@ use App\Form\EquipementType;
 use App\Repository\EquipementRepository;
 use App\Service\TwilioSmsService;
 use Doctrine\ORM\EntityManagerInterface;
+use Pagerfanta\Doctrine\ORM\QueryAdapter;
+use Pagerfanta\Exception\OutOfRangeCurrentPageException;
+use Pagerfanta\Pagerfanta;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,12 +26,24 @@ class EquipmentController extends AbstractController
     }
 
     #[Route('/', name: 'index', methods: ['GET'])]
-    public function index(EquipementRepository $equipementRepository): Response
+    public function index(Request $request, EquipementRepository $equipementRepository): Response
     {
-        $equipements = $equipementRepository->findAll();
+        $pager = new Pagerfanta(
+            new QueryAdapter(
+                $equipementRepository->createQueryBuilder('e')
+                    ->orderBy('e.dateAjout', 'DESC')
+            )
+        );
+        $pager->setMaxPerPage(10);
+
+        try {
+            $pager->setCurrentPage(max(1, $request->query->getInt('page', 1)));
+        } catch (OutOfRangeCurrentPageException) {
+            $pager->setCurrentPage(max(1, $pager->getNbPages()));
+        }
 
         return $this->render('BackOffice/equipment/index.html.twig', [
-            'equipements' => $equipements,
+            'equipementsPager' => $pager,
         ]);
     }
 
