@@ -2,8 +2,16 @@
 framework:
     secret: '%env(APP_SECRET)%'
 
-    # Note that the session will be started ONLY if you read or write from it.
-    session: true
+    # Symfony 7 : évite les warnings + comportement clair
+    http_method_override: false
+    handle_all_throwables: true
+
+    # La session se démarre seulement si tu lis/écris dedans
+    session:
+        enabled: true
+        cookie_secure: auto
+        cookie_samesite: lax
+        handler_id: null
 
     #esi: true
     #fragments: true

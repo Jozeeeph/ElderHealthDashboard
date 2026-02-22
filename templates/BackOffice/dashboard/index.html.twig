@@ -273,9 +273,32 @@
                 <span class="command-pill"><i class="bi bi-box-seam me-1"></i>{{ stats.equipements_disponibles }} equipements disponibles</span>
             </div>
         </div>
+
         <div class="command-actions d-flex gap-2">
             <a class="btn btn-outline-primary btn-sm" href="{{ path('consultation_index') }}">Consultations</a>
             <a class="btn btn-outline-secondary btn-sm" href="{{ path('appointment_index') }}">Rendez-vous</a>
+
+            {# ✅ AJOUT IA #}
+            <button class="btn btn-primary btn-sm" type="button" id="aiAnalyzeBtn">
+                <i class="bi bi-stars me-1"></i> Analyser avec IA
+            </button>
+        </div>
+    </section>
+
+    {# ✅ AJOUT IA : panneau rapport #}
+    <section class="row g-3 mt-1">
+        <div class="col-12">
+            <article class="panel">
+                <header class="panel-head">
+                    <h2 class="panel-title">Rapport IA (Insights)</h2>
+                    <span id="aiStatus" class="recent-status">Prêt</span>
+                </header>
+                <div class="p-3">
+                    <div id="aiBox" class="dash-empty">
+                        Clique sur <strong>“Analyser avec IA”</strong> pour générer un résumé automatique du dashboard.
+                    </div>
+                </div>
+            </article>
         </div>
     </section>
 
@@ -508,6 +531,55 @@ document.addEventListener('DOMContentLoaded', () => {
             }]
         });
     }
+
+    /* =========================
+       ✅ AJOUT IA (fetch + rendu)
+       ========================= */
+
+    const btn = document.getElementById('aiAnalyzeBtn');
+    const box = document.getElementById('aiBox');
+    const status = document.getElementById('aiStatus');
+
+    function escapeHtml(s) {
+        return s.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+    }
+
+    // rendu simple (démo) : \n => <br>
+    function renderMarkdownLike(md) {
+        return escapeHtml(md).replaceAll('\n', '<br>');
+    }
+
+    if (btn && box && status) {
+        btn.addEventListener('click', async () => {
+            try {
+                btn.disabled = true;
+                status.textContent = 'Analyse...';
+                box.className = '';
+                box.innerHTML = '<div class="stock-alert ok">⏳ Génération du rapport IA en cours...</div>';
+
+                const res = await fetch('{{ path("admin_dashboard_ai_insights") }}', { method: 'GET' });
+                const data = await res.json();
+
+                if (!data || !data.ok) {
+                    throw new Error('AI failed');
+                }
+
+                status.textContent = 'Généré';
+                box.className = 'recent-item';
+                box.innerHTML =
+                    '<div style="font-weight:800; margin-bottom:6px;">Résultat</div>' +
+                    '<div style="color:#475569; font-size:.92rem;">' + renderMarkdownLike(data.report_md) + '</div>';
+
+            } catch (e) {
+                status.textContent = 'Erreur';
+                box.className = 'stock-alert';
+                box.innerHTML = '<strong>Erreur IA:</strong> impossible de générer le rapport.';
+            } finally {
+                btn.disabled = false;
+            }
+        });
+    }
 });
 </script>
+
 {% endblock %}
